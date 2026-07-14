@@ -1,0 +1,27 @@
+{
+  "id_teste": "46",
+  "input_usuario": "Quantos contratos ativos em 2025?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1,
+    "ref_cols": 1,
+    "gen_cols": 1,
+    "divergencia_ex": "alias_colunas",
+    "alias_apenas": true,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT COUNT(*) AS qtd FROM contrato_contratos WHERE ano_referencia = 2025;",
+  "query_gerada": "SELECT COUNT(DISTINCT seq_contrato) AS contratos_ativos FROM contrato_contratos WHERE ano_referencia = 2025 AND vlr_contrato > 0;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

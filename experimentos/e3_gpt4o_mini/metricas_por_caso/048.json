@@ -1,0 +1,27 @@
+{
+  "id_teste": "48",
+  "input_usuario": "Top 3 licitações por valor em 2024 com nome do vencedor.",
+  "metrics": {
+    "vsr": false,
+    "ex_strict": false,
+    "ex_rows": false,
+    "ex_cols": false,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": false,
+    "tsa": true,
+    "chs": 0.5,
+    "ref_rows": 3,
+    "gen_rows": 0,
+    "ref_cols": 2,
+    "gen_cols": 0,
+    "divergencia_ex": null,
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "WITH licitacoes AS (SELECT h.nom_vencedor, SUM(CAST(h.vlr_global AS DECIMAL)) AS total_valor FROM licitacao_homologLicitacao h JOIN licitacao_licitacao l ON h.seq_licitacao = l.seq_licitacao AND h.ano_referencia = l.ano_referencia WHERE h.ano_referencia = 2024 GROUP BY h.seq_licitacao, h.nom_vencedor) SELECT nom_vencedor, total_valor FROM licitacoes ORDER BY total_valor DESC LIMIT 3;",
+  "query_gerada": "SELECT h.nom_vencedor, l.vlr_global FROM licitacao_licitacao l JOIN licitacao_homologLicitacao h ON l.seq_licitacao = h.seq_licitacao AND l.ano_referencia = h.ano_referencia WHERE l.ano_referencia = 2024 AND l.vlr_global > 0 ORDER BY l.vlr_global DESC LIMIT 3;",
+  "erro_sql_gerado": "Binder Error: Values list \"l\" does not have a column named \"vlr_global\"\n\nLINE 1: ...encia = h.ano_referencia WHERE l.ano_referencia = 2024 AND l.vlr_global > 0 ORDER BY l.vlr_global DESC LIMIT 3;\n                                                                      ^",
+  "erro_sql_referencia": null
+}

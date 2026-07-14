@@ -1,0 +1,27 @@
+{
+  "id_teste": "26",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "WITH gastos_legislativos AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_gastos FROM despesa_despesa WHERE ano_referencia = 2024 AND cod_orgao = '01') , receitas_correntes AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receitas FROM receita_receita WHERE ano_referencia = 2024 AND dsc_cateconomica ILIKE '%Corrente%') SELECT (total_gastos / NULLIF(total_receitas, 0)) * 100 AS porcentagem FROM gastos_legislativos, receitas_correntes;",
+  "columns": [
+    "porcentagem"
+  ],
+  "rows": [
+    {
+      "porcentagem": 2.7178793669
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "49d02ada1004acbf",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:12.137073+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id_teste": "5",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "WITH despesa AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa FROM educacao_educacao WHERE ano_referencia = 2023), receita AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita FROM receita_receita WHERE ano_referencia = 2023 AND dsc_especie ILIKE '%Imposto%') SELECT (despesa.total_despesa / NULLIF(receita.total_receita, 0)) * 100 AS ieq_c, CASE WHEN (despesa.total_despesa / NULLIF(receita.total_receita, 0)) * 100 >= 25 THEN 'Sim' ELSE 'Não' END AS atingiu_minimo FROM despesa, receita;",
+  "columns": [
+    "ieq_c",
+    "atingiu_minimo"
+  ],
+  "rows": [
+    {
+      "ieq_c": 80.5776443081,
+      "atingiu_minimo": "Sim"
+    }
+  ],
+  "row_count": 1,
+  "col_count": 2,
+  "schema_hash": "c5f91afa1f13c11d",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:13.083398+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

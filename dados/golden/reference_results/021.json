@@ -1,0 +1,21 @@
+{
+  "id_teste": "21",
+  "source": "golden_reference",
+  "sql": "SELECT COUNT(DISTINCT seq_licitacao) AS qtd FROM licitacao_licitacao WHERE ano_referencia = 2024;",
+  "columns": [
+    "qtd"
+  ],
+  "rows": [
+    {
+      "qtd": 64
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "1734aaf65549a563",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:39.024893+00:00",
+  "input_usuario": "Quantas licitações foram abertas em 2024?",
+  "dificuldade": "facil",
+  "categoria": "Consulta Simples"
+}

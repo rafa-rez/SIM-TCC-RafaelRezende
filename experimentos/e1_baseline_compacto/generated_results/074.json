@@ -1,0 +1,276 @@
+{
+  "id_teste": "74",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "WITH pagamentos AS ( SELECT TRIM(UPPER(nom_credor)) AS nome, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pagamento FROM despesa_pagamento WHERE ano_referencia = 2024 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND num_doc_credor NOT IN ('-1', '0') GROUP BY TRIM(UPPER(nom_credor)) ), bolsa_familia AS ( SELECT TRIM(UPPER(\"NOME FAVORECIDO\")) AS nome, SUM(CAST(\"VALOR PARCELA\" AS DECIMAL)) AS total_bolsa FROM cgu_bolsa_familia_pagamentos WHERE ano_referencia = 2024 GROUP BY TRIM(UPPER(\"NOME FAVORECIDO\")) ) SELECT COALESCE(p.nome, b.nome) AS nome, COALESCE(p.total_pagamento, 0) AS total_pagamento, COALESCE(b.total_bolsa, 0) AS total_bolsa_familia FROM pagamentos p FULL OUTER JOIN bolsa_familia b ON p.nome = b.nome ORDER BY nome LIMIT 50;",
+  "columns": [
+    "nome",
+    "total_pagamento",
+    "total_bolsa_familia"
+  ],
+  "rows": [
+    {
+      "nome": "2 L COMERCIAL LTDA",
+      "total_pagamento": 355261.48,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "3PH MEDICAMENTOS ESPECIAIS LTDA",
+      "total_pagamento": 755.82,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "45.665.176 IZADORA MARIA LIMA",
+      "total_pagamento": 1200.0,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "49.894.828 SAMARA GABRIELA DE SOUZA",
+      "total_pagamento": 1200.0,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "4TECH MANUTENCAO LABORATORIAL REFRIGERACAO E HOSPITALAR LTDA EPP",
+      "total_pagamento": 62841.52,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "A PONTO RAPIDO EIRELI-EPP",
+      "total_pagamento": 1582.0,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "A SERENATA LTDA",
+      "total_pagamento": 5083.26,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "A&G SERVICOS MÉDICOS LTDA EPP",
+      "total_pagamento": 234429.26,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ABNER MISAEL MAGALHAES BICALHO DE OLIVEIRA",
+      "total_pagamento": 3220.0,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ACACIA COMERCIO DE MEDICAMENTOS LTDA",
+      "total_pagamento": 66717.82,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ACHEI COMPONENTES ELETRONICOS COMERCIO E SERVICO",
+      "total_pagamento": 7031.0,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ACOFERRO INDUSTRIA E COMERCIO LTDA ME",
+      "total_pagamento": 2065.8,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ACTCON COMERCIO DE PRODUTOS DE INFORMATICA LTDA",
+      "total_pagamento": 66324.24,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ACTCON SOLUCOES WEB LTDA",
+      "total_pagamento": 23590.56,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ACTCON SOLUCOES WEB LTDA.",
+      "total_pagamento": 76.16,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ADAO LAUREANO BARBOSA",
+      "total_pagamento": 738.31,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ADELAIDE FREIRE BARBOSA",
+      "total_pagamento": 19386.12,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ADEMAR HERMOGENES DA SILVA",
+      "total_pagamento": 15200.5,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ADORE EVENTOS LTDA",
+      "total_pagamento": 78400.0,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ADRIANA CRISTINA AUGUSTO",
+      "total_pagamento": 86.86,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ADRIANA DO NASCIMENTO BATISTA",
+      "total_pagamento": 304.01,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ADRIANA MARIA FRANCO SOUZA",
+      "total_pagamento": 20836.16,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ADRIANE FERREIRA ALMEIDA",
+      "total_pagamento": 477.73,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ADRIANO ANSELMO MARTINS",
+      "total_pagamento": 86.86,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ADRYAN ALEX FERNANDES DOS SANTOS",
+      "total_pagamento": 2840.0,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "AFRICA IND COM E SERV DE IMP DIGITAIS LTDA",
+      "total_pagamento": 14480.6,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "AFRÂNIO REI DE FRANCA SILVA",
+      "total_pagamento": 1607.04,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "AFW COMPUTADORES LTDA",
+      "total_pagamento": 678.0,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "AGENCIA REGULADORA INTER. DE SANEAMENTO BASICO-MG",
+      "total_pagamento": 86520.56,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "AGIL EIRELI",
+      "total_pagamento": 30615.84,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "AGROVETERINARIA PS LTDA",
+      "total_pagamento": 235634.34,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "AGUIMARIO PIMENTEL DA SILVA",
+      "total_pagamento": 400.5,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "AISLAN BRENO DA SILVA MARTINS",
+      "total_pagamento": 1086.1,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "AL OLIVEIRA LTDA",
+      "total_pagamento": 909.99,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ALBERTO MAGNO DE ALMEIDA",
+      "total_pagamento": 46505.0,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ALBERTO NAZARETH PIRES",
+      "total_pagamento": 706.47,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ALCIONE APARECIDA LIMA",
+      "total_pagamento": 257.93,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ALCIONE ROBERTA TORRES MIRANDA",
+      "total_pagamento": 180.0,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ALEIXO & FERREIRA HIDROJATEAMENTO LTDAME",
+      "total_pagamento": 19128.94,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ALESSANDRA LEONEL NEVES",
+      "total_pagamento": 4950.0,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ALESSANDRA MENEGUINI",
+      "total_pagamento": 436.1,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ALEXANDRE JOSE ALVES PEDROZA",
+      "total_pagamento": 3020.0,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ALEXANDRE MAGNO LEAL -EPP.",
+      "total_pagamento": 34807.0,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ALEXSANDRA PERUCH ROTEA",
+      "total_pagamento": 173.72,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ALFALAGOS LTDA",
+      "total_pagamento": 41483.0,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ALIANCA COMERCIO E DISTRIBUIDORA LTDA",
+      "total_pagamento": 13061.52,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ALICE CORREA MARTINS DA COSTA",
+      "total_pagamento": 4500.0,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ALICE RAFAELY CARVALHO",
+      "total_pagamento": 4500.0,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ALINE FERREIRA DE JESUS",
+      "total_pagamento": 86.86,
+      "total_bolsa_familia": 0.0
+    },
+    {
+      "nome": "ALINE PEREIRA SEVERIANO",
+      "total_pagamento": 2964.12,
+      "total_bolsa_familia": 0.0
+    }
+  ],
+  "row_count": 50,
+  "col_count": 3,
+  "schema_hash": "16aabc2873446795",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:24.080863+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 0,
+    "gen_rows": 50
+  }
+}

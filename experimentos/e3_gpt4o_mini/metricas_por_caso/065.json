@@ -1,0 +1,27 @@
+{
+  "id_teste": "65",
+  "input_usuario": "Total gasto com frota em 2025.",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1,
+    "ref_cols": 1,
+    "gen_cols": 1,
+    "divergencia_ex": "alias_colunas",
+    "alias_apenas": true,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT SUM(CAST(vlr_gasto AS DECIMAL)) AS total FROM frota_gastoFrota WHERE ano_referencia = 2025;",
+  "query_gerada": "SELECT SUM(CAST(vlr_gasto AS DECIMAL)) AS total_gasto_frota FROM frota_gastoFrota WHERE ano_referencia = 2025 AND COALESCE(dsc_ori_gasto, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(dsc_tipo_gasto, '') NOT ILIKE '%NÃO INFORMADO%';",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

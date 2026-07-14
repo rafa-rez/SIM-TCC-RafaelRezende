@@ -1,0 +1,27 @@
+{
+  "id_teste": "26",
+  "input_usuario": "Qual a porcentagem do gasto da Câmara sobre a receita corrente em 2024?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1,
+    "ref_cols": 1,
+    "gen_cols": 1,
+    "divergencia_ex": "alias_colunas",
+    "alias_apenas": true,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "WITH receita_corrente AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS r FROM receita_receita WHERE dsc_cateconomica ILIKE '%Corrente%' AND ano_referencia = 2024), despesas_camara AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS d FROM despesa_despesa WHERE cod_orgao = 1 AND ano_referencia = 2024) SELECT (d / NULLIF(r, 0)) * 100 AS iev_c FROM despesas_camara, receita_corrente;",
+  "query_gerada": "WITH despesas_camara AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesas FROM despesa_despesa WHERE ano_referencia = 2024 AND cod_orgao = '01'), receitas_correntes AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receitas FROM receita_receita WHERE ano_referencia = 2024 AND dsc_cateconomica ILIKE '%Corrente%') SELECT (despesas_camara.total_despesas / NULLIF(receitas_correntes.total_receitas, 0)) * 100 AS porcentagem_gasto_camara FROM despesas_camara, receitas_correntes;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

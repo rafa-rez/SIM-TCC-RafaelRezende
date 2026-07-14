@@ -1,0 +1,51 @@
+{
+  "id_teste": "57",
+  "source": "golden_reference",
+  "sql": "SELECT CAST(SUBSTR(CAST(seq_dat_pagamento AS VARCHAR), 5, 2) AS INTEGER) AS mes, SUM(CAST(vlr_rmn_liquida AS DECIMAL)) AS total FROM remuneracao_municipio WHERE ano_referencia = 2025 GROUP BY mes ORDER BY mes;",
+  "columns": [
+    "mes",
+    "total"
+  ],
+  "rows": [
+    {
+      "mes": 1,
+      "total": 5673730.37
+    },
+    {
+      "mes": 2,
+      "total": 4008296.09
+    },
+    {
+      "mes": 3,
+      "total": 4537612.75
+    },
+    {
+      "mes": 4,
+      "total": 5898027.98
+    },
+    {
+      "mes": 5,
+      "total": 4900325.37
+    },
+    {
+      "mes": 6,
+      "total": 4977447.39
+    },
+    {
+      "mes": 7,
+      "total": 5127535.42
+    },
+    {
+      "mes": 8,
+      "total": 4912922.56
+    }
+  ],
+  "row_count": 8,
+  "col_count": 2,
+  "schema_hash": "42a09f209047a0eb",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:44.969742+00:00",
+  "input_usuario": "Evolução mensal da folha em 2025.",
+  "dificuldade": "medio",
+  "categoria": "RH Folha"
+}

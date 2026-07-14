@@ -1,0 +1,27 @@
+{
+  "id_teste": "21",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT COUNT(*) AS total_licitacoes FROM licitacao_licitacao WHERE ano_referencia = 2024;",
+  "columns": [
+    "total_licitacoes"
+  ],
+  "rows": [
+    {
+      "total_licitacoes": 64
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "1697ed3f99f512ed",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:11.234187+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

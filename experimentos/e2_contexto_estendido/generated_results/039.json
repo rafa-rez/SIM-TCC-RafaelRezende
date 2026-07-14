@@ -1,0 +1,27 @@
+{
+  "id_teste": "39",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "SELECT SUM(CAST(vlr_empenhado AS DECIMAL)) AS total_pago_pessoal FROM empenho_empenho WHERE ano_referencia = 2024;",
+  "columns": [
+    "total_pago_pessoal"
+  ],
+  "rows": [
+    {
+      "total_pago_pessoal": 222872519.8
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "597f05da1fb91ccf",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:46.192036+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 0.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

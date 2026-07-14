@@ -1,0 +1,21 @@
+{
+  "id_teste": "12",
+  "source": "golden_reference",
+  "sql": "SELECT SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total FROM cgu_transferencias WHERE ano_referencia = 2023;",
+  "columns": [
+    "total"
+  ],
+  "rows": [
+    {
+      "total": 71085392.34
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "11239872d178729a",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:37.917564+00:00",
+  "input_usuario": "Quanto o município recebeu em transferências federais em 2023?",
+  "dificuldade": "facil",
+  "categoria": "Consulta Simples"
+}

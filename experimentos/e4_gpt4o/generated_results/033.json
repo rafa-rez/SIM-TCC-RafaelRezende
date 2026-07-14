@@ -1,0 +1,65 @@
+{
+  "id_teste": "33",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT ce.nom_credor, dp.vlr_pag_fonte FROM despesa_pagamento dp JOIN empenho_credorEmpenho ce ON dp.seq_empenho = ce.seq_empenho AND dp.ano_referencia = ce.ano_referencia WHERE dp.ano_referencia = 2025 AND COALESCE(dp.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND dp.num_doc_credor NOT IN ('-1', '0') ORDER BY dp.vlr_pag_fonte DESC LIMIT 10;",
+  "columns": [
+    "nom_credor",
+    "vlr_pag_fonte"
+  ],
+  "rows": [
+    {
+      "nom_credor": "SOLUCAO EM NEGOCIOS LTDA",
+      "vlr_pag_fonte": "9997.18"
+    },
+    {
+      "nom_credor": "INSTITUTO NACIONAL DO SEGURO SOCIAL",
+      "vlr_pag_fonte": "9995.56"
+    },
+    {
+      "nom_credor": "VALOR LOCACOES LTDA",
+      "vlr_pag_fonte": "9992.5"
+    },
+    {
+      "nom_credor": "LEONARDO FILOMENO",
+      "vlr_pag_fonte": "999.8"
+    },
+    {
+      "nom_credor": "CAIXA ECONOMICA FEDERAL",
+      "vlr_pag_fonte": "999.62"
+    },
+    {
+      "nom_credor": "CAIXA ECONOMICA FEDERAL",
+      "vlr_pag_fonte": "999.62"
+    },
+    {
+      "nom_credor": "CAIXA ECONOMICA FEDERAL",
+      "vlr_pag_fonte": "999.62"
+    },
+    {
+      "nom_credor": "JOAO VAZ DA SILVA",
+      "vlr_pag_fonte": "998.89"
+    },
+    {
+      "nom_credor": "FAST CLEAN DISTRIBUIDORA LTDA",
+      "vlr_pag_fonte": "9978.65"
+    },
+    {
+      "nom_credor": "CONSORCIO OTIMO DE BILHETAGEM ELETRONICA",
+      "vlr_pag_fonte": "9975.75"
+    }
+  ],
+  "row_count": 10,
+  "col_count": 2,
+  "schema_hash": "5db84baedc32504b",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:42.181521+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 10,
+    "gen_rows": 10
+  }
+}

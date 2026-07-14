@@ -1,0 +1,27 @@
+{
+  "id_teste": "24",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "WITH receita_corrente AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS receita_corrente FROM receita_receita WHERE ano_referencia = 2024 AND dsc_cateconomica ILIKE '%Corrente%'), despesa_corrente AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS despesa_corrente FROM despesa_despesa WHERE ano_referencia = 2024 AND dsc_naturezadespesa ILIKE '3%') SELECT CAST(r.receita_corrente AS DECIMAL) / NULLIF(CAST(d.despesa_corrente AS DECIMAL), 0) AS isf_m FROM receita_corrente r CROSS JOIN despesa_corrente d;",
+  "columns": [
+    "isf_m"
+  ],
+  "rows": [
+    {
+      "isf_m": 1.0665988252
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "358a3fa05a264845",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:43.287756+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

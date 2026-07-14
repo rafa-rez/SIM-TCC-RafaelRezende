@@ -1,0 +1,45 @@
+{
+  "id_teste": "71",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "WITH pagamentos_agg AS (\n  SELECT\n    num_doc_credor,\n    nom_credor,\n    SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago\n  FROM despesa_pagamento\n  WHERE ano_referencia = 2024\n    AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%'\n    AND num_doc_credor NOT IN ('-1', '0', '')\n  GROUP BY num_doc_credor, nom_credor\n),\ntransferencias_agg AS (\n  SELECT\n    \"CÓDIGO FAVORECIDO\" AS num_doc_credor_cgu,\n    \"NOME FAVORECIDO\" AS nom_credor_cgu,\n    SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_transferido\n  FROM cgu_transferencias\n  WHERE ano_referencia = 2024\n  GROUP BY \"CÓDIGO FAVORECIDO\", \"NOME FAVORECIDO\"\n)\nSELECT\n  p.nom_credor,\n  p.num_doc_credor,\n  p.total_pago,\n  t.total_transferido\nFROM pagamentos_agg p\nJOIN transferencias_agg t\n  ON p.num_doc_credor = t.num_doc_credor_cgu\nORDER BY p.total_pago DESC\nLIMIT 3;",
+  "columns": [
+    "nom_credor",
+    "num_doc_credor",
+    "total_pago",
+    "total_transferido"
+  ],
+  "rows": [
+    {
+      "nom_credor": "SOC CIVIL DE BENEFICÊNCIA CAETEENSE",
+      "num_doc_credor": "18979328000167",
+      "total_pago": 21397578.75,
+      "total_transferido": 437944.08
+    },
+    {
+      "nom_credor": "SERVIDORES MUNICIPAIS",
+      "num_doc_credor": "18302299000102",
+      "total_pago": 1053174.54,
+      "total_transferido": 66224240.38
+    },
+    {
+      "nom_credor": "SOCIEDADE CIVIL DE BENEFICENCIA CAETEENSE",
+      "num_doc_credor": "18979328000167",
+      "total_pago": 618702.45,
+      "total_transferido": 437944.08
+    }
+  ],
+  "row_count": 3,
+  "col_count": 4,
+  "schema_hash": "f556a8ac45c57ef5",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:50.955362+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 3,
+    "gen_rows": 3
+  }
+}

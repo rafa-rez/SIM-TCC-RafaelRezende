@@ -1,0 +1,21 @@
+{
+  "id_teste": "13",
+  "source": "golden_reference",
+  "sql": "SELECT COUNT(*) AS qtd_empenhos FROM empenho_empenho WHERE ano_referencia = 2025;",
+  "columns": [
+    "qtd_empenhos"
+  ],
+  "rows": [
+    {
+      "qtd_empenhos": 6063
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "4254bb46e7f4967f",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:38.129114+00:00",
+  "input_usuario": "Quantos empenhos foram registrados em 2025?",
+  "dificuldade": "facil",
+  "categoria": "Consulta Simples"
+}

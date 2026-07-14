@@ -1,0 +1,21 @@
+{
+  "id_teste": "1",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "WITH receita AS (SELECT ano_referencia, SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS receita_corrente FROM receita_receita WHERE ano_referencia BETWEEN 2020 AND 2025 AND dsc_cateconomica ILIKE '%Corrente%'), despesa AS (SELECT ano_referencia, SUM(CAST(vlr_liquidado AS DECIMAL)) AS despesa_corrente FROM despesa_despesa WHERE ano_referencia BETWEEN 2020 AND 2025 AND dsc_naturezadespesa ILIKE '3%') SELECT r.ano_referencia, r.receita_corrente, d.despesa_corrente, CAST(r.receita_corrente AS DECIMAL) / NULLIF(CAST(d.despesa_corrente AS DECIMAL), 0) AS isf_m FROM receita r LEFT JOIN despesa d ON r.ano_referencia = d.ano_referencia ORDER BY r.ano_referencia;",
+  "columns": [],
+  "rows": [],
+  "row_count": 0,
+  "col_count": 0,
+  "schema_hash": null,
+  "error": "Binder Error: column \"ano_referencia\" must appear in the GROUP BY clause or must be part of an aggregate function.\nEither add it to the GROUP BY list, or use \"ANY_VALUE(ano_referencia)\" if the exact value of \"ano_referencia\" is not important.\n\nLINE 1: WITH receita AS (SELECT ano_referencia, SUM(CAST(vlr_realizadoateperiodo AS DECIMAL...\n                                ^",
+  "exported_at": "2026-07-14T23:55:39.212057+00:00",
+  "metrics_checkpoint": {
+    "vsr": false,
+    "ex": false,
+    "nea_ok": false,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 6,
+    "gen_rows": 0
+  }
+}

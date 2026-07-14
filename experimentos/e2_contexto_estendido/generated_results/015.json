@@ -1,0 +1,27 @@
+{
+  "id_teste": "15",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS receita_corrente_realizada FROM receita_receita WHERE ano_referencia = 2025 AND dsc_cateconomica ILIKE '%Corrente%';",
+  "columns": [
+    "receita_corrente_realizada"
+  ],
+  "rows": [
+    {
+      "receita_corrente_realizada": 112992183.25
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "e3f0d669933783bc",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:42.129990+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

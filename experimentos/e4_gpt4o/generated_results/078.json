@@ -1,0 +1,66 @@
+{
+  "id_teste": "78",
+  "source": "generated:e4_gpt4o",
+  "sql": "WITH licitacoes_agrupadas AS (SELECT l.ano_referencia, l.seq_licitacao, SUM(CAST(h.vlr_global AS DECIMAL)) AS valor_total FROM licitacao_licitacao l JOIN licitacao_homologLicitacao h ON l.seq_licitacao = h.seq_licitacao AND l.ano_referencia = h.ano_referencia WHERE l.ano_referencia IN (2024, 2025) GROUP BY l.ano_referencia, l.seq_licitacao), licitacoes_rankeadas AS (SELECT ano_referencia, seq_licitacao, valor_total, ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY valor_total DESC) AS rn FROM licitacoes_agrupadas) SELECT ano_referencia, seq_licitacao, valor_total FROM licitacoes_rankeadas WHERE rn <= 5;",
+  "columns": [
+    "ano_referencia",
+    "seq_licitacao",
+    "valor_total"
+  ],
+  "rows": [
+    {
+      "ano_referencia": 2025,
+      "seq_licitacao": 1464446,
+      "valor_total": 54800.0
+    },
+    {
+      "ano_referencia": 2025,
+      "seq_licitacao": 1447852,
+      "valor_total": 0.0
+    },
+    {
+      "ano_referencia": 2025,
+      "seq_licitacao": 1448185,
+      "valor_total": 0.0
+    },
+    {
+      "ano_referencia": 2024,
+      "seq_licitacao": 1350639,
+      "valor_total": 4432414.67
+    },
+    {
+      "ano_referencia": 2024,
+      "seq_licitacao": 1433003,
+      "valor_total": 3749659.9
+    },
+    {
+      "ano_referencia": 2024,
+      "seq_licitacao": 1368379,
+      "valor_total": 602986.9
+    },
+    {
+      "ano_referencia": 2024,
+      "seq_licitacao": 1380838,
+      "valor_total": 507229.0
+    },
+    {
+      "ano_referencia": 2024,
+      "seq_licitacao": 1380836,
+      "valor_total": 479671.0
+    }
+  ],
+  "row_count": 8,
+  "col_count": 3,
+  "schema_hash": "aabf13be585d5c48",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:49.661924+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 10,
+    "gen_rows": 8
+  }
+}

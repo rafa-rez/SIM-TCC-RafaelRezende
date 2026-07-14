@@ -1,0 +1,27 @@
+{
+  "id_teste": "46",
+  "input_usuario": "Quantos contratos ativos em 2025?",
+  "metrics": {
+    "vsr": false,
+    "ex_strict": false,
+    "ex_rows": false,
+    "ex_cols": false,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": false,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 0,
+    "ref_cols": 1,
+    "gen_cols": 0,
+    "divergencia_ex": null,
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT COUNT(*) AS qtd FROM contrato_contratos WHERE ano_referencia = 2025;",
+  "query_gerada": "SELECT COUNT(*) AS total_contratos_ativos FROM contrato_contratos WHERE ano_referencia = 2025 AND dsc_situacaoveiculo ILIKE '%Ativo%';",
+  "erro_sql_gerado": "Binder Error: Referenced column \"dsc_situacaoveiculo\" not found in FROM clause!\nCandidate bindings: \"dsc_veiculopublicacao\", \"dsc_multarecisoria\", \"dsc_nome_signatario\", \"dsc_prazoexecucao\", \"dsc_decorrentelicitacao\"\n\nLINE 1: ... FROM contrato_contratos WHERE ano_referencia = 2025 AND dsc_situacaoveiculo ILIKE '%Ativo%';\n                                                                    ^",
+  "erro_sql_referencia": null
+}

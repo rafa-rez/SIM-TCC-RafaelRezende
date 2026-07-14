@@ -1,0 +1,129 @@
+version: '3.8'
+
+services:
+  # --- REDIS (Cache / Estado) ---
+  redis:
+    image: redis:latest
+    platform: linux/amd64
+    restart: always
+    command: redis-server --requirepass prefeitura_pass
+    ports:
+      - "6380:6379"
+    networks:
+      - prefeitura_net
+
+  # --- WAHA (WhatsApp API) ---
+  waha:
+    image: devlikeapro/waha:latest
+    platform: linux/amd64
+    restart: always
+    environment:
+      WHATSAPP_HOOK_URL: http://n8n:5678/webhook/whatsapp-entrada
+      WHATSAPP_DEFAULT_ENGINE: GOWS
+      WHATSAPP_HOOK_EVENTS: message.any
+      WAHA_NO_API_KEY: "true"
+      WAHA_DASHBOARD_NO_PASSWORD: "true"
+      WHATSAPP_SWAGGER_NO_PASSWORD: "true"
+    volumes:
+      - waha_sessions:/app/.sessions
+      - waha_media:/app/.media
+    ports:
+      - "3001:3000"
+    networks:
+      - prefeitura_net
+
+  # --- QDRANT (Vector DB / RAG) ---
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant_prefeitura
+    restart: always
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - prefeitura_net
+
+  # --- OLLAMA (IA Local) ---
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama_prefeitura
+    restart: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - prefeitura_net
+
+  # --- DUCKDB API (Motor SQL para CSVs do SICOM) ---
+  duckdb_api:
+    image: python:3.11-slim
+    container_name: duckdb_prefeitura
+    restart: always
+    working_dir: /app
+    volumes:
+      - ./scripts_python:/app
+      - ./dados:/gov/dados
+      - ./dados/staging_cgu:/gov/dados/staging_cgu
+    command: >
+      bash -c "pip install --no-cache-dir fastapi uvicorn duckdb pandas pydantic &&
+      uvicorn main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
+    networks:
+      - prefeitura_net
+
+  # --- N8N (Orquestrador) ---
+  n8n:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: n8n_prefeitura
+    restart: always
+    platform: linux/amd64
+    depends_on:
+      - redis
+      - qdrant
+      - duckdb_api
+    environment:
+      # Configurações de Memória e Disco
+      N8N_RESTRICT_FILE_ACCESS_TO: ""
+      N8N_BLOCK_FILESYSTEM_READ_AND_WRITE: "false"
+      N8N_BLOCK_FILE_ACCESS_TO_N8N_FILES: "false"
+      N8N_DEFAULT_BINARY_DATA_MODE: "filesystem"
+      NODE_FUNCTION_ALLOW_BUILTIN: "*"
+      NODE_FUNCTION_ALLOW_EXTERNAL: "*"
+      
+      # Padrão n8n
+      WEBHOOK_URL: http://localhost:5679
+      N8N_HOST: n8n
+      N8N_PORT: 5678
+      GENERIC_TIMEZONE: America/Sao_Paulo
+      N8N_LOG_LEVEL: info
+      N8N_ALLOW_EXECUTE_COMMAND: "true"
+      NODES_EXCLUDE: "[]"
+      
+      # Segurança
+      N8N_SECURE_COOKIE: "false"
+      N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE: "true"
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./scripts_python:/home/node/scripts
+      - ./dados:/gov/dados
+    ports:
+      - "5679:5678"
+    networks:
+      - prefeitura_net
+
+networks:
+  prefeitura_net:
+    driver: bridge
+
+volumes:
+  waha_sessions:
+  waha_media:
+  n8n_data:
+  ollama_data:
+  qdrant_data:

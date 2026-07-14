@@ -1,0 +1,51 @@
+# Arquivos ignorados pelo Git
+
+.env
+.env.*
+__pycache__/
+*.py[cod]
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.idx
+*.ind
+*.ilg
+*.bbl
+*.blg
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# Ambiente e caches
+node_modules/
+.cursor/
+agent-tools/
+terminals/
+
+# Desenvolvimento local não necessário à validação
+lixo/
+tcc-latex/overleaf-toolkit/
+template-ufla/*.aux
+template-ufla/*.log
+template-ufla/*.pdf
+
+# Segredos e volumes
+n8n_data/
+waha_sessions/
+waha_media/
+qdrant_data/
+ollama_data/
+
+# Temporários
+scripts/_test_year.py
+.DS_Store
+Thumbs.db
+
+# Prompts legados na raiz (versões canônicas em eval/prompts/)
+Póscagada.txt
+Précagada.txt
+prompt-master
+PROXIMOS_PASSOS.md

@@ -1,0 +1,27 @@
+{
+  "id_teste": "26",
+  "source": "generated:e4_gpt4o",
+  "sql": "WITH despesas_camara AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesas FROM despesa_despesa WHERE ano_referencia = 2024 AND cod_orgao = '01'), receitas_correntes AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receitas FROM receita_receita WHERE ano_referencia = 2024 AND dsc_cateconomica ILIKE '%Corrente%') SELECT (despesas_camara.total_despesas / NULLIF(receitas_correntes.total_receitas, 0)) * 100 AS porcentagem_gasto_camara FROM despesas_camara, receitas_correntes;",
+  "columns": [
+    "porcentagem_gasto_camara"
+  ],
+  "rows": [
+    {
+      "porcentagem_gasto_camara": 2.7178793669
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "afee61de291740f5",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:40.912045+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

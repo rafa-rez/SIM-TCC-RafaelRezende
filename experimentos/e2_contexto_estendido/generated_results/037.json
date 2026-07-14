@@ -1,0 +1,37 @@
+{
+  "id_teste": "37",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "SELECT cod_orgao, SUM(CAST(vlr_liquidacao AS DECIMAL)) AS total_liquidado FROM despesa_liquidacao WHERE ano_referencia = 2025 AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5) GROUP BY cod_orgao ORDER BY cod_orgao;",
+  "columns": [
+    "cod_orgao",
+    "total_liquidado"
+  ],
+  "rows": [
+    {
+      "cod_orgao": "02",
+      "total_liquidado": 103260785.68
+    },
+    {
+      "cod_orgao": "04",
+      "total_liquidado": 292997.36
+    },
+    {
+      "cod_orgao": "05",
+      "total_liquidado": 2079210.73
+    }
+  ],
+  "row_count": 3,
+  "col_count": 2,
+  "schema_hash": "52e1e450c227ed0d",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:45.689066+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": false,
+    "chs": 1.0,
+    "ref_rows": 3,
+    "gen_rows": 3
+  }
+}

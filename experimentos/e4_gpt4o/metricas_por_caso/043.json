@@ -1,0 +1,27 @@
+{
+  "id_teste": "43",
+  "input_usuario": "Quais os 5 maiores contratos da prefeitura em 2025?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": true,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 5,
+    "gen_rows": 5,
+    "ref_cols": 2,
+    "gen_cols": 2,
+    "divergencia_ex": null,
+    "alias_apenas": false,
+    "extra": {},
+    "ex": true
+  },
+  "query_referencia": "SELECT cc.dsc_nome_credor, c.vlr_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND c.vlr_contrato > 0 ORDER BY c.vlr_contrato DESC LIMIT 5;",
+  "query_gerada": "SELECT cc.dsc_nome_credor, c.vlr_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) ORDER BY c.vlr_contrato DESC LIMIT 5;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

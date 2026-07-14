@@ -1,0 +1,45 @@
+{
+  "id_teste": "51",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT cc.dsc_nome_credor, c.vlr_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.vlr_contrato AS DECIMAL) > 1000000 ORDER BY c.vlr_contrato DESC;",
+  "columns": [
+    "dsc_nome_credor",
+    "vlr_contrato"
+  ],
+  "rows": [
+    {
+      "dsc_nome_credor": "LOK PIRAMIDE LTDA",
+      "vlr_contrato": 5697980.66
+    },
+    {
+      "dsc_nome_credor": "ZURICH ENGENHARIA LTDA",
+      "vlr_contrato": 1888888.88
+    },
+    {
+      "dsc_nome_credor": "ALVES SOLUCOES INTEGRADAS LTDA",
+      "vlr_contrato": 1566318.68
+    },
+    {
+      "dsc_nome_credor": "ALVES SOLUCOES INTEGRADAS LTDA",
+      "vlr_contrato": 1500000.0
+    },
+    {
+      "dsc_nome_credor": "EDITORA FTD S A",
+      "vlr_contrato": 1144714.0
+    }
+  ],
+  "row_count": 5,
+  "col_count": 2,
+  "schema_hash": "c540abc7934d62aa",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:19.635613+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 0.0,
+    "ref_rows": 5,
+    "gen_rows": 5
+  }
+}

@@ -1,0 +1,11 @@
+id_teste;categoria;input_usuario;tabelas_esperadas;condicao_esperada
+1;Calculo Fiscal;Calcule a Saúde Financeira (ISF-M) da prefeitura detalhada ano a ano, cobrindo todo o período de 2020 a 2025.;receita_receita, despesa_despesa;BETWEEN, NULLIF
+2;Cruzamento Investigativo;Liste todos os servidores municipais ativos em 2024 que também constam como beneficiários do Novo Bolsa Família no mesmo ano. Traga o nome, o salário máximo recebido e o total do benefício federal.;remuneracao_municipio, cgu_novo_bolsa_familia;MAX, TRIM, UPPER, Ativo
+3;Cruzamento Investigativo;Quais foram as 5 empresas que mais receberam pagamentos da prefeitura (SICOM) em 2025 e que também receberam transferências diretas do Governo Federal (CGU Transferências) no mesmo ano?;despesa_pagamento, cgu_transferencias;CAST, Código Favorecido
+4;Regra de Cadastros;Qual foi o total gasto com gasolina e diesel em 2025 para cada marca de veículo da frota municipal?;frota_gastoFrota, frota_frota;NOT ILIKE
+5;Calculo Fiscal;Qual foi o Índice de Educação (IEQ-C) do município no ano de 2023? O valor aplicado atingiu o mínimo constitucional?;educacao_educacao, receita_receita;* 100, Imposto
+6;Regra de Orgaos;Qual o valor total de Restos a Pagar que foram cancelados pela Prefeitura Municipal (excluindo Câmara e Autarquias) no ano de 2024?;empenho_movimentacaoRsp;IN (2, 4, 5), CANCELAMENTO
+7;Regra Anti-Duplicata;Liste as 10 maiores licitações homologadas em 2025 e o nome das empresas vencedoras.;licitacao_licitacao, licitacao_homologLicitacao;GROUP BY, SUM
+8;Regra de Cadastros;Quais contratos assinados em 2023 sofreram aditivos com acréscimo de valor em 2024? Liste o número do contrato, a empresa e o valor do aditivo.;contrato_contratos, contrato_termoContrato;JOIN
+9;Calculo Fiscal;Qual a porcentagem da Receita Corrente que foi gasta exclusivamente pela Câmara Municipal no ano de 2025?;despesa_despesa, receita_receita;* 100, Corrente
+10;Manipulacao de Datas;Mostre a evolução mensal do total pago pelo município a título de remuneração de pessoal ao longo do ano de 2024.;remuneracao_municipio;SUBSTR, CAST

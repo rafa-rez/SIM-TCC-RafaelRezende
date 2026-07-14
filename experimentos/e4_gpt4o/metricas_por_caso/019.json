@@ -1,0 +1,27 @@
+{
+  "id_teste": "19",
+  "input_usuario": "Qual o total de despesas empenhadas em educação em 2023?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1,
+    "ref_cols": 1,
+    "gen_cols": 1,
+    "divergencia_ex": "alias_colunas",
+    "alias_apenas": true,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT SUM(CAST(vlr_empenho AS DECIMAL)) AS total FROM educacao_educacao WHERE ano_referencia = 2023;",
+  "query_gerada": "SELECT SUM(CAST(vlr_empenho AS DECIMAL)) AS total_empenhado_educacao FROM educacao_educacao WHERE ano_referencia = 2023;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

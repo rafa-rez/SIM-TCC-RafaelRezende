@@ -1,0 +1,21 @@
+{
+  "id_teste": "79",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT c.seq_contrato, c.vlr_contrato, t.seq_termo_aditivo, t.vlr_termo_aditivo FROM contrato_contratos c JOIN contrato_termoContrato t ON c.seq_contrato = t.seq_contrato AND c.ano_referencia = t.ano_referencia WHERE c.ano_referencia = 2022 AND t.ano_referencia = 2023 AND t.dsc_tipo_termo ILIKE '%ACRÉSCIMO%';",
+  "columns": [],
+  "rows": [],
+  "row_count": 0,
+  "col_count": 0,
+  "schema_hash": null,
+  "error": null,
+  "exported_at": "2026-07-14T23:56:20.732235+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 0,
+    "gen_rows": 0
+  }
+}

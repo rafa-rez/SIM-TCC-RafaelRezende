@@ -1,0 +1,528 @@
+cod_municipio;cod_orgao;num_ano_referencia;num_mes_referencia;cod_nat_despesa;dsc_nat_despesa;vlr_executivo;vlr_legislativo;vlr_municipio
+3110004;02;2022;3;3.1.90.91.01;Sentenças Judiciais de Pessoal Ativo ;164933.68;0;164933.68
+3110004;02;2022;3;3.1.90.01.02;Aposentadorias Custeadas com Recursos Ordinários do Tesouro ;41393.4;0;41393.4
+3110004;02;2022;3;3.1.90.11.09;Subsídio de Secretário Municipal;96614.26;0;96614.26
+3110004;02;2022;3;3.1.90.04.01;Pessoal do FUNDEB (Recursos: Mínimo de 70%) ;78766.16;0;78766.16
+3110004;04;2022;4;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;5907.88;0;5907.88
+3110004;05;2022;3;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);14046.08;0;14046.08
+3110004;05;2022;3;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;139.07;0;139.07
+3110004;04;2022;5;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);370.2;0;370.2
+3110004;04;2022;2;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);861.14;0;861.14
+3110004;05;2022;2;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);1773.8;0;1773.8
+3110004;02;2022;1;3.1.90.11.02;Pessoal  do FUNDEB (Recursos: Até 30%) ;62212.61;0;62212.61
+3110004;02;2022;1;3.1.90.01.01;Aposentadorias Custeadas com Recursos do RPPS;11131.34;0;11131.34
+3110004;02;2022;2;3.1.90.13.05;Obrigações Patronais Referentes ao FUNDEB (até 30%);19660.83;0;19660.83
+3110004;02;2022;2;3.1.90.04.99;Outros;493685.85;0;493685.85
+3110004;02;2022;2;3.1.90.11.09;Subsídio de Secretário Municipal;92332.12;0;92332.12
+3110004;02;2022;2;3.1.90.11.01;Pessoal  do FUNDEB (Recursos: Mínimo de 70%) ;929855.86;0;929855.86
+3110004;02;2022;2;3.1.90.11.02;Pessoal  do FUNDEB (Recursos: Até 30%) ;66100.61;0;66100.61
+3110004;01;2022;2;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;0;747.89;747.89
+3110004;05;2022;1;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;12430.47;0;12430.47
+3110004;01;2022;4;3.1.90.11.04;Pessoal de Cargo Efetivo (Vinculado ao INSS), exceto FUNDEB;0;66901.91;66901.91
+3110004;01;2022;4;3.1.90.11.10;Subsídio de Presidente da Câmara;0;11522.68;11522.68
+3110004;01;2022;4;3.1.90.11.06;Subsídio de Vereador;0;138272.16;138272.16
+3110004;05;2022;8;3.1.90.04.99;Outros;48396.29;0;48396.29
+3110004;03;2022;11;3.1.90.11.11;Empregado Público;296955.52;0;296955.52
+3110004;05;2022;6;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);1942.21;0;1942.21
+3110004;05;2022;6;3.1.90.11.11;Empregado Público;6092.12;0;6092.12
+3110004;01;2022;9;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;0;919.12;919.12
+3110004;04;2022;11;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;9891.66;0;9891.66
+3110004;04;2022;11;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);948.63;0;948.63
+3110004;01;2022;10;3.1.90.11.10;Subsídio de Presidente da Câmara;0;8263.18;8263.18
+3110004;04;2022;10;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;4627.51;0;4627.51
+3110004;03;2022;3;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;10653.06;0;10653.06
+3110004;03;2022;6;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;49342.61;0;49342.61
+3110004;03;2022;7;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;48809.72;0;48809.72
+3110004;03;2022;9;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);22650.45;0;22650.45
+3110004;03;2022;9;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;12011.16;0;12011.16
+3110004;03;2022;10;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);64950.2;0;64950.2
+3110004;01;2022;11;3.1.90.11.06;Subsídio de Vereador;0;198316.32;198316.32
+3110004;01;2022;11;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);0;14568.83;14568.83
+3110004;02;2022;8;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;79162.51;0;79162.51
+3110004;02;2022;4;3.1.90.91.01;Sentenças Judiciais de Pessoal Ativo ;170780.5;0;170780.5
+3110004;02;2022;4;3.1.90.11.07;Subsídio de Prefeito;21865.34;0;21865.34
+3110004;02;2022;6;3.1.90.94.98;Indenizações por Demissão e com Programas de Incentivos à Demissão Voluntária - Trab. Ativo Civil;56896.15;0;56896.15
+3110004;02;2022;6;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;214973.85;0;214973.85
+3110004;02;2022;6;3.1.90.91.01;Sentenças Judiciais de Pessoal Ativo ;195295.06;0;195295.06
+3110004;02;2022;6;3.1.90.04.01;Pessoal do FUNDEB (Recursos: Mínimo de 70%) ;90067.39;0;90067.39
+3110004;02;2022;5;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);86493.15;0;86493.15
+3110004;02;2022;5;3.1.90.91.01;Sentenças Judiciais de Pessoal Ativo ;203400.49;0;203400.49
+3110004;02;2022;5;3.1.90.04.99;Outros;563857.77;0;563857.77
+3110004;02;2022;5;3.1.90.01.02;Aposentadorias Custeadas com Recursos Ordinários do Tesouro ;50427.34;0;50427.34
+3110004;02;2022;7;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;59440.89;0;59440.89
+3110004;02;2022;12;3.1.90.91.03;Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro;61976.93;0;61976.93
+3110004;02;2022;9;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;69842.83;0;69842.83
+3110004;02;2022;9;3.1.90.91.01;Sentenças Judiciais de Pessoal Ativo ;200813.91;0;200813.91
+3110004;01;2022;6;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);0;42439.9;42439.9
+3110004;04;2022;1;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);861.14;0;861.14
+3110004;04;2022;4;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);1211.1;0;1211.1
+3110004;04;2022;3;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);861.14;0;861.14
+3110004;01;2022;3;3.1.90.11.10;Subsídio de Presidente da Câmara;0;7176.68;7176.68
+3110004;04;2022;5;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;4627.51;0;4627.51
+3110004;05;2022;2;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);10624.09;0;10624.09
+3110004;05;2022;2;3.1.90.04.99;Outros;41693.78;0;41693.78
+3110004;02;2022;1;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;73442.66;0;73442.66
+3110004;02;2022;2;3.1.90.11.11;Empregado Público;816838.98;0;816838.98
+3110004;01;2022;2;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);0;36581.93;36581.93
+3110004;01;2022;2;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;0;35266.29;35266.29
+3110004;05;2022;11;3.1.90.04.99;Outros;63712.08;0;63712.08
+3110004;05;2022;11;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);16842.4;0;16842.4
+3110004;05;2022;11;3.1.90.11.11;Empregado Público;5045.84;0;5045.84
+3110004;03;2022;11;3.1.90.04.99;Outros;33651.09;0;33651.09
+3110004;01;2022;8;3.1.90.11.04;Pessoal de Cargo Efetivo (Vinculado ao INSS), exceto FUNDEB;0;99569.23;99569.23
+3110004;01;2022;8;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);0;85788.4;85788.4
+3110004;04;2022;8;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;4627.51;0;4627.51
+3110004;05;2022;6;3.1.90.04.99;Outros;49845.16;0;49845.16
+3110004;05;2022;6;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;15291.49;0;15291.49
+3110004;05;2022;7;3.1.90.04.99;Outros;29542.21;0;29542.21
+3110004;04;2022;7;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);370.2;0;370.2
+3110004;04;2022;7;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);948.63;0;948.63
+3110004;03;2022;1;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);22473.05;0;22473.05
+3110004;03;2022;2;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);56974.02;0;56974.02
+3110004;03;2022;4;3.1.90.11.11;Empregado Público;268053.85;0;268053.85
+3110004;03;2022;4;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;17032.67;0;17032.67
+3110004;03;2022;5;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;45369.86;0;45369.86
+3110004;03;2022;5;3.1.90.11.11;Empregado Público;199721.62;0;199721.62
+3110004;03;2022;5;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;19417.31;0;19417.31
+3110004;03;2022;6;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;7452.47;0;7452.47
+3110004;03;2022;6;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);22561.59;0;22561.59
+3110004;03;2022;8;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;40196.22;0;40196.22
+3110004;03;2022;8;3.1.90.11.11;Empregado Público;198813.3;0;198813.3
+3110004;03;2022;10;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);23913.67;0;23913.67
+3110004;03;2022;10;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;41006.5;0;41006.5
+3110004;02;2022;8;3.1.90.11.02;Pessoal  do FUNDEB (Recursos: Até 30%) ;80979.1;0;80979.1
+3110004;02;2022;8;3.1.90.11.01;Pessoal  do FUNDEB (Recursos: Mínimo de 70%) ;1113581.74;0;1113581.74
+3110004;02;2022;8;3.1.90.11.11;Empregado Público;835248.03;0;835248.03
+3110004;02;2022;4;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);555585.84;0;555585.84
+3110004;02;2022;4;3.1.90.13.05;Obrigações Patronais Referentes ao FUNDEB (até 30%);27551.5;0;27551.5
+3110004;02;2022;4;3.3.90.34.00;Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização ;97042.25;0;97042.25
+3110004;02;2022;6;3.1.90.13.04;Obrigações Patronais Referentes ao FUNDEB (Mínimo de 70%);346005.4;0;346005.4
+3110004;02;2022;6;3.1.90.13.05;Obrigações Patronais Referentes ao FUNDEB (até 30%);23351.82;0;23351.82
+3110004;02;2022;6;3.1.90.11.08;Subsídio de Vice-prefeito;7899.18;0;7899.18
+3110004;02;2022;5;3.1.90.13.04;Obrigações Patronais Referentes ao FUNDEB (Mínimo de 70%);345335.37;0;345335.37
+3110004;02;2022;5;3.1.90.94.01;Indenizações e Restituições Trab. Ativo Civil;118656.11;0;118656.11
+3110004;02;2022;5;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;62945.62;0;62945.62
+3110004;02;2022;5;3.1.90.11.08;Subsídio de Vice-prefeito;7899.18;0;7899.18
+3110004;02;2022;5;3.3.90.34.00;Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização ;109874.81;0;109874.81
+3110004;02;2022;5;3.1.90.11.07;Subsídio de Prefeito;15798.37;0;15798.37
+3110004;02;2022;7;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);439637.17;0;439637.17
+3110004;02;2022;7;3.1.90.13.04;Obrigações Patronais Referentes ao FUNDEB (Mínimo de 70%);349182.57;0;349182.57
+3110004;02;2022;7;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;227298.13;0;227298.13
+3110004;02;2022;12;3.1.90.91.01;Sentenças Judiciais de Pessoal Ativo ;147028.91;0;147028.91
+3110004;02;2022;12;3.1.90.03.02;Pensões Custeadas com Recursos Ordinários do Tesouro ;20923.78;0;20923.78
+3110004;02;2022;11;3.1.90.11.01;Pessoal  do FUNDEB (Recursos: Mínimo de 70%) ;1224878.14;0;1224878.14
+3110004;02;2022;11;3.1.90.04.99;Outros;670674.54;0;670674.54
+3110004;02;2022;11;3.1.90.11.09;Subsídio de Secretário Municipal;123727.68;0;123727.68
+3110004;02;2022;11;3.1.90.91.01;Sentenças Judiciais de Pessoal Ativo ;176838.08;0;176838.08
+3110004;05;2022;12;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;31045.88;0;31045.88
+3110004;03;2022;12;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);120616.2;0;120616.2
+3110004;03;2022;12;3.1.90.04.99;Outros;32688.49;0;32688.49
+3110004;02;2022;9;3.1.90.11.01;Pessoal  do FUNDEB (Recursos: Mínimo de 70%) ;701899.16;0;701899.16
+3110004;02;2022;9;3.1.71.70.00;Rateio pela Participação em Consórcio Público ;12869.33;0;12869.33
+3110004;02;2022;9;3.1.90.01.01;Aposentadorias Custeadas com Recursos do RPPS;19785.24;0;19785.24
+3110004;02;2022;10;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);525566.74;0;525566.74
+3110004;02;2022;10;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);92660.36;0;92660.36
+3110004;01;2022;5;3.1.90.11.06;Subsídio de Vereador;0;99158.16;99158.16
+3110004;02;2022;3;3.1.90.11.02;Pessoal  do FUNDEB (Recursos: Até 30%) ;67945.01;0;67945.01
+3110004;02;2022;3;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);395793.44;0;395793.44
+3110004;02;2022;3;3.1.90.04.99;Outros;498550.23;0;498550.23
+3110004;02;2022;3;3.1.90.11.01;Pessoal  do FUNDEB (Recursos: Mínimo de 70%) ;1017470.73;0;1017470.73
+3110004;02;2022;3;3.1.90.13.05;Obrigações Patronais Referentes ao FUNDEB (até 30%);19676.55;0;19676.55
+3110004;04;2022;1;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);336.05;0;336.05
+3110004;04;2022;3;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;4200.72;0;4200.72
+3110004;01;2022;3;3.1.90.11.06;Subsídio de Vereador;0;86120.16;86120.16
+3110004;01;2022;1;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);0;6878.87;6878.87
+3110004;01;2022;1;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;0;35266.29;35266.29
+3110004;05;2022;4;3.1.90.04.99;Outros;74739.28;0;74739.28
+3110004;04;2022;2;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;4200.71;0;4200.71
+3110004;02;2022;1;3.1.90.11.11;Empregado Público;863198.57;0;863198.57
+3110004;02;2022;1;3.1.90.11.01;Pessoal  do FUNDEB (Recursos: Mínimo de 70%) ;1163773.3;0;1163773.3
+3110004;02;2022;2;3.1.90.13.04;Obrigações Patronais Referentes ao FUNDEB (Mínimo de 70%);292117.11;0;292117.11
+3110004;02;2022;2;3.1.90.11.07;Subsídio de Prefeito;13776.05;0;13776.05
+3110004;02;2022;2;3.1.71.70.00;Rateio pela Participação em Consórcio Público ;12869.33;0;12869.33
+3110004;01;2022;2;3.1.90.11.04;Pessoal de Cargo Efetivo (Vinculado ao INSS), exceto FUNDEB;0;44446.99;44446.99
+3110004;01;2022;4;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;0;799.57;799.57
+3110004;05;2022;8;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);14226.48;0;14226.48
+3110004;05;2022;8;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;265.26;0;265.26
+3110004;05;2022;8;3.1.90.11.11;Empregado Público;5925.85;0;5925.85
+3110004;05;2022;9;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);2012.93;0;2012.93
+3110004;05;2022;9;3.1.90.11.11;Empregado Público;6092.14;0;6092.14
+3110004;03;2022;11;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;15783.14;0;15783.14
+3110004;05;2022;5;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;15276.71;0;15276.71
+3110004;05;2022;7;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;120.01;0;120.01
+3110004;04;2022;9;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);948.63;0;948.63
+3110004;01;2022;7;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);0;0;0
+3110004;01;2022;10;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);0;41912.39;41912.39
+3110004;01;2022;10;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;0;44827.88;44827.88
+3110004;01;2022;10;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;0;932.52;932.52
+3110004;03;2022;1;3.1.90.04.99;Outros;26977.95;0;26977.95
+3110004;03;2022;3;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);21177.69;0;21177.69
+3110004;03;2022;3;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;38445.51;0;38445.51
+3110004;03;2022;4;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;57886.23;0;57886.23
+3110004;03;2022;6;3.1.90.04.99;Outros;30481.07;0;30481.07
+3110004;03;2022;7;3.1.90.11.11;Empregado Público;195959.95;0;195959.95
+3110004;03;2022;8;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);23668.31;0;23668.31
+3110004;03;2022;8;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);64198.38;0;64198.38
+3110004;03;2022;9;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);61281.48;0;61281.48
+3110004;03;2022;9;3.1.90.04.99;Outros;27121.91;0;27121.91
+3110004;03;2022;10;3.1.90.11.11;Empregado Público;198996.4;0;198996.4
+3110004;01;2022;11;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;0;66754.27;66754.27
+3110004;02;2022;8;3.1.90.94.98;Indenizações por Demissão e com Programas de Incentivos à Demissão Voluntária - Trab. Ativo Civil;30716.17;0;30716.17
+3110004;02;2022;8;3.1.90.11.08;Subsídio de Vice-prefeito;7899.18;0;7899.18
+3110004;02;2022;8;3.1.90.04.01;Pessoal do FUNDEB (Recursos: Mínimo de 70%) ;111038.05;0;111038.05
+3110004;02;2022;4;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);112056.58;0;112056.58
+3110004;02;2022;4;3.1.90.11.01;Pessoal  do FUNDEB (Recursos: Mínimo de 70%) ;1438471.56;0;1438471.56
+3110004;02;2022;4;3.1.90.11.02;Pessoal  do FUNDEB (Recursos: Até 30%) ;95524.52;0;95524.52
+3110004;02;2022;6;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);85772.06;0;85772.06
+3110004;02;2022;6;3.1.90.04.99;Outros;596605.99;0;596605.99
+3110004;02;2022;6;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;50587.44;0;50587.44
+3110004;02;2022;6;3.1.71.70.00;Rateio pela Participação em Consórcio Público ;12869.33;0;12869.33
+3110004;02;2022;5;3.1.90.11.09;Subsídio de Secretário Municipal;114137.23;0;114137.23
+3110004;02;2022;7;3.1.90.11.09;Subsídio de Secretário Municipal;124120.41;0;124120.41
+3110004;02;2022;12;3.1.90.11.11;Empregado Público;3064768.46;0;3064768.46
+3110004;02;2022;12;3.3.90.34.00;Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização ;107375.53;0;107375.53
+3110004;02;2022;12;3.1.90.94.01;Indenizações e Restituições Trab. Ativo Civil;46159.24;0;46159.24
+3110004;02;2022;11;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;235376.52;0;235376.52
+3110004;02;2022;11;3.1.90.13.05;Obrigações Patronais Referentes ao FUNDEB (até 30%);22538.63;0;22538.63
+3110004;02;2022;11;3.1.90.11.07;Subsídio de Prefeito;15798.37;0;15798.37
+3110004;02;2022;11;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;70514.06;0;70514.06
+3110004;02;2022;11;3.1.90.11.08;Subsídio de Vice-prefeito;7899.18;0;7899.18
+3110004;02;2022;9;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);539262.63;0;539262.63
+3110004;02;2022;9;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;267470.72;0;267470.72
+3110004;02;2022;9;3.3.90.34.00;Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização ;128011.44;0;128011.44
+3110004;02;2022;10;3.1.90.03.02;Pensões Custeadas com Recursos Ordinários do Tesouro ;13340.76;0;13340.76
+3110004;02;2022;10;3.1.90.01.01;Aposentadorias Custeadas com Recursos do RPPS;19785.24;0;19785.24
+3110004;02;2022;10;3.1.90.91.03;Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro;11781.39;0;11781.39
+3110004;02;2022;10;3.1.90.91.01;Sentenças Judiciais de Pessoal Ativo ;195883.98;0;195883.98
+3110004;01;2022;5;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);0;7718.58;7718.58
+3110004;01;2022;6;3.1.90.11.04;Pessoal de Cargo Efetivo (Vinculado ao INSS), exceto FUNDEB;0;50953.18;50953.18
+3110004;01;2022;6;3.1.90.11.10;Subsídio de Presidente da Câmara;0;8263.18;8263.18
+3110004;02;2022;3;3.1.71.70.00;Rateio pela Participação em Consórcio Público ;25738.66;0;25738.66
+3110004;02;2022;3;3.1.90.11.08;Subsídio de Vice-prefeito;6888.02;0;6888.02
+3110004;04;2022;1;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;4200.72;0;4200.72
+3110004;04;2022;3;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);336.05;0;336.05
+3110004;01;2022;3;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);0;6800.39;6800.39
+3110004;01;2022;3;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;0;35266.29;35266.29
+3110004;01;2022;1;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;0;673.59;673.59
+3110004;01;2022;1;3.1.90.11.06;Subsídio de Vereador;0;86120.16;86120.16
+3110004;04;2022;5;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);948.63;0;948.63
+3110004;04;2022;2;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);336.05;0;336.05
+3110004;05;2022;2;3.1.90.94.01;Indenizações e Restituições Trab. Ativo Civil;2486;0;2486
+3110004;05;2022;2;3.1.90.11.11;Empregado Público;3480.53;0;3480.53
+3110004;05;2022;2;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;12031.98;0;12031.98
+3110004;02;2022;2;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);81644.62;0;81644.62
+3110004;02;2022;2;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;198739.46;0;198739.46
+3110004;02;2022;2;3.1.90.91.01;Sentenças Judiciais de Pessoal Ativo ;186057.32;0;186057.32
+3110004;04;2022;6;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);948.63;0;948.63
+3110004;05;2022;1;3.1.90.94.01;Indenizações e Restituições Trab. Ativo Civil;14833.89;0;14833.89
+3110004;05;2022;1;3.1.90.04.99;Outros;9714.88;0;9714.88
+3110004;01;2022;4;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);0;48259.34;48259.34
+3110004;05;2022;8;3.1.90.94.01;Indenizações e Restituições Trab. Ativo Civil;1309.6;0;1309.6
+3110004;05;2022;10;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);19991.68;0;19991.68
+3110004;05;2022;11;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);1872.25;0;1872.25
+3110004;03;2022;11;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;67870.46;0;67870.46
+3110004;05;2022;5;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);14795.56;0;14795.56
+3110004;05;2022;7;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;17401.69;0;17401.69
+3110004;04;2022;9;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;4627.51;0;4627.51
+3110004;01;2022;7;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;0;32021.56;32021.56
+3110004;01;2022;9;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);0;43065.84;43065.84
+3110004;01;2022;9;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;0;41707.39;41707.39
+3110004;03;2022;2;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;13459.06;0;13459.06
+3110004;03;2022;4;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);76869.24;0;76869.24
+3110004;03;2022;4;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);28586.46;0;28586.46
+3110004;03;2022;7;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;14037.31;0;14037.31
+3110004;02;2022;8;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);86553.7;0;86553.7
+3110004;02;2022;8;3.1.90.03.02;Pensões Custeadas com Recursos Ordinários do Tesouro ;13340.76;0;13340.76
+3110004;02;2022;8;3.1.90.91.03;Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro;23382.66;0;23382.66
+3110004;02;2022;4;3.1.90.04.99;Outros;701165.68;0;701165.68
+3110004;02;2022;4;3.1.90.11.09;Subsídio de Secretário Municipal;189089.17;0;189089.17
+3110004;02;2022;4;3.1.90.03.02;Pensões Custeadas com Recursos Ordinários do Tesouro ;16584.86;0;16584.86
+3110004;02;2022;4;3.1.90.01.02;Aposentadorias Custeadas com Recursos Ordinários do Tesouro ;77569.23;0;77569.23
+3110004;02;2022;6;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);436717.81;0;436717.81
+3110004;02;2022;6;3.1.90.11.09;Subsídio de Secretário Municipal;112578.2;0;112578.2
+3110004;02;2022;5;3.1.90.13.05;Obrigações Patronais Referentes ao FUNDEB (até 30%);23281.14;0;23281.14
+3110004;02;2022;5;3.1.90.11.11;Empregado Público;868859.53;0;868859.53
+3110004;02;2022;7;3.1.90.04.99;Outros;633055.63;0;633055.63
+3110004;02;2022;7;3.1.90.94.01;Indenizações e Restituições Trab. Ativo Civil;98761.22;0;98761.22
+3110004;02;2022;7;3.1.90.91.03;Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro;9682.07;0;9682.07
+3110004;02;2022;7;3.1.90.04.01;Pessoal do FUNDEB (Recursos: Mínimo de 70%) ;100213.57;0;100213.57
+3110004;02;2022;12;3.1.90.13.05;Obrigações Patronais Referentes ao FUNDEB (até 30%);7619.19;0;7619.19
+3110004;02;2022;12;3.1.71.70.00;Rateio pela Participação em Consórcio Público ;12869.33;0;12869.33
+3110004;02;2022;11;3.1.90.91.03;Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro;39253.98;0;39253.98
+3110004;02;2022;11;3.1.90.03.02;Pensões Custeadas com Recursos Ordinários do Tesouro ;14456.12;0;14456.12
+3110004;01;2022;12;3.1.90.11.04;Pessoal de Cargo Efetivo (Vinculado ao INSS), exceto FUNDEB;0;63357.09;63357.09
+3110004;01;2022;12;3.1.90.11.06;Subsídio de Vereador;0;132210.84;132210.84
+3110004;01;2022;12;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;0;0;0
+3110004;03;2022;12;3.1.90.11.11;Empregado Público;324072.04;0;324072.04
+3110004;02;2022;9;3.1.90.91.03;Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro;40948.68;0;40948.68
+3110004;02;2022;9;3.1.90.01.02;Aposentadorias Custeadas com Recursos Ordinários do Tesouro ;37080.8;0;37080.8
+3110004;02;2022;10;3.1.90.11.11;Empregado Público;965280.73;0;965280.73
+3110004;02;2022;10;3.1.71.70.00;Rateio pela Participação em Consórcio Público ;12869.33;0;12869.33
+3110004;02;2022;10;3.1.90.11.02;Pessoal  do FUNDEB (Recursos: Até 30%) ;80288.03;0;80288.03
+3110004;02;2022;10;3.1.90.11.07;Subsídio de Prefeito;15798.37;0;15798.37
+3110004;01;2022;6;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);0;7573.87;7573.87
+3110004;01;2022;6;3.1.90.11.06;Subsídio de Vereador;0;99158.16;99158.16
+3110004;02;2022;3;3.1.90.94.98;Indenizações por Demissão e com Programas de Incentivos à Demissão Voluntária - Trab. Ativo Civil;160620.29;0;160620.29
+3110004;02;2022;3;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);81074.82;0;81074.82
+3110004;02;2022;3;3.1.90.03.02;Pensões Custeadas com Recursos Ordinários do Tesouro ;12259.41;0;12259.41
+3110004;02;2022;3;3.1.90.11.07;Subsídio de Prefeito;13776.05;0;13776.05
+3110004;02;2022;3;3.3.90.34.00;Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização ;85625.41;0;85625.41
+3110004;01;2022;1;3.1.90.11.10;Subsídio de Presidente da Câmara;0;7176.68;7176.68
+3110004;05;2022;4;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);17505.29;0;17505.29
+3110004;05;2022;4;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);3255.01;0;3255.01
+3110004;02;2022;1;3.1.90.13.05;Obrigações Patronais Referentes ao FUNDEB (até 30%);18334.82;0;18334.82
+3110004;02;2022;1;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);83363.81;0;83363.81
+3110004;02;2022;1;3.1.90.94.98;Indenizações por Demissão e com Programas de Incentivos à Demissão Voluntária - Trab. Ativo Civil;63414.79;0;63414.79
+3110004;02;2022;1;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);408571.96;0;408571.96
+3110004;02;2022;1;3.1.90.91.01;Sentenças Judiciais de Pessoal Ativo ;119871.52;0;119871.52
+3110004;02;2022;1;3.1.90.03.02;Pensões Custeadas com Recursos Ordinários do Tesouro ;12259.41;0;12259.41
+3110004;02;2022;2;3.1.90.03.02;Pensões Custeadas com Recursos Ordinários do Tesouro ;12259.41;0;12259.41
+3110004;01;2022;2;3.1.90.11.10;Subsídio de Presidente da Câmara;0;7176.68;7176.68
+3110004;05;2022;1;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;69.78;0;69.78
+3110004;05;2022;1;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);5329.85;0;5329.85
+3110004;01;2022;4;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;0;52555.89;52555.89
+3110004;05;2022;8;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;15522.94;0;15522.94
+3110004;05;2022;9;3.1.90.04.99;Outros;54577.89;0;54577.89
+3110004;05;2022;10;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;76.87;0;76.87
+3110004;03;2022;11;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);33141.8;0;33141.8
+3110004;05;2022;5;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;81;0;81
+3110004;05;2022;7;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);2191.65;0;2191.65
+3110004;01;2022;7;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);0;0;0
+3110004;01;2022;9;3.1.90.11.04;Pessoal de Cargo Efetivo (Vinculado ao INSS), exceto FUNDEB;0;59023.78;59023.78
+3110004;01;2022;9;3.1.90.11.06;Subsídio de Vereador;0;99158.16;99158.16
+3110004;04;2022;11;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);370.2;0;370.2
+3110004;01;2022;10;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);0;7372.91;7372.91
+3110004;03;2022;1;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;15099.69;0;15099.69
+3110004;03;2022;1;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);60547.35;0;60547.35
+3110004;03;2022;2;3.1.90.04.99;Outros;39121.11;0;39121.11
+3110004;03;2022;6;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);60617.46;0;60617.46
+3110004;03;2022;9;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;47791.85;0;47791.85
+3110004;03;2022;9;3.1.90.11.11;Empregado Público;196684.59;0;196684.59
+3110004;03;2022;10;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;23714.47;0;23714.47
+3110004;01;2022;11;3.1.90.11.10;Subsídio de Presidente da Câmara;0;16526.36;16526.36
+3110004;02;2022;8;3.1.90.13.04;Obrigações Patronais Referentes ao FUNDEB (Mínimo de 70%);348606.78;0;348606.78
+3110004;02;2022;8;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;231568.26;0;231568.26
+3110004;02;2022;8;3.1.90.11.09;Subsídio de Secretário Municipal;117676.22;0;117676.22
+3110004;02;2022;4;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;276991.76;0;276991.76
+3110004;02;2022;4;3.1.90.11.08;Subsídio de Vice-prefeito;10932.66;0;10932.66
+3110004;02;2022;4;3.1.90.91.03;Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro;2585.29;0;2585.29
+3110004;02;2022;6;3.1.90.11.02;Pessoal  do FUNDEB (Recursos: Até 30%) ;82682.82;0;82682.82
+3110004;02;2022;5;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);438583.53;0;438583.53
+3110004;02;2022;5;3.1.90.94.98;Indenizações por Demissão e com Programas de Incentivos à Demissão Voluntária - Trab. Ativo Civil;183139.55;0;183139.55
+3110004;02;2022;5;3.1.90.11.02;Pessoal  do FUNDEB (Recursos: Até 30%) ;83515.47;0;83515.47
+3110004;02;2022;5;3.1.90.01.01;Aposentadorias Custeadas com Recursos do RPPS;9778.56;0;9778.56
+3110004;02;2022;5;3.1.90.03.02;Pensões Custeadas com Recursos Ordinários do Tesouro ;13340.76;0;13340.76
+3110004;02;2022;7;3.1.90.11.11;Empregado Público;872888.85;0;872888.85
+3110004;02;2022;7;3.3.90.34.00;Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização ;196286.89;0;196286.89
+3110004;02;2022;7;3.1.90.03.02;Pensões Custeadas com Recursos Ordinários do Tesouro ;13340.76;0;13340.76
+3110004;02;2022;7;3.1.90.94.98;Indenizações por Demissão e com Programas de Incentivos à Demissão Voluntária - Trab. Ativo Civil;0;0;0
+3110004;02;2022;12;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;45403.46;0;45403.46
+3110004;02;2022;12;3.1.90.11.01;Pessoal  do FUNDEB (Recursos: Mínimo de 70%) ;1169557.8;0;1169557.8
+3110004;02;2022;11;3.1.90.01.02;Aposentadorias Custeadas com Recursos Ordinários do Tesouro ;37080.8;0;37080.8
+3110004;02;2022;11;3.1.71.70.00;Rateio pela Participação em Consórcio Público ;15869.33;0;15869.33
+3110004;05;2022;12;3.1.90.11.11;Empregado Público;12565.01;0;12565.01
+3110004;04;2022;12;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;5533.37;0;5533.37
+3110004;02;2022;9;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);120378.14;0;120378.14
+3110004;02;2022;9;3.1.90.11.11;Empregado Público;1278142.22;0;1278142.22
+3110004;02;2022;9;3.1.90.13.05;Obrigações Patronais Referentes ao FUNDEB (até 30%);23088.14;0;23088.14
+3110004;02;2022;9;3.1.90.11.08;Subsídio de Vice-prefeito;10532.24;0;10532.24
+3110004;02;2022;10;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;230513.87;0;230513.87
+3110004;02;2022;10;3.1.90.04.99;Outros;888675.22;0;888675.22
+3110004;02;2022;10;3.1.90.13.04;Obrigações Patronais Referentes ao FUNDEB (Mínimo de 70%);347812.74;0;347812.74
+3110004;02;2022;10;3.1.90.13.05;Obrigações Patronais Referentes ao FUNDEB (até 30%);22718.04;0;22718.04
+3110004;01;2022;5;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);0;42819.77;42819.77
+3110004;01;2022;6;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;0;554.53;554.53
+3110004;01;2022;1;3.1.90.04.99;Outros;0;1935.07;1935.07
+3110004;05;2022;3;3.1.90.94.01;Indenizações e Restituições Trab. Ativo Civil;452.57;0;452.57
+3110004;02;2022;1;3.1.90.04.99;Outros;522245.55;0;522245.55
+3110004;02;2022;1;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;225694.79;0;225694.79
+3110004;02;2022;1;3.1.90.01.02;Aposentadorias Custeadas com Recursos Ordinários do Tesouro ;41393.4;0;41393.4
+3110004;02;2022;1;3.1.90.11.07;Subsídio de Prefeito;13776.05;0;13776.05
+3110004;02;2022;2;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);396028.62;0;396028.62
+3110004;02;2022;2;3.1.90.01.02;Aposentadorias Custeadas com Recursos Ordinários do Tesouro ;41393.4;0;41393.4
+3110004;02;2022;2;3.3.90.34.00;Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização ;0;0;0
+3110004;01;2022;2;3.1.90.04.99;Outros;0;3010.12;3010.12
+3110004;05;2022;1;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);1689.5;0;1689.5
+3110004;05;2022;8;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);2065.27;0;2065.27
+3110004;05;2022;9;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;13809.65;0;13809.65
+3110004;05;2022;9;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;262.32;0;262.32
+3110004;05;2022;9;3.1.90.94.01;Indenizações e Restituições Trab. Ativo Civil;784.58;0;784.58
+3110004;05;2022;10;3.1.90.04.99;Outros;52842.03;0;52842.03
+3110004;05;2022;11;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;15522.94;0;15522.94
+3110004;01;2022;8;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;0;68917.52;68917.52
+3110004;05;2022;7;3.1.90.11.11;Empregado Público;3485.76;0;3485.76
+3110004;01;2022;9;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);0;7812.32;7812.32
+3110004;01;2022;9;3.1.90.11.10;Subsídio de Presidente da Câmara;0;8263.18;8263.18
+3110004;01;2022;10;3.1.90.11.06;Subsídio de Vereador;0;99158.16;99158.16
+3110004;04;2022;10;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);948.63;0;948.63
+3110004;04;2022;10;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);370.2;0;370.2
+3110004;03;2022;1;3.1.90.11.11;Empregado Público;180187.38;0;180187.38
+3110004;03;2022;2;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;46659.58;0;46659.58
+3110004;03;2022;4;3.1.90.04.99;Outros;34456.27;0;34456.27
+3110004;03;2022;5;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);64839;0;64839
+3110004;03;2022;6;3.1.90.11.11;Empregado Público;221809.83;0;221809.83
+3110004;03;2022;7;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);63542.63;0;63542.63
+3110004;03;2022;7;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);23642.12;0;23642.12
+3110004;03;2022;8;3.1.90.04.99;Outros;37777.39;0;37777.39
+3110004;03;2022;10;3.1.90.04.99;Outros;33074.47;0;33074.47
+3110004;01;2022;11;3.1.90.11.04;Pessoal de Cargo Efetivo (Vinculado ao INSS), exceto FUNDEB;0;96553.71;96553.71
+3110004;02;2022;8;3.1.90.91.01;Sentenças Judiciais de Pessoal Ativo ;181258.35;0;181258.35
+3110004;02;2022;4;3.1.90.11.11;Empregado Público;1146636.12;0;1146636.12
+3110004;02;2022;4;3.1.71.70.00;Rateio pela Participação em Consórcio Público ;0;0;0
+3110004;02;2022;4;3.1.90.04.01;Pessoal do FUNDEB (Recursos: Mínimo de 70%) ;95513.17;0;95513.17
+3110004;02;2022;6;3.1.90.11.11;Empregado Público;860892.09;0;860892.09
+3110004;02;2022;6;3.1.90.03.02;Pensões Custeadas com Recursos Ordinários do Tesouro ;13340.76;0;13340.76
+3110004;02;2022;6;3.1.90.01.02;Aposentadorias Custeadas com Recursos Ordinários do Tesouro ;50427.34;0;50427.34
+3110004;02;2022;5;3.1.90.11.01;Pessoal  do FUNDEB (Recursos: Mínimo de 70%) ;1125595.59;0;1125595.59
+3110004;02;2022;5;3.1.90.94.03;Indenizações e Restituições Trab. Inat. Civil;1650.27;0;1650.27
+3110004;02;2022;7;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);85064.2;0;85064.2
+3110004;02;2022;7;3.1.90.91.01;Sentenças Judiciais de Pessoal Ativo ;196914.35;0;196914.35
+3110004;02;2022;7;3.1.90.11.01;Pessoal  do FUNDEB (Recursos: Mínimo de 70%) ;1125954.37;0;1125954.37
+3110004;02;2022;12;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);1134653.35;0;1134653.35
+3110004;02;2022;12;3.1.90.11.02;Pessoal  do FUNDEB (Recursos: Até 30%) ;76566.32;0;76566.32
+3110004;02;2022;12;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;462590.63;0;462590.63
+3110004;02;2022;12;3.1.90.01.01;Aposentadorias Custeadas com Recursos do RPPS;39570.48;0;39570.48
+3110004;02;2022;12;3.1.90.11.07;Subsídio de Prefeito;47395.11;0;47395.11
+3110004;02;2022;11;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);460731.86;0;460731.86
+3110004;02;2022;11;3.1.90.11.11;Empregado Público;884204.4;0;884204.4
+3110004;05;2022;12;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;76.87;0;76.87
+3110004;01;2022;12;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);0;51747.17;51747.17
+3110004;04;2022;12;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);2213.48;0;2213.48
+3110004;03;2022;12;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);34702.63;0;34702.63
+3110004;02;2022;9;3.1.90.11.02;Pessoal  do FUNDEB (Recursos: Até 30%) ;80698.11;0;80698.11
+3110004;02;2022;9;3.1.90.11.09;Subsídio de Secretário Municipal;109980.16;0;109980.16
+3110004;02;2022;10;3.1.90.11.09;Subsídio de Secretário Municipal;106543.27;0;106543.27
+3110004;02;2022;10;3.1.90.01.02;Aposentadorias Custeadas com Recursos Ordinários do Tesouro ;37080.8;0;37080.8
+3110004;02;2022;10;3.1.90.11.01;Pessoal  do FUNDEB (Recursos: Mínimo de 70%) ;1110050.69;0;1110050.69
+3110004;02;2022;10;3.1.90.11.08;Subsídio de Vice-prefeito;7899.18;0;7899.18
+3110004;01;2022;5;3.1.90.11.10;Subsídio de Presidente da Câmara;0;8263.18;8263.18
+3110004;01;2022;5;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;0;42356.01;42356.01
+3110004;01;2022;5;3.1.90.11.04;Pessoal de Cargo Efetivo (Vinculado ao INSS), exceto FUNDEB;0;54405.69;54405.69
+3110004;01;2022;6;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;0;64705.13;64705.13
+3110004;02;2022;3;3.1.90.11.11;Empregado Público;841103.23;0;841103.23
+3110004;02;2022;3;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;57302.81;0;57302.81
+3110004;02;2022;3;3.1.90.13.04;Obrigações Patronais Referentes ao FUNDEB (Mínimo de 70%);311435.44;0;311435.44
+3110004;04;2022;4;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);472.63;0;472.63
+3110004;01;2022;3;3.1.90.11.04;Pessoal de Cargo Efetivo (Vinculado ao INSS), exceto FUNDEB;0;49640.17;49640.17
+3110004;05;2022;3;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);1778.3;0;1778.3
+3110004;02;2022;1;3.1.90.11.08;Subsídio de Vice-prefeito;6888.02;0;6888.02
+3110004;02;2022;1;3.1.90.91.03;Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro;2865.04;0;2865.04
+3110004;02;2022;2;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;56123.61;0;56123.61
+3110004;02;2022;2;3.1.90.91.03;Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro;795.6;0;795.6
+3110004;02;2022;2;3.1.90.04.01;Pessoal do FUNDEB (Recursos: Mínimo de 70%) ;56172.89;0;56172.89
+3110004;04;2022;6;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);370.2;0;370.2
+3110004;04;2022;6;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;4627.51;0;4627.51
+3110004;05;2022;1;3.1.90.11.11;Empregado Público;3639.13;0;3639.13
+3110004;01;2022;4;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);0;9912.36;9912.36
+3110004;01;2022;8;3.1.90.11.06;Subsídio de Vereador;0;198316.32;198316.32
+3110004;01;2022;8;3.1.90.11.10;Subsídio de Presidente da Câmara;0;16526.36;16526.36
+3110004;01;2022;8;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;0;2305.21;2305.21
+3110004;04;2022;8;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);370.2;0;370.2
+3110004;04;2022;8;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);948.63;0;948.63
+3110004;05;2022;5;3.1.90.04.99;Outros;51137.72;0;51137.72
+3110004;05;2022;5;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);2122.21;0;2122.21
+3110004;01;2022;7;3.1.90.11.04;Pessoal de Cargo Efetivo (Vinculado ao INSS), exceto FUNDEB;0;4119.61;4119.61
+3110004;01;2022;10;3.1.90.11.04;Pessoal de Cargo Efetivo (Vinculado ao INSS), exceto FUNDEB;0;52809.87;52809.87
+3110004;03;2022;2;3.1.90.11.11;Empregado Público;200546.96;0;200546.96
+3110004;03;2022;2;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);21139.26;0;21139.26
+3110004;03;2022;5;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);24141.71;0;24141.71
+3110004;03;2022;7;3.1.90.04.99;Outros;29245.41;0;29245.41
+3110004;01;2022;11;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;0;253.5;253.5
+3110004;02;2022;8;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);443365.36;0;443365.36
+3110004;02;2022;8;3.1.90.01.02;Aposentadorias Custeadas com Recursos Ordinários do Tesouro ;54415.16;0;54415.16
+3110004;02;2022;8;3.1.90.04.99;Outros;632424.53;0;632424.53
+3110004;02;2022;8;3.1.90.13.05;Obrigações Patronais Referentes ao FUNDEB (até 30%);23081.81;0;23081.81
+3110004;02;2022;8;3.1.71.70.00;Rateio pela Participação em Consórcio Público ;31738.66;0;31738.66
+3110004;02;2022;8;3.1.90.01.01;Aposentadorias Custeadas com Recursos do RPPS;6438.7;0;6438.7
+3110004;02;2022;4;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;50430.58;0;50430.58
+3110004;02;2022;4;3.1.90.01.01;Aposentadorias Custeadas com Recursos do RPPS;15655.13;0;15655.13
+3110004;02;2022;6;3.3.90.34.00;Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização ;113184.2;0;113184.2
+3110004;02;2022;6;3.1.90.11.01;Pessoal  do FUNDEB (Recursos: Mínimo de 70%) ;1123176.05;0;1123176.05
+3110004;02;2022;5;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;216082.78;0;216082.78
+3110004;02;2022;5;3.1.71.70.00;Rateio pela Participação em Consórcio Público ;25738.66;0;25738.66
+3110004;02;2022;7;3.1.90.13.05;Obrigações Patronais Referentes ao FUNDEB (até 30%);23263.33;0;23263.33
+3110004;02;2022;7;3.1.90.01.02;Aposentadorias Custeadas com Recursos Ordinários do Tesouro ;50427.34;0;50427.34
+3110004;02;2022;7;3.1.90.11.08;Subsídio de Vice-prefeito;7899.18;0;7899.18
+3110004;02;2022;7;3.1.90.01.01;Aposentadorias Custeadas com Recursos do RPPS;9761.9;0;9761.9
+3110004;02;2022;12;3.1.90.11.09;Subsídio de Secretário Municipal;232132.59;0;232132.59
+3110004;02;2022;12;3.1.90.13.04;Obrigações Patronais Referentes ao FUNDEB (Mínimo de 70%);347857.86;0;347857.86
+3110004;02;2022;12;3.1.90.01.02;Aposentadorias Custeadas com Recursos Ordinários do Tesouro ;74161.6;0;74161.6
+3110004;02;2022;12;3.1.90.11.08;Subsídio de Vice-prefeito;15798.36;0;15798.36
+3110004;02;2022;11;3.1.90.13.04;Obrigações Patronais Referentes ao FUNDEB (Mínimo de 70%);349368.06;0;349368.06
+3110004;02;2022;11;3.1.90.94.01;Indenizações e Restituições Trab. Ativo Civil;40819.38;0;40819.38
+3110004;02;2022;11;3.1.90.01.01;Aposentadorias Custeadas com Recursos do RPPS;19785.24;0;19785.24
+3110004;02;2022;11;3.3.90.34.00;Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização ;102328.98;0;102328.98
+3110004;05;2022;12;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);24065.28;0;24065.28
+3110004;05;2022;12;3.1.90.94.01;Indenizações e Restituições Trab. Ativo Civil;21.36;0;21.36
+3110004;01;2022;12;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;0;41707.39;41707.39
+3110004;01;2022;12;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);0;8254.96;8254.96
+3110004;01;2022;12;3.1.90.11.10;Subsídio de Presidente da Câmara;0;11017.57;11017.57
+3110004;02;2022;9;3.1.90.13.04;Obrigações Patronais Referentes ao FUNDEB (Mínimo de 70%);229670.83;0;229670.83
+3110004;02;2022;9;3.1.90.03.02;Pensões Custeadas com Recursos Ordinários do Tesouro ;13340.76;0;13340.76
+3110004;02;2022;9;3.1.90.04.01;Pessoal do FUNDEB (Recursos: Mínimo de 70%) ;114326.78;0;114326.78
+3110004;02;2022;10;3.1.90.94.01;Indenizações e Restituições Trab. Ativo Civil;66220.81;0;66220.81
+3110004;02;2022;10;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;54348.93;0;54348.93
+3110004;02;2022;10;3.3.90.34.00;Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização ;242034.54;0;242034.54
+3110004;01;2022;5;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;0;464;464
+3110004;02;2022;3;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;205474.75;0;205474.75
+3110004;02;2022;3;3.1.90.01.01;Aposentadorias Custeadas com Recursos do RPPS;11131.34;0;11131.34
+3110004;01;2022;3;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;0;739.67;739.67
+3110004;01;2022;3;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);0;36774.89;36774.89
+3110004;01;2022;1;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);0;37387.27;37387.27
+3110004;01;2022;1;3.1.90.11.04;Pessoal de Cargo Efetivo (Vinculado ao INSS), exceto FUNDEB;0;48676.26;48676.26
+3110004;05;2022;4;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;76.87;0;76.87
+3110004;05;2022;4;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;15.12;0;15.12
+3110004;05;2022;3;3.1.90.04.99;Outros;68595.06;0;68595.06
+3110004;05;2022;2;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;69.78;0;69.78
+3110004;02;2022;1;3.1.90.13.04;Obrigações Patronais Referentes ao FUNDEB (Mínimo de 70%);263696.03;0;263696.03
+3110004;02;2022;1;3.1.71.70.00;Rateio pela Participação em Consórcio Público ;0;0;0
+3110004;02;2022;1;3.1.90.11.09;Subsídio de Secretário Municipal;85198.52;0;85198.52
+3110004;02;2022;2;3.1.90.94.98;Indenizações por Demissão e com Programas de Incentivos à Demissão Voluntária - Trab. Ativo Civil;120590.46;0;120590.46
+3110004;02;2022;2;3.1.90.01.01;Aposentadorias Custeadas com Recursos do RPPS;11131.34;0;11131.34
+3110004;02;2022;2;3.1.90.11.08;Subsídio de Vice-prefeito;6888.02;0;6888.02
+3110004;01;2022;2;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);0;6623.68;6623.68
+3110004;01;2022;2;3.1.90.11.06;Subsídio de Vereador;0;86120.16;86120.16
+3110004;05;2022;9;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);15894.86;0;15894.86
+3110004;05;2022;10;3.1.90.11.11;Empregado Público;6072.9;0;6072.9
+3110004;05;2022;10;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);1999.08;0;1999.08
+3110004;05;2022;10;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;15522.94;0;15522.94
+3110004;05;2022;11;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;38.81;0;38.81
+3110004;03;2022;11;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);61910;0;61910
+3110004;01;2022;8;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);0;15493.88;15493.88
+3110004;05;2022;5;3.1.90.11.11;Empregado Público;6092.16;0;6092.16
+3110004;05;2022;6;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);14438.63;0;14438.63
+3110004;05;2022;6;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;158.93;0;158.93
+3110004;05;2022;7;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);11492.72;0;11492.72
+3110004;05;2022;7;3.1.90.94.01;Indenizações e Restituições Trab. Ativo Civil;1986.63;0;1986.63
+3110004;04;2022;7;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;4627.51;0;4627.51
+3110004;04;2022;9;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);370.2;0;370.2
+3110004;03;2022;1;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;41703.37;0;41703.37
+3110004;03;2022;3;3.1.90.11.11;Empregado Público;184096.85;0;184096.85
+3110004;03;2022;3;3.1.90.04.99;Outros;20923.72;0;20923.72
+3110004;03;2022;3;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);56938.78;0;56938.78
+3110004;03;2022;5;3.1.90.04.99;Outros;29566.91;0;29566.91
+3110004;03;2022;8;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;13706.7;0;13706.7
+3110004;01;2022;11;3.1.90.13.03;Contribuição Patronal para o INSS (exceto a Incidente sobre o FUNDEB);0;83152.34;83152.34
+3110004;02;2022;8;3.1.90.94.01;Indenizações e Restituições Trab. Ativo Civil;28103.35;0;28103.35
+3110004;02;2022;8;3.1.90.11.07;Subsídio de Prefeito;15798.37;0;15798.37
+3110004;02;2022;4;3.1.90.94.98;Indenizações por Demissão e com Programas de Incentivos à Demissão Voluntária - Trab. Ativo Civil;56573.17;0;56573.17
+3110004;02;2022;4;3.1.90.13.04;Obrigações Patronais Referentes ao FUNDEB (Mínimo de 70%);439088.15;0;439088.15
+3110004;02;2022;6;3.1.90.94.01;Indenizações e Restituições Trab. Ativo Civil;14132.72;0;14132.72
+3110004;02;2022;6;3.1.90.11.07;Subsídio de Prefeito;15798.37;0;15798.37
+3110004;02;2022;6;3.1.90.01.01;Aposentadorias Custeadas com Recursos do RPPS;9761.9;0;9761.9
+3110004;02;2022;5;3.1.90.04.01;Pessoal do FUNDEB (Recursos: Mínimo de 70%) ;79869.22;0;79869.22
+3110004;02;2022;7;3.1.90.11.02;Pessoal  do FUNDEB (Recursos: Até 30%) ;87126.11;0;87126.11
+3110004;02;2022;7;3.1.90.11.07;Subsídio de Prefeito;15798.37;0;15798.37
+3110004;02;2022;12;3.1.90.04.99;Outros;1193481.34;0;1193481.34
+3110004;02;2022;12;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);260637.13;0;260637.13
+3110004;02;2022;11;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);87207.43;0;87207.43
+3110004;02;2022;11;3.1.90.11.02;Pessoal  do FUNDEB (Recursos: Até 30%) ;76354.39;0;76354.39
+3110004;05;2022;12;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);4087.18;0;4087.18
+3110004;05;2022;12;3.1.90.04.99;Outros;74822.39;0;74822.39
+3110004;04;2022;12;3.1.90.13.01;FGTS (exceto o Incidente sobre o FUNDEB);863.8;0;863.8
+3110004;03;2022;12;3.1.90.11.05;Pessoal de Cargo Comissionado, exceto FUNDEB;75413.91;0;75413.91
+3110004;03;2022;12;3.1.90.16.00;Outras Despesas Variáveis - Pessoal Civil;18145.19;0;18145.19
+3110004;02;2022;9;3.1.90.94.01;Indenizações e Restituições Trab. Ativo Civil;37755.26;0;37755.26
+3110004;02;2022;9;3.1.90.04.99;Outros;640968.85;0;640968.85
+3110004;02;2022;9;3.1.90.11.07;Subsídio de Prefeito;15798.37;0;15798.37
+3110004;02;2022;10;3.1.90.04.01;Pessoal do FUNDEB (Recursos: Mínimo de 70%) ;109534.88;0;109534.88

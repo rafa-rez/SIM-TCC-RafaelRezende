@@ -1,0 +1,351 @@
+{
+  "id_teste": "2",
+  "source": "generated:e4_gpt4o",
+  "sql": "WITH servidores AS (SELECT TRIM(UPPER(p.nom_pessoa)) AS nome_servidor, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS salario_maximo FROM remuneracao_municipio r JOIN pessoa_municipio p ON r.seq_dim_pessoa = p.seq_dim_pessoa WHERE r.ano_referencia = 2024 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' AND COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY nome_servidor), beneficios AS (SELECT TRIM(UPPER(cgu.\"NOME FAVORECIDO\")) AS nome_beneficiario, SUM(CAST(cgu.\"VALOR PARCELA\" AS DECIMAL)) AS total_beneficio FROM cgu_novo_bolsa_familia cgu WHERE cgu.ano_referencia = 2024 GROUP BY nome_beneficiario) SELECT s.nome_servidor, s.salario_maximo, b.total_beneficio FROM servidores s JOIN beneficios b ON s.nome_servidor = b.nome_beneficiario;",
+  "columns": [
+    "nome_servidor",
+    "salario_maximo",
+    "total_beneficio"
+  ],
+  "rows": [
+    {
+      "nome_servidor": "ANDREZA SILVA MAGALHAES",
+      "salario_maximo": 3374.01,
+      "total_beneficio": 3720.0
+    },
+    {
+      "nome_servidor": "ELIZA OLIVEIRA DO CARMO",
+      "salario_maximo": 3521.37,
+      "total_beneficio": 3540.0
+    },
+    {
+      "nome_servidor": "MARIA APARECIDA FERREIRA DE OLIVEIRA",
+      "salario_maximo": 5319.61,
+      "total_beneficio": 7200.0
+    },
+    {
+      "nome_servidor": "MARIA IMACULADA ARAUJO FONSECA",
+      "salario_maximo": 2905.46,
+      "total_beneficio": 7150.0
+    },
+    {
+      "nome_servidor": "ROSEMARY DE JESUS SIMAO",
+      "salario_maximo": 3359.0,
+      "total_beneficio": 4200.0
+    },
+    {
+      "nome_servidor": "CRISTINA FERNANDA DOS SANTOS SILVA",
+      "salario_maximo": 1432.05,
+      "total_beneficio": 5635.0
+    },
+    {
+      "nome_servidor": "DERLIAN DE SOUZA PEREIRA",
+      "salario_maximo": 1362.28,
+      "total_beneficio": 7800.0
+    },
+    {
+      "nome_servidor": "GLEICIELE DE LOURDES BARBOSA SANCHA",
+      "salario_maximo": 393.07,
+      "total_beneficio": 2275.0
+    },
+    {
+      "nome_servidor": "MIRIAN CRISTINA DIAS",
+      "salario_maximo": 3235.59,
+      "total_beneficio": 3575.0
+    },
+    {
+      "nome_servidor": "POLIANA RAMOS DE OLIVEIRA",
+      "salario_maximo": 3037.9,
+      "total_beneficio": 4500.0
+    },
+    {
+      "nome_servidor": "ANGELA MARIA DA SILVA",
+      "salario_maximo": 6129.04,
+      "total_beneficio": 2925.0
+    },
+    {
+      "nome_servidor": "DEBORA CRISTINA DA SILVA TELESFORO",
+      "salario_maximo": 1498.32,
+      "total_beneficio": 6750.0
+    },
+    {
+      "nome_servidor": "GLAUCIELLY APARECIDA TEIXEIRA",
+      "salario_maximo": 1494.09,
+      "total_beneficio": 7700.0
+    },
+    {
+      "nome_servidor": "JHENY DAS GRACAS DE JESUS",
+      "salario_maximo": 2630.83,
+      "total_beneficio": 3575.0
+    },
+    {
+      "nome_servidor": "MARIA EDUARDA ALVES RIBEIRO",
+      "salario_maximo": 1360.67,
+      "total_beneficio": 8100.0
+    },
+    {
+      "nome_servidor": "WALQUIRIA ESTHER LEITE",
+      "salario_maximo": 1923.14,
+      "total_beneficio": 9300.0
+    },
+    {
+      "nome_servidor": "BRUNA RODRIGUES VIANA SILVA",
+      "salario_maximo": 716.14,
+      "total_beneficio": 800.0
+    },
+    {
+      "nome_servidor": "CAROLINE DE SOUZA DO CARMO",
+      "salario_maximo": 393.07,
+      "total_beneficio": 750.0
+    },
+    {
+      "nome_servidor": "JENEFFER CRISTIANE MARQUES LUIZ",
+      "salario_maximo": 1948.85,
+      "total_beneficio": 2925.0
+    },
+    {
+      "nome_servidor": "AMANDA DE JESUS OLIVEIRA",
+      "salario_maximo": 2584.26,
+      "total_beneficio": 5050.0
+    },
+    {
+      "nome_servidor": "FABIANA ANGELICA MEIRELES",
+      "salario_maximo": 1010.92,
+      "total_beneficio": 5110.0
+    },
+    {
+      "nome_servidor": "MARIA APARECIDA DOS SANTOS",
+      "salario_maximo": 2273.15,
+      "total_beneficio": 17112.0
+    },
+    {
+      "nome_servidor": "SUELY ANTONIA PORTO",
+      "salario_maximo": 3931.56,
+      "total_beneficio": 1891.0
+    },
+    {
+      "nome_servidor": "FABIANA APARECIDA SANTOS OLIVEIRA",
+      "salario_maximo": 1787.0,
+      "total_beneficio": 7350.0
+    },
+    {
+      "nome_servidor": "MARIA DA PIEDADE SILVA",
+      "salario_maximo": 4017.17,
+      "total_beneficio": 7200.0
+    },
+    {
+      "nome_servidor": "MARIA DE LOURDES PORTO",
+      "salario_maximo": 1772.23,
+      "total_beneficio": 9555.0
+    },
+    {
+      "nome_servidor": "URSULA DANIELE VIANA",
+      "salario_maximo": 1038.0,
+      "total_beneficio": 9514.0
+    },
+    {
+      "nome_servidor": "CACILDA DA SILVA",
+      "salario_maximo": 1494.09,
+      "total_beneficio": 7475.0
+    },
+    {
+      "nome_servidor": "ARLETE SANDRIA ALMEIDA SOARES",
+      "salario_maximo": 716.14,
+      "total_beneficio": 3900.0
+    },
+    {
+      "nome_servidor": "CAMILA CRISTINA PIEDADE SANTOS",
+      "salario_maximo": 3398.28,
+      "total_beneficio": 4200.0
+    },
+    {
+      "nome_servidor": "CLAUDINEIA ALVES DOS SANTOS",
+      "salario_maximo": 2539.44,
+      "total_beneficio": 7200.0
+    },
+    {
+      "nome_servidor": "GLEICE KELLY LACERDA DOS SANTOS CAMILO",
+      "salario_maximo": 3453.44,
+      "total_beneficio": 4000.0
+    },
+    {
+      "nome_servidor": "MARCIONELE ROBERTA DA SILVA",
+      "salario_maximo": 104.81,
+      "total_beneficio": 7600.0
+    },
+    {
+      "nome_servidor": "POLIANY DOS SANTOS DE JESUS SILVA",
+      "salario_maximo": 1038.0,
+      "total_beneficio": 7800.0
+    },
+    {
+      "nome_servidor": "PATRINY APARECIDA GONCALVES DA SILVA",
+      "salario_maximo": 1895.41,
+      "total_beneficio": 4500.0
+    },
+    {
+      "nome_servidor": "MIRIAN DE SOUZA",
+      "salario_maximo": 3531.72,
+      "total_beneficio": 12120.0
+    },
+    {
+      "nome_servidor": "MEIREMAR LOURDES SANTOS CRUZ",
+      "salario_maximo": 716.14,
+      "total_beneficio": 1800.0
+    },
+    {
+      "nome_servidor": "HELLEN CRISTINA SOUZA",
+      "salario_maximo": 1605.09,
+      "total_beneficio": 7875.0
+    },
+    {
+      "nome_servidor": "ISADORA CAMILA DE SENA",
+      "salario_maximo": 1038.0,
+      "total_beneficio": 7500.0
+    },
+    {
+      "nome_servidor": "MICHELLE CRISTIANE FERREIRA",
+      "salario_maximo": 1957.37,
+      "total_beneficio": 4500.0
+    },
+    {
+      "nome_servidor": "GEYZIANNE PRISCILA SOUZA VIEIRA",
+      "salario_maximo": 716.14,
+      "total_beneficio": 9600.0
+    },
+    {
+      "nome_servidor": "LUCIVANIA JORGETE DA PIEDADE MOREIRA",
+      "salario_maximo": 2552.75,
+      "total_beneficio": 5050.0
+    },
+    {
+      "nome_servidor": "NATHALIA STEFANE SILVA MONTEIRO",
+      "salario_maximo": 5697.93,
+      "total_beneficio": 6750.0
+    },
+    {
+      "nome_servidor": "ROSANA CRISTINA DE OLIVEIRA",
+      "salario_maximo": 554.0,
+      "total_beneficio": 4350.0
+    },
+    {
+      "nome_servidor": "KELLY CLAUDIA ROSA DE OLIVEIRA",
+      "salario_maximo": 1074.13,
+      "total_beneficio": 600.0
+    },
+    {
+      "nome_servidor": "MARCIA APARECIDA DA SILVA",
+      "salario_maximo": 2361.37,
+      "total_beneficio": 1200.0
+    },
+    {
+      "nome_servidor": "ELIANA APARECIDA DOS SANTOS",
+      "salario_maximo": 1662.92,
+      "total_beneficio": 6000.0
+    },
+    {
+      "nome_servidor": "FELICIA APARECIDA SOUZA SILVA",
+      "salario_maximo": 537.87,
+      "total_beneficio": 7360.0
+    },
+    {
+      "nome_servidor": "ISADORA FONTANA PEIXOTO DE MELO",
+      "salario_maximo": 489.81,
+      "total_beneficio": 9400.0
+    },
+    {
+      "nome_servidor": "GISELE SOARES BELMIRO LELES",
+      "salario_maximo": 1432.05,
+      "total_beneficio": 3900.0
+    },
+    {
+      "nome_servidor": "LIVIA ALVES DOS SANTOS",
+      "salario_maximo": 393.07,
+      "total_beneficio": 9000.0
+    },
+    {
+      "nome_servidor": "MARIA DE LOURDES DA SILVA",
+      "salario_maximo": 2141.62,
+      "total_beneficio": 7800.0
+    },
+    {
+      "nome_servidor": "MELISSA EVELYN DOS SANTOS LIMA",
+      "salario_maximo": 1494.09,
+      "total_beneficio": 4500.0
+    },
+    {
+      "nome_servidor": "TATIANA MARIA OLIVEIRA",
+      "salario_maximo": 510.0,
+      "total_beneficio": 7800.0
+    },
+    {
+      "nome_servidor": "VARLENE VENTURA SILVIANO",
+      "salario_maximo": 1761.25,
+      "total_beneficio": 6825.0
+    },
+    {
+      "nome_servidor": "ARIANE ESTEFANY OLIVEIRA ALMEIDA",
+      "salario_maximo": 335.79,
+      "total_beneficio": 2550.0
+    },
+    {
+      "nome_servidor": "MARIA GERALDA DA SILVA",
+      "salario_maximo": 2460.72,
+      "total_beneficio": 600.0
+    },
+    {
+      "nome_servidor": "ADRIANA CRISTINA BONSUCESSO SANTIAGO",
+      "salario_maximo": 1551.76,
+      "total_beneficio": 3575.0
+    },
+    {
+      "nome_servidor": "BRUNA RAFAELA FERREIRA DOS SANTOS",
+      "salario_maximo": 3664.95,
+      "total_beneficio": 4100.0
+    },
+    {
+      "nome_servidor": "MARIA D AJUDA SOUZA DOS SANTOS",
+      "salario_maximo": 1432.05,
+      "total_beneficio": 6825.0
+    },
+    {
+      "nome_servidor": "ANA PAULA ANDRELINO FONSECA",
+      "salario_maximo": 1632.96,
+      "total_beneficio": 8400.0
+    },
+    {
+      "nome_servidor": "GESSICA DOS SANTOS PEREIRA",
+      "salario_maximo": 657.4,
+      "total_beneficio": 9000.0
+    },
+    {
+      "nome_servidor": "KATICILAYNE GOMES TIAGO",
+      "salario_maximo": 1885.69,
+      "total_beneficio": 6315.0
+    },
+    {
+      "nome_servidor": "KIARA KAMILA BRANDAO DA SILVA FIGUEIREDO",
+      "salario_maximo": 1724.96,
+      "total_beneficio": 7800.0
+    },
+    {
+      "nome_servidor": "SAMIRA DE SOUZA PEREIRA SANTOS",
+      "salario_maximo": 2302.99,
+      "total_beneficio": 6300.0
+    }
+  ],
+  "row_count": 65,
+  "col_count": 3,
+  "schema_hash": "40bbc10c47894e5e",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:37.251314+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 65,
+    "gen_rows": 65
+  }
+}

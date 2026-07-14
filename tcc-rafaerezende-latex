@@ -1,0 +1,368 @@
+=========================
+METADADOS
+=========================
+
+Autor:
+Rafael Alves Silva Rezende
+
+Instituição:
+Universidade Federal de Lavras (UFLA)
+
+Curso:
+Bacharelado em Ciência da Computação
+
+Ano:
+2026
+
+Orientador:
+Prof. Dr. Densilson
+
+Título:
+Arquitetura de Orquestração Cognitiva Baseada em LLMs: Integração de RAG e Text-to-SQL Aplicada a Dados de Transparência Municipal: Uma Abordagem Empírica sobre Resultados Cognitivos de LLMs em Bases Governamentais Utilizando-se de Técnicas Modernas para Processamento de Dados
+
+
+=========================
+PROBLEMA
+=========================
+
+- Dados públicos são difíceis de explorar para usuários comuns.
+- Exigem conhecimento técnico em bancos de dados, documentos e portais de transparência.
+- Falta uma interface simples para consultas em linguagem natural.
+
+
+=========================
+OBJETIVO
+=========================
+
+Desenvolver uma arquitetura híbrida baseada em LLMs capaz de:
+
+- interpretar a intenção do usuário;
+- decidir automaticamente qual mecanismo utilizar;
+- integrar RAG e Text-to-SQL;
+- permitir acesso conversacional a bases públicas municipais.
+
+
+=========================
+ARQUITETURA
+=========================
+
+Entrada:
+- Pergunta em linguagem natural.
+
+Orquestrador Semântico:
+- Analisa intenção.
+- Escolhe o melhor mecanismo.
+
+Fluxo RAG:
+- Recuperação de documentos.
+- Leis.
+- Decretos.
+- Normas.
+- Informações textuais.
+
+Fluxo Text-to-SQL:
+- Consultas analíticas.
+- Estatísticas.
+- Comparações.
+- Bancos relacionais.
+
+Saída:
+- Resposta em linguagem natural.
+
+Automação:
+- n8n.
+
+
+=========================
+TECNOLOGIAS
+=========================
+
+- Large Language Models (LLMs)
+- Retrieval-Augmented Generation (RAG)
+- Text-to-SQL
+- n8n
+- Qdrant
+- DuckDB
+- Python
+- Embeddings
+- Busca Vetorial
+- Orquestração Cognitiva
+- Orquestração Semântica
+- DDL Minification
+- Smart Sampling
+- Autocorreção Iterativa
+
+
+=========================
+FLUXO DO SISTEMA
+=========================
+
+1. Usuário faz uma pergunta.
+2. O orquestrador identifica a intenção.
+3. Decide entre:
+   - RAG
+   - Text-to-SQL
+4. O subsistema executa.
+5. O resultado retorna ao usuário.
+
+
+=========================
+METODOLOGIA
+=========================
+
+Tipo de pesquisa:
+
+- Aplicada
+- Experimental
+- Desenvolvimento iterativo
+- Validação funcional
+
+Processo:
+
+- Construção da arquitetura.
+- Integração dos módulos.
+- Testes em ambiente real.
+- Benchmark.
+- Avaliação.
+
+
+=========================
+RAG
+=========================
+
+Responsável por:
+
+- recuperação documental;
+- documentos municipais;
+- leis;
+- decretos;
+- normas.
+
+Base utilizado:
+
+- Qdrant.
+
+Processo:
+
+- segmentação;
+- vetorização;
+- recuperação semântica.
+
+
+=========================
+TEXT-TO-SQL
+=========================
+
+Responsável por:
+
+- consultas quantitativas;
+- comparações;
+- estatísticas;
+- perguntas sobre bancos relacionais.
+
+Banco:
+
+- DuckDB
+
+Intermediado por:
+
+- API Python
+
+
+=========================
+DDL MINIFICATION
+=========================
+
+Objetivo:
+
+- reduzir quantidade de tokens.
+
+Consiste em:
+
+- remover redundâncias;
+- simplificar DDL;
+- padronizar descrições;
+- remover informações pouco relevantes.
+
+Benefícios:
+
+- menor custo;
+- menor contexto;
+- maior eficiência.
+
+
+=========================
+SMART SAMPLING
+=========================
+
+Objetivo:
+
+Adicionar exemplos reais das colunas ao contexto.
+
+Benefícios:
+
+- melhora entendimento do modelo;
+- melhora filtros;
+- melhora joins;
+- melhora inferência.
+
+
+=========================
+AUTOCORREÇÃO ITERATIVA
+=========================
+
+Função:
+
+- detectar erros SQL;
+- corrigir automaticamente;
+- aumentar robustez;
+- melhorar taxa de sucesso.
+
+
+=========================
+CRITÉRIOS DE AVALIAÇÃO
+=========================
+
+- Execution Accuracy
+- Rule Compliance
+- Consumo de Tokens
+- Latência
+- Robustez
+- Viabilidade
+
+
+=========================
+BENCHMARK
+=========================
+
+GPT-4o-mini + DDL Minificado
+
+Execution Accuracy:
+60%
+
+Rule Compliance:
+50%
+
+Tokens:
+~13.400
+
+Latência:
+9,8 segundos
+
+
+GPT-4o + DDL Completo
+
+Execution Accuracy:
+100%
+
+Rule Compliance:
+90%
+
+Tokens:
+~35.000
+
+Latência:
+70 segundos
+
+
+GPT-4o + DDL Minificado
+
+Execution Accuracy:
+100%
+
+Rule Compliance:
+100%
+
+Tokens:
+~16.400
+
+Latência:
+28,3 segundos
+
+
+=========================
+RESULTADOS
+=========================
+
+- Elevada precisão.
+- Alta conformidade lógica.
+- Redução significativa de tokens.
+- Redução do custo contextual.
+- Arquitetura robusta.
+- Seleção dinâmica do melhor mecanismo.
+- Boa escalabilidade.
+- Aplicação prática em dados públicos.
+
+
+=========================
+CONTRIBUIÇÕES
+=========================
+
+- Arquitetura híbrida.
+- Integração entre RAG e Text-to-SQL.
+- Orquestração cognitiva.
+- Interface conversacional para transparência pública.
+- Diretrizes para soluções GovTech.
+- Democratização do acesso aos dados públicos.
+
+
+=========================
+IMPACTO
+=========================
+
+- Fortalecimento da auditoria cidadã.
+- Maior transparência governamental.
+- Redução da barreira técnica.
+- Democratização do acesso à informação.
+- Contribuição para Governança Digital.
+- Alinhamento ao ODS 16.
+
+
+=========================
+PALAVRAS-CHAVE
+=========================
+
+- Inteligência Artificial
+- LLM
+- Large Language Models
+- RAG
+- Retrieval-Augmented Generation
+- Text-to-SQL
+- Orquestração Cognitiva
+- Dados Governamentais
+- Dados Abertos
+- Transparência Pública
+- GovTech
+- Qdrant
+- DuckDB
+- Python
+- n8n
+- LLMOps
+- Embeddings
+- Busca Vetorial
+- Bancos Relacionais
+- NLP
+- IA Conversacional
+
+
+=========================
+ESTRUTURA DO TCC
+=========================
+
+1. Introdução
+
+2. Referencial Teórico
+   - Sistemas Conversacionais Aplicados a Dados Públicos
+   - Arquiteturas Híbridas e Orquestração Cognitiva
+
+3. Metodologia
+   - DDL Minification
+   - Smart Sampling
+
+4. Análise de Resultados
+
+5. Discussão
+
+6. Conclusão
+
+7. Referências

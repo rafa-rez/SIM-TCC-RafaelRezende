@@ -1,0 +1,491 @@
+cod_municipio|cod_orgao|num_ano_referencia|num_mes_referencia|cod_nat_despesa|dsc_nat_despesa|vlr_executivo|vlr_legislativo|vlr_municipio
+3110004|01|2023|12|3.1.90.13.01|FGTS|0.0|8433.75|8433.75
+3110004|01|2023|12|3.1.90.11.10|Subsídio de Presidente da Câmara|0.0|35012.76|35012.76
+3110004|02|2023|1|3.1.90.11.09|Subsídio de Secretário Municipal|120863.63|0.0|120863.63
+3110004|02|2023|1|3.1.90.13.01|FGTS|175454.58|0.0|175454.58
+3110004|02|2023|2|3.1.90.13.01|FGTS|179778.18|0.0|179778.18
+3110004|02|2023|2|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|37818.4|0.0|37818.4
+3110004|02|2023|2|3.1.90.11.07|Subsídio de Prefeito|15798.37|0.0|15798.37
+3110004|02|2023|2|3.1.71.70.00|Rateio pela Participação em Consórcio Público|12869.33|0.0|12869.33
+3110004|02|2023|2|3.1.90.01.01|Aposentadorias Custeadas com Recursos do RPPS|19844.06|0.0|19844.06
+3110004|02|2023|2|3.1.90.01.02|Aposentadorias Custeadas com Recursos Ordinários do Tesouro|37080.8|0.0|37080.8
+3110004|02|2023|3|3.1.90.03.02|Pensões Custeadas com Recursos Ordinários do Tesouro|10783.89|0.0|10783.89
+3110004|02|2023|3|3.1.71.70.00|Rateio pela Participação em Consórcio Público|25738.66|0.0|25738.66
+3110004|02|2023|4|3.1.90.11.09|Subsídio de Secretário Municipal|128883.0|0.0|128883.0
+3110004|02|2023|4|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|113049.14|0.0|113049.14
+3110004|02|2023|5|3.1.90.11.11|Empregado Público|3823535.18|0.0|3823535.18
+3110004|02|2023|5|3.1.90.04.99|Outras Contratações por Tempo Determinado|930191.13|0.0|930191.13
+3110004|02|2023|5|3.3.90.34.00|Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização|245750.09|0.0|245750.09
+3110004|02|2023|6|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|121582.55|0.0|121582.55
+3110004|02|2023|6|3.1.90.01.01|Aposentadorias Custeadas com Recursos do RPPS|16188.42|0.0|16188.42
+3110004|02|2023|6|3.1.90.91.01|Sentenças Judiciais de Pessoal Ativo|172685.64|0.0|172685.64
+3110004|02|2023|7|3.1.90.11.09|Subsídio de Secretário Municipal|146181.96|0.0|146181.96
+3110004|02|2023|8|3.1.90.11.11|Empregado Público|2718661.35|0.0|2718661.35
+3110004|02|2023|9|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|85749.42|0.0|85749.42
+3110004|02|2023|9|3.1.90.91.03|Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro|0.0|0.0|0.0
+3110004|02|2023|10|3.1.90.11.11|Empregado Público|2817851.55|0.0|2817851.55
+3110004|02|2023|11|3.1.90.13.01|FGTS|234986.37|0.0|234986.37
+3110004|02|2023|11|3.1.90.03.02|Pensões Custeadas com Recursos Ordinários do Tesouro|15596.65|0.0|15596.65
+3110004|02|2023|11|3.3.90.34.00|Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização|212866.74|0.0|212866.74
+3110004|02|2023|11|3.1.90.01.02|Aposentadorias Custeadas com Recursos Ordinários do Tesouro|40788.88|0.0|40788.88
+3110004|02|2023|11|3.1.90.91.01|Sentenças Judiciais de Pessoal Ativo|255261.07|0.0|255261.07
+3110004|02|2023|12|3.1.90.04.99|Outras Contratações por Tempo Determinado|1297853.0|0.0|1297853.0
+3110004|02|2023|12|3.1.90.11.07|Subsídio de Prefeito|33470.44|0.0|33470.44
+3110004|02|2023|12|3.1.90.01.02|Aposentadorias Custeadas com Recursos Ordinários do Tesouro|94567.6|0.0|94567.6
+3110004|02|2023|12|3.1.90.11.08|Subsídio de Vice-prefeito|16735.22|0.0|16735.22
+3110004|04|2023|10|3.1.90.13.01|FGTS|407.22|0.0|407.22
+3110004|03|2023|12|3.1.90.04.99|Outras Contratações por Tempo Determinado|45990.3|0.0|45990.3
+3110004|03|2023|12|3.1.90.13.01|FGTS|37580.61|0.0|37580.61
+3110004|01|2023|11|3.1.90.13.01|FGTS|0.0|16472.46|16472.46
+3110004|03|2023|9|3.1.90.13.03|Contribuição Patronal para o INSS|68159.7|0.0|68159.7
+3110004|03|2023|10|3.1.90.13.01|FGTS|25548.0|0.0|25548.0
+3110004|03|2023|4|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|20109.64|0.0|20109.64
+3110004|03|2023|7|3.1.90.13.03|Contribuição Patronal para o INSS|67571.43|0.0|67571.43
+3110004|03|2023|7|3.1.90.13.01|FGTS|25341.09|0.0|25341.09
+3110004|03|2023|8|3.1.90.13.01|FGTS|25607.48|0.0|25607.48
+3110004|03|2023|8|3.1.90.94.99|Outras Indenizações e Restituições Trabalhistas|0.0|0.0|0.0
+3110004|05|2023|5|3.1.90.04.99|Outras Contratações por Tempo Determinado|59401.81|0.0|59401.81
+3110004|05|2023|5|3.1.90.11.11|Empregado Público|20086.48|0.0|20086.48
+3110004|05|2023|5|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|1681.61|0.0|1681.61
+3110004|05|2023|7|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|344.91|0.0|344.91
+3110004|05|2023|8|3.1.90.04.99|Outras Contratações por Tempo Determinado|45360.84|0.0|45360.84
+3110004|05|2023|8|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|1957.11|0.0|1957.11
+3110004|05|2023|10|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|2083.16|0.0|2083.16
+3110004|05|2023|10|3.1.90.13.03|Contribuição Patronal para o INSS|16310.82|0.0|16310.82
+3110004|04|2023|5|3.1.90.13.01|FGTS|555.3|0.0|555.3
+3110004|01|2023|1|3.1.90.13.03|Contribuição Patronal para o INSS|0.0|39422.12|39422.12
+3110004|01|2023|2|3.1.90.11.06|Subsídio de Vereador|0.0|99158.16|99158.16
+3110004|01|2023|2|3.1.90.11.42|Férias Vencidas e Proporcionais|0.0|1921.94|1921.94
+3110004|01|2023|3|3.1.90.11.01|Vencimentos e Salários|0.0|86278.1|86278.1
+3110004|01|2023|3|3.1.90.11.45|Férias - Abono Constitucional|0.0|1793.85|1793.85
+3110004|05|2023|1|3.1.90.11.09|Subsídio de Secretário Municipal|7869.96|0.0|7869.96
+3110004|05|2023|1|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|5554.63|0.0|5554.63
+3110004|01|2023|8|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|0.0|866.81|866.81
+3110004|04|2023|8|3.1.90.13.01|FGTS|407.22|0.0|407.22
+3110004|01|2023|6|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|0.0|782.77|782.77
+3110004|01|2023|7|3.1.90.13.03|Contribuição Patronal para o INSS|0.0|46620.82|46620.82
+3110004|01|2023|7|3.1.90.11.44|Férias - Abono Pecuniário|0.0|10343.95|10343.95
+3110004|04|2023|1|3.1.90.11.11|Empregado Público|4627.51|0.0|4627.51
+3110004|04|2023|9|3.1.90.11.11|Empregado Público|5090.26|0.0|5090.26
+3110004|01|2023|12|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|0.0|973.53|973.53
+3110004|01|2023|12|3.1.90.11.44|Férias - Abono Pecuniário|0.0|0.0|0.0
+3110004|02|2023|1|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|55003.09|0.0|55003.09
+3110004|02|2023|2|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|63797.61|0.0|63797.61
+3110004|02|2023|2|3.1.90.11.09|Subsídio de Secretário Municipal|141484.9|0.0|141484.9
+3110004|02|2023|2|3.1.90.91.03|Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro|36433.61|0.0|36433.61
+3110004|02|2023|4|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|75492.15|0.0|75492.15
+3110004|02|2023|4|3.1.90.13.01|FGTS|183422.79|0.0|183422.79
+3110004|02|2023|4|3.1.90.91.01|Sentenças Judiciais de Pessoal Ativo|250359.17|0.0|250359.17
+3110004|02|2023|4|3.1.90.91.03|Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro|21835.3|0.0|21835.3
+3110004|02|2023|5|3.1.90.13.03|Contribuição Patronal para o INSS|1218574.74|0.0|1218574.74
+3110004|02|2023|6|3.1.71.70.00|Rateio pela Participação em Consórcio Público|6000.0|0.0|6000.0
+3110004|02|2023|7|3.1.90.91.01|Sentenças Judiciais de Pessoal Ativo|197468.62|0.0|197468.62
+3110004|02|2023|7|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|89232.11|0.0|89232.11
+3110004|01|2023|10|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|0.0|841.53|841.53
+3110004|02|2023|9|3.1.71.70.00|Rateio pela Participação em Consórcio Público|0.0|0.0|0.0
+3110004|02|2023|9|3.1.90.13.99|Outras Obrigações|386153.59|0.0|386153.59
+3110004|02|2023|9|3.1.90.01.02|Aposentadorias Custeadas com Recursos Ordinários do Tesouro|40788.88|0.0|40788.88
+3110004|02|2023|10|3.1.90.11.09|Subsídio de Secretário Municipal|158468.78|0.0|158468.78
+3110004|02|2023|10|3.1.90.91.01|Sentenças Judiciais de Pessoal Ativo|49841.83|0.0|49841.83
+3110004|02|2023|11|3.1.90.04.99|Outras Contratações por Tempo Determinado|529247.06|0.0|529247.06
+3110004|02|2023|11|3.1.71.70.00|Rateio pela Participação em Consórcio Público|12869.33|0.0|12869.33
+3110004|02|2023|12|3.1.90.13.01|FGTS|444039.37|0.0|444039.37
+3110004|02|2023|12|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|134168.7|0.0|134168.7
+3110004|02|2023|12|3.1.90.01.01|Aposentadorias Custeadas com Recursos do RPPS|33223.65|0.0|33223.65
+3110004|04|2023|11|3.1.90.11.11|Empregado Público|5090.26|0.0|5090.26
+3110004|05|2023|12|3.1.90.13.03|Contribuição Patronal para o INSS|20510.6|0.0|20510.6
+3110004|03|2023|12|3.1.90.13.03|Contribuição Patronal para o INSS|127443.16|0.0|127443.16
+3110004|03|2023|12|3.1.90.11.01|Vencimentos e Salários|73435.43|0.0|73435.43
+3110004|01|2023|11|3.1.90.13.03|Contribuição Patronal para o INSS|0.0|95876.32|95876.32
+3110004|03|2023|10|3.1.90.13.03|Contribuição Patronal para o INSS|67063.51|0.0|67063.51
+3110004|03|2023|4|3.1.90.04.99|Outras Contratações por Tempo Determinado|24284.17|0.0|24284.17
+3110004|03|2023|4|3.1.90.11.01|Vencimentos e Salários|45514.81|0.0|45514.81
+3110004|03|2023|8|3.1.90.11.01|Vencimentos e Salários|43885.82|0.0|43885.82
+3110004|05|2023|11|3.1.90.13.01|FGTS|5532.49|0.0|5532.49
+3110004|05|2023|11|3.1.90.11.09|Subsídio de Secretário Municipal|12985.44|0.0|12985.44
+3110004|05|2023|4|3.1.90.13.01|FGTS|2078.71|0.0|2078.71
+3110004|05|2023|5|3.1.90.13.03|Contribuição Patronal para o INSS|19442.28|0.0|19442.28
+3110004|05|2023|6|3.1.90.11.11|Empregado Público|13192.33|0.0|13192.33
+3110004|05|2023|6|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|816.65|0.0|816.65
+3110004|05|2023|7|3.1.90.04.99|Outras Contratações por Tempo Determinado|31263.3|0.0|31263.3
+3110004|05|2023|7|3.1.90.13.03|Contribuição Patronal para o INSS|12137.79|0.0|12137.79
+3110004|05|2023|9|3.1.90.04.99|Outras Contratações por Tempo Determinado|50714.13|0.0|50714.13
+3110004|05|2023|9|3.1.90.11.09|Subsídio de Secretário Municipal|8656.96|0.0|8656.96
+3110004|05|2023|10|3.1.90.11.09|Subsídio de Secretário Municipal|8656.96|0.0|8656.96
+3110004|05|2023|10|3.1.90.11.01|Vencimentos e Salários|121.55|0.0|121.55
+3110004|04|2023|4|3.1.90.13.03|Contribuição Patronal para o INSS|948.63|0.0|948.63
+3110004|01|2023|5|3.1.90.11.44|Férias - Abono Pecuniário|0.0|338.36|338.36
+3110004|01|2023|2|3.1.90.11.44|Férias - Abono Pecuniário|0.0|980.06|980.06
+3110004|01|2023|2|3.1.90.11.45|Férias - Abono Constitucional|0.0|273.12|273.12
+3110004|05|2023|2|3.1.90.13.01|FGTS|1914.52|0.0|1914.52
+3110004|05|2023|3|3.1.90.13.01|FGTS|2169.74|0.0|2169.74
+3110004|03|2023|2|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|20527.24|0.0|20527.24
+3110004|01|2023|4|3.1.90.13.01|FGTS|0.0|9051.0|9051.0
+3110004|01|2023|4|3.1.90.13.03|Contribuição Patronal para o INSS|0.0|42419.92|42419.92
+3110004|01|2023|9|3.1.90.13.01|FGTS|0.0|8568.33|8568.33
+3110004|01|2023|8|3.1.90.11.45|Férias - Abono Constitucional|0.0|0.0|0.0
+3110004|01|2023|8|3.1.90.11.01|Vencimentos e Salários|0.0|101824.86|101824.86
+3110004|01|2023|6|3.1.90.11.06|Subsídio de Vereador|0.0|105038.28|105038.28
+3110004|01|2023|6|3.1.90.13.03|Contribuição Patronal para o INSS|0.0|45600.64|45600.64
+3110004|04|2023|6|3.1.90.13.01|FGTS|407.22|0.0|407.22
+3110004|01|2023|7|3.1.90.11.45|Férias - Abono Constitucional|0.0|5432.51|5432.51
+3110004|01|2023|7|3.1.90.11.42|Férias Vencidas e Proporcionais|0.0|15894.85|15894.85
+3110004|02|2023|1|3.1.90.11.08|Subsídio de Vice-prefeito|15798.37|0.0|15798.37
+3110004|02|2023|3|3.1.90.13.03|Contribuição Patronal para o INSS|739345.41|0.0|739345.41
+3110004|02|2023|4|3.1.90.11.11|Empregado Público|2269784.07|0.0|2269784.07
+3110004|02|2023|4|3.1.90.13.03|Contribuição Patronal para o INSS|745227.28|0.0|745227.28
+3110004|02|2023|5|3.1.90.11.08|Subsídio de Vice-prefeito|10709.71|0.0|10709.71
+3110004|02|2023|5|3.1.90.01.01|Aposentadorias Custeadas com Recursos do RPPS|22088.71|0.0|22088.71
+3110004|02|2023|5|3.1.71.70.00|Rateio pela Participação em Consórcio Público|25738.66|0.0|25738.66
+3110004|02|2023|6|3.1.90.91.03|Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro|54190.92|0.0|54190.92
+3110004|02|2023|6|3.1.90.11.08|Subsídio de Vice-prefeito|8367.61|0.0|8367.61
+3110004|02|2023|6|3.1.90.11.07|Subsídio de Prefeito|16735.22|0.0|16735.22
+3110004|02|2023|7|3.1.71.70.00|Rateio pela Participação em Consórcio Público|12869.33|0.0|12869.33
+3110004|02|2023|8|3.1.90.13.03|Contribuição Patronal para o INSS|886261.33|0.0|886261.33
+3110004|02|2023|8|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|136881.78|0.0|136881.78
+3110004|02|2023|8|3.1.90.01.02|Aposentadorias Custeadas com Recursos Ordinários do Tesouro|40788.88|0.0|40788.88
+3110004|01|2023|10|3.1.90.11.01|Vencimentos e Salários|0.0|102194.52|102194.52
+3110004|01|2023|10|3.1.90.11.44|Férias - Abono Pecuniário|0.0|3051.14|3051.14
+3110004|02|2023|9|3.1.90.03.02|Pensões Custeadas com Recursos Ordinários do Tesouro|15596.65|0.0|15596.65
+3110004|02|2023|9|3.1.90.01.01|Aposentadorias Custeadas com Recursos do RPPS|16188.42|0.0|16188.42
+3110004|02|2023|10|3.1.90.03.02|Pensões Custeadas com Recursos Ordinários do Tesouro|15596.65|0.0|15596.65
+3110004|02|2023|10|3.1.90.11.07|Subsídio de Prefeito|16735.22|0.0|16735.22
+3110004|02|2023|11|3.1.90.11.08|Subsídio de Vice-prefeito|8367.61|0.0|8367.61
+3110004|04|2023|11|3.1.90.13.01|FGTS|407.22|0.0|407.22
+3110004|04|2023|11|3.1.90.13.03|Contribuição Patronal para o INSS|1043.5|0.0|1043.5
+3110004|03|2023|12|3.1.90.11.11|Empregado Público|359136.0|0.0|359136.0
+3110004|01|2023|11|3.1.90.11.10|Subsídio de Presidente da Câmara|0.0|8753.19|8753.19
+3110004|01|2023|11|3.1.90.11.43|13° Salário|0.0|78858.62|78858.62
+3110004|03|2023|9|3.1.90.11.11|Empregado Público|225489.58|0.0|225489.58
+3110004|03|2023|9|3.1.90.11.01|Vencimentos e Salários|51909.54|0.0|51909.54
+3110004|03|2023|3|3.1.90.94.99|Outras Indenizações e Restituições Trabalhistas|3940.19|0.0|3940.19
+3110004|03|2023|5|3.1.90.13.03|Contribuição Patronal para o INSS|90582.82|0.0|90582.82
+3110004|03|2023|7|3.1.90.04.99|Outras Contratações por Tempo Determinado|37009.21|0.0|37009.21
+3110004|03|2023|8|3.1.90.04.99|Outras Contratações por Tempo Determinado|31268.77|0.0|31268.77
+3110004|05|2023|11|3.1.90.11.11|Empregado Público|17180.12|0.0|17180.12
+3110004|05|2023|11|3.1.90.04.99|Outras Contratações por Tempo Determinado|71120.0|0.0|71120.0
+3110004|05|2023|11|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|1005.92|0.0|1005.92
+3110004|05|2023|4|3.1.90.11.11|Empregado Público|13656.06|0.0|13656.06
+3110004|05|2023|4|3.1.90.11.09|Subsídio de Secretário Municipal|4984.31|0.0|4984.31
+3110004|05|2023|5|3.1.90.13.01|FGTS|3000.11|0.0|3000.11
+3110004|05|2023|7|3.1.90.11.11|Empregado Público|12006.58|0.0|12006.58
+3110004|05|2023|8|3.1.90.11.09|Subsídio de Secretário Municipal|8656.96|0.0|8656.96
+3110004|05|2023|9|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|429.46|0.0|429.46
+3110004|05|2023|10|3.1.90.04.99|Outras Contratações por Tempo Determinado|63094.53|0.0|63094.53
+3110004|04|2023|5|3.1.90.13.03|Contribuição Patronal para o INSS|1422.95|0.0|1422.95
+3110004|04|2023|3|3.1.90.13.03|Contribuição Patronal para o INSS|948.63|0.0|948.63
+3110004|01|2023|5|3.1.90.11.06|Subsídio de Vereador|0.0|128558.76|128558.76
+3110004|01|2023|3|3.1.90.13.01|FGTS|0.0|8199.46|8199.46
+3110004|05|2023|1|3.1.90.04.99|Outras Contratações por Tempo Determinado|13770.9|0.0|13770.9
+3110004|05|2023|2|3.1.90.11.09|Subsídio de Secretário Municipal|7869.96|0.0|7869.96
+3110004|05|2023|3|3.1.90.13.03|Contribuição Patronal para o INSS|16071.48|0.0|16071.48
+3110004|05|2023|3|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|705.22|0.0|705.22
+3110004|03|2023|1|3.1.90.11.01|Vencimentos e Salários|44658.99|0.0|44658.99
+3110004|01|2023|9|3.1.90.13.03|Contribuição Patronal para o INSS|0.0|46388.08|46388.08
+3110004|01|2023|8|3.1.90.13.03|Contribuição Patronal para o INSS|0.0|45475.23|45475.23
+3110004|01|2023|8|3.1.90.11.10|Subsídio de Presidente da Câmara|0.0|8753.19|8753.19
+3110004|01|2023|7|3.1.90.13.01|FGTS|0.0|10743.17|10743.17
+3110004|01|2023|7|3.1.90.11.10|Subsídio de Presidente da Câmara|0.0|8753.19|8753.19
+3110004|04|2023|2|3.1.90.11.11|Empregado Público|4627.51|0.0|4627.51
+3110004|01|2023|12|3.1.90.11.06|Subsídio de Vereador|0.0|116709.2|116709.2
+3110004|02|2023|1|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|83087.14|0.0|83087.14
+3110004|02|2023|1|3.1.90.04.99|Outras Contratações por Tempo Determinado|688576.06|0.0|688576.06
+3110004|02|2023|1|3.1.90.91.01|Sentenças Judiciais de Pessoal Ativo|271856.42|0.0|271856.42
+3110004|02|2023|2|3.1.90.11.08|Subsídio de Vice-prefeito|7899.18|0.0|7899.18
+3110004|02|2023|2|3.1.90.03.02|Pensões Custeadas com Recursos Ordinários do Tesouro|10783.89|0.0|10783.89
+3110004|02|2023|3|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|59409.23|0.0|59409.23
+3110004|02|2023|3|3.1.90.04.99|Outras Contratações por Tempo Determinado|670120.19|0.0|670120.19
+3110004|02|2023|4|3.1.90.04.99|Outras Contratações por Tempo Determinado|782618.28|0.0|782618.28
+3110004|02|2023|4|3.1.71.70.00|Rateio pela Participação em Consórcio Público|0.0|0.0|0.0
+3110004|02|2023|5|3.1.90.13.01|FGTS|296743.61|0.0|296743.61
+3110004|02|2023|5|3.1.90.91.01|Sentenças Judiciais de Pessoal Ativo|172354.77|0.0|172354.77
+3110004|02|2023|5|3.1.90.91.03|Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro|55494.45|0.0|55494.45
+3110004|02|2023|6|3.1.90.11.09|Subsídio de Secretário Municipal|148009.4|0.0|148009.4
+3110004|02|2023|7|3.1.90.13.03|Contribuição Patronal para o INSS|892106.71|0.0|892106.71
+3110004|02|2023|7|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|154989.62|0.0|154989.62
+3110004|02|2023|7|3.1.90.91.02|Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos do RPPS|30420.13|0.0|30420.13
+3110004|02|2023|8|3.1.90.03.02|Pensões Custeadas com Recursos Ordinários do Tesouro|15596.65|0.0|15596.65
+3110004|02|2023|8|3.1.90.01.01|Aposentadorias Custeadas com Recursos do RPPS|16188.42|0.0|16188.42
+3110004|02|2023|8|3.1.90.11.08|Subsídio de Vice-prefeito|8367.61|0.0|8367.61
+3110004|01|2023|10|3.1.90.11.10|Subsídio de Presidente da Câmara|0.0|8753.19|8753.19
+3110004|02|2023|9|3.1.90.04.99|Outras Contratações por Tempo Determinado|802120.56|0.0|802120.56
+3110004|02|2023|9|3.1.90.91.01|Sentenças Judiciais de Pessoal Ativo|355367.72|0.0|355367.72
+3110004|02|2023|9|3.1.90.11.08|Subsídio de Vice-prefeito|8367.61|0.0|8367.61
+3110004|02|2023|9|3.1.90.11.07|Subsídio de Prefeito|16735.22|0.0|16735.22
+3110004|02|2023|10|3.1.90.13.01|FGTS|233438.76|0.0|233438.76
+3110004|02|2023|10|3.3.90.34.00|Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização|148041.69|0.0|148041.69
+3110004|02|2023|10|3.1.90.01.02|Aposentadorias Custeadas com Recursos Ordinários do Tesouro|40788.88|0.0|40788.88
+3110004|02|2023|11|3.1.90.13.03|Contribuição Patronal para o INSS|899319.0|0.0|899319.0
+3110004|02|2023|11|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|76868.64|0.0|76868.64
+3110004|02|2023|11|3.1.90.11.07|Subsídio de Prefeito|16735.22|0.0|16735.22
+3110004|05|2023|12|3.1.90.04.99|Outras Contratações por Tempo Determinado|16724.06|0.0|16724.06
+3110004|05|2023|12|3.1.90.11.11|Empregado Público|17992.14|0.0|17992.14
+3110004|03|2023|10|3.1.90.11.11|Empregado Público|222245.84|0.0|222245.84
+3110004|03|2023|3|3.1.90.04.99|Outras Contratações por Tempo Determinado|40541.13|0.0|40541.13
+3110004|03|2023|3|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|9030.82|0.0|9030.82
+3110004|03|2023|4|3.1.90.13.01|FGTS|23492.17|0.0|23492.17
+3110004|03|2023|7|3.1.90.94.99|Outras Indenizações e Restituições Trabalhistas|285.38|0.0|285.38
+3110004|05|2023|11|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|7129.68|0.0|7129.68
+3110004|05|2023|6|3.1.90.11.09|Subsídio de Secretário Municipal|8656.96|0.0|8656.96
+3110004|05|2023|7|3.1.90.13.01|FGTS|2251.44|0.0|2251.44
+3110004|05|2023|7|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|4265.92|0.0|4265.92
+3110004|05|2023|9|3.1.90.13.01|FGTS|2173.51|0.0|2173.51
+3110004|03|2023|11|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|23768.66|0.0|23768.66
+3110004|04|2023|5|3.1.90.11.11|Empregado Público|6941.26|0.0|6941.26
+3110004|01|2023|5|3.1.90.11.10|Subsídio de Presidente da Câmara|0.0|10713.23|10713.23
+3110004|01|2023|1|3.1.90.11.42|Férias Vencidas e Proporcionais|0.0|185.34|185.34
+3110004|01|2023|1|3.1.90.11.45|Férias - Abono Constitucional|0.0|473.7|473.7
+3110004|01|2023|3|3.1.90.11.42|Férias Vencidas e Proporcionais|0.0|5381.59|5381.59
+3110004|01|2023|3|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|0.0|873.6|873.6
+3110004|05|2023|1|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|469.8|0.0|469.8
+3110004|05|2023|1|3.1.90.13.03|Contribuição Patronal para o INSS|16132.12|0.0|16132.12
+3110004|05|2023|2|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|2807.45|0.0|2807.45
+3110004|05|2023|3|3.1.90.11.09|Subsídio de Secretário Municipal|3147.98|0.0|3147.98
+3110004|03|2023|1|3.1.90.13.01|FGTS|23920.43|0.0|23920.43
+3110004|03|2023|1|3.1.90.04.99|Outras Contratações por Tempo Determinado|26506.71|0.0|26506.71
+3110004|01|2023|4|3.1.90.11.01|Vencimentos e Salários|0.0|93191.69|93191.69
+3110004|01|2023|4|3.1.90.11.06|Subsídio de Vereador|0.0|99158.16|99158.16
+3110004|01|2023|9|3.1.90.11.42|Férias Vencidas e Proporcionais|0.0|16313.65|16313.65
+3110004|01|2023|8|3.1.90.11.43|13° Salário|0.0|0.0|0.0
+3110004|01|2023|6|3.1.90.11.45|Férias - Abono Constitucional|0.0|1887.79|1887.79
+3110004|04|2023|7|3.1.90.13.03|Contribuição Patronal para o INSS|1043.5|0.0|1043.5
+3110004|04|2023|7|3.1.90.13.01|FGTS|407.22|0.0|407.22
+3110004|01|2023|12|3.1.90.11.01|Vencimentos e Salários|0.0|115988.71|115988.71
+3110004|01|2023|12|3.1.90.11.45|Férias - Abono Constitucional|0.0|3880.11|3880.11
+3110004|02|2023|1|3.1.90.91.03|Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro|74880.04|0.0|74880.04
+3110004|02|2023|3|3.1.90.13.01|FGTS|181923.03|0.0|181923.03
+3110004|02|2023|3|3.1.90.11.08|Subsídio de Vice-prefeito|7899.18|0.0|7899.18
+3110004|02|2023|3|3.1.90.01.02|Aposentadorias Custeadas com Recursos Ordinários do Tesouro|37080.8|0.0|37080.8
+3110004|02|2023|4|3.1.90.01.02|Aposentadorias Custeadas com Recursos Ordinários do Tesouro|37080.8|0.0|37080.8
+3110004|02|2023|5|3.1.90.11.07|Subsídio de Prefeito|19858.03|0.0|19858.03
+3110004|02|2023|6|3.1.90.13.03|Contribuição Patronal para o INSS|878542.91|0.0|878542.91
+3110004|02|2023|6|3.1.90.01.02|Aposentadorias Custeadas com Recursos Ordinários do Tesouro|40788.88|0.0|40788.88
+3110004|02|2023|7|3.1.90.01.01|Aposentadorias Custeadas com Recursos do RPPS|16188.42|0.0|16188.42
+3110004|02|2023|7|3.1.90.03.02|Pensões Custeadas com Recursos Ordinários do Tesouro|15596.65|0.0|15596.65
+3110004|02|2023|8|3.1.90.13.01|FGTS|224697.54|0.0|224697.54
+3110004|02|2023|8|3.1.90.91.03|Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro|55776.05|0.0|55776.05
+3110004|02|2023|8|3.1.90.11.07|Subsídio de Prefeito|16735.22|0.0|16735.22
+3110004|01|2023|10|3.1.90.13.01|FGTS|0.0|8601.21|8601.21
+3110004|01|2023|10|3.1.90.11.06|Subsídio de Vereador|0.0|105038.28|105038.28
+3110004|02|2023|9|3.1.90.11.09|Subsídio de Secretário Municipal|134388.42|0.0|134388.42
+3110004|04|2023|12|3.1.90.11.11|Empregado Público|19072.06|0.0|19072.06
+3110004|05|2023|12|3.1.90.11.09|Subsídio de Secretário Municipal|12985.44|0.0|12985.44
+3110004|01|2023|11|3.1.90.11.06|Subsídio de Vereador|0.0|198171.8|198171.8
+3110004|01|2023|11|3.1.90.11.01|Vencimentos e Salários|0.0|125059.51|125059.51
+3110004|01|2023|11|3.1.90.11.45|Férias - Abono Constitucional|0.0|410.34|410.34
+3110004|01|2023|11|3.1.90.11.44|Férias - Abono Pecuniário|0.0|373.92|373.92
+3110004|03|2023|3|3.1.90.11.11|Empregado Público|203783.84|0.0|203783.84
+3110004|03|2023|5|3.1.90.13.01|FGTS|34507.74|0.0|34507.74
+3110004|03|2023|5|3.1.90.94.99|Outras Indenizações e Restituições Trabalhistas|600.0|0.0|600.0
+3110004|03|2023|8|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|14003.5|0.0|14003.5
+3110004|05|2023|4|3.1.90.04.99|Outras Contratações por Tempo Determinado|41201.33|0.0|41201.33
+3110004|05|2023|5|3.1.90.11.09|Subsídio de Secretário Municipal|12067.29|0.0|12067.29
+3110004|05|2023|8|3.1.90.11.11|Empregado Público|13398.03|0.0|13398.03
+3110004|05|2023|8|3.1.90.13.01|FGTS|2248.96|0.0|2248.96
+3110004|05|2023|9|3.1.90.11.11|Empregado Público|15098.5|0.0|15098.5
+3110004|05|2023|10|3.1.90.13.01|FGTS|4068.61|0.0|4068.61
+3110004|03|2023|11|3.1.90.04.99|Outras Contratações por Tempo Determinado|44849.33|0.0|44849.33
+3110004|04|2023|3|3.1.90.13.01|FGTS|370.2|0.0|370.2
+3110004|01|2023|1|3.1.90.13.01|FGTS|0.0|6424.24|6424.24
+3110004|01|2023|1|3.1.90.94.99|Outras Indenizações e Restituições Trabalhistas|0.0|8168.7|8168.7
+3110004|01|2023|1|3.1.90.11.06|Subsídio de Vereador|0.0|99158.16|99158.16
+3110004|01|2023|2|3.1.90.13.03|Contribuição Patronal para o INSS|0.0|41789.32|41789.32
+3110004|01|2023|2|3.1.90.13.01|FGTS|0.0|7326.03|7326.03
+3110004|05|2023|2|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|783.34|0.0|783.34
+3110004|03|2023|2|3.1.90.11.01|Vencimentos e Salários|46879.83|0.0|46879.83
+3110004|01|2023|4|3.1.90.94.99|Outras Indenizações e Restituições Trabalhistas|0.0|9221.13|9221.13
+3110004|01|2023|4|3.1.90.11.43|13° Salário|0.0|1975.95|1975.95
+3110004|01|2023|9|3.1.90.11.44|Férias - Abono Pecuniário|0.0|3756.61|3756.61
+3110004|04|2023|1|3.1.90.13.01|FGTS|370.2|0.0|370.2
+3110004|04|2023|2|3.1.90.13.01|FGTS|370.2|0.0|370.2
+3110004|04|2023|9|3.1.90.13.01|FGTS|407.22|0.0|407.22
+3110004|02|2023|1|3.1.90.13.03|Contribuição Patronal para o INSS|726877.34|0.0|726877.34
+3110004|02|2023|1|3.1.90.01.01|Aposentadorias Custeadas com Recursos do RPPS|19844.06|0.0|19844.06
+3110004|02|2023|2|3.1.90.11.11|Empregado Público|2343539.34|0.0|2343539.34
+3110004|02|2023|2|3.1.90.04.99|Outras Contratações por Tempo Determinado|700391.08|0.0|700391.08
+3110004|02|2023|3|3.1.90.11.11|Empregado Público|2413335.11|0.0|2413335.11
+3110004|02|2023|3|3.1.90.11.09|Subsídio de Secretário Municipal|124873.3|0.0|124873.3
+3110004|02|2023|5|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|79523.97|0.0|79523.97
+3110004|02|2023|5|3.1.90.01.02|Aposentadorias Custeadas com Recursos Ordinários do Tesouro|55621.18|0.0|55621.18
+3110004|02|2023|6|3.1.90.13.01|FGTS|217949.57|0.0|217949.57
+3110004|02|2023|6|3.1.90.11.11|Empregado Público|2662239.08|0.0|2662239.08
+3110004|02|2023|7|3.1.90.11.11|Empregado Público|2741849.91|0.0|2741849.91
+3110004|02|2023|7|3.1.90.01.02|Aposentadorias Custeadas com Recursos Ordinários do Tesouro|40788.88|0.0|40788.88
+3110004|02|2023|7|3.1.90.11.08|Subsídio de Vice-prefeito|8367.61|0.0|8367.61
+3110004|02|2023|8|3.1.90.11.09|Subsídio de Secretário Municipal|156578.49|0.0|156578.49
+3110004|02|2023|8|3.3.90.34.00|Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização|122975.02|0.0|122975.02
+3110004|01|2023|10|3.1.90.13.03|Contribuição Patronal para o INSS|0.0|45960.74|45960.74
+3110004|01|2023|10|3.1.90.11.45|Férias - Abono Constitucional|0.0|2496.53|2496.53
+3110004|02|2023|9|3.1.90.11.11|Empregado Público|2777331.83|0.0|2777331.83
+3110004|02|2023|9|3.3.90.34.00|Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização|149285.55|0.0|149285.55
+3110004|02|2023|10|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|297074.67|0.0|297074.67
+3110004|02|2023|11|3.1.90.11.11|Empregado Público|3053481.05|0.0|3053481.05
+3110004|02|2023|12|3.1.90.03.02|Pensões Custeadas com Recursos Ordinários do Tesouro|15945.65|0.0|15945.65
+3110004|04|2023|12|3.1.90.13.03|Contribuição Patronal para o INSS|4133.4|0.0|4133.4
+3110004|04|2023|10|3.1.90.13.03|Contribuição Patronal para o INSS|1043.5|0.0|1043.5
+3110004|04|2023|10|3.1.90.11.11|Empregado Público|5090.26|0.0|5090.26
+3110004|01|2023|11|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|0.0|967.67|967.67
+3110004|03|2023|9|3.1.90.13.01|FGTS|25271.19|0.0|25271.19
+3110004|03|2023|3|3.1.90.11.01|Vencimentos e Salários|50984.62|0.0|50984.62
+3110004|03|2023|3|3.1.90.13.01|FGTS|23105.94|0.0|23105.94
+3110004|03|2023|5|3.1.90.11.11|Empregado Público|296032.08|0.0|296032.08
+3110004|03|2023|5|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|13169.08|0.0|13169.08
+3110004|03|2023|6|3.1.90.04.99|Outras Contratações por Tempo Determinado|31622.79|0.0|31622.79
+3110004|03|2023|7|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|10709.57|0.0|10709.57
+3110004|03|2023|7|3.1.90.11.11|Empregado Público|216788.1|0.0|216788.1
+3110004|03|2023|8|3.1.90.13.03|Contribuição Patronal para o INSS|67219.63|0.0|67219.63
+3110004|05|2023|11|3.1.90.13.03|Contribuição Patronal para o INSS|15793.42|0.0|15793.42
+3110004|05|2023|4|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|841.93|0.0|841.93
+3110004|05|2023|7|3.1.90.11.09|Subsídio de Secretário Municipal|8656.96|0.0|8656.96
+3110004|05|2023|8|3.1.90.13.03|Contribuição Patronal para o INSS|15107.25|0.0|15107.25
+3110004|03|2023|11|3.1.90.11.11|Empregado Público|320764.49|0.0|320764.49
+3110004|03|2023|11|3.1.90.13.01|FGTS|37409.65|0.0|37409.65
+3110004|03|2023|11|3.1.90.13.03|Contribuição Patronal para o INSS|69214.58|0.0|69214.58
+3110004|01|2023|5|3.1.90.13.03|Contribuição Patronal para o INSS|0.0|57741.99|57741.99
+3110004|01|2023|2|3.1.90.11.10|Subsídio de Presidente da Câmara|0.0|8263.18|8263.18
+3110004|05|2023|1|3.1.90.13.01|FGTS|1839.92|0.0|1839.92
+3110004|05|2023|1|3.1.90.11.11|Empregado Público|9193.6|0.0|9193.6
+3110004|05|2023|2|3.1.90.11.11|Empregado Público|11611.75|0.0|11611.75
+3110004|05|2023|3|3.1.90.04.99|Outras Contratações por Tempo Determinado|51264.23|0.0|51264.23
+3110004|03|2023|2|3.1.90.11.11|Empregado Público|217083.64|0.0|217083.64
+3110004|03|2023|2|3.1.90.04.99|Outras Contratações por Tempo Determinado|27999.62|0.0|27999.62
+3110004|03|2023|1|3.1.90.13.03|Contribuição Patronal para o INSS|64307.38|0.0|64307.38
+3110004|01|2023|9|3.1.90.11.01|Vencimentos e Salários|0.0|89088.62|89088.62
+3110004|01|2023|9|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|0.0|246.58|246.58
+3110004|01|2023|9|3.1.90.11.06|Subsídio de Vereador|0.0|105038.28|105038.28
+3110004|01|2023|8|3.1.90.11.42|Férias Vencidas e Proporcionais|0.0|0.0|0.0
+3110004|04|2023|8|3.1.90.11.11|Empregado Público|5090.26|0.0|5090.26
+3110004|01|2023|6|3.1.90.11.01|Vencimentos e Salários|0.0|100002.9|100002.9
+3110004|04|2023|6|3.1.90.11.11|Empregado Público|5090.26|0.0|5090.26
+3110004|04|2023|7|3.1.90.11.11|Empregado Público|5090.26|0.0|5090.26
+3110004|01|2023|7|3.1.90.11.01|Vencimentos e Salários|0.0|89247.72|89247.72
+3110004|04|2023|2|3.1.90.13.03|Contribuição Patronal para o INSS|948.63|0.0|948.63
+3110004|01|2023|12|3.1.90.13.03|Contribuição Patronal para o INSS|0.0|54000.22|54000.22
+3110004|02|2023|1|3.1.90.03.02|Pensões Custeadas com Recursos Ordinários do Tesouro|10783.89|0.0|10783.89
+3110004|02|2023|1|3.1.71.70.00|Rateio pela Participação em Consórcio Público|0.0|0.0|0.0
+3110004|02|2023|1|3.3.90.34.00|Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização|0.0|0.0|0.0
+3110004|02|2023|1|3.1.90.11.07|Subsídio de Prefeito|5266.12|0.0|5266.12
+3110004|02|2023|2|3.1.90.13.03|Contribuição Patronal para o INSS|735681.51|0.0|735681.51
+3110004|02|2023|2|3.3.90.34.00|Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização|230430.06|0.0|230430.06
+3110004|02|2023|3|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|148092.38|0.0|148092.38
+3110004|02|2023|3|3.1.90.91.01|Sentenças Judiciais de Pessoal Ativo|366922.64|0.0|366922.64
+3110004|02|2023|3|3.1.90.11.07|Subsídio de Prefeito|15798.37|0.0|15798.37
+3110004|02|2023|4|3.1.90.11.07|Subsídio de Prefeito|15798.37|0.0|15798.37
+3110004|02|2023|5|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|314018.45|0.0|314018.45
+3110004|02|2023|5|3.1.90.11.09|Subsídio de Secretário Municipal|193381.76|0.0|193381.76
+3110004|02|2023|5|3.1.90.03.02|Pensões Custeadas com Recursos Ordinários do Tesouro|19498.26|0.0|19498.26
+3110004|02|2023|6|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|87834.14|0.0|87834.14
+3110004|02|2023|7|3.1.90.13.01|FGTS|223470.9|0.0|223470.9
+3110004|02|2023|8|3.1.90.04.99|Outras Contratações por Tempo Determinado|768768.24|0.0|768768.24
+3110004|02|2023|8|3.1.71.70.00|Rateio pela Participação em Consórcio Público|25738.66|0.0|25738.66
+3110004|02|2023|8|3.1.90.91.01|Sentenças Judiciais de Pessoal Ativo|119207.35|0.0|119207.35
+3110004|02|2023|9|3.1.90.13.03|Contribuição Patronal para o INSS|899201.05|0.0|899201.05
+3110004|02|2023|9|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|132067.53|0.0|132067.53
+3110004|02|2023|10|3.1.90.13.03|Contribuição Patronal para o INSS|909640.11|0.0|909640.11
+3110004|02|2023|10|3.1.90.01.01|Aposentadorias Custeadas com Recursos do RPPS|16188.42|0.0|16188.42
+3110004|02|2023|10|3.1.90.91.03|Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro|49813.32|0.0|49813.32
+3110004|02|2023|11|3.1.90.11.09|Subsídio de Secretário Municipal|139250.92|0.0|139250.92
+3110004|02|2023|11|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|159796.32|0.0|159796.32
+3110004|02|2023|12|3.1.90.11.09|Subsídio de Secretário Municipal|212971.99|0.0|212971.99
+3110004|02|2023|12|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|141973.34|0.0|141973.34
+3110004|02|2023|12|3.3.90.34.00|Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização|0.0|0.0|0.0
+3110004|02|2023|12|3.1.71.70.00|Rateio pela Participação em Consórcio Público|15869.33|0.0|15869.33
+3110004|05|2023|12|3.1.90.13.01|FGTS|4114.12|0.0|4114.12
+3110004|03|2023|9|3.1.90.04.99|Outras Contratações por Tempo Determinado|31369.0|0.0|31369.0
+3110004|03|2023|10|3.1.90.04.99|Outras Contratações por Tempo Determinado|31268.77|0.0|31268.77
+3110004|03|2023|5|3.1.90.04.99|Outras Contratações por Tempo Determinado|38836.5|0.0|38836.5
+3110004|03|2023|5|3.1.90.11.01|Vencimentos e Salários|68633.45|0.0|68633.45
+3110004|03|2023|6|3.1.90.13.01|FGTS|25517.97|0.0|25517.97
+3110004|03|2023|6|3.1.90.11.01|Vencimentos e Salários|51686.57|0.0|51686.57
+3110004|03|2023|7|3.1.90.11.01|Vencimentos e Salários|52535.25|0.0|52535.25
+3110004|03|2023|8|3.1.90.11.11|Empregado Público|207260.22|0.0|207260.22
+3110004|05|2023|5|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|774.37|0.0|774.37
+3110004|05|2023|6|3.1.90.13.03|Contribuição Patronal para o INSS|19009.82|0.0|19009.82
+3110004|05|2023|9|3.1.90.13.03|Contribuição Patronal para o INSS|15355.24|0.0|15355.24
+3110004|05|2023|10|3.1.90.11.11|Empregado Público|13700.41|0.0|13700.41
+3110004|03|2023|11|3.1.90.11.01|Vencimentos e Salários|74047.37|0.0|74047.37
+3110004|04|2023|4|3.1.90.11.11|Empregado Público|4627.51|0.0|4627.51
+3110004|01|2023|5|3.1.90.11.01|Vencimentos e Salários|0.0|135975.4|135975.4
+3110004|01|2023|2|3.1.90.11.01|Vencimentos e Salários|0.0|92914.07|92914.07
+3110004|01|2023|2|3.1.90.11.43|13° Salário|0.0|40882.16|40882.16
+3110004|01|2023|3|3.1.90.11.44|Férias - Abono Pecuniário|0.0|2403.46|2403.46
+3110004|01|2023|3|3.1.90.11.10|Subsídio de Presidente da Câmara|0.0|8263.18|8263.18
+3110004|01|2023|3|3.1.90.13.03|Contribuição Patronal para o INSS|0.0|42575.22|42575.22
+3110004|01|2023|3|3.1.90.11.06|Subsídio de Vereador|0.0|99158.16|99158.16
+3110004|03|2023|2|3.1.90.13.01|FGTS|23943.62|0.0|23943.62
+3110004|03|2023|1|3.1.90.11.11|Empregado Público|211285.6|0.0|211285.6
+3110004|01|2023|4|3.1.90.11.10|Subsídio de Presidente da Câmara|0.0|8263.18|8263.18
+3110004|01|2023|9|3.1.90.11.45|Férias - Abono Constitucional|0.0|5437.86|5437.86
+3110004|01|2023|9|3.1.90.11.10|Subsídio de Presidente da Câmara|0.0|8753.19|8753.19
+3110004|01|2023|8|3.1.90.13.01|FGTS|0.0|8220.58|8220.58
+3110004|01|2023|8|3.1.90.11.06|Subsídio de Vereador|0.0|105038.28|105038.28
+3110004|01|2023|6|3.1.90.11.44|Férias - Abono Pecuniário|0.0|1078.08|1078.08
+3110004|01|2023|7|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|0.0|887.54|887.54
+3110004|01|2023|7|3.1.90.11.06|Subsídio de Vereador|0.0|105038.28|105038.28
+3110004|01|2023|7|3.1.90.11.43|13° Salário|0.0|4347.1|4347.1
+3110004|04|2023|9|3.1.90.13.03|Contribuição Patronal para o INSS|1043.5|0.0|1043.5
+3110004|02|2023|1|3.1.90.11.11|Empregado Público|2666501.11|0.0|2666501.11
+3110004|02|2023|1|3.1.90.01.02|Aposentadorias Custeadas com Recursos Ordinários do Tesouro|37080.8|0.0|37080.8
+3110004|02|2023|2|3.1.90.91.01|Sentenças Judiciais de Pessoal Ativo|238777.89|0.0|238777.89
+3110004|02|2023|3|3.1.90.01.01|Aposentadorias Custeadas com Recursos do RPPS|18301.19|0.0|18301.19
+3110004|02|2023|3|3.1.90.91.03|Sentenças Judiciais de Inativos e Pensionistas Custeadas com Recursos Ordinários do Tesouro|22546.9|0.0|22546.9
+3110004|02|2023|4|3.1.90.01.01|Aposentadorias Custeadas com Recursos do RPPS|16339.66|0.0|16339.66
+3110004|02|2023|4|3.1.90.11.08|Subsídio de Vice-prefeito|7899.18|0.0|7899.18
+3110004|02|2023|4|3.1.90.03.02|Pensões Custeadas com Recursos Ordinários do Tesouro|13608.61|0.0|13608.61
+3110004|02|2023|4|3.3.90.34.00|Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização|104482.33|0.0|104482.33
+3110004|02|2023|6|3.1.90.04.99|Outras Contratações por Tempo Determinado|772952.12|0.0|772952.12
+3110004|02|2023|6|3.1.90.03.02|Pensões Custeadas com Recursos Ordinários do Tesouro|15596.65|0.0|15596.65
+3110004|02|2023|6|3.3.90.34.00|Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização|121127.62|0.0|121127.62
+3110004|02|2023|7|3.1.90.04.99|Outras Contratações por Tempo Determinado|785551.96|0.0|785551.96
+3110004|02|2023|7|3.1.90.11.07|Subsídio de Prefeito|16735.22|0.0|16735.22
+3110004|02|2023|7|3.3.90.34.00|Outras Despesas de Pessoal Decorrentes de Contratos de Terceirização|122929.96|0.0|122929.96
+3110004|02|2023|8|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|84127.86|0.0|84127.86
+3110004|01|2023|10|3.1.90.11.43|13° Salário|0.0|2445.9|2445.9
+3110004|02|2023|9|3.1.90.13.01|FGTS|229302.12|0.0|229302.12
+3110004|02|2023|10|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|176787.6|0.0|176787.6
+3110004|02|2023|10|3.1.90.04.99|Outras Contratações por Tempo Determinado|694023.95|0.0|694023.95
+3110004|02|2023|10|3.1.90.11.08|Subsídio de Vice-prefeito|8367.61|0.0|8367.61
+3110004|02|2023|10|3.1.71.70.00|Rateio pela Participação em Consórcio Público|12869.33|0.0|12869.33
+3110004|02|2023|11|3.1.90.01.01|Aposentadorias Custeadas com Recursos do RPPS|16188.42|0.0|16188.42
+3110004|02|2023|12|3.1.90.13.03|Contribuição Patronal para o INSS|1665911.16|0.0|1665911.16
+3110004|02|2023|12|3.1.90.11.11|Empregado Público|5525500.01|0.0|5525500.01
+3110004|02|2023|12|3.1.90.91.01|Sentenças Judiciais de Pessoal Ativo|162671.99|0.0|162671.99
+3110004|04|2023|12|3.1.90.13.01|FGTS|1613.04|0.0|1613.04
+3110004|05|2023|12|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|52911.5|0.0|52911.5
+3110004|05|2023|12|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|1446.33|0.0|1446.33
+3110004|03|2023|12|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|19742.97|0.0|19742.97
+3110004|03|2023|9|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|15015.94|0.0|15015.94
+3110004|03|2023|10|3.1.90.11.01|Vencimentos e Salários|66269.33|0.0|66269.33
+3110004|03|2023|10|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|16222.26|0.0|16222.26
+3110004|03|2023|3|3.1.90.13.03|Contribuição Patronal para o INSS|62077.03|0.0|62077.03
+3110004|03|2023|4|3.1.90.13.03|Contribuição Patronal para o INSS|63191.0|0.0|63191.0
+3110004|03|2023|4|3.1.90.11.11|Empregado Público|213197.97|0.0|213197.97
+3110004|03|2023|6|3.1.90.11.11|Empregado Público|242685.57|0.0|242685.57
+3110004|03|2023|6|3.1.90.13.03|Contribuição Patronal para o INSS|66984.72|0.0|66984.72
+3110004|03|2023|6|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|14691.38|0.0|14691.38
+3110004|05|2023|4|3.1.90.13.03|Contribuição Patronal para o INSS|13593.92|0.0|13593.92
+3110004|05|2023|6|3.1.90.04.99|Outras Contratações por Tempo Determinado|67940.06|0.0|67940.06
+3110004|05|2023|6|3.1.90.13.01|FGTS|2197.71|0.0|2197.71
+3110004|05|2023|6|3.1.90.94.01|Indenizações e Restituições Trab. Ativo Civil|286.2|0.0|286.2
+3110004|05|2023|8|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|199.51|0.0|199.51
+3110004|05|2023|10|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|718.84|0.0|718.84
+3110004|04|2023|4|3.1.90.13.01|FGTS|370.2|0.0|370.2
+3110004|04|2023|3|3.1.90.11.11|Empregado Público|4627.51|0.0|4627.51
+3110004|01|2023|5|3.1.90.13.01|FGTS|0.0|10855.19|10855.19
+3110004|01|2023|5|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|0.0|836.55|836.55
+3110004|01|2023|1|3.1.90.11.01|Vencimentos e Salários|0.0|81085.56|81085.56
+3110004|01|2023|1|3.1.90.11.10|Subsídio de Presidente da Câmara|0.0|8263.18|8263.18
+3110004|01|2023|3|3.1.90.11.43|13° Salário|0.0|0.0|0.0
+3110004|05|2023|2|3.1.90.13.03|Contribuição Patronal para o INSS|11778.22|0.0|11778.22
+3110004|05|2023|2|3.1.90.04.99|Outras Contratações por Tempo Determinado|33507.43|0.0|33507.43
+3110004|05|2023|3|3.1.90.11.11|Empregado Público|13750.98|0.0|13750.98
+3110004|03|2023|2|3.1.90.13.03|Contribuição Patronal para o INSS|64498.75|0.0|64498.75
+3110004|03|2023|1|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|14358.77|0.0|14358.77
+3110004|01|2023|4|3.1.90.16.00|Outras Despesas Variáveis - Pessoal Civil|0.0|277.03|277.03
+3110004|01|2023|8|3.1.90.11.44|Férias - Abono Pecuniário|0.0|0.0|0.0
+3110004|04|2023|8|3.1.90.13.03|Contribuição Patronal para o INSS|1043.5|0.0|1043.5
+3110004|01|2023|6|3.1.90.11.10|Subsídio de Presidente da Câmara|0.0|8753.19|8753.19
+3110004|01|2023|6|3.1.90.13.01|FGTS|0.0|8872.45|8872.45
+3110004|01|2023|6|3.1.90.11.42|Férias Vencidas e Proporcionais|0.0|5663.38|5663.38
+3110004|04|2023|6|3.1.90.13.03|Contribuição Patronal para o INSS|1043.5|0.0|1043.5
+3110004|04|2023|1|3.1.90.13.03|Contribuição Patronal para o INSS|948.63|0.0|948.63

@@ -1,0 +1,27 @@
+{
+  "id_teste": "41",
+  "input_usuario": "Qual o valor total recebido via CGU despesas favorecidos em 2024?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1,
+    "ref_cols": 1,
+    "gen_cols": 1,
+    "divergencia_ex": "alias_colunas",
+    "alias_apenas": true,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT SUM(CAST(\"Valor Recebido\" AS DECIMAL)) AS total FROM cgu_despesas_favorecidos WHERE ano_referencia = 2024;",
+  "query_gerada": "SELECT SUM(CAST(\"Valor Recebido\" AS DECIMAL)) AS total_recebido FROM cgu_despesas_favorecidos WHERE ano_referencia = 2024;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

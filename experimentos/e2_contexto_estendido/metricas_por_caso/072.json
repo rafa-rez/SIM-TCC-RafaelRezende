@@ -1,0 +1,27 @@
+{
+  "id_teste": "72",
+  "input_usuario": "Beneficiários do Novo Bolsa Família em 2025 com total acima de 6000 reais.",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": false,
+    "ex_cols": true,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 20,
+    "gen_rows": 50,
+    "ref_cols": 2,
+    "gen_cols": 2,
+    "divergencia_ex": "cardinalidade_linhas",
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT \"NOME FAVORECIDO\", SUM(CAST(\"VALOR PARCELA\" AS DECIMAL)) AS total FROM cgu_novo_bolsa_familia WHERE ano_referencia = 2025 GROUP BY \"NOME FAVORECIDO\" HAVING SUM(CAST(\"VALOR PARCELA\" AS DECIMAL)) > 6000 ORDER BY total DESC LIMIT 20;",
+  "query_gerada": "SELECT TRIM(UPPER(\"NOME FAVORECIDO\")) AS nome_beneficiario, SUM(CAST(\"VALOR PARCELA\" AS DECIMAL)) AS total_recebido FROM cgu_novo_bolsa_familia WHERE ano_referencia = 2025 GROUP BY TRIM(UPPER(\"NOME FAVORECIDO\")) HAVING SUM(CAST(\"VALOR PARCELA\" AS DECIMAL)) > 6000 ORDER BY total_recebido DESC LIMIT 50;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

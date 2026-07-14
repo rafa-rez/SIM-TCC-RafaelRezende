@@ -1,0 +1,24 @@
+{
+  "id_teste": "67",
+  "source": "golden_reference",
+  "sql": "SELECT DISTINCT dsc_marca FROM frota_frota WHERE ano_referencia = 2025 AND COALESCE(dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') LIMIT 50;",
+  "columns": [
+    "dsc_marca"
+  ],
+  "rows": [
+    {
+      "dsc_marca": "FORD"
+    },
+    {
+      "dsc_marca": "TOYOTA"
+    }
+  ],
+  "row_count": 2,
+  "col_count": 1,
+  "schema_hash": "c4399d2724ea7482",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:46.607662+00:00",
+  "input_usuario": "Marcas de veículos na frota em 2025 excluindo DIVERSOS.",
+  "dificuldade": "facil",
+  "categoria": "Frota"
+}

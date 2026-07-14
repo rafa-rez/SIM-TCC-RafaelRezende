@@ -1,0 +1,35 @@
+{
+  "id_teste": "71",
+  "source": "golden_reference",
+  "sql": "WITH pag AS (SELECT num_doc_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS tp FROM despesa_pagamento WHERE ano_referencia = 2024 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY num_doc_credor), tr AS (SELECT \"CÓDIGO FAVORECIDO\" AS doc, SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS tt FROM cgu_transferencias WHERE ano_referencia = 2024 GROUP BY doc) SELECT p.num_doc_credor, p.tp, t.tt FROM pag p JOIN tr t ON CAST(p.num_doc_credor AS VARCHAR) = CAST(t.doc AS VARCHAR) ORDER BY (p.tp + t.tt) DESC LIMIT 3;",
+  "columns": [
+    "num_doc_credor",
+    "tp",
+    "tt"
+  ],
+  "rows": [
+    {
+      "num_doc_credor": "18302299000102",
+      "tp": 1166444.21,
+      "tt": 66224240.38
+    },
+    {
+      "num_doc_credor": "18979328000167",
+      "tp": 22016281.2,
+      "tt": 437944.08
+    },
+    {
+      "num_doc_credor": "21000203000158",
+      "tp": 229301.93,
+      "tt": 6590.0
+    }
+  ],
+  "row_count": 3,
+  "col_count": 3,
+  "schema_hash": "d924d55b078ecf1d",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:47.602735+00:00",
+  "input_usuario": "Top 3 empresas SICOM pagamentos 2024 que também têm transferências CGU 2024.",
+  "dificuldade": "dificil",
+  "categoria": "Cruzamento Investigativo"
+}

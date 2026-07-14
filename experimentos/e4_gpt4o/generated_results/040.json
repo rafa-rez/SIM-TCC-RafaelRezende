@@ -1,0 +1,45 @@
+{
+  "id_teste": "40",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT ce.nom_credor, COUNT(e.seq_empenho) AS total_empenhos FROM empenho_empenho e JOIN empenho_credorEmpenho ce ON e.seq_empenho = ce.seq_empenho AND e.ano_referencia = ce.ano_referencia WHERE e.ano_referencia = 2025 GROUP BY ce.nom_credor ORDER BY total_empenhos DESC LIMIT 5;",
+  "columns": [
+    "nom_credor",
+    "total_empenhos"
+  ],
+  "rows": [
+    {
+      "nom_credor": "INSTITUTO NACIONAL DO SEGURO SOCIAL",
+      "total_empenhos": 449
+    },
+    {
+      "nom_credor": "CAIXA ECONOMICA FEDERAL",
+      "total_empenhos": 408
+    },
+    {
+      "nom_credor": "CEMIG DISTRIBUICAO S.A",
+      "total_empenhos": 47
+    },
+    {
+      "nom_credor": "BANCO DO BRASIL SA",
+      "total_empenhos": 39
+    },
+    {
+      "nom_credor": "ESTADO DE MINAS GERAIS",
+      "total_empenhos": 33
+    }
+  ],
+  "row_count": 5,
+  "col_count": 2,
+  "schema_hash": "dec9e96861a55e22",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:43.879245+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 5,
+    "gen_rows": 5
+  }
+}

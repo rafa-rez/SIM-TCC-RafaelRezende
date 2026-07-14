@@ -1,0 +1,27 @@
+{
+  "id_teste": "33",
+  "input_usuario": "Quais os 10 maiores pagamentos em 2025 com nome do credor?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 10,
+    "gen_rows": 10,
+    "ref_cols": 2,
+    "gen_cols": 2,
+    "divergencia_ex": "divergencia_valores",
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT nom_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total FROM despesa_pagamento WHERE ano_referencia = 2025 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY nom_credor ORDER BY total DESC LIMIT 10;",
+  "query_gerada": "SELECT p.nom_credor, CAST(p.vlr_pag_fonte AS DECIMAL) AS valor_pagamento FROM despesa_pagamento p WHERE p.ano_referencia = 2025 AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND p.num_doc_credor NOT IN ('-1', '0') ORDER BY valor_pagamento DESC LIMIT 10;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

@@ -1,0 +1,225 @@
+{
+  "id_teste": "58",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "WITH servidores_ativos AS ( SELECT p.seq_dim_pessoa, p.nom_pessoa, p.num_documento, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS maior_salario FROM remuneracao_municipio r JOIN pessoa_municipio p ON r.seq_dim_pessoa = p.seq_dim_pessoa WHERE r.ano_referencia = 2025 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' AND COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY p.seq_dim_pessoa, p.nom_pessoa, p.num_documento ), bpc_2025 AS ( SELECT TRIM(UPPER(\"NOME BENEFICIÁRIO\")) AS nome_bpc FROM cgu_bpc WHERE ano_referencia = 2025 ) SELECT sa.nom_pessoa, sa.num_documento FROM servidores_ativos sa JOIN bpc_2025 b ON TRIM(UPPER(sa.nom_pessoa)) = b.nome_bpc LIMIT 50;",
+  "columns": [
+    "nom_pessoa",
+    "num_documento"
+  ],
+  "rows": [
+    {
+      "nom_pessoa": "CARLOS ALBERTO DOS SANTOS",
+      "num_documento": "81775687600"
+    },
+    {
+      "nom_pessoa": "DANIELA MARIA DA SILVA",
+      "num_documento": "13984620632"
+    },
+    {
+      "nom_pessoa": "MARIA APARECIDA DOS SANTOS",
+      "num_documento": "07974617608"
+    },
+    {
+      "nom_pessoa": "MARIA DE FATIMA DA SILVA",
+      "num_documento": "31492070610"
+    },
+    {
+      "nom_pessoa": "RAIMUNDO FERREIRA DA SILVA",
+      "num_documento": "39308871691"
+    },
+    {
+      "nom_pessoa": "MARIA APARECIDA DOS SANTOS",
+      "num_documento": "03093806690"
+    },
+    {
+      "nom_pessoa": "CARLOS ALBERTO DOS SANTOS",
+      "num_documento": "81775687600"
+    },
+    {
+      "nom_pessoa": "DANIELA MARIA DA SILVA",
+      "num_documento": "13984620632"
+    },
+    {
+      "nom_pessoa": "MARIA APARECIDA DOS SANTOS",
+      "num_documento": "07974617608"
+    },
+    {
+      "nom_pessoa": "MARIA DE FATIMA DA SILVA",
+      "num_documento": "31492070610"
+    },
+    {
+      "nom_pessoa": "RAIMUNDO FERREIRA DA SILVA",
+      "num_documento": "39308871691"
+    },
+    {
+      "nom_pessoa": "MARIA APARECIDA DOS SANTOS",
+      "num_documento": "03093806690"
+    },
+    {
+      "nom_pessoa": "CARLOS ALBERTO DOS SANTOS",
+      "num_documento": "81775687600"
+    },
+    {
+      "nom_pessoa": "DANIELA MARIA DA SILVA",
+      "num_documento": "13984620632"
+    },
+    {
+      "nom_pessoa": "MARIA APARECIDA DOS SANTOS",
+      "num_documento": "07974617608"
+    },
+    {
+      "nom_pessoa": "MARIA DE FATIMA DA SILVA",
+      "num_documento": "31492070610"
+    },
+    {
+      "nom_pessoa": "RAIMUNDO FERREIRA DA SILVA",
+      "num_documento": "39308871691"
+    },
+    {
+      "nom_pessoa": "MARIA APARECIDA DOS SANTOS",
+      "num_documento": "03093806690"
+    },
+    {
+      "nom_pessoa": "CARLOS ALBERTO DOS SANTOS",
+      "num_documento": "81775687600"
+    },
+    {
+      "nom_pessoa": "DANIELA MARIA DA SILVA",
+      "num_documento": "13984620632"
+    },
+    {
+      "nom_pessoa": "MARIA APARECIDA DOS SANTOS",
+      "num_documento": "07974617608"
+    },
+    {
+      "nom_pessoa": "MARIA DE FATIMA DA SILVA",
+      "num_documento": "31492070610"
+    },
+    {
+      "nom_pessoa": "RAIMUNDO FERREIRA DA SILVA",
+      "num_documento": "39308871691"
+    },
+    {
+      "nom_pessoa": "MARIA APARECIDA DOS SANTOS",
+      "num_documento": "03093806690"
+    },
+    {
+      "nom_pessoa": "CARLOS ALBERTO DOS SANTOS",
+      "num_documento": "81775687600"
+    },
+    {
+      "nom_pessoa": "DANIELA MARIA DA SILVA",
+      "num_documento": "13984620632"
+    },
+    {
+      "nom_pessoa": "MARIA APARECIDA DOS SANTOS",
+      "num_documento": "07974617608"
+    },
+    {
+      "nom_pessoa": "MARIA DE FATIMA DA SILVA",
+      "num_documento": "31492070610"
+    },
+    {
+      "nom_pessoa": "RAIMUNDO FERREIRA DA SILVA",
+      "num_documento": "39308871691"
+    },
+    {
+      "nom_pessoa": "MARIA APARECIDA DOS SANTOS",
+      "num_documento": "03093806690"
+    },
+    {
+      "nom_pessoa": "CARLOS ALBERTO DOS SANTOS",
+      "num_documento": "81775687600"
+    },
+    {
+      "nom_pessoa": "DANIELA MARIA DA SILVA",
+      "num_documento": "13984620632"
+    },
+    {
+      "nom_pessoa": "MARIA APARECIDA DOS SANTOS",
+      "num_documento": "07974617608"
+    },
+    {
+      "nom_pessoa": "MARIA DE FATIMA DA SILVA",
+      "num_documento": "31492070610"
+    },
+    {
+      "nom_pessoa": "RAIMUNDO FERREIRA DA SILVA",
+      "num_documento": "39308871691"
+    },
+    {
+      "nom_pessoa": "MARIA APARECIDA DOS SANTOS",
+      "num_documento": "03093806690"
+    },
+    {
+      "nom_pessoa": "CARLOS ALBERTO DOS SANTOS",
+      "num_documento": "81775687600"
+    },
+    {
+      "nom_pessoa": "DANIELA MARIA DA SILVA",
+      "num_documento": "13984620632"
+    },
+    {
+      "nom_pessoa": "MARIA APARECIDA DOS SANTOS",
+      "num_documento": "07974617608"
+    },
+    {
+      "nom_pessoa": "MARIA DE FATIMA DA SILVA",
+      "num_documento": "31492070610"
+    },
+    {
+      "nom_pessoa": "RAIMUNDO FERREIRA DA SILVA",
+      "num_documento": "39308871691"
+    },
+    {
+      "nom_pessoa": "MARIA APARECIDA DOS SANTOS",
+      "num_documento": "03093806690"
+    },
+    {
+      "nom_pessoa": "CARLOS ALBERTO DOS SANTOS",
+      "num_documento": "81775687600"
+    },
+    {
+      "nom_pessoa": "DANIELA MARIA DA SILVA",
+      "num_documento": "13984620632"
+    },
+    {
+      "nom_pessoa": "MARIA APARECIDA DOS SANTOS",
+      "num_documento": "07974617608"
+    },
+    {
+      "nom_pessoa": "MARIA DE FATIMA DA SILVA",
+      "num_documento": "31492070610"
+    },
+    {
+      "nom_pessoa": "RAIMUNDO FERREIRA DA SILVA",
+      "num_documento": "39308871691"
+    },
+    {
+      "nom_pessoa": "MARIA APARECIDA DOS SANTOS",
+      "num_documento": "03093806690"
+    },
+    {
+      "nom_pessoa": "CARLOS ALBERTO DOS SANTOS",
+      "num_documento": "81775687600"
+    },
+    {
+      "nom_pessoa": "DANIELA MARIA DA SILVA",
+      "num_documento": "13984620632"
+    }
+  ],
+  "row_count": 50,
+  "col_count": 2,
+  "schema_hash": "93dbc67228e8dd9e",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:21.429933+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 5,
+    "gen_rows": 50
+  }
+}

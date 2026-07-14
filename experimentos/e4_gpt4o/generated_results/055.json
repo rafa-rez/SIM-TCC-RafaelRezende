@@ -1,0 +1,27 @@
+{
+  "id_teste": "55",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT SUM(CAST(vlr_rmn_liquida AS DECIMAL)) AS total_folha_pagamento FROM remuneracao_municipio WHERE ano_referencia = 2024 AND dsc_sit_serv_pens ILIKE '%Ativo%';",
+  "columns": [
+    "total_folha_pagamento"
+  ],
+  "rows": [
+    {
+      "total_folha_pagamento": 37044568.64
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "8eb471d246a45ecc",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:45.380393+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 0.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

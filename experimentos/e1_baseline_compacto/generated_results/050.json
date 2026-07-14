@@ -1,0 +1,27 @@
+{
+  "id_teste": "50",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT COUNT(*) AS total_licitacoes_pregao FROM licitacao_licitacao l WHERE l.ano_referencia = 2025 AND l.dsc_modalidade ILIKE '%PREGÃO%';",
+  "columns": [
+    "total_licitacoes_pregao"
+  ],
+  "rows": [
+    {
+      "total_licitacoes_pregao": 26
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "143401f90f891645",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:19.600086+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

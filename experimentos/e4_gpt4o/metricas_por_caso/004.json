@@ -1,0 +1,27 @@
+{
+  "id_teste": "4",
+  "input_usuario": "Qual foi o total gasto com gasolina e diesel em 2025 para cada marca de veículo da frota municipal?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": true,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 31,
+    "gen_rows": 31,
+    "ref_cols": 2,
+    "gen_cols": 2,
+    "divergencia_ex": null,
+    "alias_apenas": false,
+    "extra": {},
+    "ex": true
+  },
+  "query_referencia": "SELECT f.dsc_marca, SUM(CAST(g.vlr_gasto AS DECIMAL)) AS total_gasto FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND (g.dsc_tipo_gasto ILIKE '%GASOLINA%' OR g.dsc_tipo_gasto ILIKE '%DIESEL%') GROUP BY f.dsc_marca",
+  "query_gerada": "SELECT f.dsc_marca, SUM(CAST(g.vlr_gasto AS DECIMAL)) AS total_gasto FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND (g.dsc_tipo_gasto ILIKE '%GASOLINA%' OR g.dsc_tipo_gasto ILIKE '%DIESEL%') AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' GROUP BY f.dsc_marca;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

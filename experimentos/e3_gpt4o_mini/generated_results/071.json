@@ -1,0 +1,21 @@
+{
+  "id_teste": "71",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT dp.num_doc_credor, SUM(CAST(dp.vlr_pagamento AS DECIMAL)) AS total_pagamentos FROM despesa_pagamento dp JOIN cgu_transferencias ct ON CAST(dp.num_doc_credor AS VARCHAR) = CAST(ct.\"Código Favorecido\" AS VARCHAR) WHERE dp.ano_referencia = 2024 AND ct.ano_referencia = 2024 AND COALESCE(dp.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(ct.\"NOME FAVORECIDO\", '') NOT ILIKE '%NAO INFORMADO%' GROUP BY dp.num_doc_credor ORDER BY total_pagamentos DESC LIMIT 3;",
+  "columns": [],
+  "rows": [],
+  "row_count": 0,
+  "col_count": 0,
+  "schema_hash": null,
+  "error": "Binder Error: Values list \"ct\" does not have a column named \"Código Favorecido\"\n\nLINE 1: ...sferencias ct ON CAST(dp.num_doc_credor AS VARCHAR) = CAST(ct.\"Código Favorecido\" AS VARCHAR) WHERE dp.ano_referencia...\n                                                                      ^",
+  "exported_at": "2026-07-14T23:56:19.738862+00:00",
+  "metrics_checkpoint": {
+    "vsr": false,
+    "ex": false,
+    "nea_ok": false,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 3,
+    "gen_rows": 0
+  }
+}

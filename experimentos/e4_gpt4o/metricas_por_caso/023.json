@@ -1,0 +1,27 @@
+{
+  "id_teste": "23",
+  "input_usuario": "Calcule o Índice de Saúde (IES-C) do município em 2024.",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1,
+    "ref_cols": 1,
+    "gen_cols": 1,
+    "divergencia_ex": "alias_colunas",
+    "alias_apenas": true,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "WITH desp AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS d FROM saude_saude WHERE ano_referencia = 2024), rec AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS r FROM receita_receita WHERE ano_referencia = 2024 AND (dsc_especie ILIKE '%Imposto%' OR dsc_origem ILIKE '%Transfer%')) SELECT (desp.d / NULLIF(rec.r, 0)) * 100 AS ies_c FROM desp, rec;",
+  "query_gerada": "WITH cte_despesa_saude AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa_saude FROM saude_saude WHERE ano_referencia = 2024), cte_receita_impostos_transferencias AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita FROM receita_receita WHERE ano_referencia = 2024 AND (dsc_especie ILIKE '%Imposto%' OR dsc_origem ILIKE '%Transfer%')) SELECT (cte_despesa_saude.total_despesa_saude / NULLIF(cte_receita_impostos_transferencias.total_receita, 0)) * 100 AS indice_saude FROM cte_despesa_saude, cte_receita_impostos_transferencias;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

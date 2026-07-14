@@ -1,0 +1,27 @@
+{
+  "id_teste": "35",
+  "input_usuario": "Liste os 5 empenhos de maior valor em 2025.",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": false,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": true,
+    "tsa": false,
+    "chs": 0.5,
+    "ref_rows": 5,
+    "gen_rows": 5,
+    "ref_cols": 3,
+    "gen_cols": 2,
+    "divergencia_ex": "cardinalidade_colunas",
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT num_empenho, nom_credor, CAST(vlr_empenhado AS DECIMAL) AS valor FROM empenho_empenho e JOIN empenho_credorEmpenho c ON e.seq_empenho = c.seq_empenho AND e.ano_referencia = c.ano_referencia WHERE e.ano_referencia = 2025 ORDER BY valor DESC LIMIT 5;",
+  "query_gerada": "SELECT num_empenho, CAST(vlr_empenhado AS DECIMAL) AS valor_empenho FROM empenho_empenho WHERE ano_referencia = 2025 ORDER BY valor_empenho DESC LIMIT 5;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

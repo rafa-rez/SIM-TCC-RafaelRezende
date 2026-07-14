@@ -1,0 +1,27 @@
+{
+  "id_teste": "68",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT SUM(CAST(g.num_marc_final AS INTEGER) - CAST(g.num_marc_inicial AS INTEGER)) AS km_total FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO');",
+  "columns": [
+    "km_total"
+  ],
+  "rows": [
+    {
+      "km_total": 1027780.0
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "5c1a6b9fdcfda8d3",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:47.676762+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "id_teste": "27",
+  "source": "golden_reference",
+  "sql": "WITH receita_corrente AS (SELECT ano_referencia, SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS r FROM receita_receita WHERE dsc_cateconomica ILIKE '%Corrente%' AND ano_referencia BETWEEN 2022 AND 2024 GROUP BY ano_referencia), despesa_corrente AS (SELECT ano_referencia, SUM(CAST(vlr_liquidado AS DECIMAL)) AS d FROM despesa_despesa WHERE dsc_naturezadespesa LIKE '3%' AND ano_referencia BETWEEN 2022 AND 2024 GROUP BY ano_referencia) SELECT rc.ano_referencia, rc.r / NULLIF(dc.d, 0) AS isf_m FROM receita_corrente rc JOIN despesa_corrente dc ON rc.ano_referencia = dc.ano_referencia ORDER BY rc.ano_referencia;",
+  "columns": [
+    "ano_referencia",
+    "isf_m"
+  ],
+  "rows": [
+    {
+      "ano_referencia": 2022,
+      "isf_m": 1.1599104316
+    },
+    {
+      "ano_referencia": 2023,
+      "isf_m": 1.0561620019
+    },
+    {
+      "ano_referencia": 2024,
+      "isf_m": 1.0665988252
+    }
+  ],
+  "row_count": 3,
+  "col_count": 2,
+  "schema_hash": "2830e614005e6334",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:40.186123+00:00",
+  "input_usuario": "Calcule o ISF-M para cada ano entre 2022 e 2024.",
+  "dificuldade": "medio",
+  "categoria": "Calculo Fiscal"
+}

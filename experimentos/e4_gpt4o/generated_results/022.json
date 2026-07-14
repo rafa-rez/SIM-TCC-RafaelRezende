@@ -1,0 +1,27 @@
+{
+  "id_teste": "22",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT SUM(CAST(\"VALOR PARCELA\" AS DECIMAL)) AS total_auxilio_brasil FROM cgu_auxilio_brasil WHERE ano_referencia = 2022;",
+  "columns": [
+    "total_auxilio_brasil"
+  ],
+  "rows": [
+    {
+      "total_auxilio_brasil": 7453316.0
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "824aa71a581d08f2",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:40.093130+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

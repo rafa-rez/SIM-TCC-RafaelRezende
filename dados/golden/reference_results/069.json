@@ -1,0 +1,70 @@
+{
+  "id_teste": "69",
+  "source": "golden_reference",
+  "sql": "WITH pag AS (SELECT num_doc_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pag FROM despesa_pagamento WHERE ano_referencia = 2024 AND num_doc_credor NOT IN ('-1', '0') GROUP BY num_doc_credor), cgu AS (SELECT \"Código Favorecido\" AS doc, SUM(CAST(\"Valor Recebido\" AS DECIMAL)) AS total_cgu FROM cgu_despesas_favorecidos WHERE ano_referencia = 2024 GROUP BY doc) SELECT p.num_doc_credor, p.total_pag, c.total_cgu FROM pag p JOIN cgu c ON CAST(p.num_doc_credor AS VARCHAR) = CAST(c.doc AS VARCHAR) ORDER BY (p.total_pag + c.total_cgu) DESC LIMIT 10;",
+  "columns": [
+    "num_doc_credor",
+    "total_pag",
+    "total_cgu"
+  ],
+  "rows": [
+    {
+      "num_doc_credor": "18979328000167",
+      "total_pag": 22016281.2,
+      "total_cgu": 437944.08
+    },
+    {
+      "num_doc_credor": "18302299000102",
+      "total_pag": 1166444.21,
+      "total_cgu": 4231545.19
+    },
+    {
+      "num_doc_credor": "17926188000104",
+      "total_pag": 418118.44,
+      "total_cgu": 8218.53
+    },
+    {
+      "num_doc_credor": "21000203000158",
+      "total_pag": 229301.93,
+      "total_cgu": 6590.0
+    },
+    {
+      "num_doc_credor": "24789180000109",
+      "total_pag": 27427.0,
+      "total_cgu": 63140.0
+    },
+    {
+      "num_doc_credor": "22473558000127",
+      "total_pag": 4900.0,
+      "total_cgu": 32898.0
+    },
+    {
+      "num_doc_credor": "42540202000176",
+      "total_pag": 30000.0,
+      "total_cgu": 3250.0
+    },
+    {
+      "num_doc_credor": "18273987000183",
+      "total_pag": 4900.0,
+      "total_cgu": 27221.0
+    },
+    {
+      "num_doc_credor": "03166229000199",
+      "total_pag": 10600.0,
+      "total_cgu": 15882.0
+    },
+    {
+      "num_doc_credor": "18562405000189",
+      "total_pag": 9600.0,
+      "total_cgu": 13338.0
+    }
+  ],
+  "row_count": 10,
+  "col_count": 3,
+  "schema_hash": "d76cc40a0d5c5f41",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:46.974315+00:00",
+  "input_usuario": "Empresas que receberam pagamentos da prefeitura e despesas CGU em 2024.",
+  "dificuldade": "dificil",
+  "categoria": "Cruzamento Investigativo"
+}

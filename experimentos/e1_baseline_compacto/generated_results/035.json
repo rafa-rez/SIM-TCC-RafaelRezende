@@ -1,0 +1,45 @@
+{
+  "id_teste": "35",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT e.num_empenho, CAST(e.vlr_empenhado AS DECIMAL) AS valor_empenho FROM empenho_empenho e WHERE e.ano_referencia = 2025 ORDER BY CAST(e.vlr_empenhado AS DECIMAL) DESC LIMIT 5;",
+  "columns": [
+    "num_empenho",
+    "valor_empenho"
+  ],
+  "rows": [
+    {
+      "num_empenho": 146,
+      "valor_empenho": 3854710.92
+    },
+    {
+      "num_empenho": 1149,
+      "valor_empenho": 3172785.0
+    },
+    {
+      "num_empenho": 196,
+      "valor_empenho": 2737217.56
+    },
+    {
+      "num_empenho": 1268,
+      "valor_empenho": 2014291.41
+    },
+    {
+      "num_empenho": 375,
+      "valor_empenho": 2000000.0
+    }
+  ],
+  "row_count": 5,
+  "col_count": 2,
+  "schema_hash": "0ff0a8eb4eecf325",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:17.943106+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": false,
+    "chs": 0.5,
+    "ref_rows": 5,
+    "gen_rows": 5
+  }
+}

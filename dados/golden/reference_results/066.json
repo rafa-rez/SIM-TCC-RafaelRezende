@@ -1,0 +1,31 @@
+{
+  "id_teste": "66",
+  "source": "golden_reference",
+  "sql": "SELECT f.dsc_tipo_veiculo, SUM(CAST(g.vlr_gasto AS DECIMAL)) AS total FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2024 AND g.dsc_tipo_gasto ILIKE '%GASOLINA%' AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' GROUP BY f.dsc_tipo_veiculo;",
+  "columns": [
+    "dsc_tipo_veiculo",
+    "total"
+  ],
+  "rows": [
+    {
+      "dsc_tipo_veiculo": "3 - VEÍCULOS",
+      "total": 407838.38
+    },
+    {
+      "dsc_tipo_veiculo": "5 - EQUIPAMENTOS",
+      "total": 6568.64
+    },
+    {
+      "dsc_tipo_veiculo": "99 - OUTROS",
+      "total": 27309.72
+    }
+  ],
+  "row_count": 3,
+  "col_count": 2,
+  "schema_hash": "b3b6df273d718880",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:46.589626+00:00",
+  "input_usuario": "Gasto com gasolina por tipo de veículo em 2024.",
+  "dificuldade": "medio",
+  "categoria": "Frota"
+}

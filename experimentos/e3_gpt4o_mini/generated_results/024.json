@@ -1,0 +1,27 @@
+{
+  "id_teste": "24",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "WITH receita AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita FROM receita_receita WHERE ano_referencia = 2024 AND COALESCE(dsc_cateconomica, '') ILIKE '%Corrente%'), despesa AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa FROM despesa_despesa WHERE ano_referencia = 2024 AND COALESCE(dsc_naturezadespesa, '') ILIKE '3%') SELECT (total_receita / NULLIF(total_despesa, 0)) AS isf_m FROM receita, despesa;",
+  "columns": [
+    "isf_m"
+  ],
+  "rows": [
+    {
+      "isf_m": 1.0665988252
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "358a3fa05a264845",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:11.728872+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

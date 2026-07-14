@@ -1,0 +1,27 @@
+{
+  "id_teste": "73",
+  "input_usuario": "Total de transferências CGU por tipo em 2025.",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 2,
+    "gen_rows": 2,
+    "ref_cols": 2,
+    "gen_cols": 2,
+    "divergencia_ex": "alias_colunas",
+    "alias_apenas": true,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT \"TIPO TRANSFERÊNCIA\", SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total FROM cgu_transferencias WHERE ano_referencia = 2025 GROUP BY \"TIPO TRANSFERÊNCIA\" ORDER BY total DESC;",
+  "query_gerada": "SELECT \"TIPO TRANSFERÊNCIA\" AS tipo_transferencia, SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_transferido FROM cgu_transferencias WHERE ano_referencia = 2025 GROUP BY \"TIPO TRANSFERÊNCIA\" ORDER BY total_transferido DESC;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

@@ -1,0 +1,73 @@
+{
+  "id_teste": "10",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT CAST(SUBSTR(CAST(r.seq_dat_pagamento AS VARCHAR), 5, 2) AS INTEGER) AS mes, SUM(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS total_pago FROM remuneracao_municipio r WHERE r.ano_referencia = 2024 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' GROUP BY mes ORDER BY mes;",
+  "columns": [
+    "mes",
+    "total_pago"
+  ],
+  "rows": [
+    {
+      "mes": 1,
+      "total_pago": 2694717.9
+    },
+    {
+      "mes": 2,
+      "total_pago": 2466703.61
+    },
+    {
+      "mes": 3,
+      "total_pago": 2543519.41
+    },
+    {
+      "mes": 4,
+      "total_pago": 3513416.11
+    },
+    {
+      "mes": 5,
+      "total_pago": 3010385.16
+    },
+    {
+      "mes": 6,
+      "total_pago": 2851394.83
+    },
+    {
+      "mes": 7,
+      "total_pago": 2829444.26
+    },
+    {
+      "mes": 8,
+      "total_pago": 2916359.66
+    },
+    {
+      "mes": 9,
+      "total_pago": 2890041.0
+    },
+    {
+      "mes": 10,
+      "total_pago": 2815139.87
+    },
+    {
+      "mes": 11,
+      "total_pago": 2989997.73
+    },
+    {
+      "mes": 12,
+      "total_pago": 5523449.1
+    }
+  ],
+  "row_count": 12,
+  "col_count": 2,
+  "schema_hash": "4a9adb139d289dba",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:13.674775+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 12,
+    "gen_rows": 12
+  }
+}

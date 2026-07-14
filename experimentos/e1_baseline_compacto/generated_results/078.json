@@ -1,0 +1,84 @@
+{
+  "id_teste": "78",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "WITH licitacoes_agrupadas AS (\n  SELECT\n    l.ano_referencia,\n    l.seq_licitacao,\n    l.num_processo,\n    l.num_ano_processo,\n    SUM(CAST(h.vlr_global AS DECIMAL)) AS valor_total\n  FROM licitacao_licitacao l\n  JOIN licitacao_homologLicitacao h\n    ON l.seq_licitacao = h.seq_licitacao\n    AND l.ano_referencia = h.ano_referencia\n  WHERE l.ano_referencia IN (2024, 2025)\n  GROUP BY l.ano_referencia, l.seq_licitacao, l.num_processo, l.num_ano_processo\n), ranked_licitacoes AS (\n  SELECT\n    ano_referencia,\n    seq_licitacao,\n    num_processo,\n    num_ano_processo,\n    valor_total,\n    ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY valor_total DESC) AS rn\n  FROM licitacoes_agrupadas\n)\nSELECT\n  ano_referencia,\n  seq_licitacao,\n  num_processo,\n  num_ano_processo,\n  valor_total\nFROM ranked_licitacoes\nWHERE rn <= 5\nORDER BY ano_referencia, valor_total DESC;",
+  "columns": [
+    "ano_referencia",
+    "seq_licitacao",
+    "num_processo",
+    "num_ano_processo",
+    "valor_total"
+  ],
+  "rows": [
+    {
+      "ano_referencia": 2024,
+      "seq_licitacao": 1350639,
+      "num_processo": "000000000378",
+      "num_ano_processo": 2023,
+      "valor_total": 4432414.67
+    },
+    {
+      "ano_referencia": 2024,
+      "seq_licitacao": 1433003,
+      "num_processo": "000000000135",
+      "num_ano_processo": 2024,
+      "valor_total": 3749659.9
+    },
+    {
+      "ano_referencia": 2024,
+      "seq_licitacao": 1368379,
+      "num_processo": "000000000060",
+      "num_ano_processo": 2024,
+      "valor_total": 602986.9
+    },
+    {
+      "ano_referencia": 2024,
+      "seq_licitacao": 1380838,
+      "num_processo": "000000000081",
+      "num_ano_processo": 2024,
+      "valor_total": 507229.0
+    },
+    {
+      "ano_referencia": 2024,
+      "seq_licitacao": 1380836,
+      "num_processo": "000000000080",
+      "num_ano_processo": 2024,
+      "valor_total": 479671.0
+    },
+    {
+      "ano_referencia": 2025,
+      "seq_licitacao": 1464446,
+      "num_processo": "1",
+      "num_ano_processo": 2025,
+      "valor_total": 54800.0
+    },
+    {
+      "ano_referencia": 2025,
+      "seq_licitacao": 1448185,
+      "num_processo": "153",
+      "num_ano_processo": 2024,
+      "valor_total": 0.0
+    },
+    {
+      "ano_referencia": 2025,
+      "seq_licitacao": 1447852,
+      "num_processo": "26",
+      "num_ano_processo": 2024,
+      "valor_total": 0.0
+    }
+  ],
+  "row_count": 8,
+  "col_count": 5,
+  "schema_hash": "e5be52b49f2a392d",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:24.547135+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 10,
+    "gen_rows": 8
+  }
+}

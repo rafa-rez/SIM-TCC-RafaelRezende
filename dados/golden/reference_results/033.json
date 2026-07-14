@@ -1,0 +1,59 @@
+{
+  "id_teste": "33",
+  "source": "golden_reference",
+  "sql": "SELECT nom_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total FROM despesa_pagamento WHERE ano_referencia = 2025 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY nom_credor ORDER BY total DESC LIMIT 10;",
+  "columns": [
+    "nom_credor",
+    "total"
+  ],
+  "rows": [
+    {
+      "nom_credor": "SOCIEDADE CIVIL DE BENEFICENCIA CAETEENSE",
+      "total": 9871952.6
+    },
+    {
+      "nom_credor": "QUANTUM - ENGENHARIA E CONSULTORIA LTDA",
+      "total": 6814349.82
+    },
+    {
+      "nom_credor": "INSTITUTO NACIONAL DO SEGURO SOCIAL",
+      "total": 5623735.76
+    },
+    {
+      "nom_credor": "EMPRESA TRANSCOL LTDA",
+      "total": 5354871.04
+    },
+    {
+      "nom_credor": "UNICAPA - UNIAO DOS APLICADORES DE PAVIMENTO ASFALTICO LTDA",
+      "total": 3168251.87
+    },
+    {
+      "nom_credor": "CAIXA ECONOMICA FEDERAL",
+      "total": 2828710.86
+    },
+    {
+      "nom_credor": "MEGA VALE ADMINISTRADORA DE CARTOES E SERVICOS LTDA",
+      "total": 2700000.0
+    },
+    {
+      "nom_credor": "CEMIG DISTRIBUICAO S.A",
+      "total": 1945085.98
+    },
+    {
+      "nom_credor": "MINISTERIO DA FAZENDA",
+      "total": 1612129.67
+    },
+    {
+      "nom_credor": "LOK PIRAMIDE LTDA",
+      "total": 1580618.99
+    }
+  ],
+  "row_count": 10,
+  "col_count": 2,
+  "schema_hash": "a662eeefdabd5cf1",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:41.151451+00:00",
+  "input_usuario": "Quais os 10 maiores pagamentos em 2025 com nome do credor?",
+  "dificuldade": "medio",
+  "categoria": "Despesas Pagamentos"
+}

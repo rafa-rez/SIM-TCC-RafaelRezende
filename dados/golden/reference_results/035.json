@@ -1,0 +1,45 @@
+{
+  "id_teste": "35",
+  "source": "golden_reference",
+  "sql": "SELECT num_empenho, nom_credor, CAST(vlr_empenhado AS DECIMAL) AS valor FROM empenho_empenho e JOIN empenho_credorEmpenho c ON e.seq_empenho = c.seq_empenho AND e.ano_referencia = c.ano_referencia WHERE e.ano_referencia = 2025 ORDER BY valor DESC LIMIT 5;",
+  "columns": [
+    "num_empenho",
+    "nom_credor",
+    "valor"
+  ],
+  "rows": [
+    {
+      "num_empenho": 146,
+      "nom_credor": "SOCIEDADE CIVIL DE BENEFICENCIA CAETEENSE",
+      "valor": 3854710.92
+    },
+    {
+      "num_empenho": 1149,
+      "nom_credor": "EMPRESA TRANSCOL LTDA",
+      "valor": 3172785.0
+    },
+    {
+      "num_empenho": 196,
+      "nom_credor": "QUANTUM - ENGENHARIA E CONSULTORIA LTDA",
+      "valor": 2737217.56
+    },
+    {
+      "num_empenho": 1268,
+      "nom_credor": "CONSORCIO INTERMUNICIPAL ALIANCA PARA A SAUDE CIAS",
+      "valor": 2014291.41
+    },
+    {
+      "num_empenho": 394,
+      "nom_credor": "QUANTUM - ENGENHARIA E CONSULTORIA LTDA",
+      "valor": 2000000.0
+    }
+  ],
+  "row_count": 5,
+  "col_count": 3,
+  "schema_hash": "00a4bc65623798e1",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:41.915282+00:00",
+  "input_usuario": "Liste os 5 empenhos de maior valor em 2025.",
+  "dificuldade": "medio",
+  "categoria": "Despesas Pagamentos"
+}

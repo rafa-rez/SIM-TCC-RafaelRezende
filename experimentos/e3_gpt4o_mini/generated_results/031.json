@@ -1,0 +1,27 @@
+{
+  "id_teste": "31",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_gasto_saude FROM saude_saude WHERE ano_referencia = 2025;",
+  "columns": [
+    "total_gasto_saude"
+  ],
+  "rows": [
+    {
+      "total_gasto_saude": 14357832.52
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "f760bc824680b82e",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:12.816253+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

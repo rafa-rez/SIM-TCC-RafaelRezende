@@ -1,0 +1,27 @@
+{
+  "id_teste": "10",
+  "input_usuario": "Mostre a evolução mensal do total pago pelo município a título de remuneração de pessoal ao longo do ano de 2024.",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 12,
+    "gen_rows": 12,
+    "ref_cols": 2,
+    "gen_cols": 2,
+    "divergencia_ex": "divergencia_valores",
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT CAST(SUBSTR(CAST(seq_dat_pagamento AS VARCHAR), 5, 2) AS INTEGER) AS mes, SUM(CAST(vlr_rmn_liquida AS DECIMAL)) AS total_pago FROM remuneracao_municipio WHERE ano_referencia = 2024 GROUP BY mes ORDER BY mes",
+  "query_gerada": "SELECT CAST(SUBSTR(CAST(r.seq_dat_pagamento AS VARCHAR), 5, 2) AS INTEGER) AS mes, SUM(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS total_pago FROM remuneracao_municipio r WHERE r.ano_referencia = 2024 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' GROUP BY mes ORDER BY mes;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

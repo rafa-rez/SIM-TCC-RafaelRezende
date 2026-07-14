@@ -1,0 +1,27 @@
+{
+  "id_teste": "52",
+  "input_usuario": "Qual empresa venceu mais licitações em 2025?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1,
+    "ref_cols": 2,
+    "gen_cols": 2,
+    "divergencia_ex": "alias_colunas",
+    "alias_apenas": true,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT nom_vencedor, COUNT(DISTINCT seq_licitacao) AS qtd FROM licitacao_homologLicitacao WHERE ano_referencia = 2025 AND COALESCE(nom_vencedor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY nom_vencedor ORDER BY qtd DESC LIMIT 1;",
+  "query_gerada": "SELECT lh.nom_vencedor, COUNT(DISTINCT lh.seq_licitacao) AS total_licitacoes FROM licitacao_homologLicitacao lh JOIN licitacao_licitacao l ON lh.seq_licitacao = l.seq_licitacao AND lh.ano_referencia = l.ano_referencia WHERE lh.ano_referencia = 2025 AND COALESCE(lh.nom_vencedor, '') <> '' GROUP BY lh.nom_vencedor ORDER BY total_licitacoes DESC LIMIT 1;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

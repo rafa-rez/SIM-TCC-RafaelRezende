@@ -1,0 +1,21 @@
+\chapter{Referencial Teórico}
+
+\section{Modelos de linguagem e dados governamentais}
+
+Os Modelos de Linguagem de Grande Escala (\termo{llm}) são capazes de generalizar padrões linguísticos e realizar raciocínio aproximado sobre instruções em linguagem natural. Em bases governamentais heterogêneas, o desafio central é condicionar o modelo com contexto suficiente sem exceder limites de tokens e custo operacional.
+
+\section{Recuperação aumentada por geração}
+
+A técnica \termo{rag} complementa o \termo{llm} com recuperação de trechos documentais relevantes antes da geração da resposta, sendo adequada a perguntas sobre leis, decretos e normas municipais.
+
+\section{Text-to-SQL}
+
+Text-to-SQL converte perguntas em consultas estruturadas sobre bancos relacionais, permitindo respostas quantitativas sobre despesas, receitas, folha e licitações. A literatura emprega métricas como \textit{Execution Accuracy} e \textit{Valid SQL Rate} para avaliação.
+
+\section{Orquestração cognitiva}
+
+Designa a camada que interpreta a intenção do usuário e seleciona dinamicamente o mecanismo mais adequado. Plataformas de automação permitem integrar APIs, modelos e canais conversacionais em arquitetura modular.
+
+\section{Trabalhos relacionados}
+
+Benchmarks Text-to-SQL (Spider, BIRD) estabelecem protocolos com conjuntos de referência e comparação de resultados executados. Este trabalho adapta esses princípios ao contexto municipal brasileiro.

@@ -1,0 +1,45 @@
+{
+  "id_teste": "45",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT nom_vencedor, SUM(CAST(vlr_global AS DECIMAL)) AS total_homologado FROM licitacao_homologLicitacao WHERE ano_referencia = 2024 AND COALESCE(nom_vencedor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY nom_vencedor ORDER BY total_homologado DESC LIMIT 5;",
+  "columns": [
+    "nom_vencedor",
+    "total_homologado"
+  ],
+  "rows": [
+    {
+      "nom_vencedor": "ALVES SOLUCOES INTEGRADAS LTDA",
+      "total_homologado": 4432414.67
+    },
+    {
+      "nom_vencedor": "SEMPRA PAVIMENTACAO EIRELI",
+      "total_homologado": 3749659.9
+    },
+    {
+      "nom_vencedor": "IGL ENGENHARIA LTDA EPP",
+      "total_homologado": 602986.9
+    },
+    {
+      "nom_vencedor": "CM CONSTRUTORA MINAS LTDA EPP",
+      "total_homologado": 507229.0
+    },
+    {
+      "nom_vencedor": "TERRASA ENGENHARIA LTDA - ME",
+      "total_homologado": 479671.0
+    }
+  ],
+  "row_count": 5,
+  "col_count": 2,
+  "schema_hash": "d8ae6e37982d5c46",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:19.424145+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 5,
+    "gen_rows": 5
+  }
+}

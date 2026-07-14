@@ -1,0 +1,358 @@
+%==============================================================================
+% Importando a classe
+%==============================================================================
+\documentclass{templufla}          
+
+%==============================================================================
+% Pacote hyperref para referências cruzadas dentro do documento \ref e \autoref
+% O pacote hyperref precisa ser importado o mais cedo possível.
+
+% Setspace precisa estar antes do hyperref para usar a versão atual do abntex.
+\usepackage{setspace}
+
+% Definindo cores para os links cruzados
+\usepackage{xcolor}              % para mais cores
+\definecolor{rltred}{rgb}{0.2,0,0}
+\definecolor{rltgreen}{rgb}{0,0.2,0}
+\definecolor{rltblue}{rgb}{0,0,0.2}
+
+
+% Importa hyperref
+\usepackage[%
+hidelinks, % colorlinks=true, | Troque se quiser link com cor
+urlcolor=rltblue,       % \href{...}{...} external (URL)
+filecolor=rltgreen,     % \href{...} local file
+linkcolor=rltred,       % \ref{...} and \pageref{...}
+citecolor=rltgreen,%
+]{hyperref} % 
+
+
+%==============================================================================
+% Configurando a linguagem do template
+
+% Português
+\usepackage[brazilian]{babel}
+\input{linguas/tempPor}
+
+% Inglês
+%\usepackage[english]{babel}
+%\input{linguas/tempEng}
+
+%==============================================================================
+% Configuração dos pacotes necessários
+% Primeiros pacotes (alguns precisam ser importados depois)
+
+% TEXTOS
+\usepackage[T1]{fontenc}         % usa fontes postscript com acentos
+\usepackage[utf8]{inputenc}      % permite edição direta com acentos
+\usepackage{listings}            % para inserção de código
+\usepackage{fancyvrb}            % para inserção de saídas de comandos
+
+% MATEMÁTICA
+\usepackage{amsmath}             % pacote da AMS para Matemática Avançada
+\usepackage{amssymb}             % símbolos extras da AMS
+\usepackage{mathtools}			 % para mais comandos de matemática
+\usepackage{latexsym}            % símbolos extras do LaTeX
+
+% TABELAS
+\usepackage{longtable}           % para tabelas muito grandes
+\usepackage{array}               % para mais opções em tabelas
+\usepackage{colortbl}            % para cores em tabelas
+\usepackage{multirow}            % para células com várias linhas
+\usepackage{multicol}            % para células com várias colunas
+
+% FIGUAS E GRÁFICOS
+\usepackage{subfigure}           % para figuras dentro de figuras
+\usepackage{caption}             % para remodelar o formato dos títulos
+
+
+%==============================================================================
+% Citações/referências no formato ABNT, utilizando o pacote abntex2.
+% O pacote já vem na maioria das distribuições (texLive, MikTeX, Overleaf e etc...)
+% mas, caso você seja super roots e não use os listados, precisa instalar o abntex2:
+% http://abntex.codigolivre.org.br/
+
+% A versão disponível com esse template sofreu algumas alterações para se adaptar ao
+% padrão atual, já que a original está desatualizada.
+% Para mais informações, vizite o repositório oficial do template.
+
+
+% abnt-emphasize=bf coloca o título das bibliografias em negrito
+% abnt-etal-list=3 limita o número de autores antes de et al. para 3
+% abnt-url-package=xurl diz para usar o pacote url
+\usepackage[alf, abnt-etal-list=3, abnt-emphasize=bf]{abntex2cite}
+
+%==============================================================================
+% Ajustando os pacotes importados
+
+% Definindo cores para elementos tabulares
+\newcolumntype{Z}{|>{\columncolor[gray]{0.9}}l|} %cor cinza em células
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+% Definindo espaçamento vertical de elementos tabulares
+\renewcommand{\arraystretch}{1.5}
+
+% Configuração padrão do listings (ambiente de código)
+\lstset{
+	extendedchars=true,
+	breaklines=true,
+	tabsize=3,
+	basicstyle=\linespread{1}\ttfamily\normalsize,
+	stringstyle=\em,
+	showstringspaces=true,
+	inputencoding=utf8,
+	captionpos=t,
+	backgroundcolor=\color{black!5},
+	literate={{á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+	{Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+	{â}{{\^a}}1 {ê}{{\^e}}1 {ô}{{\^o}}1
+	{Â}{{\^A}}1 {Ê}{{\^E}}1 {Ô}{{\^O}}1
+	{ã}{{\~a}}1 {õ}{{\~o}}1 {ẽ}{{\~e}}1 
+	{ç}{{\c{c}}}1
+	{à}{{\`{a}}}1{À}{{\`{A}}}1}
+}
+
+% Carregamento do glossário, listas de siglas, símbolos e etc
+\loadglsentries{glossarios/abreviaturas}
+\loadglsentries{glossarios/glossario}
+\loadglsentries{glossarios/siglas}
+\loadglsentries{glossarios/simbolos}
+
+% Especificando hifenizações que por ventura LaTeX não saiba fazer
+% Por padrão 99,9% dos termos em português devem ser hifenizados corretamente.
+% Adicione aqui palavras precise especificar como hifenizar (ou não hifenizar)
+\hyphenation{software am-bien-te coor-de-na-ção FAE-PE TelEduc Williams UFLA Murray Bookchin}
+
+%==============================================================================
+% Dados da monografia, capa: autor, titulo, banca, etc... - SUBSTITUA DE ACORDO
+%==============================================================================
+% Dados para o arquivo PDF (metadados)
+
+\hypersetup{%
+% Titulo
+pdftitle={Template de Exemplo do Estilo Padrão UFLA},
+% Autor
+pdfauthor={Joana Autora da Silva},
+% Descrição
+pdfsubject={Um template de trabalhos acadêmcios UFLA em LaTeX, atualizado com a 6ª edição.},
+% Palavras-Chave
+pdfkeywords={comunicação científica; pesquisa; pesquisa científica; redação.}
+}
+	
+%==============================================================================
+% Informações básicas
+
+% Nome da(s)/do(s) autora(s)/autor(es)
+\author{Joana Autora da Silva}
+
+% Título do trabalho, em lígua vernácula
+\title{Template de Exemplo do Estilo Padrão UFLA}
+
+% Subítulo do trabalho, em lígua vernácula
+\subtitle{Usando Latex! =)}
+
+% Título do trabalho, em inglês
+\engtitle{Example Template for UFLA's Standard Style}
+
+% Subítulo do trabalho, em inglês
+\engsubtitle{Using \LaTeX =)}
+
+% Edição, se houver. Caso contrário, comente.
+\edicao{6$^a$ edição atualizada, ampliada e revista}
+
+% Data de publicação
+\date{2025}
+
+% Tipo do Documento
+\tipo{Tese apresentada à Universidade Federal de Lavras, como parte das exigências do Programa de Pós-Graduação em Monografia, área de concentração em TCC, para a obtenção do título de Doutor. }
+
+
+% Orientador/orientadora
+% Altere o comando para os diferentes gêneros
+\orientador{Prof. Dr. José Orientador}
+%\orientadora{Profa. Dr. Maria Orientadora}
+
+% Coorientador/coorientadora
+% Altere o comando para os diferentes gêneros
+% Comente se não houver.
+\coorientadora{Profa. Dra. Maria Orientadora }
+%\coorientador{Prof. Dr. José Orientador}
+
+% Local
+\local{Lavras -- MG}
+
+%==============================================================================
+% Informações da banca
+
+% Membros da banca. Até quatro membros. 
+% Deve ser {nome}{instituição}.
+% Comente os últimos se a banca tiver menos membros.
+\bancaum{Prof. Me. Antônio Banca Um}{UFM}
+\bancadois{Prof. Dr. João Banca Dois}{FCO}
+\bancatres{Profa. Dra. Eliza Banca Três}{BELMIS}
+\bancaquatro{Prof. Esp. Zorbison Uberplax IV}{UFO}
+
+% Data da defesa
+\defesa{29 de maio de 2025}
+
+%==============================================================================
+% Ficha catalográfica, gerada pelo sistema da Biblioteca da UFLA
+% https://bibliotecauniversitaria.ufla.br/recursos-tecnologicos/ficha-catalografica
+% adicione o arquivo PDF da ficha ao projeto e ajuste o nome no comando
+
+% 
+\fichaCatalograficaPDF{ficha-catalografica-SIG.pdf}
+
+%==============================================================================
+% Se vc já defendeu e tem o arquivo escaneado da folha de rosto, 
+% descomente e altere o nome do arquivo
+%\folhaAprovacaoAssinada{folharosto}
+
+
+%==============================================================================
+% O documento em si
+%==============================================================================
+\begin{document}
+
+%==============================================================================
+%Elementos pré-textuais
+
+% Cria capa, folha de rosto, folha de aprovação e ficha
+\maketitle
+
+% Dedicatórias\\
+\dedic{Espaço reservado à dedicatória.}
+
+% Agradecimentos
+\thanks{Espaço reservado aos agradecimentos.}         
+
+% Epígrafe
+\epigrafe{%
+Espaço reservado à epígrafe.\par
+(Autor Desconhecido)}
+
+% Resumo e palavras-chave
+% As palavras-chave PRECISAM vir primeiro
+\palchaves{resumo; palavras; representativas.}
+\resumo{%
+O resumo deve conter palavras representativas do conteúdo do trabalho, localizadas abaixo do mesmo, antecedidas da expressão “palavras-chave” seguida de dois pontos. As palavras-chave devem ser separadas entre si por ponto e vírgula e finalizadas por ponto. Devem ser grafadas com as iniciais em letra minúscula, com exceção dos substantivos próprios e nomes científicos.
+}
+
+% Abstract e keywords
+% As keywords PRECISAM vir primeiro
+\keywords{summary; words; representative.}
+\abstract{%
+The abstract must contain words representative of the content of the work, located below it, preceded by the expression “keywords” followed by two points. Keywords should be separated from each other by semicolons and finalized by periods. They should be spelled with the initials in lowercase, with the exception of proper nouns and scientific names.
+}
+
+% Indicadores de impacto
+\indicadoresdeimpacto{%
+De caráter institucional, é um item obrigatório como parte das exigências das PRPG/PROEC para os trabalhos de pós-graduação Stricto sensu da UFLA. O autor deve apresentar um relato dos impactos sociais, tecnológicos, econômicos e/ou culturais dos resultados obtidos, considerando as populações, sociedade e territórios, deixando evidente se esses impactos foram concretos e diretos ou em potencial. Ao elaborar o item sobre impactos, é importante: 
+a) caracterizar e quantificar resultados dos impactos sociais, tecnológicos, econômicos e/ou culturais da melhor forma possível; 
+b) estabelecer se há algum caráter extensionista no trabalho, demonstrando impacto e participação da sociedade externa à UFLA, como parceiros e público-alvo; 
+c) definir o território e grupos populacionais impactados; 
+d) quando possível, declarar público diretamente beneficiado e número de docentes, estudantes e técnicos envolvidos nas ações extensionistas; 
+e) estabelecer em quais das oito áreas temáticas da Política Nacional de Extensão podem ser classificados os impactos do trabalho. São elas: 1 - Comunicação, 2 - Cultura, 3 - Direitos humanos e justiça, 4 - Educação, 5 - Meio ambiente, 6 - Saúde, 7 - Tecnologia e produção e 8 - Trabalho;
+f) demonstrar quais os impactos da pesquisa e se estão alinhados com os 17 (dezessete) Objetivos de Desenvolvimento Sustentável (ODS) da Organização das Nações Unidas (ONU).
+}
+
+% Impact indicators
+\impactindicators{%
+Of an institutional nature, it is a mandatory item as part of the PRPG/PROEC requirements for UFLA's Stricto sensu postgraduate work. The author must present a report on the social, technological, economic and/or cultural impacts of the results obtained, considering the populations, society and territories, making it clear whether these impacts were concrete and direct or potential. When preparing the item on impacts, it is important to:
+a) characterize and quantify the results of the social, technological, economic and/or cultural impacts in the best possible way;
+b) establish whether there is any extensionist character to the work, demonstrating the impact and participation of society outside UFLA, such as partners and target audience;
+c) define the territory and population groups impacted;
+d) when possible, declare the public directly benefited and the number of teachers, students and technicians involved in the extension actions;
+e) establish in which of the eight thematic areas of the National Extension Policy the impacts of the work can be classified. They are: 1 - Communication, 2 - Culture, 3 - Human rights and justice, 4 - Education, 5 - Environment, 6 - Health, 7 - Technology and production and 8 - Work;
+f) demonstrate the impacts of the research and whether they are aligned with the 17 (seventeen) Sustainable Development Goals (SDGs) of the United Nations (UN).
+}
+
+% Listas gerais
+% Comente para remover.
+\listoffigures  	% Lista de Figuras
+%\listofilustracoes % Lista de Ilustrações
+%\listofgraficos	% Lista de Gráficos
+\listoftables       % Lista de Tabelas
+\listofquadros		% Lista de Quadros
+%\listofexemplos    % Lista de Exemplos
+%\listofteoremas    % Lista de Teoremas
+\listofabreviaturas % Lista de Abreviaturas
+\listofsiglas       % Lista de Siglas
+\listofsimbolos     % Lista de Símbolos
+
+% Sumário
+\tableofcontents
+\clearpage
+
+%==============================================================================
+% Elementos textuais
+
+% Começa a mostrar a numeração
+\pagestyle{ufla}
+
+
+% Incluindo as seções
+% É recomendado que as seções sejam organizadas em arquivos separados
+% e incluídas no documento com o comando \include
+\include{secoes/introducao}
+\include{secoes/latex}
+\include{secoes/elementos}
+\include{secoes/listasGlossarioIndice}
+\include{secoes/conclusao}
+
+%==============================================================================
+% Bibliografia
+
+% Carrega o estilo para referências ABNT
+\bibliographystyle{abntex2-alf}            
+
+% Alterando informações do estilo de citação.
+% Como estamos usando uma versão alterada, essas opções são necessárias.
+% Et al. em itálico
+\citeoption{abnt-etal-text=it}
+
+% Até 3 autores antes do et al.
+\citeoption{abnt-etal-cite=3}
+
+% Colocar s.d. na falta de um ano de publicação
+\citeoption{abnt-missing-year=sd}
+
+% Altera o estilo de citação para (Autor, ano)
+% A opção abnt-cite-style=AuthorYEAR está quebrada; essa é equivalente.
+\citeoption{abnt-nbr10520=1988}
+\citeoption{abnt-and-type=e}
+
+
+% Comando necessário para corrigir o título das referências.
+% Para o estilo ABNT, esse comando SEMPRE deve ser
+% chamado antes do \bibliography
+\referencias
+% Adiciona as referência em bibtex 
+\bibliography{refbib}
+
+%==============================================================================
+% Outros elementos pós-textuais
+
+% Glossário
+\glossario
+
+% Anexos e apêndices
+% Os anexos devem ser includios antes
+% e utilizar \input ao invés de \include, para não criar uma nova página
+% Anexos
+\input{anexos/anexo1}
+\input{anexos/anexo2}
+
+% Apendices
+\input{apendices/apendice1}
+
+% Índice
+\indice
+
+
+%==============================================================================
+% Fim do documento
+%==============================================================================
+\end{document}

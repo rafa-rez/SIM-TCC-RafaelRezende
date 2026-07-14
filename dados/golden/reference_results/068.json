@@ -1,0 +1,21 @@
+{
+  "id_teste": "68",
+  "source": "golden_reference",
+  "sql": "SELECT SUM(CAST(num_marc_final AS INTEGER) - CAST(num_marc_inicial AS INTEGER)) AS km_total FROM frota_gastoFrota WHERE ano_referencia = 2025 AND num_marc_final > num_marc_inicial;",
+  "columns": [
+    "km_total"
+  ],
+  "rows": [
+    {
+      "km_total": 1027780.0
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "5c1a6b9fdcfda8d3",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:46.649149+00:00",
+  "input_usuario": "Km total rodado pela frota em 2025.",
+  "dificuldade": "medio",
+  "categoria": "Frota"
+}

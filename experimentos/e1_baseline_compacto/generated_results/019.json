@@ -1,0 +1,27 @@
+{
+  "id_teste": "19",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT SUM(CAST(vlr_empenhado AS DECIMAL)) AS total_empenhado_educacao FROM despesa_despesa WHERE ano_referencia = 2023 AND COALESCE(dsc_funcao, '') ILIKE '%educa%';",
+  "columns": [
+    "total_empenhado_educacao"
+  ],
+  "rows": [
+    {
+      "total_empenhado_educacao": 52415287.08
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "6b4e7d24e81365dd",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:15.432691+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": false,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

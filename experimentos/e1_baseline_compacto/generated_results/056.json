@@ -1,0 +1,45 @@
+{
+  "id_teste": "56",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT r.dsc_cargo, AVG(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS media_remuneracao FROM remuneracao_municipio r WHERE r.ano_referencia = 2024 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' GROUP BY r.dsc_cargo ORDER BY media_remuneracao DESC LIMIT 5;",
+  "columns": [
+    "dsc_cargo",
+    "media_remuneracao"
+  ],
+  "rows": [
+    {
+      "dsc_cargo": "PREFEITO MUNICIPAL",
+      "media_remuneracao": 18171.7807692308
+    },
+    {
+      "dsc_cargo": "APOSTILADA CC-AD-01",
+      "media_remuneracao": 11535.7192307692
+    },
+    {
+      "dsc_cargo": "ASSESSOR CONT.APOSTILA AA-NM-0",
+      "media_remuneracao": 11498.5984615385
+    },
+    {
+      "dsc_cargo": "DIRETOR DEPARTAMENTO CC-AD-03",
+      "media_remuneracao": 11483.58
+    },
+    {
+      "dsc_cargo": "PROCURADOR GERAL",
+      "media_remuneracao": 8683.84125
+    }
+  ],
+  "row_count": 5,
+  "col_count": 2,
+  "schema_hash": "e9ccaaf1ffe00420",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:20.743169+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 5,
+    "gen_rows": 5
+  }
+}

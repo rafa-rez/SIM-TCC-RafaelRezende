@@ -1,0 +1,27 @@
+{
+  "id_teste": "76",
+  "input_usuario": "Top 5 fornecedores pagos em 2024 que também aparecem em despesas favorecidos CGU.",
+  "metrics": {
+    "vsr": false,
+    "ex_strict": false,
+    "ex_rows": false,
+    "ex_cols": false,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": false,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 5,
+    "gen_rows": 0,
+    "ref_cols": 3,
+    "gen_cols": 0,
+    "divergencia_ex": null,
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "WITH pag AS (SELECT num_doc_credor, nom_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS tp FROM despesa_pagamento WHERE ano_referencia = 2024 GROUP BY num_doc_credor, nom_credor), cgu AS (SELECT \"Código Favorecido\" AS doc, SUM(CAST(\"Valor Recebido\" AS DECIMAL)) AS tc FROM cgu_despesas_favorecidos WHERE ano_referencia = 2024 GROUP BY doc) SELECT p.nom_credor, p.tp, c.tc FROM pag p JOIN cgu c ON CAST(p.num_doc_credor AS VARCHAR) = CAST(c.doc AS VARCHAR) ORDER BY p.tp DESC LIMIT 5;",
+  "query_gerada": "SELECT dp.num_doc_credor, SUM(CAST(dp.vlr_pagamento AS DECIMAL)) AS total_pago FROM despesa_pagamento dp JOIN cgu_despesas_favorecidos cgu ON CAST(dp.num_doc_credor AS VARCHAR) = CAST(cgu.\"Código Favorecido\" AS VARCHAR) WHERE dp.ano_referencia = 2024 AND cgu.ano_referencia = 2024 AND COALESCE(dp.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND dp.num_doc_credor NOT IN ('-1', '0') GROUP BY dp.num_doc_credor ORDER BY total_pago DESC LIMIT 5;",
+  "erro_sql_gerado": "Binder Error: Values list \"dp\" does not have a column named \"vlr_pagamento\"\n\nLINE 1: SELECT dp.num_doc_credor, SUM(CAST(dp.vlr_pagamento AS DECIMAL)) AS total_pago FROM despesa_pa...\n                                           ^",
+  "erro_sql_referencia": null
+}

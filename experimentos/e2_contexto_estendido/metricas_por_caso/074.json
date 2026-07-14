@@ -1,0 +1,27 @@
+{
+  "id_teste": "74",
+  "input_usuario": "Credores com pagamentos municipais e bolsa família pagamentos em 2024 (por nome).",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": false,
+    "ex_cols": false,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 0,
+    "gen_rows": 0,
+    "ref_cols": 0,
+    "gen_cols": 0,
+    "divergencia_ex": null,
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "WITH pag AS (SELECT TRIM(UPPER(nom_credor)) AS nome, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pag FROM despesa_pagamento WHERE ano_referencia = 2024 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY nome), bf AS (SELECT TRIM(UPPER(\"NOME FAVORECIDO\")) AS nome, SUM(CAST(\"VALOR PARCELA\" AS DECIMAL)) AS total_bf FROM cgu_bolsa_familia_pagamentos WHERE ano_referencia = 2024 GROUP BY nome) SELECT p.nome, p.total_pag, b.total_bf FROM pag p JOIN bf b ON p.nome = b.nome LIMIT 20;",
+  "query_gerada": "WITH pagamentos_municipais AS ( SELECT DISTINCT TRIM(UPPER(nom_credor)) AS nome_credor FROM despesa_pagamento WHERE ano_referencia = 2024 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND num_doc_credor NOT IN ('-1', '0') ), bolsa_familia AS ( SELECT DISTINCT TRIM(UPPER(\"NOME FAVORECIDO\")) AS nome_favorecido FROM cgu_bolsa_familia_pagamentos WHERE ano_referencia = 2024 ) SELECT pm.nome_credor AS nome FROM pagamentos_municipais pm INNER JOIN bolsa_familia bf ON pm.nome_credor = bf.nome_favorecido ORDER BY nome ASC;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

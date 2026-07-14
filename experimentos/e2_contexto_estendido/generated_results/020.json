@@ -1,0 +1,27 @@
+{
+  "id_teste": "20",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "SELECT SUM(CAST(vlr_contrato AS DECIMAL)) AS total_contratos_assinados FROM contrato_contratos WHERE ano_referencia = 2025;",
+  "columns": [
+    "total_contratos_assinados"
+  ],
+  "rows": [
+    {
+      "total_contratos_assinados": 18062857.11
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "c2c0b1421aa7002f",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:42.788147+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 0.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

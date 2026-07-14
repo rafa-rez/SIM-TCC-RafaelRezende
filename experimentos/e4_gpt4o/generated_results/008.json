@@ -1,0 +1,21 @@
+{
+  "id_teste": "8",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT c.num_contrato, cc.dsc_nome_credor, t.vlr_termo_aditivo FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia JOIN contrato_termoContrato t ON c.seq_contrato = t.seq_contrato AND t.ano_referencia = 2024 WHERE c.ano_referencia = 2023 AND c.dat_assinatura BETWEEN '2023-01-01' AND '2023-12-31' AND t.dsc_tipo_alteracao ILIKE '%ACRESCIMO DE VALOR%';",
+  "columns": [],
+  "rows": [],
+  "row_count": 0,
+  "col_count": 0,
+  "schema_hash": null,
+  "error": "Conversion Error: Could not convert string '2023-01-01' to INT64\n\nLINE 1: ... WHERE c.ano_referencia = 2023 AND c.dat_assinatura BETWEEN '2023-01-01' AND '2023-12-31' AND t.dsc_tipo_alteracao ILIKE...\n                                                                       ^",
+  "exported_at": "2026-07-14T23:56:37.975266+00:00",
+  "metrics_checkpoint": {
+    "vsr": false,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 0,
+    "gen_rows": 0
+  }
+}

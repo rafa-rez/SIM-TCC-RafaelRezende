@@ -1,0 +1,15 @@
+{
+  "id_teste": "75",
+  "source": "golden_reference",
+  "sql": "SELECT \"NOME PROGRAMA\", SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total FROM cgu_transferencias WHERE ano_referencia = 2024 AND (\"NOME PROGRAMA\" ILIKE '%FPM%' OR \"NOME PROGRAMA\" ILIKE '%ICMS%') GROUP BY \"NOME PROGRAMA\";",
+  "columns": [],
+  "rows": [],
+  "row_count": 0,
+  "col_count": 0,
+  "schema_hash": null,
+  "error": null,
+  "exported_at": "2026-07-14T23:54:48.152792+00:00",
+  "input_usuario": "Quanto o município recebeu de FPM e ICMS via transferências em 2024?",
+  "dificuldade": "medio",
+  "categoria": "Cruzamento Investigativo"
+}

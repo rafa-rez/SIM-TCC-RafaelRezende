@@ -1,0 +1,27 @@
+{
+  "id_teste": "64",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT COUNT(*) AS total_veiculos FROM frota_frota WHERE ano_referencia = 2025;",
+  "columns": [
+    "total_veiculos"
+  ],
+  "rows": [
+    {
+      "total_veiculos": 5
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "9e5a2f2d7f7002ba",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:18.675787+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 0.5,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

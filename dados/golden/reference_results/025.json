@@ -1,0 +1,23 @@
+{
+  "id_teste": "25",
+  "source": "golden_reference",
+  "sql": "WITH despesa_mde AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa FROM educacao_educacao WHERE ano_referencia = 2025), receita_impostos AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita FROM receita_receita WHERE ano_referencia = 2025 AND dsc_especie ILIKE '%Imposto%') SELECT (d.total_despesa / NULLIF(r.total_receita, 0)) * 100 AS ieq_c, CASE WHEN (d.total_despesa / NULLIF(r.total_receita, 0)) * 100 >= 25 THEN 'Sim' ELSE 'Não' END AS atingiu FROM despesa_mde d, receita_impostos r;",
+  "columns": [
+    "ieq_c",
+    "atingiu"
+  ],
+  "rows": [
+    {
+      "ieq_c": 37.5161054123,
+      "atingiu": "Sim"
+    }
+  ],
+  "row_count": 1,
+  "col_count": 2,
+  "schema_hash": "8fc628472855ff36",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:39.657296+00:00",
+  "input_usuario": "Qual o IEQ-C em 2025 e se atingiu 25%?",
+  "dificuldade": "medio",
+  "categoria": "Calculo Fiscal"
+}

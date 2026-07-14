@@ -1,0 +1,71 @@
+\chapter{Plano de Avaliação com LLM-as-Judge}
+\label{sec:plano-judge}
+
+\section{Situação atual}
+
+O pipeline \texttt{eval/} implementa EX, VSR, NEA, TSA, CHS e métricas operacionais. \textbf{Não há, até o momento, módulo de LLM-as-Judge} --- ou seja, nenhum julgamento automático da adequação semântica da resposta ao usuário, nem da correção quando múltiplas SQLs seriam aceitáveis.
+
+\section{Motivação}
+
+EX estrito penaliza respostas plausíveis. Um juiz (\textit{judge}) baseado em \\termo{llm} pode avaliar se $R_{gen}$ responde à pergunta $q$, mesmo quando difere de $R_{ref}$, e se a explicação técnica é coerente --- aproximando avaliação humana em escala.
+
+\section{Protocolo proposto}
+
+\subsection{Escopo inicial}
+
+\begin{itemize}
+    \item Amostra estratificada de 30 consultas (10 fáceis, 10 médias, 10 difíceis);
+    \item Foco em casos com VSR=1 e EX=0 (divergência semântica);
+    \item Modelo juiz: GPT-4o ou GPT-4.1-mini (custo controlado).
+\end{itemize}
+
+\subsection{Entrada do juiz}
+
+Para cada item: \texttt{input\_usuario}, \texttt{query\_gerada}, amostra de $R_{gen}$ (top 20 linhas), \texttt{query\_referencia}, amostra de $R_{ref}$, \texttt{explicacao\_tecnica}.
+
+\subsection{Prompt do juiz (rubrica)}
+
+Escala Likert 1--5 em quatro dimensões:
+
+\begin{enumerate}
+    \item \textbf{Adequação semântica}: a SQL responde à pergunta?
+    \item \textbf{Correção factual}: os dados retornados são coerentes com o domínio municipal?
+    \item \textbf{Completude}: faltam filtros, agregações ou tabelas críticas?
+    \item \textbf{Explicação}: a justificativa técnica reflete a SQL executada?
+\end{enumerate}
+
+Saída em JSON: \texttt{scores}, \texttt{veredito} (correto / parcialmente correto / incorreto), \texttt{justificativa}.
+
+\subsection{Métricas derivadas}
+
+\begin{itemize}
+    \item \textbf{JAR (Judge Agreement Rate)}: proporção \textit{correto} ou \textit{parcialmente correto};
+    \item \textbf{Correlação JAR vs EX}: quantos EX=0 seriam ``salvos'' pelo juiz;
+    \item \textbf{Cohen's $\kappa$} (opcional): concordância juiz vs anotação humana em subamostra de 10 itens.
+\end{itemize}
+
+\section{Implementação prevista}
+
+\begin{enumerate}
+    \item \texttt{eval/run\_judge.py} --- lê \texttt{checkpoint.jsonl}, filtra amostra, chama API OpenAI;
+    \item \texttt{eval/prompts/judge\_rubric.txt} --- rubrica fixa;
+    \item \texttt{eval/results/<exp>/judge\_results.jsonl} --- saída incremental;
+    \item \texttt{eval/aggregate\_judge.py} --- consolida JAR e compara com EX;
+    \item Orçamento estimado: 30 itens $\times$ $\sim$2k tokens $\approx$ US\$ 0,15--0,50 (4.1-mini).
+\end{enumerate}
+
+\section{Cronograma sugerido}
+
+\begin{itemize}
+    \item \textbf{Semana 1}: implementar \texttt{run\_judge.py} + rubrica; piloto 5 consultas;
+    \item \textbf{Semana 2}: amostra 30 + revisão manual de 10 casos pelo autor;
+    \item \textbf{Semana 3}: redigir subseção no TCC com tabela JAR vs EX e exemplos qualitativos.
+\end{itemize}
+
+\section{Riscos e mitigação}
+
+\begin{itemize}
+    \item \textbf{Viés do juiz}: usar temperatura 0 e segundo juiz em 20\% da amostra;
+    \item \textbf{Custo}: limitar amostra e cachear resultados;
+    \item \textbf{Validade}: subamostra humana obrigatória para calibrar a rubrica antes de generalizar.
+\end{itemize}

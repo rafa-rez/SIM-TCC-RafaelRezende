@@ -1,0 +1,21 @@
+{
+  "id_teste": "7",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT lh.seq_licitacao, lh.vlr_global, cl.nom_pessoa FROM licitacao_homologLicitacao lh JOIN licitacao_credLicitacao cl ON lh.seq_licitacao = cl.seq_licitacao AND lh.ano_referencia = cl.ano_referencia WHERE lh.ano_referencia = 2025 AND lh.vlr_global > 0 ORDER BY lh.vlr_global DESC LIMIT 10;",
+  "columns": [],
+  "rows": [],
+  "row_count": 0,
+  "col_count": 0,
+  "schema_hash": null,
+  "error": null,
+  "exported_at": "2026-07-14T23:56:09.150317+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": false,
+    "tsa": false,
+    "chs": 0.0,
+    "ref_rows": 1,
+    "gen_rows": 0
+  }
+}

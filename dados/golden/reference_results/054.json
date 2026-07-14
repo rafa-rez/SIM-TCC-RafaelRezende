@@ -1,0 +1,21 @@
+{
+  "id_teste": "54",
+  "source": "golden_reference",
+  "sql": "SELECT COUNT(DISTINCT seq_dim_pessoa) AS qtd FROM remuneracao_municipio WHERE ano_referencia = 2025 AND dsc_sit_serv_pens ILIKE '%Ativo%';",
+  "columns": [
+    "qtd"
+  ],
+  "rows": [
+    {
+      "qtd": 1368
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "1734aaf65549a563",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:44.247698+00:00",
+  "input_usuario": "Quantos servidores ativos em 2025?",
+  "dificuldade": "medio",
+  "categoria": "RH Folha"
+}

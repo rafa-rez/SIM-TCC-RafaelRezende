@@ -1,0 +1,27 @@
+{
+  "id_teste": "20",
+  "input_usuario": "Qual o valor total de contratos assinados em 2025?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 0.0,
+    "ref_rows": 1,
+    "gen_rows": 1,
+    "ref_cols": 1,
+    "gen_cols": 1,
+    "divergencia_ex": "divergencia_valores",
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT SUM(CAST(vlr_contrato AS DECIMAL)) AS total FROM contrato_contratos WHERE ano_referencia = 2025 AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5);",
+  "query_gerada": "SELECT SUM(CAST(vlr_contrato AS DECIMAL)) AS total_contratos FROM contrato_contratos WHERE ano_referencia = 2025;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

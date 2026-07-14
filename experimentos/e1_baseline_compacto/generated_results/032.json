@@ -1,0 +1,41 @@
+{
+  "id_teste": "32",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "WITH receita_corrente AS ( SELECT ano_referencia, SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS receita_corrente FROM receita_receita WHERE ano_referencia BETWEEN 2020 AND 2023 AND dsc_cateconomica ILIKE '%Corrente%' GROUP BY ano_referencia ), despesa_corrente AS ( SELECT ano_referencia, SUM(CAST(vlr_liquidado AS DECIMAL)) AS despesa_corrente FROM despesa_despesa WHERE ano_referencia BETWEEN 2020 AND 2023 AND dsc_naturezadespesa ILIKE '3%' GROUP BY ano_referencia ) SELECT r.ano_referencia, r.receita_corrente / NULLIF(d.despesa_corrente, 0) AS isf_m FROM receita_corrente r LEFT JOIN despesa_corrente d ON r.ano_referencia = d.ano_referencia ORDER BY r.ano_referencia;",
+  "columns": [
+    "ano_referencia",
+    "isf_m"
+  ],
+  "rows": [
+    {
+      "ano_referencia": 2020,
+      "isf_m": 1.1195393762
+    },
+    {
+      "ano_referencia": 2021,
+      "isf_m": 1.1670181287
+    },
+    {
+      "ano_referencia": 2022,
+      "isf_m": 1.1599104316
+    },
+    {
+      "ano_referencia": 2023,
+      "isf_m": 1.0561620019
+    }
+  ],
+  "row_count": 4,
+  "col_count": 2,
+  "schema_hash": "2830e614005e6334",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:17.390413+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 4,
+    "gen_rows": 4
+  }
+}

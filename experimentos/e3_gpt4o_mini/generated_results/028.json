@@ -1,0 +1,27 @@
+{
+  "id_teste": "28",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_impostos FROM receita_receita WHERE ano_referencia = 2023 AND dsc_especie ILIKE '%Imposto%';",
+  "columns": [
+    "total_impostos"
+  ],
+  "rows": [
+    {
+      "total_impostos": 17703004.18
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "fa22141ffb7e04a7",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:12.486149+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

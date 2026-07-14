@@ -1,0 +1,21 @@
+{
+  "id_teste": "23",
+  "source": "golden_reference",
+  "sql": "WITH desp AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS d FROM saude_saude WHERE ano_referencia = 2024), rec AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS r FROM receita_receita WHERE ano_referencia = 2024 AND (dsc_especie ILIKE '%Imposto%' OR dsc_origem ILIKE '%Transfer%')) SELECT (desp.d / NULLIF(rec.r, 0)) * 100 AS ies_c FROM desp, rec;",
+  "columns": [
+    "ies_c"
+  ],
+  "rows": [
+    {
+      "ies_c": 11.9365042267
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "302ece926cb7e684",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:39.271852+00:00",
+  "input_usuario": "Calcule o Índice de Saúde (IES-C) do município em 2024.",
+  "dificuldade": "medio",
+  "categoria": "Calculo Fiscal"
+}

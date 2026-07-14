@@ -1,0 +1,21 @@
+{
+  "id_teste": "34",
+  "source": "golden_reference",
+  "sql": "SELECT SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total FROM despesa_pagamento dp JOIN empenho_empenho e ON dp.seq_empenho = e.seq_empenho AND dp.ano_referencia = e.ano_referencia WHERE dp.ano_referencia = 2024 AND e.dsc_funcao ILIKE '%SAÚDE%';",
+  "columns": [
+    "total"
+  ],
+  "rows": [
+    {
+      "total": 47990260.77
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "11239872d178729a",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:41.670746+00:00",
+  "input_usuario": "Qual o total pago por função de Saúde em 2024?",
+  "dificuldade": "medio",
+  "categoria": "Despesas Pagamentos"
+}

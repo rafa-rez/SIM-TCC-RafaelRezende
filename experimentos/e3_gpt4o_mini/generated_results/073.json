@@ -1,0 +1,33 @@
+{
+  "id_teste": "73",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT \"TIPO TRANSFERÊNCIA\", COUNT(*) AS total_transferencias FROM cgu_transferencias WHERE ano_referencia = 2025 GROUP BY \"TIPO TRANSFERÊNCIA\";",
+  "columns": [
+    "TIPO TRANSFERÊNCIA",
+    "total_transferencias"
+  ],
+  "rows": [
+    {
+      "TIPO TRANSFERÊNCIA": "Legais, Voluntárias e Específicas",
+      "total_transferencias": 298
+    },
+    {
+      "TIPO TRANSFERÊNCIA": "Constitucionais e Royalties",
+      "total_transferencias": 61
+    }
+  ],
+  "row_count": 2,
+  "col_count": 2,
+  "schema_hash": "1c3a5fe3dcf3312b",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:19.879938+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 2,
+    "gen_rows": 2
+  }
+}

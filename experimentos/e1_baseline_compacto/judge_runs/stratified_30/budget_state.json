@@ -1,0 +1,668 @@
+{
+  "total_usd": 0.296589,
+  "total_tokens_in": 110065,
+  "total_tokens_out": 11931,
+  "calls": 60,
+  "history": [
+    {
+      "ts": "2026-07-09 17:29:36",
+      "model": "gpt-4o",
+      "tokens_in": 2279,
+      "tokens_out": 84,
+      "cost_usd": 0.006537,
+      "meta": {
+        "id_teste": "11",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:29:38",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 612,
+      "tokens_out": 104,
+      "cost_usd": 0.000411,
+      "meta": {
+        "id_teste": "11",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:29:41",
+      "model": "gpt-4o",
+      "tokens_in": 2252,
+      "tokens_out": 88,
+      "cost_usd": 0.00651,
+      "meta": {
+        "id_teste": "12",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:29:43",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 589,
+      "tokens_out": 111,
+      "cost_usd": 0.000413,
+      "meta": {
+        "id_teste": "12",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:29:46",
+      "model": "gpt-4o",
+      "tokens_in": 2238,
+      "tokens_out": 80,
+      "cost_usd": 0.006395,
+      "meta": {
+        "id_teste": "13",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:29:48",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 567,
+      "tokens_out": 110,
+      "cost_usd": 0.000403,
+      "meta": {
+        "id_teste": "13",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:29:50",
+      "model": "gpt-4o",
+      "tokens_in": 2245,
+      "tokens_out": 87,
+      "cost_usd": 0.006483,
+      "meta": {
+        "id_teste": "14",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:29:52",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 581,
+      "tokens_out": 110,
+      "cost_usd": 0.000408,
+      "meta": {
+        "id_teste": "14",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:29:54",
+      "model": "gpt-4o",
+      "tokens_in": 2260,
+      "tokens_out": 83,
+      "cost_usd": 0.00648,
+      "meta": {
+        "id_teste": "15",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:29:56",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 592,
+      "tokens_out": 110,
+      "cost_usd": 0.000413,
+      "meta": {
+        "id_teste": "15",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:00",
+      "model": "gpt-4o",
+      "tokens_in": 2467,
+      "tokens_out": 235,
+      "cost_usd": 0.008518,
+      "meta": {
+        "id_teste": "16",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:02",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 952,
+      "tokens_out": 110,
+      "cost_usd": 0.000557,
+      "meta": {
+        "id_teste": "16",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:05",
+      "model": "gpt-4o",
+      "tokens_in": 2242,
+      "tokens_out": 86,
+      "cost_usd": 0.006465,
+      "meta": {
+        "id_teste": "17",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:07",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 577,
+      "tokens_out": 109,
+      "cost_usd": 0.000405,
+      "meta": {
+        "id_teste": "17",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:10",
+      "model": "gpt-4o",
+      "tokens_in": 2266,
+      "tokens_out": 92,
+      "cost_usd": 0.006585,
+      "meta": {
+        "id_teste": "18",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:12",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 607,
+      "tokens_out": 113,
+      "cost_usd": 0.000424,
+      "meta": {
+        "id_teste": "18",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:14",
+      "model": "gpt-4o",
+      "tokens_in": 2270,
+      "tokens_out": 84,
+      "cost_usd": 0.006515,
+      "meta": {
+        "id_teste": "19",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:16",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 603,
+      "tokens_out": 112,
+      "cost_usd": 0.00042,
+      "meta": {
+        "id_teste": "19",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:18",
+      "model": "gpt-4o",
+      "tokens_in": 2250,
+      "tokens_out": 86,
+      "cost_usd": 0.006485,
+      "meta": {
+        "id_teste": "20",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:20",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 585,
+      "tokens_out": 111,
+      "cost_usd": 0.000412,
+      "meta": {
+        "id_teste": "20",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:28",
+      "model": "gpt-4o",
+      "tokens_in": 3290,
+      "tokens_out": 670,
+      "cost_usd": 0.014925,
+      "meta": {
+        "id_teste": "4",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:31",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 1885,
+      "tokens_out": 227,
+      "cost_usd": 0.001117,
+      "meta": {
+        "id_teste": "4",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:34",
+      "model": "gpt-4o",
+      "tokens_in": 2402,
+      "tokens_out": 103,
+      "cost_usd": 0.007035,
+      "meta": {
+        "id_teste": "5",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:36",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 755,
+      "tokens_out": 134,
+      "cost_usd": 0.000516,
+      "meta": {
+        "id_teste": "5",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:39",
+      "model": "gpt-4o",
+      "tokens_in": 2301,
+      "tokens_out": 107,
+      "cost_usd": 0.006823,
+      "meta": {
+        "id_teste": "6",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:40",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 657,
+      "tokens_out": 115,
+      "cost_usd": 0.000447,
+      "meta": {
+        "id_teste": "6",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:47",
+      "model": "gpt-4o",
+      "tokens_in": 2751,
+      "tokens_out": 413,
+      "cost_usd": 0.011007,
+      "meta": {
+        "id_teste": "7",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:50",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 1417,
+      "tokens_out": 179,
+      "cost_usd": 0.000853,
+      "meta": {
+        "id_teste": "7",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:53",
+      "model": "gpt-4o",
+      "tokens_in": 2381,
+      "tokens_out": 83,
+      "cost_usd": 0.006782,
+      "meta": {
+        "id_teste": "9",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:30:55",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 713,
+      "tokens_out": 108,
+      "cost_usd": 0.000458,
+      "meta": {
+        "id_teste": "9",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:31:00",
+      "model": "gpt-4o",
+      "tokens_in": 2568,
+      "tokens_out": 371,
+      "cost_usd": 0.01013,
+      "meta": {
+        "id_teste": "10",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:31:02",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 1191,
+      "tokens_out": 117,
+      "cost_usd": 0.000664,
+      "meta": {
+        "id_teste": "10",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:31:05",
+      "model": "gpt-4o",
+      "tokens_in": 2350,
+      "tokens_out": 121,
+      "cost_usd": 0.007085,
+      "meta": {
+        "id_teste": "23",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:31:07",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 720,
+      "tokens_out": 126,
+      "cost_usd": 0.00049,
+      "meta": {
+        "id_teste": "23",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:31:11",
+      "model": "gpt-4o",
+      "tokens_in": 2366,
+      "tokens_out": 149,
+      "cost_usd": 0.007405,
+      "meta": {
+        "id_teste": "24",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:31:13",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 766,
+      "tokens_out": 111,
+      "cost_usd": 0.000484,
+      "meta": {
+        "id_teste": "24",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:31:16",
+      "model": "gpt-4o",
+      "tokens_in": 2407,
+      "tokens_out": 107,
+      "cost_usd": 0.007087,
+      "meta": {
+        "id_teste": "25",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:31:18",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 763,
+      "tokens_out": 113,
+      "cost_usd": 0.000486,
+      "meta": {
+        "id_teste": "25",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:31:23",
+      "model": "gpt-4o",
+      "tokens_in": 2386,
+      "tokens_out": 109,
+      "cost_usd": 0.007055,
+      "meta": {
+        "id_teste": "26",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:31:26",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 744,
+      "tokens_out": 122,
+      "cost_usd": 0.000493,
+      "meta": {
+        "id_teste": "26",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:31:32",
+      "model": "gpt-4o",
+      "tokens_in": 2763,
+      "tokens_out": 470,
+      "cost_usd": 0.011607,
+      "meta": {
+        "id_teste": "1",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:31:35",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 1496,
+      "tokens_out": 205,
+      "cost_usd": 0.000926,
+      "meta": {
+        "id_teste": "1",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:31:57",
+      "model": "gpt-4o",
+      "tokens_in": 4932,
+      "tokens_out": 2205,
+      "cost_usd": 0.03438,
+      "meta": {
+        "id_teste": "2",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:31:59",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 3931,
+      "tokens_out": 195,
+      "cost_usd": 0.001884,
+      "meta": {
+        "id_teste": "2",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:32:05",
+      "model": "gpt-4o",
+      "tokens_in": 2604,
+      "tokens_out": 202,
+      "cost_usd": 0.00853,
+      "meta": {
+        "id_teste": "3",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:32:06",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 1061,
+      "tokens_out": 113,
+      "cost_usd": 0.000605,
+      "meta": {
+        "id_teste": "3",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:32:11",
+      "model": "gpt-4o",
+      "tokens_in": 2361,
+      "tokens_out": 115,
+      "cost_usd": 0.007052,
+      "meta": {
+        "id_teste": "8",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:32:15",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 725,
+      "tokens_out": 130,
+      "cost_usd": 0.000498,
+      "meta": {
+        "id_teste": "8",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:32:20",
+      "model": "gpt-4o",
+      "tokens_in": 2503,
+      "tokens_out": 254,
+      "cost_usd": 0.008797,
+      "meta": {
+        "id_teste": "32",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:32:22",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 1013,
+      "tokens_out": 119,
+      "cost_usd": 0.000596,
+      "meta": {
+        "id_teste": "32",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:32:25",
+      "model": "gpt-4o",
+      "tokens_in": 2510,
+      "tokens_out": 167,
+      "cost_usd": 0.007945,
+      "meta": {
+        "id_teste": "48",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:32:28",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 927,
+      "tokens_out": 117,
+      "cost_usd": 0.000558,
+      "meta": {
+        "id_teste": "48",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:32:33",
+      "model": "gpt-4o",
+      "tokens_in": 4067,
+      "tokens_out": 236,
+      "cost_usd": 0.012528,
+      "meta": {
+        "id_teste": "58",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:32:35",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 1560,
+      "tokens_out": 146,
+      "cost_usd": 0.000858,
+      "meta": {
+        "id_teste": "58",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:32:46",
+      "model": "gpt-4o",
+      "tokens_in": 4232,
+      "tokens_out": 786,
+      "cost_usd": 0.01844,
+      "meta": {
+        "id_teste": "69",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:32:49",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 2608,
+      "tokens_out": 168,
+      "cost_usd": 0.001312,
+      "meta": {
+        "id_teste": "69",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:32:53",
+      "model": "gpt-4o",
+      "tokens_in": 2436,
+      "tokens_out": 121,
+      "cost_usd": 0.0073,
+      "meta": {
+        "id_teste": "70",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:32:55",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 806,
+      "tokens_out": 116,
+      "cost_usd": 0.000508,
+      "meta": {
+        "id_teste": "70",
+        "step": "judge"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:33:00",
+      "model": "gpt-4o",
+      "tokens_in": 2583,
+      "tokens_out": 260,
+      "cost_usd": 0.009057,
+      "meta": {
+        "id_teste": "71",
+        "step": "orchestrator"
+      }
+    },
+    {
+      "ts": "2026-07-09 17:33:02",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 1100,
+      "tokens_out": 116,
+      "cost_usd": 0.000626,
+      "meta": {
+        "id_teste": "71",
+        "step": "judge"
+      }
+    }
+  ]
+}

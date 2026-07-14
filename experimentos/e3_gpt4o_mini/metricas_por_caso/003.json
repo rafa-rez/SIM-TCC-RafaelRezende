@@ -1,0 +1,27 @@
+{
+  "id_teste": "3",
+  "input_usuario": "Quais foram as 5 empresas que mais receberam pagamentos da prefeitura (SICOM) em 2025 e que também receberam transferências diretas do Governo Federal (CGU Transferências) no mesmo ano?",
+  "metrics": {
+    "vsr": false,
+    "ex_strict": false,
+    "ex_rows": false,
+    "ex_cols": false,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": false,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 2,
+    "gen_rows": 0,
+    "ref_cols": 3,
+    "gen_cols": 0,
+    "divergencia_ex": null,
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "WITH cte_pagamentos AS (SELECT dp.num_doc_credor, SUM(CAST(dp.vlr_pag_fonte AS DECIMAL)) AS total_pagamentos FROM despesa_pagamento dp WHERE dp.ano_referencia = 2025 AND COALESCE(dp.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND dp.num_doc_credor NOT IN ('-1', '0') GROUP BY dp.num_doc_credor), cte_transferencias AS (SELECT ct.\"CÓDIGO FAVORECIDO\" AS num_doc_credor, SUM(CAST(ct.\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_transferencias FROM cgu_transferencias ct WHERE ct.ano_referencia = 2025 GROUP BY ct.\"CÓDIGO FAVORECIDO\") SELECT p.num_doc_credor, p.total_pagamentos, t.total_transferencias FROM cte_pagamentos p JOIN cte_transferencias t ON CAST(p.num_doc_credor AS VARCHAR) = CAST(t.num_doc_credor AS VARCHAR) ORDER BY (p.total_pagamentos + t.total_transferencias) DESC LIMIT 5",
+  "query_gerada": "WITH pagamentos AS (SELECT num_doc_credor, nom_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pagamentos FROM despesa_pagamento WHERE ano_referencia = 2025 AND COALESCE(nom_credor, '') NOT ILIKE '%NÃO INFORMADO%' AND num_doc_credor NOT IN ('-1', '0') GROUP BY num_doc_credor, nom_credor), transferencias AS (SELECT \"Código Favorecido\", SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_transferencias FROM cgu_transferencias WHERE ano_referencia = 2025 GROUP BY \"Código Favorecido\") SELECT p.nom_credor, p.total_pagamentos FROM pagamentos p JOIN transferencias t ON CAST(p.num_doc_credor AS VARCHAR) = CAST(t.\"Código Favorecido\" AS VARCHAR) ORDER BY p.total_pagamentos DESC LIMIT 5;",
+  "erro_sql_gerado": "Binder Error: Referenced column \"Código Favorecido\" not found in FROM clause!\nCandidate bindings: \"filename\"\n\nLINE 1: ... FROM cgu_transferencias WHERE ano_referencia = 2025 GROUP BY \"Código Favorecido\") SELECT p.nom_credor, p.total_pagamentos...\n                                                                         ^",
+  "erro_sql_referencia": null
+}

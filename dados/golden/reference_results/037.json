@@ -1,0 +1,31 @@
+{
+  "id_teste": "37",
+  "source": "golden_reference",
+  "sql": "SELECT cod_orgao, SUM(CAST(vlr_liquidado AS DECIMAL)) AS total FROM despesa_despesa WHERE ano_referencia = 2025 AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5) GROUP BY cod_orgao ORDER BY total DESC;",
+  "columns": [
+    "cod_orgao",
+    "total"
+  ],
+  "rows": [
+    {
+      "cod_orgao": "02",
+      "total": 100470595.88
+    },
+    {
+      "cod_orgao": "05",
+      "total": 1615438.1
+    },
+    {
+      "cod_orgao": "04",
+      "total": 292997.36
+    }
+  ],
+  "row_count": 3,
+  "col_count": 2,
+  "schema_hash": "b7dc8f5f5a4bf851",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:42.302830+00:00",
+  "input_usuario": "Quanto foi liquidado em 2025 por órgão da prefeitura (cod_orgao 2, 4, 5)?",
+  "dificuldade": "medio",
+  "categoria": "Despesas Pagamentos"
+}

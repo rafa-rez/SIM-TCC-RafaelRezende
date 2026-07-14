@@ -1,0 +1,6 @@
+seq_dim_orgao;cod_municipio;cod_orgao;cod_tip_orgao;cod_tip_orgao;cnpj_orgao;nom_orgao;nom_grupo_jurisdicionado;dsc_tip_orgao;dsc_esfera
+339;3110004;5;4;22257307000105;FUNDAÇÃO EDUCACIONAL DE CAETÉ;MUNICIPAL;Fundação;Poder Executivo
+337;3110004;3;3;19893791000154;SERVIÇO AUTONOMO DE AGUA E ESGOTO DE CAETE;MUNICIPAL;Autarquia (exceto RPPS);Poder Executivo
+335;3110004;1;1;65174518000197;Camara Municipal de Caeté;MUNICIPAL;Câmara Municipal;Poder Legislativo
+336;3110004;2;2;18302299000102;PREFEITURA MUNICIPAL DE CAETÉ;MUNICIPAL;Prefeitura Municipal;Poder Executivo
+338;3110004;4;4;21155528000100;FUNDAÇÃO CASA DE CULTURA DE CAETÉ;MUNICIPAL;Fundação;Poder Executivo

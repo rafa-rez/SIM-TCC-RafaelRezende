@@ -1,0 +1,29 @@
+{
+  "id_teste": "34",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT dsc_funcao, SUM(CAST(vlr_pagamento AS DECIMAL)) AS total_pago FROM saude_saude WHERE ano_referencia = 2024 GROUP BY dsc_funcao;",
+  "columns": [
+    "dsc_funcao",
+    "total_pago"
+  ],
+  "rows": [
+    {
+      "dsc_funcao": "10 - SAÚDE",
+      "total_pago": 19053321.2
+    }
+  ],
+  "row_count": 1,
+  "col_count": 2,
+  "schema_hash": "c40a43c136d3902a",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:42.288038+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": false,
+    "chs": 0.5,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

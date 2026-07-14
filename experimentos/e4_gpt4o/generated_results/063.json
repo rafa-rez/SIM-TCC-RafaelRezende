@@ -1,0 +1,33 @@
+{
+  "id_teste": "63",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT f.dsc_veiculo, f.dsc_marca, f.dsc_num_placa, SUM(CAST(g.vlr_gasto AS DECIMAL)) AS total_gasto FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2024 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') GROUP BY f.dsc_veiculo, f.dsc_marca, f.dsc_num_placa ORDER BY total_gasto DESC LIMIT 1;",
+  "columns": [
+    "dsc_veiculo",
+    "dsc_marca",
+    "dsc_num_placa",
+    "total_gasto"
+  ],
+  "rows": [
+    {
+      "dsc_veiculo": "PA CARREGADEIRA MODELO LW300KV",
+      "dsc_marca": "CATERPILLAR XC MG XT870BR",
+      "dsc_num_placa": null,
+      "total_gasto": 190498.77
+    }
+  ],
+  "row_count": 1,
+  "col_count": 4,
+  "schema_hash": "efb55ed9d552777e",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:47.467649+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

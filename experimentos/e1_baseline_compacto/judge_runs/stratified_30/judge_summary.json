@@ -1,0 +1,33 @@
+{
+  "experiment": "baseline_16k",
+  "run_name": "stratified_30",
+  "total": 30,
+  "jar_pct": 100.0,
+  "jar_count": 30,
+  "ex_pct": 20.0,
+  "ex_count": 6,
+  "avg_judge_scores": {
+    "adequacao_semantica": 4.87,
+    "fidelidade_dados": 4.87,
+    "completude": 4.73,
+    "clareza_cidadao": 4.77
+  },
+  "by_dificuldade": {
+    "dificil": {
+      "n": 10,
+      "jar_pct": 100.0,
+      "ex_pct": 20.0
+    },
+    "facil": {
+      "n": 10,
+      "jar_pct": 100.0,
+      "ex_pct": 20.0
+    },
+    "medio": {
+      "n": 10,
+      "jar_pct": 100.0,
+      "ex_pct": 20.0
+    }
+  },
+  "total_cost_usd": 0.2966
+}

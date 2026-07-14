@@ -1,0 +1,57 @@
+{
+  "id_teste": "57",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT CAST(SUBSTR(CAST(seq_dat_pagamento AS VARCHAR), 5, 2) AS INTEGER) AS mes, SUM(CAST(vlr_rmn_liquida AS DECIMAL)) AS total_folha FROM remuneracao_municipio r WHERE ano_referencia = 2025 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' GROUP BY mes ORDER BY mes;",
+  "columns": [
+    "mes",
+    "total_folha"
+  ],
+  "rows": [
+    {
+      "mes": 1,
+      "total_folha": 3511040.92
+    },
+    {
+      "mes": 2,
+      "total_folha": 2222855.66
+    },
+    {
+      "mes": 3,
+      "total_folha": 2700206.0
+    },
+    {
+      "mes": 4,
+      "total_folha": 3568612.4
+    },
+    {
+      "mes": 5,
+      "total_folha": 2931895.35
+    },
+    {
+      "mes": 6,
+      "total_folha": 2918049.01
+    },
+    {
+      "mes": 7,
+      "total_folha": 2983630.14
+    },
+    {
+      "mes": 8,
+      "total_folha": 2871143.98
+    }
+  ],
+  "row_count": 8,
+  "col_count": 2,
+  "schema_hash": "af34a74171517de4",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:21.024925+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 8,
+    "gen_rows": 8
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "id_teste": "39",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT SUM(CAST(dp.vlr_pag_fonte AS DECIMAL)) AS total_pago FROM despesa_pagamento dp JOIN empenho_empenho e ON dp.seq_empenho = e.seq_empenho AND dp.ano_referencia = e.ano_referencia WHERE dp.ano_referencia = 2024 AND COALESCE(dp.nom_credor, '') NOT ILIKE '%NAO INFORMADO%';",
+  "columns": [
+    "total_pago"
+  ],
+  "rows": [
+    {
+      "total_pago": 126409366.27
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "bf0385330cd8f5bb",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:14.857089+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 0.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

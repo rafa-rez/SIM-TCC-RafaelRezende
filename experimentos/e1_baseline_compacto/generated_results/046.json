@@ -1,0 +1,27 @@
+{
+  "id_teste": "46",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT COUNT(DISTINCT seq_contrato) AS contratos_ativos FROM contrato_contratos WHERE ano_referencia = 2025 AND CAST(vlr_contrato AS DECIMAL) > 0;",
+  "columns": [
+    "contratos_ativos"
+  ],
+  "rows": [
+    {
+      "contratos_ativos": 58
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "e3824fee34a333fe",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:19.448714+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

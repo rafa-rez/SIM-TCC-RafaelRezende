@@ -1,0 +1,27 @@
+{
+  "id_teste": "70",
+  "input_usuario": "Servidores ativos em 2023 com Auxílio Brasil em 2023.",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": false,
+    "ex_cols": false,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 0,
+    "gen_rows": 0,
+    "ref_cols": 0,
+    "gen_cols": 0,
+    "divergencia_ex": null,
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "WITH servidores AS (SELECT TRIM(UPPER(p.nom_pessoa)) AS nome, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS salario FROM remuneracao_municipio r JOIN pessoa_municipio p ON r.seq_dim_pessoa = p.seq_dim_pessoa WHERE r.ano_referencia = 2023 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' GROUP BY nome), benef AS (SELECT TRIM(UPPER(\"NOME FAVORECIDO\")) AS nome, SUM(CAST(\"VALOR PARCELA\" AS DECIMAL)) AS total FROM cgu_auxilio_brasil WHERE ano_referencia = 2023 GROUP BY nome) SELECT s.nome, s.salario, b.total FROM servidores s JOIN benef b ON s.nome = b.nome;",
+  "query_gerada": "WITH servidores_ativos AS ( SELECT r.seq_dim_pessoa, p.nom_pessoa, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS maior_salario FROM remuneracao_municipio r JOIN pessoa_municipio p ON r.seq_dim_pessoa = p.seq_dim_pessoa WHERE r.ano_referencia = 2023 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' AND COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY r.seq_dim_pessoa, p.nom_pessoa ), auxilio_brasil_2023 AS ( SELECT DISTINCT TRIM(UPPER(\"NOME FAVORECIDO\")) AS nome_favorecido FROM cgu_auxilio_brasil WHERE ano_referencia = 2023 AND COALESCE(\"NOME FAVORECIDO\", '') NOT ILIKE '%NAO INFORMADO%' ) SELECT s.nom_pessoa, s.maior_salario FROM servidores_ativos s JOIN auxilio_brasil_2023 a ON TRIM(UPPER(s.nom_pessoa)) = a.nome_favorecido LIMIT 50;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

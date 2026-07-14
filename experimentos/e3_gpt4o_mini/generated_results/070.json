@@ -1,0 +1,21 @@
+{
+  "id_teste": "70",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT DISTINCT TRIM(UPPER(r.nom_pessoa)) AS nome_servidor, TRIM(UPPER(a.\"NOME FAVORECIDO\") ) AS nome_favorecido FROM remuneracao_municipio r JOIN cgu_auxilio_brasil a ON TRIM(UPPER(r.nom_pessoa)) = TRIM(UPPER(a.\"NOME FAVORECIDO\") ) WHERE r.ano_referencia = 2023 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' AND a.ano_referencia = 2023;",
+  "columns": [],
+  "rows": [],
+  "row_count": 0,
+  "col_count": 0,
+  "schema_hash": null,
+  "error": "Binder Error: Values list \"r\" does not have a column named \"nom_pessoa\"\n\nLINE 1: ...eracao_municipio r JOIN cgu_auxilio_brasil a ON TRIM(UPPER(r.nom_pessoa)) = TRIM(UPPER(a.\"NOME FAVORECIDO\") ) WHERE...\n                                                                      ^",
+  "exported_at": "2026-07-14T23:56:19.436707+00:00",
+  "metrics_checkpoint": {
+    "vsr": false,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 0,
+    "gen_rows": 0
+  }
+}

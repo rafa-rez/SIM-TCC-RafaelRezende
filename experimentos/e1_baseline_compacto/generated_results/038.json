@@ -1,0 +1,27 @@
+{
+  "id_teste": "38",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT COUNT(*) AS total_pagamentos FROM despesa_pagamento WHERE ano_referencia = 2023 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND num_doc_credor NOT IN ('-1', '0');",
+  "columns": [
+    "total_pagamentos"
+  ],
+  "rows": [
+    {
+      "total_pagamentos": 12219
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "8e1d6d68075b715c",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:18.555987+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

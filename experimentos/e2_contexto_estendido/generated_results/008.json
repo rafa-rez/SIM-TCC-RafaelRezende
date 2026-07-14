@@ -1,0 +1,76 @@
+{
+  "id_teste": "8",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "SELECT c.num_contrato, cc.dsc_nome_credor, CAST(t.vlr_termo_aditivo AS DECIMAL) AS valor_aditivo FROM contrato_contratos c LEFT JOIN contrato_termoContrato t ON c.seq_contrato = t.seq_contrato LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2023 AND CAST(SUBSTR(CAST(c.dat_assinatura AS VARCHAR), 1, 4) AS INTEGER) = 2023 AND t.ano_referencia = 2024 AND t.dsc_tipo_alteracao ILIKE '%ACRESCIMO DE VALOR%' AND COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%' ORDER BY valor_aditivo DESC LIMIT 50;",
+  "columns": [
+    "num_contrato",
+    "dsc_nome_credor",
+    "valor_aditivo"
+  ],
+  "rows": [
+    {
+      "num_contrato": 13,
+      "dsc_nome_credor": "ORGANIZACAO EMY LTDA-EPP",
+      "valor_aditivo": 66810.24
+    },
+    {
+      "num_contrato": 28,
+      "dsc_nome_credor": "LEONARDO FILOMENO",
+      "valor_aditivo": 24222.8
+    },
+    {
+      "num_contrato": 37,
+      "dsc_nome_credor": "EMPRESA JORNALISTICA OPINIAO LTDA.",
+      "valor_aditivo": 6450.75
+    },
+    {
+      "num_contrato": 29,
+      "dsc_nome_credor": "ALEIXO & FERREIRA HIDROJATEAMENTO LTDAME",
+      "valor_aditivo": 4631.0
+    },
+    {
+      "num_contrato": 15,
+      "dsc_nome_credor": "TELEFONICA BRASIL SA",
+      "valor_aditivo": 1308.0
+    },
+    {
+      "num_contrato": 5,
+      "dsc_nome_credor": "ELOY MONTEIRO DOMINGOS",
+      "valor_aditivo": 1250.0
+    },
+    {
+      "num_contrato": 14,
+      "dsc_nome_credor": "COMPANHIA ITABIRANA DE TELECOMUNICACOES LTDA.",
+      "valor_aditivo": 871.92
+    },
+    {
+      "num_contrato": 5,
+      "dsc_nome_credor": "ELOY MONTEIRO DOMINGOS",
+      "valor_aditivo": 798.0
+    },
+    {
+      "num_contrato": 27,
+      "dsc_nome_credor": "ROSIMEIRE RODRIGUES ALVES VIEIRA",
+      "valor_aditivo": 450.0
+    },
+    {
+      "num_contrato": 4,
+      "dsc_nome_credor": "LEONARDO FILOMENO-ME",
+      "valor_aditivo": 190.0
+    }
+  ],
+  "row_count": 10,
+  "col_count": 3,
+  "schema_hash": "8b29873b635cff22",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:40.912746+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 0,
+    "gen_rows": 10
+  }
+}

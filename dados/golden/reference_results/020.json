@@ -1,0 +1,21 @@
+{
+  "id_teste": "20",
+  "source": "golden_reference",
+  "sql": "SELECT SUM(CAST(vlr_contrato AS DECIMAL)) AS total FROM contrato_contratos WHERE ano_referencia = 2025 AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5);",
+  "columns": [
+    "total"
+  ],
+  "rows": [
+    {
+      "total": 14809951.09
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "11239872d178729a",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:38.996374+00:00",
+  "input_usuario": "Qual o valor total de contratos assinados em 2025?",
+  "dificuldade": "facil",
+  "categoria": "Consulta Simples"
+}

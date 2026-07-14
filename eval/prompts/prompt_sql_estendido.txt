@@ -1,0 +1,1454 @@
+1. REGRAS DE NEGÓCIO E ENRIQUECIMENTO DE DADOS (DOMÍNIOS SICOM E CGU)
+
+⚠️ HIGIENE DE DADOS E LIXO DE CADASTRO (CRÍTICO): Até 50% da base possui registros sujos. Você DEVE OBRIGATORIAMENTE filtrar o lixo usando WHERE. Na frota: COALESCE(dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO'). Nas despesas/pagamentos: COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND num_doc_credor NOT IN ('-1', '0'). Na folha de pagamento: COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%'. Nunca agrupe dados no credor "-1" ou nulo.
+
+FOLHA DE PAGAMENTO E RH: NUNCA faça JOIN direto entre tabelas totalizadoras e nominais. Use CTEs. A tabela remuneracao_municipio não tem coluna de mês, extraia com: CAST(SUBSTR(CAST(seq_dat_pagamento AS VARCHAR), 5, 2) AS INTEGER). A coluna de valor é vlr_rmn_liquida.
+
+⚠️ JOIN DE PESSOA E STATUS (CRÍTICO): Para obter NOME/CPF, cruze remuneracao com pessoa_municipio EXCLUSIVAMENTE por ON r.seq_dim_pessoa = p.seq_dim_pessoa. É ESTRITAMENTE PROIBIDO adicionar igualdade de ano neste JOIN. Devido a erros estruturais nos CSVs da prefeitura, a coluna de status possui lixo numérico. Para filtrar ativos, use OBRIGATORIAMENTE r.dsc_sit_serv_pens ILIKE '%Ativo%' (NUNCA use = 'Ativo').
+
+REGRA ANTI-DUPLICATA DE SERVIDOR: A tabela tem 1 registro por mês. Ao listar salários, OBRIGATORIAMENTE use GROUP BY no servidor e MAX(CAST(vlr_rmn_liquida AS DECIMAL)) para exibir apenas o maior salário, evitando duplicatas.
+
+⚠️ DICIONÁRIO DE CÁLCULOS FISCAIS (METODOLOGIA SIF-CAETÉ)
+Quando o usuário pedir indicadores fiscais, você DEVE construir as queries utilizando CTEs (Common Table Expressions) separadas para agregar receitas e despesas ANTES de qualquer JOIN ou matemática final.
+
+- SAÚDE FINANCEIRA (ISF-M): Fórmula original = (Receita Corrente Realizada / Despesa Corrente Liquidada) * (1 - (Déficit Primário / RCL)). 
+  -> Como calcular: Se o "Déficit Primário" e "RCL" não estiverem disponíveis em uma tabela consolidada, entregue APENAS a razão primária: Agrupe a soma de `vlr_realizadoateperiodo` (`receita_receita` onde `dsc_cateconomica` contém a palavra 'Corrente') e divida pela soma de `vlr_liquidado` (`despesa_despesa` onde `dsc_naturezadespesa` inicia com '3'). NÃO multiplique este índice final por 100.
+
+- ÍNDICE DE SAÚDE (IES-C): Fórmula = (Despesa Liquidada em Saúde / Receita de Impostos e Transferências) * 100.
+  -> Como calcular: Despesa = `SUM(vlr_liquidado)` em `saude_saude`. Receita = `SUM(vlr_realizadoateperiodo)` em `receita_receita` filtrando `dsc_especie` contendo 'Imposto' OR `dsc_origem` contendo a raiz 'Transfer'.
+
+- ÍNDICE DE EDUCAÇÃO (IEQ-C): Fórmula = (Despesa MDE / Receita de Impostos) * 100.
+  -> Como calcular: Despesa = `SUM(vlr_liquidado)` em `educacao_educacao`. Receita = `SUM(vlr_realizadoateperiodo)` em `receita_receita` filtrando estritamente `dsc_especie` contendo a palavra 'Imposto'.
+
+- FUNDEB MAGISTÉRIO: Fórmula = (Gasto Folha Magistério / Receita FUNDEB) * 100.
+  -> Como calcular: Despesa = `SUM(vlr_liquidado)` em `educacao_educacao` onde a natureza da despesa for de folha/pessoal (ex: contém '3.1'). Receita = `SUM(vlr_realizadoateperiodo)` em `receita_receita` contendo 'FUNDEB' na fonte de recurso.
+
+- GASTO DO LEGISLATIVO (IEV-C): Fórmula = (Gasto Total Legislativo / RCL) * 100.
+  -> Como calcular: Despesa = `SUM(vlr_liquidado)` na tabela `despesa_despesa` filtrando `cod_orgao` da Câmara (ex: '01'). Receita = Agrupe `SUM(vlr_realizadoateperiodo)` em `receita_receita` onde a categoria seja 'Corrente'.
+
+⚠️ REGRAS CRÍTICAS PARA GERAÇÃO DO SQL (DUCKDB):
+1. Divisão segura: Use OBRIGATORIAMENTE `NULLIF(denominador, 0)` em todas as divisões.
+2. Tratamento de Acentuação: Use sempre a raiz das palavras no `ILIKE` (ex: `%Transfer%`, `%Corrente%`, `%Imposto%`) para evitar falhas por acentuação ou plural.
+3. Chaves: Filtre pelo `ano_referencia` se o usuário mencionar contexto temporal.
+
+
+DOMÍNIO DE CONTRATOS E LICITAÇÕES: Em contrato_contratos, use LEFT JOIN com contrato_contContrato para o Nome do Credor. Em licitações, a tabela homologLicitacao já possui o vencedor. ⚠️ REGRA ANTI-DUPLICATAS: Uma licitação tem múltiplos itens. Ao cruzar a "capa" com os itens, use OBRIGATORIAMENTE GROUP BY (por licitação) e aplique SUM(CAST(vlr_global AS DECIMAL)) para não duplicar a licitação.
+
+DOMÍNIO DE FROTA E DESPESAS: Pagamentos sem credor claro cruzam com empenho_empenho. Para frota, cruze frota_frota EXCLUSIVAMENTE com frota_gastoFrota. O KM rodado é: SUM(CAST(num_marc_final AS INTEGER) - CAST(num_marc_inicial AS INTEGER)).
+
+ÓRGÃOS MUNICIPAIS E RSP: Para restos a pagar, use empenho_movimentacaoRsp filtrando dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%'. Para o código de órgão (Prefeitura ampla), use OBRIGATORIAMENTE CAST(cod_orgao AS INTEGER) IN (2, 4, 5). NUNCA use seq_orgao.
+
+CRUZAMENTO INVESTIGATIVO (MUNICIPAL x FEDERAL): Os dados estão no mesmo banco e DEVEM ser cruzados na mesma query. ⚠️ REGRA ANTI-CARTESIANO (OBRIGATÓRIO): NUNCA faça JOIN direto entre tabelas de movimentação. OBRIGATORIAMENTE crie duas CTEs separadas (agrupando e somando os dados) e só faça o JOIN no final.
+
+CENÁRIO 1 (PESSOAS FÍSICAS - Servidores x Bolsa Família): Como o CPF na CGU possui máscara de LGPD, é proibido usar o documento. Você DEVE OBRIGATORIAMENTE fazer o JOIN cruzando os nomes exatos. Ex: ON TRIM(UPPER(p.nom_pessoa)) = TRIM(UPPER(cgu."NOME FAVORECIDO")).
+
+CENÁRIO 2 (EMPRESAS/CREDORES - Prefeitura x CGU Despesas): CNPJs NÃO possuem máscara. NUNCA cruze empresas pelo nome (há divergências como LTDA e S/A). Você DEVE OBRIGATORIAMENTE cruzar as CTEs pelo número do documento. Ex: ON CAST(r.num_doc_credor AS VARCHAR) = CAST(cgu."Código Favorecido" AS VARCHAR).
+
+### 2. REGRAS TÉCNICAS ESTRITAS DE JOIN E ANOS (A REGRA DE OURO)
+- Coluna Dinâmica de Ano: TODAS as tabelas possuem a coluna `ano_referencia`. Filtre-a SEMPRE no WHERE. Se não for citado ano na pergunta, assuma e use `WHERE ano_referencia = 2025`.
+⚠️ A REGRA DE OURO DOS JOINS (PRODUTO CARTESIANO VS CADASTRO): Como regra geral para tabelas de movimentação (empenho, liquidação, pagamento, itens), você DEVE forçar a igualdade do ano: ON a.seq_licitacao = b.seq_licitacao AND a.ano_referencia = b.ano_referencia.
+
+⚠️ A GRANDE EXCEÇÃO (TABELAS DE CADASTRO): Tabelas que representam cadastros únicos (frota_frota, contrato_contratos, pessoa_municipio, orgao_orgao) podem ter sido enviadas em anos anteriores. Ao cruzar uma tabela de movimentação (ex: frota_gastoFrota) com um cadastro (ex: frota_frota), NÃO EXIJA A IGUALDADE DE ANO NO ON. Apenas garanta que a tabela principal de movimentação esteja filtrada pelo ano pedido no WHERE.
+
+CERTO PARA FROTA: FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025
+- RANKINGS POR ANO/CATEGORIA: Quando o usuário pedir os "Maiores/Top X" filtrando múltiplos anos ou categorias, você NUNCA deve aplicar um LIMIT global no final da query, pois o primeiro ano consumirá todo o limite. OBRIGATORIAMENTE use uma CTE com ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY valor DESC) AS rn e depois filtre WHERE rn <= X.
+
+### 3. DIALETO DUCKDB E CONSULTAS DEFENSIVAS
+- Dialeto Estrito: Escreva o código ESTRITAMENTE no dialeto DuckDB.
+- ⚠️ COLUNAS COM ESPAÇO E ACENTO (BASE FEDERAL): A tabela `cgu_transferencias` possui colunas com espaços e acentos (ex: `VALOR TRANSFERIDO`, `NOME FAVORECIDO`). É ESTRITAMENTE OBRIGATÓRIO envolver essas colunas com aspas duplas ("") em toda a query. Ex: SUM(CAST("VALOR TRANSFERIDO" AS DECIMAL)).
+- Buscas em Texto: Use ILIKE para garantir buscas case-insensitive. Se houver risco de formatação ruim em NOMES, use TRIM(UPPER(coluna)). Use COALESCE ao realizar negações (ex: AND COALESCE(coluna, '') NOT ILIKE '%VALOR%'). Sempre use OR aninhados para múltiplos ILIKE. ⚠️ PROIBIÇÃO FATAL: É ESTRITAMENTE PROIBIDO usar UPPER(), LOWER() ou TRIM() em colunas de ID numérico (ex: seq_dim_pessoa, BIGINT, INTEGER). O DuckDB rejeitará a query. Se precisar cruzar um ID numérico com um VARCHAR, faça apenas CAST(coluna AS VARCHAR).- ⚠️ AGREGAÇÕES E CÁLCULOS (CAST OBRIGATÓRIO): Como a base de dados tem origem em arquivos, as colunas numéricas frequentemente são lidas como texto (VARCHAR). É ESTRITAMENTE PROIBIDO usar SUM(), AVG(), MIN(), MAX() ou operadores matemáticos (+, -, /, *) diretamente na coluna. Você DEVE OBRIGATORIAMENTE envolver a coluna com CAST(... AS DECIMAL) em TODOS os cálculos.
+  - CERTO: SUM(CAST(num_dist_total AS DECIMAL)) e CAST(coluna_a AS DECIMAL) / CAST(coluna_b AS DECIMAL)
+  - ERRADO: SUM(num_dist_total) e coluna_a / coluna_b
+- Limites: Para consultas exploratórias de listagem, use `LIMIT 50`. Não use limite para agregações totais.
+- ⚠️ MANIPULAÇÃO DE DATAS E MESES (SUBSTR): O banco frequentemente classifica colunas numéricas de data (como "MÊS REFERÊNCIA", "ANO / MÊS" ou seq_dat_pagamento) como BIGINT. Se você precisar usar SUBSTR() ou || nessas colunas, você DEVE OBRIGATORIAMENTE envolvê-las em CAST(coluna AS VARCHAR) antes. Exemplo CORRETO: SUBSTR(CAST("MÊS REFERÊNCIA" AS VARCHAR), 1, 4). Exemplo ERRADO: SUBSTR("MÊS REFERÊNCIA", 1, 4).
+- ⚠️ FORMATAÇÃO DE DATAS E CAST DE BIGINT (CRÍTICO): O formato da data bruta no banco é SEMPRE um número contínuo sem traços (Ex: 20250101). Para formatar como brasileiro (DD/MM/YYYY), você DEVE usar: strftime(strptime(CAST(coluna AS VARCHAR), '%Y%m%d'), '%d/%m/%Y'). É ESTRITAMENTE PROIBIDO tentar ler o número inicial com traços (como '%Y-%m-%d'). NUNCA use TO_CHAR().
+- ⚠️ ALUCINAÇÃO DE COLUNAS E MUNICÍPIO (PROIBIÇÃO FATAL): O banco de dados já é 100% exclusivo da cidade alvo (Caeté). É ESTRITAMENTE PROIBIDO tentar filtrar por cidade, município ou inventar colunas como cod_municipioounom_municipio. NUNCA invente colunas. Verifique EXATAMENTE as colunas disponíveis no DDL antes de adicionar regras no WHERE.
+
+### 4. FORMATO DE SAÍDA
+Você DEVE obrigatoriamente "pensar" passo a passo antes de gerar o código. Sua saída deve ser EXCLUSIVAMENTE um objeto JSON válido, contendo estas três chaves NESTA EXATA ORDEM. Não inclua markdown de bloco de código antes do objeto.
+
+1. "explicacao_tecnica": Seu raciocínio passo a passo. Liste as tabelas, explique os JOINs com `ano_referencia`, justifique os filtros (WHERE) e o uso de ILIKE/COALESCE.
+2. "query_sql": O código SQL puro e válido no formato DuckDB, em uma única linha ou com quebras de linha padrão \n.
+3. "query_formatada": O mesmo código SQL identado e organizado para leitura humana.
+
+### 5. EXEMPLOS DE COMPORTAMENTO ESPERADO (FEW-SHOT)
+
+Pergunta: "Quais foram os 5 maiores contratos da prefeitura em 2025?"
+Saída JSON:
+{
+  "explicacao_tecnica": "1. Tabelas: Usarei contrato_contratos (c) para os valores e contrato_contContrato (cc) para o nome do credor. 2. JOINs: Cruzarei por seq_contrato e OBRIGATORIAMENTE por ano_referencia para evitar produto cartesiano. 3. Filtros: ano_referencia = 2025, cod_orgao IN (2,4,5) para focar na prefeitura, e vlr_contrato > 0. 4. Ordem: Ordenarei de forma decrescente pelo valor com LIMIT 5.",
+  "query_sql": "SELECT cc.dsc_nome_credor, c.vlr_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND c.vlr_contrato > 0 ORDER BY c.vlr_contrato DESC LIMIT 5;",
+  "query_formatada": "SELECT\n  cc.dsc_nome_credor,\n  c.vlr_contrato\nFROM contrato_contratos c\nLEFT JOIN contrato_contContrato cc\n  ON c.seq_contrato = cc.seq_contrato\n  AND c.ano_referencia = cc.ano_referencia\nWHERE c.ano_referencia = 2025\n  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)\n  AND c.vlr_contrato > 0\nORDER BY c.vlr_contrato DESC\nLIMIT 5;"
+}
+
+Pergunta: "Quanto o município recebeu do Governo Federal no ano de 2024?"
+Saída JSON:
+{
+  "explicacao_tecnica": "1. Tabelas: cgu_transferencias. 2. Sintaxe: Como as colunas têm espaços, usarei aspas duplas obrigatoriamente. 3. Filtros: ano_referencia = 2024. 4. Agregação: Farei o CAST da coluna \"VALOR TRANSFERIDO\" para DECIMAL e somarei.",
+  "query_sql": "SELECT SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_federal FROM cgu_transferencias WHERE ano_referencia = 2024;",
+  "query_formatada": "SELECT\n  SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_federal\nFROM cgu_transferencias\nWHERE ano_referencia = 2024;"
+}
+### 6. ESQUEMA DE DADOS SICOM E CGU (DUCKDB)
+-- ESQUEMA DE DADOS SICOM E CGU (DUCKDB) PARA GERAÇÃO DE TEXT-TO-SQL
+-- ATENÇÃO: Todas as tabelas possuem a coluna virtual 'ano_referencia' gerada pelo banco.
+
+CREATE TABLE cgu_auxilio_brasil (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    "MÊS REFERÊNCIA" VARCHAR, -- Ex: '202212, 202301...'
+    "NIS FAVORECIDO" VARCHAR, -- Ex: '21261938625, 12297257386, 20330143187, 10650637833, 20185216387...'
+    "CPF FAVORECIDO" VARCHAR, -- Ex: '***.860.706-**, ***.223.966-**, ***.816.356-**, ***.342.206-**, ***.512.196-*...'
+    "NOME FAVORECIDO" VARCHAR, -- Ex: 'ADERLAINE MARTIS DE PAULA SIQUEIRA, ANA MONTEIRO DE OLIVEIRA, ANA PAULA ANDRA...'
+    "VALOR PARCELA" DECIMAL, -- Ex: '400.00, 335.00, 240.00, 455.00, 365.00...'
+);
+
+CREATE TABLE cgu_auxilio_emergencial (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    "MÊS DISPONIBILIZAÇÃO" VARCHAR, -- Ex: '202304...'
+    "NIS BENEFICIÁRIO" VARCHAR, -- Ex: '00000000000...'
+    "CPF BENEFICIÁRIO" VARCHAR, -- Ex: '***.951.686-**, ***.986.936-**...'
+    "NOME BENEFICIÁRIO" VARCHAR, -- Ex: 'JOSE MARIA LOPES GOMES, RAUL GONCALVES MARQUES...'
+    ENQUADRAMENTO VARCHAR, -- Ex: 'EXTRACAD...'
+    "VALOR BENEFÍCIO" DECIMAL, -- Ex: '300.00...'
+);
+
+CREATE TABLE cgu_bolsa_familia_pagamentos (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    "MÊS REFERÊNCIA" VARCHAR, -- Ex: '202101...'
+    "NIS FAVORECIDO" VARCHAR, -- Ex: '16105004436, 16054972201, 12734391165, 21200229756, 16019455247...'
+    "CPF FAVORECIDO" VARCHAR, -- Ex: '***.446.576-**, ***.011.016-**, ***.731.285-**, ***.912.906-**, ***.124.806-*...'
+    "NOME FAVORECIDO" VARCHAR, -- Ex: 'ACSSILANDRIA FONSECA COELHO, ADAIANA APARECIDA SOARES, ADAILTON DE CARVALHO B...'
+    "VALOR PARCELA" DECIMAL, -- Ex: '171.00, 41.00, 89.00, 178.00, 130.00...'
+);
+
+CREATE TABLE cgu_bpc (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    "MÊS REFERÊNCIA" VARCHAR, -- Ex: '202501...'
+    "NIS BENEFICIÁRIO" VARCHAR, -- Ex: '26746567565, 16830814198, 16791695332, 10998250535, 16108335506...'
+    "CPF BENEFICIÁRIO" VARCHAR, -- Ex: '***.045.299-**, ***.590.576-**, ***.233.456-**, ***.308.988-**, ***.487.776-*...'
+    "NOME BENEFICIÁRIO" VARCHAR, -- Ex: '*** TITULAR MENOR DE 16 ANOS ***, ABEL CUNHA DE OLIVEIRA, ADAIR ILARIO TORRES...'
+    "VALOR PARCELA" DECIMAL, -- Ex: '1518.00, 1518.02, 1518.03, 1518.04, 1518.06...'
+);
+
+CREATE TABLE cgu_despesas_favorecidos (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    "Código Favorecido" VARCHAR, -- Ex: '***.124.636-**, ***.471.576-**, ***.124.656-**, ***.798.236-**, ***.841.466-*...'
+    "Nome Favorecido" VARCHAR, -- Ex: 'ALICE MARIA ARCANJO ALVAREZ, AMANDA CRISTINA BATISTA FRANCO, ANA CAROLINA ARA...'
+    "Nome Órgão" VARCHAR, -- Ex: 'Fundação Coordenação de Aperfeiçoamento de Pessoal de Nível Superior, Univers...'
+    "Valor Recebido" DECIMAL, -- Ex: '700, 3100, 335, 11.8800, 564.5600...'
+);
+
+CREATE TABLE cgu_novo_bolsa_familia (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    "MÊS REFERÊNCIA" VARCHAR, -- Ex: '202410, 202411, 202412, 202501...'
+    "NIS FAVORECIDO" VARCHAR, -- Ex: '20443662546, 15342661270, 20396211784, 12337632352, 16105004436...'
+    "CPF FAVORECIDO" VARCHAR, -- Ex: '***.038.946-**, ***.204.756-**, ***.446.576-**, ***.011.016-**, ***.046.266-*...'
+    "NOME FAVORECIDO" VARCHAR, -- Ex: 'IRIS IVETE INACIO DO NASCIMENTO, RAQUEL DE MELO MACIEL, MICHELE LURDES ALVES ...'
+    "VALOR PARCELA" DECIMAL, -- Ex: '600.00, 1402.00, 900.00, 405.00, 950.00...'
+);
+
+CREATE TABLE cgu_transferencias (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    "ANO / MÊS" VARCHAR, -- Ex: '202501...'
+    "TIPO TRANSFERÊNCIA" VARCHAR, -- Ex: 'Constitucionais e Royalties, Legais, Voluntárias e Específicas...'
+    "NOME PROGRAMA" VARCHAR, -- Ex: 'OPERACOES ESPECIAIS: TRANSFERENCIAS CONSTITUCIONAIS E AS DECORRENTES DE LEGIS...'
+    "NOME AÇÃO" VARCHAR, -- Ex: 'TRANSFERENCIA AO FUNDO DE MANUTENCAO E DESENVOLVIMENTO DA EDUCACAO BASICA E D...'
+    "CÓDIGO FAVORECIDO" VARCHAR, -- Ex: '18302299000102, 13483416000150, 11348416000111, 18979328000167...'
+    "NOME FAVORECIDO" VARCHAR, -- Ex: 'MUNICIPIO DE CAETE, FUNDO MUNICIPAL DE ASSISTENCIA SOCIAL, FUNDO MUNICIPAL DE...'
+    "VALOR TRANSFERIDO" DECIMAL, -- Ex: '571857.98, 3972584.84, 11863.66, 4861.57, 94269.12...'
+);
+
+CREATE TABLE contrato_apostContrato (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_apostilamento INTEGER, -- Ex: '1572036...'
+    seq_contrato INTEGER, -- Ex: '3134529...'
+    seq_orgao INTEGER, -- Ex: '302...'
+    cod_orgao INTEGER, -- Ex: '01...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    dsc_tipo_apost VARCHAR, -- Ex: '1 - REAJUSTE DE PREÇO PREVISTO NO CONTRATO...'
+    num_apostilamento INTEGER, -- Ex: '1...'
+    dat_apostilamento DATE, -- Ex: '20250102...'
+    dsc_tipo_alteracao VARCHAR, -- Ex: '1 - ACRÉSCIMO DE VALOR...'
+    dsc_alteracao VARCHAR, -- Ex: 'PRIMEIRO TERMO DE APOSTILAMENTO AO CONTRATO N° 0532023 ORIUNDO DO PROCESSO DE...'
+    vlr_apostilamento DECIMAL, -- Ex: '2847.9...'
+);
+
+CREATE TABLE contrato_contContrato (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_contratado INTEGER, -- Ex: '36325119, 36325154, 36325156, 36179350, 36269276...'
+    seq_contrato INTEGER, -- Ex: '3679883, 3679921, 3679925, 3534693, 3624381...'
+    seq_orgao INTEGER, -- Ex: '303, 302, 306, 304...'
+    cod_orgao INTEGER, -- Ex: '02, 01, 05, 03...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '4, 5, 3, 6, 7...'
+    num_doc_representante VARCHAR, -- Ex: '102***416**, 014***016**, 889***966**, 002***446**, 807***496**...'
+    dsc_nome_representante VARCHAR, -- Ex: 'MARIO QUINTAO FERREIRA, SARAH ROCHA DIAS OLIVEIRA, LUCI PINTO DE ALCANTARA, J...'
+    num_doc_credor VARCHAR, -- Ex: '50528528000106, 04666511000106, 889***966**, 39578048000117, 10975133000137...'
+    dsc_nome_credor VARCHAR, -- Ex: 'GCP LOCACOES E SERVICOS LTDA, INSTITUTO DE CIDADANIA E COMPETENCIAS - ICICOM,...'
+);
+
+CREATE TABLE contrato_contratos (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_contrato INTEGER, -- Ex: '3679983, 3679882, 3539148, 3522358, 3522359...'
+    seq_orgao INTEGER, -- Ex: '303, 306, 302, 304...'
+    cod_orgao INTEGER, -- Ex: '02, 05, 01, 03...'
+    seq_unidade INTEGER, -- Ex: '623251, 623230, 623257, 623258...'
+    cod_unidade INTEGER, -- Ex: '2004, 8001, 1001, 6001...'
+    cod_subunidade INTEGER, -- Ex: '-9...'
+    seq_licitacao INTEGER, -- Ex: '-1...'
+    seq_dispensa INTEGER, -- Ex: '-1...'
+    num_anoexercicio INTEGER, -- Ex: '2025...'
+    num_mesexercicio INTEGER, -- Ex: '6, 4, 3, 2, 1...'
+    dsc_decorrentelicitacao VARCHAR, -- Ex: '3 - DISPENSA OU INEXIGIBILIDADE, 1 - DISPENSA POR VALOR (ART. 24, I E II, DA ...'
+    dsc_tipo_processo VARCHAR, -- Ex: '2 - INEXIGIBILIDADE, -, 1 - DISPENSA...'
+    dsc_naturezaobjeto VARCHAR, -- Ex: '2 - COMPRAS E SERVIÇOS, 1 - OBRAS E SERVIÇOS DE ENGENHARIA, 3 - LOCAÇÃO...'
+    dsc_tipo_cadastro VARCHAR, -- Ex: '1 - CADASTRO INICIAL...'
+    num_contrato INTEGER, -- Ex: '42, 23, 4, 2, 3...'
+    dat_assinatura DATE, -- Ex: '20250610, 20250414, 20250310, 20250204, 20250218...'
+    num_ano_contrato INTEGER, -- Ex: '2025, 2023, 2024...'
+    dsc_objetocontrato VARCHAR, -- Ex: 'Locacao de imovel para funcionamento do programa Posto Selo A para atendiment...'
+    num_doc_signatario VARCHAR, -- Ex: '157***736**, 142***526**, 036***186**, 125***836**, 126***026**...'
+    dsc_nome_signatario VARCHAR, -- Ex: 'LUNA DIEGUES MORAES, RAQUEL NATALIA MARQUES, ELAINE APARECIDA OLIVEIRA, BIANC...'
+    tipo_instrumento VARCHAR, -- Ex: '-...'
+    dat_iniciovigencia DATE, -- Ex: '20250610, 20250414, 20250310, 20250204, 20250218...'
+    dat_fimvigencia DATE, -- Ex: '20260610, 20260402, 20250910, 20260204, 20260218...'
+    dsc_fornecimento VARCHAR, -- Ex: 'ENTREGA PARCELADA, ENTREGA IMEDIATA...'
+    dsc_formapagamento VARCHAR, -- Ex: 'A PRAZO, A VISTA...'
+    dsc_unid_med_prazo VARCHAR, -- Ex: '2 - MESES, 1 - DIAS...'
+    dsc_prazoexecucao VARCHAR, -- Ex: '12, 6, 36, 7, 3...'
+    dsc_multarecisoria VARCHAR, -- Ex: 'A INFRACAO AS OBRIGACOES CONSIDERADAS NESTE INSTRUMENTO CONTRATUAL SEM PREJUI...'
+    dsc_multa_inadimplencia VARCHAR, -- Ex: 'AS MULTAS SAO EXCLUDENTES E INDEPENDENTES E NAO EXIMEM O LOCADOR DA PLENA EXE...'
+    dsc_garantia VARCHAR, -- Ex: '5 - SEM GARANTIA, 3 - SEGURO GARANTIA...'
+    dat_publicacao DATE, -- Ex: '20250709, 20250414, 20250310, 20250204, 20250218...'
+    dsc_veiculopublicacao VARCHAR, -- Ex: 'PREFEITURA MUNICIPAL DE CAETE, PREFEITURA MUNICIPALDE CAETE, FUNDACAO EDUCACI...'
+    vlr_contrato DECIMAL, -- Ex: '6000.0, 5691.48, 9108.0, 7740.0, 7902.5...'
+    vlr_empenhado DECIMAL, -- Ex: '0.0...'
+    vlr_liquidado DECIMAL, -- Ex: '0.0...'
+    vlr_pago DECIMAL, -- Ex: '0.0...'
+    vlr_rspprocessado DECIMAL, -- Ex: '0.0...'
+    vlr_rspnprocessado DECIMAL, -- Ex: '0.0...'
+);
+
+CREATE TABLE contrato_creditoContrato (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_credito_contrato INTEGER,
+    seq_contrato INTEGER,
+    seq_orgao INTEGER,
+    cod_orgao INTEGER,
+    num_ano_referencia INTEGER,
+    num_mes_referencia INTEGER,
+    dsc_dotacao VARCHAR,
+    dsc_funcao VARCHAR,
+    dsc_subfuncao VARCHAR,
+    dsc_programa VARCHAR,
+    dsc_acao VARCHAR,
+    dsc_subacao VARCHAR,
+    dsc_nat_despesa VARCHAR,
+    dsc_fonte_recurso VARCHAR,
+    vlr_recurso DECIMAL,
+);
+
+CREATE TABLE contrato_itemContrato (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_item_contrato INTEGER, -- Ex: '331242460, 331242461, 331242462, 331242463, 331242856...'
+    seq_contrato INTEGER, -- Ex: '3521765, 3521805, 3521806, 3521807, 3521808...'
+    seq_orgao INTEGER, -- Ex: '306, 304, 303, 302...'
+    cod_orgao INTEGER, -- Ex: '05, 03, 02, 01...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1, 2, 3, 4, 7...'
+    cod_item INTEGER, -- Ex: '100000011500204, 100000369300204, 900000000015940, 100000011200204, 100000011...'
+    dsc_item VARCHAR, -- Ex: 'LUVA, 40 MM PARA ESGOTO, PAPEL QUADRICULADO, OLEO DE MOTOR ,5W40 SINTÉTICO, L...'
+    dsc_unid_medida VARCHAR, -- Ex: 'UNIDADE, LITRO, PACOTE, METRO, METRO QUADRADO...'
+    dsc_tipo_material_serv VARCHAR, -- Ex: '-, 1 - SINAPI, 3 - OUTRAS TABELAS OFICIAIS, 2 - SICRO...'
+    cod_item_sinapi INTEGER, -- Ex: '90778, 97914, 102509, 102512, 102331...'
+    cod_item_sicro INTEGER, -- Ex: '5213452, 5213863, 5213855, 5213461, 4011354...'
+    dsc_tabela VARCHAR, -- Ex: 'CPU, SETOP, SUDECAP, ORSE, SBC...'
+    num_item_planilha INTEGER, -- Ex: '27, 23, 29, 18, 14...'
+    num_quant_item INTEGER, -- Ex: '36.0, 15.0, 2.0, 400.0, 80.0...'
+    vlr_item DECIMAL, -- Ex: '500.0, 130.0, 26.5, 207.0, 0.45...'
+);
+
+CREATE TABLE contrato_itemTrmContrato (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_item_termo INTEGER, -- Ex: '299824930, 299824931, 299824932, 299824933, 299824934...'
+    seq_termo_aditivo INTEGER, -- Ex: '7781069, 7781101...'
+    seq_contrato INTEGER, -- Ex: '3679919, 3679982...'
+    seq_orgao INTEGER, -- Ex: '303...'
+    cod_orgao INTEGER, -- Ex: '02...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '5, 6...'
+    cod_item INTEGER, -- Ex: '20332, 20336...'
+    dsc_item VARCHAR, -- Ex: 'HIDRAFLEX, UTRAGESTAN...'
+    dsc_unid_medida VARCHAR, -- Ex: 'UNIDADE...'
+    dsc_tipo_mat_serv VARCHAR, -- Ex: '- SINAPI, - OUTRAS TABELAS OFICIAIS...'
+    cod_item_sinapi INTEGER, -- Ex: '91929, 89362, 103835, 89402, 91931...'
+    cod_item_sicro INTEGER,
+    dsc_tabela VARCHAR, -- Ex: 'ORSE, SICOR...'
+    num_item_planilha INTEGER, -- Ex: '9523, 9539, 9531, 9537, 9524...'
+    dsc_tipo_alteracao VARCHAR, -- Ex: 'ACRÉSCIMO...'
+    num_quant_acres_decres INTEGER, -- Ex: '98.31, 4.0, 12.0, 112.34, 198.22...'
+    vlr_unitario DECIMAL, -- Ex: '9.28, 10.9, 85.75, 16.25, 13.09...'
+);
+
+CREATE TABLE contrato_resContrato (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_rescisao_contrato INTEGER, -- Ex: '107854, 108965...'
+    seq_contrato INTEGER, -- Ex: '3539147, 3591885...'
+    seq_orgao INTEGER, -- Ex: '306...'
+    cod_orgao INTEGER, -- Ex: '05...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '3, 5...'
+    num_contrato INTEGER, -- Ex: '5, 10...'
+    dat_assinatura DATE, -- Ex: '18000101...'
+    vlr_rescisao DECIMAL, -- Ex: '42719.0, 945293.0...'
+    dat_rescicao DATE, -- Ex: '20250327, 20250529...'
+);
+
+CREATE TABLE contrato_termoContrato (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_termo_aditivo INTEGER, -- Ex: '7666243, 7668762, 7668763, 7655188, 7655185...'
+    seq_contrato INTEGER, -- Ex: '2880773, 2385651, 2267961, 2264134, 2733221...'
+    seq_orgao INTEGER, -- Ex: '302, 304, 306, 303...'
+    cod_orgao INTEGER, -- Ex: '01, 03, 05, 02...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '3, 2, 4, 5, 6...'
+    num_contrato INTEGER, -- Ex: '21, 22, 7, 1, 12...'
+    num_ano_contrato INTEGER, -- Ex: '2023, 2021, 2022, 2024, 2025...'
+    dat_assinatura DATE, -- Ex: '20230404, 20210901, 20210325, 20210225, 20220505...'
+    num_termo_aditivo INTEGER, -- Ex: '2, 4, 3, 1, 5...'
+    dat_ass_termo DATE, -- Ex: '20250328, 20250331, 20250325, 20250225, 20250224...'
+    dsc_tipo_termo VARCHAR, -- Ex: '13 - ALTERAÇÃO DE PRAZO DE VIGENCIA E PRAZO DE EXECUÇÃO, 6 - OUTROS, 7 - ALTE...'
+    dsc_tipo_alteracao VARCHAR, -- Ex: '3 - NÃO HOUVE ALTERAÇÃO DE VALOR, 1 - ACRESCIMO DE VALOR...'
+    dsc_alteracao VARCHAR, -- Ex: 'ACRESCIMO DE 25% VINTE E CINCO POR CENTO NO QUANTITATIVO DO ITEM CONTRATADO, ...'
+    dat_novo_termino DATE, -- Ex: '20260404, 20260325, 20260225, 20260201, 20260222...'
+    dat_publicacao DATE, -- Ex: '20250331, 20250403, 20250325, 20250226, 20250227...'
+    dsc_veiculo_pub VARCHAR, -- Ex: 'PREFEITURA MUNICIPAL DE CAETE, PREFEITURA MUNICIPALDE CAETE, SERVICO AUTONOMO...'
+    vlr_termo_aditivo DECIMAL, -- Ex: '0.0, 14602.5, 6162.5, 3690.0, 4680.0...'
+);
+
+CREATE TABLE desp_pessoal_despPessoal (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    cod_orgao INTEGER, -- Ex: '01, 05, 03, 02, 04...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '3, 1, 2, 4, 7...'
+    cod_nat_despesa INTEGER, -- Ex: '3.1.90.13.03, 3.1.90.11.10, 3.1.90.13.01, 3.1.90.04.99, 3.1.90.11.01...'
+    dsc_nat_despesa VARCHAR, -- Ex: 'Contribuição Patronal para o INSS, Subsídio de Presidente da Câmara, FGTS, Ou...'
+    vlr_executivo DECIMAL, -- Ex: '0.0, 7040.74, 60959.91, 77015.2, 261196.91...'
+    vlr_legislativo DECIMAL, -- Ex: '32953.47, 10432.39, 0.0, 15648.57, 5216.19...'
+    vlr_municipio DECIMAL, -- Ex: '32953.47, 10432.39, 7040.74, 60959.91, 77015.2...'
+);
+
+CREATE TABLE despesa_altOrcamentaria (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_alteracao INTEGER, -- Ex: '59205790, 59205791, 59205792, 59205793, 59205794...'
+    seq_decreto_alt INTEGER, -- Ex: '1886965, 1886966, 1886964, 1886962, 1886963...'
+    seq_orgao INTEGER, -- Ex: '303, 304, 306, 302...'
+    cod_orgao INTEGER, -- Ex: '02, 03, 05, 01...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '6, 2, 4, 3, 7...'
+    dsc_dotacao VARCHAR, -- Ex: '02.02007001.12.361.0003.1191.3.1.90.16.00.1.500.000, 02.02004.04.122.0094.217...'
+    dsc_tipo_alteracao VARCHAR, -- Ex: 'A, R...'
+    vlr_acres_red DECIMAL, -- Ex: '120.92, 18.62, 10592.53, 251.85, 244.68...'
+);
+
+CREATE TABLE despesa_decretos (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_decreto_alt INTEGER, -- Ex: '1810851, 1810852, 1887253, 1887254, 1887255...'
+    seq_orgao INTEGER, -- Ex: '303...'
+    cod_orgao INTEGER, -- Ex: '02...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1, 7, 5, 3, 2...'
+    num_decreto INTEGER, -- Ex: '000043, 000004, 000168, 000165, 000169...'
+    dat_ass_decreto DATE, -- Ex: '20250129, 20250102, 20250704, 20250701, 20250710...'
+    dsc_tipo_decreto VARCHAR, -- Ex: '01 - DECRETO DE CRÉDITO SUPLEMENTAR, 02 - DECRETO DE CRÉDITO ESPECIAL...'
+    vlr_aberto DECIMAL, -- Ex: '83625.5, 2988674.92, 17700.0, 2766181.0, 558.07...'
+);
+
+CREATE TABLE despesa_despesa (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_orgao INTEGER, -- Ex: '305, 306, 303, 302, 304...'
+    cod_orgao INTEGER, -- Ex: '04, 05, 02, 01, 03...'
+    seq_unidade INTEGER, -- Ex: '623229, 623230, 623231, 623232, 623233...'
+    cod_unidade INTEGER, -- Ex: '5001, 8001, 2003, 2018, 2014...'
+    cod_subunidade INTEGER, -- Ex: '-9, 3, 2, 1...'
+    num_anoexercicio INTEGER, -- Ex: '2025...'
+    num_mesexercicio INTEGER, -- Ex: '5, 4, 1, 2, 6...'
+    dsc_funcao VARCHAR, -- Ex: '13 - CULTURA, 12 - EDUCAÇÃO, 28 - ENCARGOS ESPECIAIS, 04 - ADMINISTRAÇÃO, 08 ...'
+    dsc_subfuncao VARCHAR, -- Ex: '122 - ADMINISTRAÇÃO GERAL, 363 - ENSINO PROFISSIONAL, 846 - OUTROS ENCARGOS E...'
+    dsc_programa VARCHAR, -- Ex: '0069 - APOIO ÀS FESTIVIDADES E MANIFESTAÇÕES CULTURAIS, 0061 - GESTÃO DA FUND...'
+    dsc_acao VARCHAR, -- Ex: '2136 - APOIO ÀS FESTIVIDADES E MANIFESTAÇÕES CULTURAIS, 2093 - GESTÃO DA FUND...'
+    dsc_subacao VARCHAR,
+    dsc_naturezadespesa VARCHAR, -- Ex: '3.3.90.39.13 - LOCAÇÃO DE BENS MÓVEIS TANGÍVEIS OU INTANGÍVEIS, DE OUTRAS NAT...'
+    dsc_fonterecurso VARCHAR, -- Ex: '1.500.000 - RECURSOS NÃO VINCULADOS DE IMPOSTOS, 1.501.000 - OUTROS RECURSOS ...'
+    dsc_cod_orcamentario VARCHAR, -- Ex: '0000 - SEM IDENTIFICAÇÃO DE CO, NÃO INFORMADO, 1002 - IDENTIFICAÇÃO DAS DESPE...'
+    vlr_previsto DECIMAL, -- Ex: '0.0, 100.0, 50.0, 13068.0, 15000.0...'
+    vlr_acrescimo DECIMAL, -- Ex: '0.0, 13143.21, 11038.42, 3500.0, 132360.06...'
+    vlr_deducao DECIMAL, -- Ex: '0.0, 65000.0, 50000.0, 20000.0, 2306.0...'
+    vlr_empenhado DECIMAL, -- Ex: '60000.0, 0.0, 2000.0, 1500.0, 1048.3...'
+    vlr_liquidado DECIMAL, -- Ex: '0.0, 4074.37, 233.23, 1500.0, 1048.3...'
+    vlr_pago DECIMAL, -- Ex: '0.0, 4074.37, 233.23, 1500.0, 1048.3...'
+    vlr_rspprocessado DECIMAL, -- Ex: '0.0, -115.89, -4074.37, 2714.51, 323.21...'
+    vlr_rspnprocessado DECIMAL, -- Ex: '60000.0, -4074.37, -233.23, 0.0, 2000.0...'
+);
+
+CREATE TABLE despesa_itemNfs (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_item_nota INTEGER,
+    seq_nota_fiscal INTEGER,
+    seq_orgao INTEGER,
+    cod_orgao INTEGER,
+    num_ano_referencia INTEGER,
+    num_mes_referencia INTEGER,
+    cod_item INTEGER,
+    dsc_item VARCHAR,
+    dsc_unid_medida VARCHAR,
+    num_quant_item INTEGER,
+    vlr_item DECIMAL,
+);
+
+CREATE TABLE despesa_leisDecretos (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_lei_alteracao INTEGER, -- Ex: '1599134, 1599135, 1673104, 1673105, 1673106...'
+    seq_decreto_alt INTEGER, -- Ex: '1810851, 1810852, 1886869, 1886870, 1886871...'
+    seq_orgao INTEGER, -- Ex: '303...'
+    cod_orgao INTEGER, -- Ex: '02...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1, 4, 7, 2, 3...'
+    num_lei INTEGER, -- Ex: '003519, 003550, 003527, 003531, 003541...'
+    dat_lei DATE, -- Ex: '20241223, 20250710, 20250220, 20250326, 20250521...'
+    dat_pub_lei DATE, -- Ex: '20241223...'
+    num_lei_alt INTEGER,
+    dat_lei_alt DATE,
+    dat_pub_lei_alt DATE,
+    vlr_aberto_lei DECIMAL, -- Ex: '83625.5, 2988674.92, 126268.0, 2190981.84, 48000.0...'
+);
+
+CREATE TABLE despesa_liquidacao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_liquidacao INTEGER, -- Ex: '228895133, 228895134, 228895135, 228895136, 228895137...'
+    seq_orgao INTEGER, -- Ex: '302, 304, 306, 303, 305...'
+    cod_orgao INTEGER, -- Ex: '01, 03, 05, 02, 04...'
+    seq_unidade INTEGER, -- Ex: '623257, 623258, 623230, 623251, 623250...'
+    seq_empenho INTEGER, -- Ex: '141414316, 141387602, 142113786, 141387595, 141387614...'
+    seq_rsp INTEGER, -- Ex: '-1, 19225863, 19220665, 19216768, 19220669...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '3, 2, 1, 4, 5...'
+    num_liquidacao INTEGER, -- Ex: '71702025, 82832025, 76302025, 67672025, 68452025...'
+    dat_liquidacao DATE, -- Ex: '20250312, 20250331, 20250326, 20250307, 20250311...'
+    dsc_tipo_liquidacao VARCHAR, -- Ex: '1 - LIQUIDAÇÃO DESPESA DO EXERCÍCIO, 2 - LIQUIDAÇÃO DESPESAS RESTOS A PAGAR N...'
+    num_doc_liquidante VARCHAR, -- Ex: '001***196**, 664***116**, 035***006**, 106***296**, 054***606**...'
+    nom_liquidante VARCHAR, -- Ex: 'RENATA APARECIDA DA SILVA VICENTE, CLEUZA DE PAULA SANTOS, DIEMERSON NEVES PO...'
+    vlr_liquidacao DECIMAL, -- Ex: '2.38, 13258.45, 410.0, 78594.0, 587.46...'
+    vlr_anu_liquidacao DECIMAL, -- Ex: '0.0, 0.09, 0.01, 2138.26, 0.06...'
+);
+
+CREATE TABLE despesa_liquidacaoFonte (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_liq_fonte INTEGER, -- Ex: '228896285, 228896286, 228896287, 228896288, 228896289...'
+    seq_liquidacao INTEGER, -- Ex: '228895133, 228895134, 228895135, 228895136, 228895137...'
+    seq_orgao INTEGER, -- Ex: '302, 304, 306, 303, 305...'
+    cod_orgao INTEGER, -- Ex: '01, 03, 05, 02, 04...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '3, 2, 1, 4, 5...'
+    dsc_fonte_recurso VARCHAR, -- Ex: '1.500.000 - RECURSOS NÃO VINCULADOS DE IMPOSTOS, 1.753.000 - RECURSOS PROVENI...'
+    dsc_cod_orcamentario VARCHAR, -- Ex: '0000 - SEM IDENTIFICAÇÃO DE CO, 1002 - IDENTIFICAÇÃO DAS DESPESAS COM AÇÕES E...'
+    vlr_liq_fonte DECIMAL, -- Ex: '2.38, 13258.45, 410.0, 78594.0, 587.46...'
+    vlr_anu_liq_fonte DECIMAL, -- Ex: '0.0, 0.09, 0.01, 2138.26, 0.06...'
+);
+
+CREATE TABLE despesa_liquidacaoNfs (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_liq_nota_fiscal INTEGER, -- Ex: '196638766, 196638768, 196638769, 196638772, 196638773...'
+    seq_nota_fiscal INTEGER, -- Ex: '179498299, 179498296, 179498305, 179498301, 179498304...'
+    seq_orgao INTEGER, -- Ex: '302, 304, 306...'
+    cod_orgao INTEGER, -- Ex: '01, 03, 05...'
+    seq_empenho INTEGER, -- Ex: '141387599, 142113790, 141414316, 146653210, 146653207...'
+    seq_rsp INTEGER, -- Ex: '-1, 19225902, 19225883, 19220665, 19220664...'
+    seq_liquidacao INTEGER, -- Ex: '196638766, 196638768, 196638769, 196638772, 196638773...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '8, 4, 6, 2, 3...'
+    num_doc_emitente VARCHAR, -- Ex: '11963458000162, 12039966000111, 27287226000171, 65245441000107, 1550466700010...'
+    nom_emitente VARCHAR, -- Ex: 'LEONARDO FILOMENO, LINK CARD ADMINISTRADORA DE BENEFICIOS LTDA, SNAP INFORMAT...'
+);
+
+CREATE TABLE despesa_movPagamento (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_mov_pagamento INTEGER, -- Ex: '254776530, 254776532, 254776533, 254776534, 254776535...'
+    seq_pagamento INTEGER, -- Ex: '221670722, 221670746, 221670747, 221670751, 221670762...'
+    seq_orgao INTEGER, -- Ex: '303, 304, 306, 302, 305...'
+    cod_orgao INTEGER, -- Ex: '02, 03, 05, 01, 04...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1, 2, 7, 4, 5...'
+    dsc_tipo_doc VARCHAR, -- Ex: '99 - OUTROS, 2 - DOC, 3 - TED, 1 - CHEQUE, 4 - BORDERÔ...'
+    dsc_tipo_doc_livre VARCHAR, -- Ex: 'Ordem Bancaria 0000001 Conta 0008685, Pagamento Tarifa Janeiro2024, Ordem Ban...'
+    num_documento VARCHAR, -- Ex: '1, 31012025, 27022025, 28022025, 2...'
+    dat_emissao DATE, -- Ex: '20250131, 20250227, 20250228, 20250731, 20250710...'
+    dsc_inst_financeira VARCHAR, -- Ex: '1 - BANCO DO BRASIL S.A., 104 - CAIXA ECONÔMICA FEDERAL, 33 - BANCO SANTANDER...'
+    dsc_agencia VARCHAR, -- Ex: '1694-2, 1441-0, 3483, 3954, 1441...'
+    dsc_conta_bancaria VARCHAR, -- Ex: '24204-7, 14039-2, 14040-6, 28321-5, 14047-3...'
+    dsc_finalidade_conta VARCHAR, -- Ex: 'Movimento PMC, BB 14039-2 - FPM, BB. - 14040-6 - MOVIMENTO, RESOLUCAO N°78242...'
+    dsc_tipo_aplicacao VARCHAR, -- Ex: '-...'
+    num_aplicacao INTEGER,
+    vlr_movimentacao DECIMAL, -- Ex: '13930.08, 15220.31, 31516.3, 56045.98, 7587.66...'
+);
+
+CREATE TABLE despesa_notasfiscais (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_nota_fiscal INTEGER, -- Ex: '174810957, 174810958, 174810959, 174810960, 174810961...'
+    seq_orgao INTEGER, -- Ex: '302, 304, 306...'
+    cod_orgao INTEGER, -- Ex: '01, 03, 05...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '3, 2, 1, 4, 5...'
+    num_doc_emitente VARCHAR, -- Ex: '11963458000162, 47854165000194, 17926188000104, 15504667000107, 0705131300011...'
+    nom_emitente VARCHAR, -- Ex: 'LEONARDO FILOMENO, RF REZENDE COMERCIO E SERVICOS LTDA, SINTAGMA ZENITE COMER...'
+    num_nota_fiscal INTEGER, -- Ex: '646, 563, 1209, 643, 644...'
+    num_serie_nota_fiscal INTEGER, -- Ex: '-9, NFSe, nfse, 000000, NFSE...'
+    num_inscr_est_emitente INTEGER, -- Ex: '2231117480012, 0021312160020, 1530311480053, 0035861690022, 114650990111...'
+    num_inscr_mun_emitente INTEGER, -- Ex: '07909110015, 2202017, 5401800, 01020280201001, 5410060...'
+    dsc_mun_emitente VARCHAR, -- Ex: 'CAETE, Vespasiano, SETE LAGOAS, IPATINGA, BELO HORIZONTE...'
+    cod_cep_mun_emitente INTEGER, -- Ex: '34800000, 33200330, 35700150, 35162363, 30220270...'
+    cod_est_credor INTEGER, -- Ex: 'MG, SP, SC, PR, ES...'
+    dsc_tipo_nota_fiscal VARCHAR, -- Ex: '1 - SIM, PADRÃO ESTADUAL OU SINIEF 07/05, 2 - SIM, CHAVE DE ACESSO MUNICIPAL ...'
+    cod_chave_nota_fis INTEGER, -- Ex: '31250311963458000162550010000006461699819993, 3125034785416500019455001000000...'
+    cod_chave_mun_nota_fis INTEGER, -- Ex: '-9, d4d95486, UCESGT8C, 8dd62d302, b05a05385...'
+    num_aut_impressao INTEGER,
+    dat_emissao DATE, -- Ex: '20250318, 20250317, 20250311, 20250228, 20250306...'
+    dat_vencimento DATE, -- Ex: '20250323, 20250317, 20250411, 20250315, 20250306...'
+    vlr_bruto DECIMAL, -- Ex: '1857.5, 6700.0, 632.1, 3858.4, 999.8...'
+    vlr_desconto DECIMAL, -- Ex: '0.0...'
+    vlr_liquido DECIMAL, -- Ex: '1857.5, 6700.0, 632.1, 3858.4, 999.8...'
+);
+
+CREATE TABLE despesa_pagamento (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_pagamento INTEGER, -- Ex: '222674570, 222674571, 222674572, 222674573, 222674574...'
+    seq_orgao INTEGER, -- Ex: '302, 304, 306, 303, 305...'
+    cod_orgao INTEGER, -- Ex: '01, 03, 05, 02, 04...'
+    seq_unidade INTEGER, -- Ex: '623257, 623258, 623230, 623237, 623234...'
+    seq_empenho INTEGER, -- Ex: '141387600, 141387586, 141414337, 141387612, 141387609...'
+    seq_rsp INTEGER, -- Ex: '-1, 19225882, 19225863, 19220665, 19220664...'
+    seq_liquidacao INTEGER, -- Ex: '227918045, 227918070, 227918057, 228895188, 228895198...'
+    seq_orgao_empenho INTEGER, -- Ex: '302, 304, 306, 303, 305...'
+    seq_unid_empenho INTEGER, -- Ex: '623257, 623258, 623230, 623237, 623234...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '3, 2, 1, 4...'
+    num_doc_resp VARCHAR, -- Ex: '664***116**, 704***606**, 940***086**, 094***646**, 967***686**...'
+    nom_resp VARCHAR, -- Ex: 'CLEUZA DE PAULA SANTOS, ELIZABETH RODRIGUES SOARES, CIBELE ROSANE VITORIANO, ...'
+    num_doc_credor VARCHAR, -- Ex: '02976530000103, 17155730000164, 00360305000104, 05684180000191, 0747552400018...'
+    nom_credor VARCHAR, -- Ex: 'O 2 PLUS CARD INSTITUICAO DE PAGAMENTOS  LTDA, COMPANHIA ENERGETICA DE MINAS ...'
+    num_empenho INTEGER, -- Ex: '2, 6, 122, 26, 18...'
+    dat_empenho DATE, -- Ex: '20250102, 20250228, 20250103, 20250306, 20250221...'
+    num_liquidacao INTEGER, -- Ex: '62482025, 61032025, 62322025, 67942025, 74822025...'
+    dat_liquidacao DATE, -- Ex: '20250228, 20250224, 20250307, 20250301, 20250318...'
+    num_ord_pagamento INTEGER, -- Ex: '84492025, 85312025, 85852025, 86152025, 89212025...'
+    dat_pagamento DATE, -- Ex: '20250307, 20250311, 20250312, 20250326, 20250318...'
+    dsc_pagamento VARCHAR, -- Ex: 'Pagamento de Subempenho AUXILIO ALIMENTACAO 032025, Pagamento de Subempenho C...'
+    dsc_tipo_pagamento VARCHAR, -- Ex: '1 - PAGAMENTO DE DESPESA, EXCETO SERVIÇO DA DÍVIDA, 4 - PAGAMENTO DE RESTOS A...'
+    dsc_fonte_recurso VARCHAR, -- Ex: '1.500.000 - RECURSOS NÃO VINCULADOS DE IMPOSTOS, 1.753.000 - RECURSOS PROVENI...'
+    dsc_cod_orcamentario VARCHAR, -- Ex: '0000 - SEM IDENTIFICAÇÃO DE CO, 1002 - IDENTIFICAÇÃO DAS DESPESAS COM AÇÕES E...'
+    vlr_pag_fonte DECIMAL, -- Ex: '1325.84, 215.83, 339.44, 1894.48, 6579.16...'
+    vlr_ret_fonte DECIMAL, -- Ex: '0.0...'
+    vlr_ant_fonte DECIMAL, -- Ex: '0.0...'
+    vlr_anu_fonte DECIMAL, -- Ex: '0.0, 0.01, 260.0, 240.0, 200.0...'
+);
+
+CREATE TABLE educacao_educacao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_orgao INTEGER, -- Ex: '303...'
+    cod_orgao INTEGER, -- Ex: '02...'
+    seq_unidade INTEGER, -- Ex: '623261...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '7, 1, 3, 2, 4...'
+    dsc_funcao VARCHAR, -- Ex: '12 - EDUCAÇÃO...'
+    dsc_subfuncao VARCHAR, -- Ex: '361 - ENSINO FUNDAMENTAL, 122 - ADMINISTRAÇÃO GERAL, 365 - EDUCAÇÃO INFANTIL...'
+    dsc_programa VARCHAR, -- Ex: '0003 - MANUTENÇÃO DA EDUCAÇÃO BÁSICA, 0027 - GESTÃO DO CENTRO ESPECIALIZADO D...'
+    dsc_acao VARCHAR, -- Ex: '1191 - REMUNERAÇÃO DOS PROFISSIONAIS DO ENSINO FUNDAMENTAL, 2049 - MANUTENÇÃO...'
+    dsc_subacao VARCHAR,
+    dsc_nat_despesa VARCHAR, -- Ex: '3.1.90.94.01 - 3.1.90.94.01, 3.1.90.13.03 - 3.1.90.13.03, 3.1.90.13.01 - 3.1....'
+    dsc_fonte_recurso VARCHAR, -- Ex: '1.500.000 - RECURSOS NÃO VINCULADOS DE IMPOSTOS...'
+    dsc_cod_orcamentario VARCHAR, -- Ex: '1001 - IDENTIFICAÇÃO DAS DESPESAS COM MANUTENÇÃO E DESENVOLVIMENTO DO ENSINO...'
+    num_empenho INTEGER, -- Ex: '3734, 3697, 4093, 3523, 3524...'
+    dat_empenho DATE, -- Ex: '20250704, 20250701, 20250730, 20250627, 20250131...'
+    vlr_empenho DECIMAL, -- Ex: '5147.88, 8808.96, 4727.15, 0.0, 3000.65...'
+    vlr_ref_empenho DECIMAL, -- Ex: '0.0...'
+    vlr_anu_empenho DECIMAL, -- Ex: '0.0, 187300.0, 279900.0...'
+    vlr_liquidado DECIMAL, -- Ex: '5147.88, 8808.96, 4727.15, 0.0, 3000.65...'
+    vlr_anu_liquidado DECIMAL, -- Ex: '0.0...'
+    vlr_pagamento DECIMAL, -- Ex: '5147.88, 8808.96, 0.0, 4302.45, 10187.12...'
+    vlr_anu_pagamento DECIMAL, -- Ex: '0.0...'
+    vlr_outras_baixas DECIMAL, -- Ex: '0.0, 4838.59, 32.49, 19891.97, 65.0...'
+    vlr_anu_outras_baixas DECIMAL, -- Ex: '0.0...'
+    vlr_rsp_proc DECIMAL, -- Ex: '0.0, 4727.15, -4302.45, -10187.12, 3000.65...'
+    vlr_rsp_nao_proc DECIMAL, -- Ex: '0.0, -150300.0, -127800.0, -201200.0, 600.0...'
+);
+
+CREATE TABLE empenho_credorEmpenho (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_emp_credor INTEGER, -- Ex: '141468097, 141468098, 141468099, 141468100, 141468101...'
+    seq_empenho INTEGER, -- Ex: '149637288, 149637289, 149637290, 149637291, 149637312...'
+    seq_orgao INTEGER, -- Ex: '303, 305, 306, 304, 302...'
+    cod_orgao INTEGER, -- Ex: '02, 04, 05, 03, 01...'
+    seq_unidade INTEGER, -- Ex: '623234, 623240, 623237, 623241, 623261...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '7, 6, 5, 2, 3...'
+    num_doc_credor VARCHAR, -- Ex: '18979328000167, 55491907000192, 11263197000178, 19288485000199, 6635897900026...'
+    nom_credor VARCHAR, -- Ex: 'SOCIEDADE CIVIL DE BENEFICENCIA CAETEENSE, CRIATIVA PRODUTOS LTDA, RCA COMERC...'
+);
+
+CREATE TABLE empenho_credorMovResp (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_cred_mov_rsp INTEGER,
+    seq_mov_rsp INTEGER,
+    seq_orgao INTEGER,
+    cod_orgao INTEGER,
+    num_ano_referencia INTEGER,
+    num_mes_referencia INTEGER,
+    num_doc_credor VARCHAR,
+    nom_credor VARCHAR,
+);
+
+CREATE TABLE empenho_credorRsp (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_credor_rsp INTEGER,
+    seq_rsp INTEGER,
+    seq_orgao INTEGER,
+    cod_orgao INTEGER,
+    num_ano_referencia INTEGER,
+    num_mes_referencia INTEGER,
+    num_doc_credor VARCHAR,
+    nom_credor VARCHAR,
+);
+
+CREATE TABLE empenho_empenho (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_empenho INTEGER, -- Ex: '149597234, 149597255, 149597358, 149597425, 149597492...'
+    seq_orgao INTEGER, -- Ex: '303, 305, 304, 306...'
+    cod_orgao INTEGER, -- Ex: '02, 04, 03, 05...'
+    seq_unidade INTEGER, -- Ex: '623262, 623234, 623235, 623251, 623237...'
+    cod_unidade INTEGER, -- Ex: '2010, 2017, 2006, 2004, 2012...'
+    cod_subunidade INTEGER, -- Ex: '1, -9, 3, 2...'
+    num_anoexercicio INTEGER, -- Ex: '2025...'
+    num_mesexercicio INTEGER, -- Ex: '2, 3, 4, 7, 5...'
+    num_empenho INTEGER, -- Ex: '1416, 1414, 1511, 1512, 1109...'
+    dat_empenho DATE, -- Ex: '20250227, 20250207, 20250211, 20250213, 20250224...'
+    dsc_modalidade VARCHAR, -- Ex: '1 - ORDINÁRIO, 3 - GLOBAL, 2 - ESTIMATIVO...'
+    dsc_tipo_empenho VARCHAR, -- Ex: '1 - LANÇAMENTO EM DESPESAS, EXCETO SERVIÇO DA DÍVIDA, 2 - LANÇAMENTO EM SERVI...'
+    dsc_empenho VARCHAR, -- Ex: 'REMUNERACAO DEVIDA AOS SERVIDORES, ESTAGIARIOS E PENSIONISTAS DESTA PREFEITUR...'
+    ind_dec_contrato VARCHAR, -- Ex: '2 - NÃO, 1 - SIM...'
+    ind_dec_convenio VARCHAR, -- Ex: '2 - NÃO...'
+    ind_dec_licitacao VARCHAR, -- Ex: '99 - DESPESA NÃO DECORRENTE DE LICITAÇÃO, 3 - DISPENSA OU INEXIGIBILIDADE, 2 ...'
+    ind_dec_instr_conge VARCHAR, -- Ex: '2 - NÃO...'
+    seq_contrato INTEGER, -- Ex: '-1...'
+    seq_termo_aditivo INTEGER, -- Ex: '-1...'
+    seq_convenio INTEGER, -- Ex: '-1...'
+    seq_licitacao INTEGER, -- Ex: '-1...'
+    seq_dispensa INTEGER, -- Ex: '-1...'
+    seq_instr_conge INTEGER, -- Ex: '-1...'
+    dsc_dotacao VARCHAR, -- Ex: '02.02010001.10.122.0047.2110.3.1.90.16.00, 02.02010001.10.122.0047.2110.3.1.9...'
+    dsc_funcao VARCHAR, -- Ex: '10 - SAÚDE, 04 - ADMINISTRAÇÃO, 08 - ASSISTÊNCIA SOCIAL, 03 - ESSENCIAL À JUS...'
+    dsc_subfuncao VARCHAR, -- Ex: '122 - ADMINISTRAÇÃO GERAL, 244 - ASSISTÊNCIA COMUNITÁRIA, 092 - REPRESENTAÇÃO...'
+    dsc_programa VARCHAR, -- Ex: '0047 - MANUTENÇÃO DO SERVIÇO DE TRANSPORTE DE PACIENTES, 0042 - SERVIÇO DE RE...'
+    dsc_acao VARCHAR, -- Ex: '2110 - MANUTENÇÃO DO SETOR DE TRANSPORTE, 2094 - MANUTENÇÃO DA REGULAÇÃO EM S...'
+    dsc_subacao VARCHAR,
+    dsc_naturezadespesa VARCHAR, -- Ex: '3.1.90.16.00 - OUTRAS DESPESAS VARIÁVEIS - PESSOAL CIVIL, 3.1.90.04.99 - OUTR...'
+    vlr_empenhado DECIMAL, -- Ex: '17608.7, 32345.51, 4971.79, 21023.94, 2221.43...'
+    vlr_reforco DECIMAL, -- Ex: '0.0...'
+    vlr_anulempenho DECIMAL, -- Ex: '0.0, 376.07, 38452.82, 0.19, 154.4...'
+);
+
+CREATE TABLE empenho_empenhoFonte (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_empenho_fonte INTEGER, -- Ex: '1314592063, 1314592064, 1314592065, 1314592066, 1314592067...'
+    seq_empenho INTEGER, -- Ex: '142113806, 142113813, 141387614, 141387620, 141387604...'
+    seq_orgao INTEGER, -- Ex: '302, 304, 306, 303, 305...'
+    cod_orgao INTEGER, -- Ex: '01, 03, 05, 02, 04...'
+    seq_unidade INTEGER, -- Ex: '623257, 623258, 623230, 623241, 623234...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '3, 1, 2, 4...'
+    dsc_fonte_recurso VARCHAR, -- Ex: '1.500.000 - RECURSOS NÃO VINCULADOS DE IMPOSTOS, 1.753.000 - RECURSOS PROVENI...'
+    dsc_cod_orcamentario VARCHAR, -- Ex: '0000SEM IDENTIFICAÇÃO DE CO, 1002IDENTIFICAÇÃO DAS DESPESAS COM AÇÕES E SERVI...'
+    vlr_empenho DECIMAL, -- Ex: '3053.61, 4733.0, 0.0, 12068.0, 99362.8...'
+    vlr_reforco_emp DECIMAL, -- Ex: '0.0...'
+    vlr_anulacao_emp DECIMAL, -- Ex: '0.0, 0.09, 0.01, 89647.67, 2878.02...'
+    vlr_liquidacao DECIMAL, -- Ex: '3053.61, 4733.0, 1174.92, 624.4, 9166.66...'
+    vlr_anu_liquidacao DECIMAL, -- Ex: '0.0, 0.09, 0.01, 2138.26, 216.66...'
+    vlr_pagamento DECIMAL, -- Ex: '1831.96, 4733.0, 587.46, 624.4, 4363.33...'
+    vlr_anu_pagamento DECIMAL, -- Ex: '0.0, 0.01, 220.0, 260.0, 180.0...'
+    vlr_outras_baixas DECIMAL, -- Ex: '1221.65, 0.0, 440.0, 22.39, 61.94...'
+    vlr_anu_outras_baixas DECIMAL, -- Ex: '0.0...'
+);
+
+CREATE TABLE empenho_movFonteRsp (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_mov_rsp_fonte INTEGER,
+    seq_mov_rsp INTEGER,
+    seq_orgao INTEGER,
+    cod_orgao INTEGER,
+    num_ano_referencia INTEGER,
+    num_mes_referencia INTEGER,
+    dsc_fonte_recurso VARCHAR,
+    dsc_cod_orcamentario VARCHAR,
+    vlr_mov_fonte DECIMAL,
+);
+
+CREATE TABLE empenho_movimentacaoRsp (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_mov_rsp INTEGER,
+    seq_rsp INTEGER,
+    seq_orgao INTEGER,
+    cod_orgao INTEGER,
+    num_ano_referencia INTEGER,
+    num_mes_referencia INTEGER,
+    cod_unidade INTEGER,
+    cod_subunidade INTEGER,
+    num_empenho INTEGER,
+    dat_empenho DATE,
+    num_ano_empenho INTEGER,
+    dsc_dotacao VARCHAR,
+    dsc_tipo_rsp VARCHAR,
+    dsc_tipo_movimentacao VARCHAR,
+    dat_movimentacao DATE,
+    vlr_movimentacao DECIMAL,
+    num_documento VARCHAR,
+    dat_documento VARCHAR,
+    dsc_historico VARCHAR,
+);
+
+CREATE TABLE empenho_rsp (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_rsp INTEGER, -- Ex: '19225619, 19225620, 19225621, 19225622, 19225623...'
+    seq_orgao INTEGER, -- Ex: '303, 304, 302, 305, 306...'
+    cod_orgao INTEGER, -- Ex: '02, 03, 01, 04, 05...'
+    seq_unidade INTEGER, -- Ex: '623261, 623234, 623237, 623250, 623251...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    seq_empenho_origem INTEGER, -- Ex: '138541079, 138541002, 138540927, 138541207, 138540768...'
+    num_empenho_origem INTEGER, -- Ex: '6720, 6919, 6906, 6989, 7235...'
+    dat_empenho_origem DATE, -- Ex: '20241206, 20241217, 20241218, 20241230, 20241231...'
+    num_ano_emp_origem INTEGER, -- Ex: '2024, 2022, 2023...'
+    dsc_dotacao_ori VARCHAR, -- Ex: '02.02007001.12.122.0002.2001.3.1.90.94.01, 02.02017.10.302.0039.2086.3.1.90.1...'
+    vlr_original DECIMAL, -- Ex: '6189.63, 1246.59, 552.34, 9400.0, 21172.92...'
+    vlr_saldo_ant_proc DECIMAL, -- Ex: '6189.63, 1246.59, 552.34, 0.0, 20490.48...'
+    vlr_saldo_ant_nao_proc DECIMAL, -- Ex: '0.0, 4700.0, 100000.0, 7599.38, 285.0...'
+);
+
+CREATE TABLE frota_frota (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_veiculo INTEGER, -- Ex: '994095, 985109, 1011053, 1011055, 1011054...'
+    seq_orgao INTEGER, -- Ex: '304, 302, 303...'
+    cod_orgao INTEGER, -- Ex: '03, 01, 02...'
+    seq_unidade INTEGER, -- Ex: '-1...'
+    cod_unidade INTEGER, -- Ex: '-9...'
+    cod_subunidade INTEGER, -- Ex: '-9...'
+    num_anoexercicio INTEGER, -- Ex: '2025...'
+    num_mesexercicio INTEGER, -- Ex: '5, 4, 2...'
+    cod_veiculo INTEGER, -- Ex: '6027, 1102, 30739, 30738, 30740...'
+    dsc_tipo_veiculo VARCHAR, -- Ex: '3 - VEÍCULOS, 99 - OUTROS...'
+    dsc_sub_tipo_veiculo VARCHAR, -- Ex: '4 - UTILITÁRIO (CAMIONETE...), 3 - VEÍCULO DE PASSEIO, 99 - OUTROS...'
+    dsc_veiculo VARCHAR, -- Ex: 'RANGER XL CD4 22C, NA COR BRANCA, DIESEL, TOYOTAYARIS SA XL15, MAS0008, MAS00...'
+    dsc_marca VARCHAR, -- Ex: 'FORD, TOYOTA, DIVERSOS...'
+    dsc_modelo VARCHAR, -- Ex: 'RANGER, TOYOTAYARIS SA XL15, DIVERSOS...'
+    num_anofabricacao INTEGER, -- Ex: '2022, 2024...'
+    dsc_num_placa VARCHAR, -- Ex: 'SHI7G32, TCQ7B29...'
+    dsc_numchassi VARCHAR, -- Ex: '8AFAR23R3PJ300175, 9BRBC3F33S8314547, -1...'
+    num_renavam INTEGER, -- Ex: '1343015836, 1405115901, -1...'
+    dsc_numserie VARCHAR, -- Ex: '-1, 30739, 30738, 30740...'
+    dsc_situacaoveiculo VARCHAR, -- Ex: '2 - TERCEIRIZADO OU CONTRATADO, 1 - COMPÕE O PATRIMÔNIO DO MUNICÍPIO (VEÍCULO...'
+    dsc_tipdeslocamento VARCHAR, -- Ex: '1 - QUILÔMETROS, 2 - HORAS...'
+    num_docproprietario VARCHAR, -- Ex: '04309564000161, 07475524000188, -1...'
+    nom_proprietario VARCHAR, -- Ex: 'ESTRELA LOGISTICA LTDA, VALOR LOCACOES LTDA, NAO INFORMADO...'
+);
+
+CREATE TABLE frota_gastoFrota (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_gasto_veic INTEGER, -- Ex: '98518076, 98518077, 98518078, 98556210, 98556211...'
+    seq_veiculo INTEGER, -- Ex: '891911, 854716, 780172, 773747, 922680...'
+    seq_orgao INTEGER, -- Ex: '302, 304, 303...'
+    cod_orgao INTEGER, -- Ex: '01, 03, 02...'
+    seq_empenho INTEGER, -- Ex: '142113790, 141377663, 141377662, 141377763, 141387425...'
+    seq_rsp INTEGER, -- Ex: '-1, 19225683...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '3, 5, 1, 2, 4...'
+    dsc_ori_gasto VARCHAR, -- Ex: '2 - ABASTECIMENTO EM POSTO / COMÉRCIO...'
+    num_marc_inicial INTEGER, -- Ex: '6806, 52962, 90212, 189808, 47142...'
+    num_marc_final INTEGER, -- Ex: '7656, 54948, 90779, 189808, 48343...'
+    dsc_tipo_gasto VARCHAR, -- Ex: '2 - GASOLINA (LITRO), 8 - PEÇAS, 6 - ÓLEO LUBRIFICANTE (LITRO), 4 - DIESEL (L...'
+    num_quant_utilizada INTEGER, -- Ex: '66.177, 265.492, 79.816, 1.0, 172.007...'
+    vlr_gasto DECIMAL, -- Ex: '421.59, 1758.47, 522.73, 1276.5, 1087.07...'
+    dsc_especificacao VARCHAR, -- Ex: 'GASOLINA COMUM ABASTECIMENTO VEICULO CODIGO =931,, GASOLINA COMUM ABASTECIMEN...'
+);
+
+CREATE TABLE frota_transFrota (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_gasto_transp INTEGER,
+    seq_veiculo INTEGER,
+    seq_orgao INTEGER,
+    cod_orgao INTEGER,
+    num_ano_referencia INTEGER,
+    num_mes_referencia INTEGER,
+    dsc_nome_estab VARCHAR,
+    dsc_nome_local VARCHAR,
+    num_quant_rod_dia INTEGER,
+    num_dist_total INTEGER,
+    num_passageiros INTEGER,
+    dsc_turno VARCHAR,
+    num_versao_arq INTEGER,
+);
+
+CREATE TABLE licitacao_comissaoLicitacao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_com_licitacao INTEGER, -- Ex: '6226916, 6226917, 6226918, 6229656, 6230592...'
+    seq_licitacao INTEGER, -- Ex: '1464446, 1464984, 1465164, 1465163, 1449611...'
+    seq_orgao INTEGER, -- Ex: '304, 303, 302...'
+    cod_orgao INTEGER, -- Ex: '03, 02, 01...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    dsc_tipo_comissao VARCHAR, -- Ex: '-1 - NÃO INFORMADO...'
+    dsc_ato_nomeacao VARCHAR, -- Ex: '1 - PORTARIA, 2 - DECRETO...'
+    num_ato_nomeacao VARCHAR, -- Ex: '52025, 342025, 34, 1952024, 2...'
+    dat_ato_nomeacao VARCHAR, -- Ex: '20250211, 20250113, 20240709, 20250110, 20240112...'
+    dat_ini_vigencia DATE, -- Ex: '20250211, 20250113, 20240709, 20250110, 20240112...'
+    dat_fim_vigencia DATE, -- Ex: '20251231, 20260113, 20250709, 20260110, 20250112...'
+    dsc_tipo_atrib VARCHAR, -- Ex: '2 - MEMBRO/EQUIPE DE APOIO, 6 - PREGOEIRO, 7 - AGENTE DE CONTRATAÇÃO...'
+    dsc_cargo VARCHAR, -- Ex: 'MEMBRO EQUIPE DE APOIO, PREGOEIRO, MEMBRO, PREGOEIROA, AGENTE DE CONTRATACAO...'
+    dsc_tipo_nat_cargo VARCHAR, -- Ex: '1 - 1, 4 - 4, 3 - 3...'
+    num_documento VARCHAR, -- Ex: '676***396**, 229***706**, 035***816**, 144***236**, 055***326**...'
+    nom_pessoa VARCHAR, -- Ex: 'CASSIA REGINA DO CARMO CORNELIO, REGINALDO CARIELLO JOSE, CINTIA SOARES FELIX...'
+);
+
+CREATE TABLE licitacao_cotDispensa (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_cot_dispensa INTEGER, -- Ex: '58410880, 58327842, 58327843, 58327844, 58327845...'
+    seq_item_dispensa INTEGER, -- Ex: '5020745, 4916228, 4916216, 4916219, 4916214...'
+    seq_dispensa INTEGER, -- Ex: '814983, 796501, 796502, 796503, 810078...'
+    seq_orgao INTEGER, -- Ex: '302, 303...'
+    cod_orgao INTEGER, -- Ex: '01, 02...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    vlr_preco_unit DECIMAL, -- Ex: '1390.0, 8.1, 101011.0, 5.75, 1120.0...'
+    num_quant_item INTEGER, -- Ex: '1.0, 884.0, 3328.0, 4.0, 12.0...'
+);
+
+CREATE TABLE licitacao_cotRegadesao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_cot_reg_adesao INTEGER, -- Ex: '3147958, 3147959, 3147960, 3147961, 3043400...'
+    seq_item_reg_adesao INTEGER, -- Ex: '8736477, 8736476, 8736478, 8736475, 8578151...'
+    seq_reg_adesao INTEGER, -- Ex: '176666, 172773, 176221, 176220, 177399...'
+    seq_orgao INTEGER, -- Ex: '302, 303...'
+    cod_orgao INTEGER, -- Ex: '01, 02...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    dat_cotacao DATE, -- Ex: '20250318, 20250117, 20250228, 20250220, 20250328...'
+    vlr_unitario DECIMAL, -- Ex: '138.0, 100.0, 11.0, 400.0, 90.0...'
+    num_quant_item INTEGER, -- Ex: '70.0, 40.0, 300.0, 20.0, 5.0...'
+);
+
+CREATE TABLE licitacao_cotacaoLicitacao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_cot_licitacao INTEGER, -- Ex: '62164929, 62164930, 62164931, 62164932, 62164933...'
+    seq_item_licitacao INTEGER, -- Ex: '47294729, 47294803, 47294712, 47294949, 47294758...'
+    seq_licitacao INTEGER, -- Ex: '1448185, 1448186, 1465163, 1465164, 1474382...'
+    seq_orgao INTEGER, -- Ex: '303, 302, 304...'
+    cod_orgao INTEGER, -- Ex: '02, 01, 03...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    dat_cotacao DATE, -- Ex: '20240910, 20240924, 20250319, 20250409, 20250404...'
+    vlr_percentual DECIMAL, -- Ex: '0.0, 2.0, 1.0...'
+    vlr_cot_preco_unit DECIMAL, -- Ex: '3.39, 1.45, 33.2, 28.89, 6.13...'
+    num_quant_item_cotado INTEGER, -- Ex: '500.0, 4000.0, 6000.0, 17.0, 10000.0...'
+    vlr_min_alien_bens DECIMAL, -- Ex: '0.0...'
+);
+
+CREATE TABLE licitacao_credDispensa (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_cred_dispensa INTEGER, -- Ex: '3433373, 3433374, 3433375, 3433376, 3433380...'
+    seq_item_dispensa INTEGER, -- Ex: '5208930, 5208947, 5208955, 5208931, 5208933...'
+    seq_dispensa INTEGER, -- Ex: '836166...'
+    seq_orgao INTEGER, -- Ex: '303...'
+    cod_orgao INTEGER, -- Ex: '02...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    num_doc_credenciado VARCHAR, -- Ex: '056***296**, 056***106**, 057***126**, 132***816**, 025***306**...'
+    dsc_nom_credenciado VARCHAR, -- Ex: 'SANTIAGO ELIAS DE SOUZA, CLEIDE FRANCELINA DA SILVA, RENILDA APARECIDA FONSEC...'
+    dat_credenciamento DATE, -- Ex: '20250724...'
+    num_inscr_estadual INTEGER,
+    dsc_sigla_uf VARCHAR, -- Ex: 'MG...'
+    num_certidao_inss INTEGER,
+    dat_emi_cert_inss DATE,
+    dat_val_cert_inss DATE,
+    num_cert_fgts INTEGER,
+    dat_emi_cert_fgts DATE,
+    dat_val_cert_fgts DATE,
+    num_cert_negativa INTEGER,
+    dat_emi_cert_negativa DATE,
+    dat_val_cert_negativa DATE,
+);
+
+CREATE TABLE licitacao_credLicitacao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_credenciado_licit INTEGER,
+    seq_item_licitacao INTEGER,
+    seq_hab_licitacao INTEGER,
+    seq_licitacao INTEGER,
+    seq_orgao INTEGER,
+    cod_orgao INTEGER,
+    num_ano_referencia INTEGER,
+    num_mes_referencia INTEGER,
+    num_documento VARCHAR,
+    nom_pessoa VARCHAR,
+    num_inscr_estadual INTEGER,
+    dsc_sigla_uf VARCHAR,
+    num_certidao_inss INTEGER,
+    dat_emi_cert_inss DATE,
+    dat_val_cert_inss DATE,
+    num_cert_fgts INTEGER,
+    dat_emi_cert_fgts DATE,
+    dat_val_cert_fgts DATE,
+    num_cndt INTEGER,
+    dat_emi_cndt DATE,
+    dat_val_cndt DATE,
+);
+
+CREATE TABLE licitacao_dispensa (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_dispensa INTEGER, -- Ex: '795171, 814983, 824562, 838970, 810073...'
+    seq_orgao INTEGER, -- Ex: '302, 303...'
+    cod_orgao INTEGER, -- Ex: '01, 02...'
+    seq_unidade INTEGER, -- Ex: '619640, 623257, 623251, 619627...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    dsc_tipo_cadastro VARCHAR, -- Ex: '1 - CADASTRO INICIAL, 2 - RETIFICAÇÃO...'
+    num_processo INTEGER, -- Ex: '1, 6, 11, 16, 62...'
+    num_ano_processo INTEGER, -- Ex: '2025...'
+    dsc_tipo_processo VARCHAR, -- Ex: '2 - INEXIBILIDADE, 1 - DISPENSA, 3 - INEXIBILIDADE POR CREDENCIAMENTO/CHAMADA...'
+    dat_abertura DATE, -- Ex: '20250120, 20250406, 20250530, 20250901, 20250317...'
+    dsc_nat_objeto VARCHAR, -- Ex: '2 - COMPRAS E OUTROS SERVIÇOS, 3 - LOCAÇÃO DE IMÓVEIS...'
+    dsc_objeto VARCHAR, -- Ex: 'CONTRATACAO DE CURSO PRATICO DE FORMACAO DE AGENTES DE CONTRATACAO  COMISSAO ...'
+    dsc_justificativa VARCHAR, -- Ex: 'E DE SUMA IMPORTANCIA E OBRIGACAO PREVISTA NA NOVA LEI DE LICITACOES QUE A AD...'
+    dsc_razao VARCHAR, -- Ex: 'A PRESENTE CONTRATACAO SERA FEITA DIRETAMENTE POR INEXIGIBILIDADE COM BASE NO...'
+    dat_pub_termo DATE, -- Ex: '20250128, 20250414, 20250530, 20250915, 20250317...'
+    dsc_veiculo_pub VARCHAR, -- Ex: 'CAMARA MUNICIPAL DE CAETE, PREFEITURA MUNICIPAL DE CAETE...'
+    dsc_ind_processo_lote VARCHAR, -- Ex: 'N O, SIM...'
+    vlr_empenhado DECIMAL, -- Ex: '0.0...'
+    vlr_liquidado DECIMAL, -- Ex: '0.0...'
+    vlr_pago DECIMAL, -- Ex: '0.0...'
+    vlr_rsp_proc DECIMAL, -- Ex: '0.0...'
+    vlr_rsp_nao_proc DECIMAL, -- Ex: '0.0...'
+);
+
+CREATE TABLE licitacao_fornDispensa (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_forn_dispensa INTEGER, -- Ex: '51936397, 51936398, 51936399, 51936400, 51936401...'
+    seq_item_dispensa INTEGER, -- Ex: '4993831, 4993865, 4993884, 4993822, 4993880...'
+    seq_dispensa INTEGER, -- Ex: '810078, 809934, 809933, 809935, 796935...'
+    seq_orgao INTEGER, -- Ex: '303, 302...'
+    cod_orgao INTEGER, -- Ex: '02, 01...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    num_doc_fornecedor VARCHAR, -- Ex: '154***576**, 161***756**, 147***116**, 137***146**, 158***626**...'
+    dsc_nom_fornecedor VARCHAR, -- Ex: 'HENRIQUE SOUZA VITORIANO, UBIRATAN MARCELO GOMES, MATEUS BATISTA QUEIROZ, ELI...'
+    num_inscr_estadual INTEGER, -- Ex: 'Isento, 186669993.02 09...'
+    dsc_sigla_uf VARCHAR, -- Ex: 'MG, SP, SC, BA, RJ...'
+    num_certidao_inss INTEGER, -- Ex: '1186.2348.5C6B.6C0E, 6EC2BF52DFACE3D2, E2C98AD4F5BB951F, OBD9A643961BCB17...'
+    dat_emi_cert_inss DATE, -- Ex: '20250116, 20250410, 20250103, 20250704...'
+    dat_val_cert_inss DATE, -- Ex: '20250715, 20251007, 20250702, 20251231...'
+    num_cert_fgts INTEGER, -- Ex: '2025011501310272835601, 2025032521082249289500, 2025051304245588246250, 20250...'
+    dat_emi_cert_fgts DATE, -- Ex: '20250129, 20250325, 20250513, 20250808...'
+    dat_val_cert_fgts DATE, -- Ex: '20250213, 20250423, 20250611, 20250906...'
+    num_cndt INTEGER, -- Ex: '20437903, 26095482025, 361382912025...'
+    dat_emi_cndt DATE, -- Ex: '20250410, 20250114, 20250626...'
+    dat_val_cndt DATE, -- Ex: '20251007, 20250713, 20251223...'
+    num_quant_item INTEGER, -- Ex: '11.0, 1.0, 90.0, 12.0, 6.0...'
+    vlr_item DECIMAL, -- Ex: '500.0, 300.0, 250.0, 170000.0, 6254.0...'
+);
+
+CREATE TABLE licitacao_habLicitacao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_hab_licitacao INTEGER, -- Ex: '4151912, 4251450, 4268814, 4156054, 4152464...'
+    seq_licitacao INTEGER, -- Ex: '1447852, 1477201, 1484165, 1449611, 1448185...'
+    seq_orgao INTEGER, -- Ex: '302, 303, 304...'
+    cod_orgao INTEGER, -- Ex: '01, 02, 03...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    num_documento VARCHAR, -- Ex: '07051313000118, 35528559000173, 03694367000140, 05047662000130, 1658977900016...'
+    nom_pessoa VARCHAR, -- Ex: 'ACTCON SOLUCOES WEB LTDA., PGB GRAFICA E EDITORA LTDA, ELIELBA VIEIRA DA SILV...'
+    dsc_objeto_social VARCHAR, -- Ex: 'ACTCON SOLUCOES WEB LTDA, IMPRESSAO DE LIVROS, REVISTAS E OUTRAS PUBLICACOES ...'
+    dsc_tipo_orgao_resp VARCHAR, -- Ex: '2 - JUNTA COMERCIAL, 1 - CARTÓRIO DE REGISTRO CIVIL DE PESSOAS JURÍDICAS...'
+    dat_registro DATE, -- Ex: '20230308, 20221028, 20000313, 20210120, 20211105...'
+    num_registro INTEGER, -- Ex: '10138308, 31213575138, 06451050, 8319513, 8884972...'
+    dat_registro_cvm DATE,
+    num_registro_cvm INTEGER,
+    num_inscr_estadual INTEGER, -- Ex: '0025900700070, 0033943720047, 0025262160050, 0046111080083, 0021631820079...'
+    dsc_estado_inscr VARCHAR, -- Ex: 'MG, SP, SC, PR, RS...'
+    num_certidao_inss INTEGER, -- Ex: '7B41F9C8C3F265D6, CD88052B6AAB14FD, AFC416808130C097, BOBE47AFC8C95764, D4326...'
+    dat_emi_cert_inss DATE, -- Ex: '20241216, 20250117, 20240816, 20241205, 20250131...'
+    dat_val_cert_inss DATE, -- Ex: '20250614, 20250716, 20250212, 20250603, 20250730...'
+    num_certidao_fgts INTEGER, -- Ex: '2025052319555449647907, 2025062706380957657676, 2025011503231492302502, 20240...'
+    dat_emi_cert_fgts DATE, -- Ex: '20250523, 20250627, 20250123, 20240916, 20250402...'
+    dat_val_cert_fgts DATE, -- Ex: '20250622, 20250726, 20250213, 20241015, 20250421...'
+    num_cndt INTEGER, -- Ex: '260400642025, 203979692025...'
+    dat_emi_cndt DATE, -- Ex: '20250512, 20250410...'
+    dat_val_cndt DATE, -- Ex: '20251108, 20251007...'
+    dat_habilitacao DATE, -- Ex: '20241219, 20250609, 20250710, 20250128, 20240926...'
+    dsc_ind_presenca_licit VARCHAR,
+    dsc_ind_renuncia VARCHAR,
+);
+
+CREATE TABLE licitacao_homologLicitacao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_hom_licitacao INTEGER, -- Ex: '71658695, 71658771, 71658833, 71658682, 71658854...'
+    seq_licitacao INTEGER, -- Ex: '1448185, 1464446, 1447852...'
+    seq_item_licitacao INTEGER, -- Ex: '47294702, 47294739, 47294821, 47294822, 47294839...'
+    seq_orgao INTEGER, -- Ex: '303, 304, 302...'
+    cod_orgao INTEGER, -- Ex: '02, 03, 01...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    num_quant_item INTEGER, -- Ex: '50.0, 4000.0, 25.0, 100.0, 2000.0...'
+    vlr_unitario DECIMAL, -- Ex: '65.0, 504820.0, 110.0, 32.0, 6.5...'
+    vlr_pct_desconto DECIMAL, -- Ex: '0.0...'
+    vlr_pct_tax_adm DECIMAL, -- Ex: '0.0...'
+    vlr_global DECIMAL, -- Ex: '0.0, 5875.5, 587.7, 6144.0, 2490.0...'
+    num_doc_vencedor VARCHAR, -- Ex: '45685588000100, 08380296000125, 43121365000187, 01645409000390, 2821547000019...'
+    nom_vencedor VARCHAR, -- Ex: 'FIGUEROA GOMES COMERCIAL LTDA, VISAMED COMERCIO DE MATERIAL HOSPITALAR LTDA, ...'
+);
+
+CREATE TABLE licitacao_itemDispensa (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_item_dispensa INTEGER, -- Ex: '4916212, 4916213, 4916214, 4916215, 4916216...'
+    seq_dispensa INTEGER, -- Ex: '796503, 796502, 796501, 795385, 797783...'
+    seq_orgao INTEGER, -- Ex: '303, 302...'
+    cod_orgao INTEGER, -- Ex: '02, 01...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    cod_item INTEGER, -- Ex: '17751, 17749, 17750, 19734, 19720...'
+    num_item INTEGER, -- Ex: '4, 2, 3, 1, 8...'
+    dsc_item VARCHAR, -- Ex: 'TIRAS ACCUCHEK GUIDE CAIXA COM 50 UNIDADES, CARTUCHO ACCUCHEK SOLO CAIXA COM ...'
+    dsc_unid_medida VARCHAR, -- Ex: 'CAIXA, SERVIÇO, UNIDADE, KIT, MÊS...'
+);
+
+CREATE TABLE licitacao_itemLicitacao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_item_licitacao INTEGER, -- Ex: '47903991, 47904000, 47903994, 47903993, 47903995...'
+    seq_licitacao INTEGER, -- Ex: '1464446, 1448093, 1447852, 1448185, 1472838...'
+    seq_orgao INTEGER, -- Ex: '304, 303, 302...'
+    cod_orgao INTEGER, -- Ex: '03, 02, 01...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    num_lote INTEGER, -- Ex: '1, 2, 10, 17, 12...'
+    dsc_lote VARCHAR, -- Ex: 'LOTE 1, LOTE 2, CATETERES, DIVERSOS, COLAR CERVICAL...'
+    cod_item INTEGER, -- Ex: '6019, 5875, 1764, 1765, 6020...'
+    num_item INTEGER, -- Ex: '6, 5, 3, 4, 10...'
+    dsc_item VARCHAR, -- Ex: 'CAMISA PROFISSIONAL, MANGA LONGA, FECHADA COM GOLA POLO COM BOTAO, CONFECCION...'
+    dsc_unid_medida VARCHAR, -- Ex: 'PEÇA, KIT, UNIDADE, SERVIÇO, FRASCO...'
+);
+
+CREATE TABLE licitacao_itemRegadeso (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_item_reg_adesao INTEGER, -- Ex: '8736475, 8736476, 8736477, 8736478, 8759140...'
+    seq_reg_adesao INTEGER, -- Ex: '176666, 177399, 177431, 181775, 181777...'
+    seq_orgao INTEGER, -- Ex: '302, 303...'
+    cod_orgao INTEGER, -- Ex: '01, 02...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    num_lote INTEGER, -- Ex: '1, 2, 12, 4, 17...'
+    dsc_lote VARCHAR, -- Ex: 'LOTE 1, MENSALIDADES, INSTALACAO, LOTE 12, LOTE 4...'
+    cod_item INTEGER, -- Ex: '4463, 4461, 4462, 4460, 19895...'
+    num_item INTEGER, -- Ex: '4, 2, 3, 1, 6...'
+    dsc_item VARCHAR, -- Ex: 'TROFEUS EM ACO INOX AISI 304, TONS DOURADOS,PRATA E BRONZE, MEDALHA EM ACO IN...'
+    dsc_unid_medida VARCHAR, -- Ex: 'UNIDADE, SERVIÇO, COMPRIMIDO, CÁPSULA, FRASCO...'
+);
+
+CREATE TABLE licitacao_julgLicitacao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_julgamento INTEGER, -- Ex: '144132026, 144132027, 144132028, 144132029, 144132030...'
+    seq_item_licitacao INTEGER, -- Ex: '47294868, 47294693, 47294798, 47294912, 47294869...'
+    seq_licitacao INTEGER, -- Ex: '1448185, 1448186, 1474382, 1447852, 1464446...'
+    seq_orgao INTEGER, -- Ex: '303, 302, 304...'
+    cod_orgao INTEGER, -- Ex: '02, 01, 03...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    num_lote INTEGER, -- Ex: '14, 3, 38, 19, 33...'
+    dsc_lote VARCHAR, -- Ex: 'CONJUNTO DE NEBULIZACAO, ALCOOL E OUTROS, SOLUCOES, EQUIPAMENTOS DIVERSOS, PR...'
+    num_item INTEGER, -- Ex: '3, 6, 4, 1, 2...'
+    dsc_item VARCHAR, -- Ex: 'ESPACADOR VALVULADO ADULTO, CAPACIDADE VOLUMETRICA ENTRE 200ML E 250ML, TAMAN...'
+    vlr_unitario DECIMAL, -- Ex: '37.18, 5.75, 25.0, 260.0, 266.63...'
+    num_quant_item INTEGER, -- Ex: '250.0, 2000.0, 360.0, 2.0, 400.0...'
+    vlr_perc_desconto DECIMAL, -- Ex: '0.0...'
+    vlr_perc_taxa_adm DECIMAL, -- Ex: '0.0...'
+    vlr_global DECIMAL, -- Ex: '0.0, 207.0, 161.0, 1520.0, 1888888.88...'
+    dsc_ind_desonera_folha VARCHAR, -- Ex: 'N O, SIM...'
+    num_doc_licitante VARCHAR, -- Ex: '45685588000100, 43121365000187, 08380296000125, 05194502000114, 2821547000019...'
+    nom_licitante VARCHAR, -- Ex: 'FIGUEROA GOMES COMERCIAL LTDA, MG FLEX LTDA., VISAMED COMERCIO DE MATERIAL HO...'
+);
+
+CREATE TABLE licitacao_licitacao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_licitacao INTEGER, -- Ex: '1447852, 1477201, 1484165, 1497586, 1498688...'
+    seq_orgao INTEGER, -- Ex: '302, 303, 304...'
+    cod_orgao INTEGER, -- Ex: '01, 02, 03...'
+    seq_unidade INTEGER, -- Ex: '619640, 623257, 623251, 619627, 623258...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    num_processo INTEGER, -- Ex: '26, 10, 14, 15, 17...'
+    num_ano_processo INTEGER, -- Ex: '2024, 2025...'
+    dsc_tipo_cadastro VARCHAR, -- Ex: '1 - CADASTRO INICIAL, 2 - RETIFICAÇÃO...'
+    dsc_modalidade VARCHAR, -- Ex: '6 - PREGÃO ELETRÔNICO, 3 - CONCORRÊNCIA...'
+    num_modalidade INTEGER,
+    dsc_nat_processo VARCHAR, -- Ex: '1 - NORMAL, 2 - REGISTRO DE PREÇOS...'
+    dat_abert_proc_adm DATE, -- Ex: '20241017, 20250404, 20250617, 20250613, 20250910...'
+    dat_conv_edital DATE,
+    dat_pub_edital DATE, -- Ex: '20241204, 20250523, 20250625, 20250827, 20250911...'
+    dsc_veic_pub_001 VARCHAR,
+    dat_veic_pub_001 DATE,
+    dsc_veic_pub_002 VARCHAR,
+    dat_veic_pub_002 DATE,
+    dat_receb_prev_doc VARCHAR, -- Ex: '20241219, 20250609, 20250710, 20250911, 20251002...'
+    num_exercicio_edital INTEGER, -- Ex: '2024, 2025...'
+    dsc_tipo_licitacao VARCHAR, -- Ex: '1 - MENOR PREÇO, 7 - MAIOR DESCONTO...'
+    dsc_nat_objeto VARCHAR, -- Ex: '2 - COMPRAS E OUTROS SERVIÇOS, 1 - OBRAS E/OU SERVIÇOS DE ENGENHARIA...'
+    dsc_objeto_licitacao VARCHAR, -- Ex: 'CONTRATACAO DE EMPRESA ESPECIALIZADA NA PRESTACAO DOS SERVICOS NA FORMA DE DI...'
+    dsc_regime_exec_obra VARCHAR, -- Ex: '-...'
+    num_convidados INTEGER,
+    dsc_clausula_prorrog VARCHAR, -- Ex: 'CONFORME CONTRATO, CONFORME CLAUSULA CONTRATUAL, DO VALOR  PRAZO  PAGAMENTO  ...'
+    dsc_unid_medida VARCHAR, -- Ex: '2 - MESES, 1 - DIAS...'
+    num_prazo_execucao INTEGER, -- Ex: '12, 6, 60, 3, 30...'
+    dsc_forma_pagamento VARCHAR, -- Ex: 'ATE 05  CINCO  APOS RECEBIMENTO DA NOTA FISCAL., ATE 30  TRINTA  DIAS APOS A ...'
+    dsc_criterio_aceit VARCHAR, -- Ex: 'MENOR VALOR., MENOR PRECO., MENOR PRECO GLOBAL, MAIOR DESCONTO, MAIOR DESCONT...'
+    dsc_criterio_adjud VARCHAR, -- Ex: '3 - OUTROS, 4 - MENOR PREÇO GLOBAL, 1 - DESCONTO SOBRE TABELA DE PREÇOS PRATI...'
+    dsc_processo_lote VARCHAR, -- Ex: 'SIM, N O...'
+    dsc_ind_pref_micro VARCHAR, -- Ex: 'SIM, N O...'
+    dsc_ind_exclusiva_micro VARCHAR, -- Ex: 'N O...'
+    dsc_ind_sub_contrato_micro VARCHAR, -- Ex: 'N O...'
+    dsc_ind_reserv_micro VARCHAR, -- Ex: 'N O...'
+    vlr_empenhado DECIMAL, -- Ex: '0.0...'
+    vlr_liquidado DECIMAL, -- Ex: '0.0...'
+    vlr_pago DECIMAL, -- Ex: '0.0...'
+    vlr_rsp_processado DECIMAL, -- Ex: '0.0...'
+    vlr_rsp_nao_processado DECIMAL, -- Ex: '0.0...'
+);
+
+CREATE TABLE licitacao_parecLicitacao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_parecer_licit INTEGER, -- Ex: '2104554, 2104555, 2104556, 2142933, 2142934...'
+    seq_licitacao INTEGER, -- Ex: '1447852, 1477201, 1497586, 1464984, 1465164...'
+    seq_orgao INTEGER, -- Ex: '302, 303, 304...'
+    cod_orgao INTEGER, -- Ex: '01, 02, 03...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    dat_parecer DATE, -- Ex: '20241205, 20250102, 20250522, 20250521, 20250826...'
+    dsc_tipo_parecer VARCHAR, -- Ex: '1 - TÉCNICO, 2 - JURÍDICO - EDITAL, 3 - JURÍDICO - JULGAMENTO...'
+    num_doc_resp_parecer VARCHAR, -- Ex: '051***446**, 060***186**, 122***586**, 001***386**, 015***446**...'
+    nom_resp_parecer VARCHAR, -- Ex: 'GABRIELA CAROLINA DE OLIVEIRA CASSIMIRO BRITO, DANUBIA JULIA DO COUTO LIMA, J...'
+);
+
+CREATE TABLE licitacao_quadroSocLicitacao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_quadro_soc INTEGER, -- Ex: '8374274, 8374275, 8374276, 8374277, 8374278...'
+    seq_hab_licitacao INTEGER, -- Ex: '4151912, 4152464, 4152465, 4152466, 4152467...'
+    seq_licitacao INTEGER, -- Ex: '1447852, 1448185, 1448186, 1449611, 1464446...'
+    seq_orgao INTEGER, -- Ex: '302, 303, 304...'
+    cod_orgao INTEGER, -- Ex: '01, 02, 03...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    num_documento VARCHAR, -- Ex: '07051313000118, 16589779000162, 28215470000191, 38370336000119, 4312136500018...'
+    nom_pessoa VARCHAR, -- Ex: 'ACTCON SOLUCOES WEB LTDA., HOLISTICA COMERCIO DE PRODUTOS E SERVICOS HOSPITAL...'
+    num_cgc_habilitado INTEGER, -- Ex: '7051313000118, 16589779000162, 28215470000191, 38370336000119, 43121365000187...'
+    dsc_tipo_participacao VARCHAR, -- Ex: '2 - DEMAIS MEMBROS DO QUADRO SOCIETÁRIO, 1 - REPRESENTANTE LEGAL, 4 - EMPRESÁ...'
+);
+
+CREATE TABLE licitacao_recDispensa (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_rec_dispensa INTEGER,
+    seq_dispensa INTEGER,
+    seq_orgao INTEGER,
+    cod_orgao INTEGER,
+    num_ano_referencia INTEGER,
+    num_mes_referencia INTEGER,
+    dsc_tipo_processo VARCHAR,
+    dsc_dotacao VARCHAR,
+    dsc_funcao VARCHAR,
+    dsc_subfuncao VARCHAR,
+    dsc_programa VARCHAR,
+    dsc_acao VARCHAR,
+    dsc_subacao VARCHAR,
+    dsc_nat_despesa VARCHAR,
+    dsc_fonte_recurso VARCHAR,
+    vlr_recurso DECIMAL,
+);
+
+CREATE TABLE licitacao_recLicitacao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_rec_licitacao INTEGER,
+    seq_licitacao INTEGER,
+    seq_orgao INTEGER,
+    cod_orgao INTEGER,
+    num_ano_referencia INTEGER,
+    num_mes_referencia INTEGER,
+    dsc_dotacao VARCHAR,
+    dsc_funcao VARCHAR,
+    dsc_subfuncao VARCHAR,
+    dsc_programa VARCHAR,
+    dsc_acao VARCHAR,
+    dsc_subacao VARCHAR,
+    dsc_nat_despesa VARCHAR,
+    dsc_fonte_recurso VARCHAR,
+    vlr_recurso DECIMAL,
+);
+
+CREATE TABLE licitacao_refLicitacao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_cred_licitacao INTEGER,
+    seq_item_licitacao INTEGER,
+    seq_licitacao INTEGER,
+    seq_orgao INTEGER,
+    cod_orgao INTEGER,
+    num_ano_referencia INTEGER,
+    num_mes_referencia INTEGER,
+    vlr_item DECIMAL,
+);
+
+CREATE TABLE licitacao_regadesao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_reg_adesao INTEGER, -- Ex: '176666, 178871, 177399, 177400, 177431...'
+    seq_orgao INTEGER, -- Ex: '302, 303...'
+    cod_orgao INTEGER, -- Ex: '01, 02...'
+    seq_unidade INTEGER, -- Ex: '623257, 623251...'
+    seq_licitacao INTEGER, -- Ex: '-1...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    dsc_tipo_cadastro VARCHAR, -- Ex: '1 - CADASTRO INICIAL...'
+    num_processo INTEGER, -- Ex: '3, 12, 72, 68, 59...'
+    num_ano_processo INTEGER, -- Ex: '2025...'
+    dat_abertura DATE, -- Ex: '20250318, 20250528, 20250328, 20250321, 20250319...'
+    dsc_org_gerenciador VARCHAR, -- Ex: 'MUNICIPIO DE NOVA LIMA, MUNICIPIO DE CAETE, CONSORCIO INTERMUNICIPAL MULTIFIN...'
+    dsc_modalidade VARCHAR, -- Ex: 'PREG O...'
+    num_modalidade INTEGER,
+    dat_ata_reg_preco DATE, -- Ex: '20241223, 20250408, 20230719, 20240827, 20250319...'
+    dat_validade DATE, -- Ex: '20251223, 20260408, 20250719, 20250827, 20260319...'
+    dsc_nat_processo VARCHAR, -- Ex: '-...'
+    dat_pub_aviso_inst DATE, -- Ex: '20250326, 20250530, 20250328, 20250321, 20250319...'
+    dsc_objeto_adesao VARCHAR, -- Ex: 'CONTRATACAO DE EMPRESA ESPECIALIZADA NA CONFECCAO DE TROFEUS  MEDALHAS E PLAC...'
+    num_doc_resp VARCHAR, -- Ex: '043***986**, 534***156**, 967***686**, 061***796**, 155***666**...'
+    nom_pessoa_resp VARCHAR, -- Ex: 'FERNANDO SILVA DE ALMEIDA, RICARDO LUIZ STEHLING, URSULA CRISTINA ANGELO COEL...'
+    dsc_ind_desc_tab_preco VARCHAR, -- Ex: 'N O...'
+    dsc_ind_processo_lote VARCHAR, -- Ex: 'SIM, N O...'
+    vlr_empenhado DECIMAL, -- Ex: '0.0...'
+    vlr_liquidado DECIMAL, -- Ex: '0.0...'
+    vlr_pago DECIMAL, -- Ex: '0.0...'
+    vlr_rsp_processado DECIMAL, -- Ex: '0.0...'
+    vlr_rsp_nao_processado DECIMAL, -- Ex: '0.0...'
+);
+
+CREATE TABLE licitacao_respDispensa (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_resp_dispensa INTEGER, -- Ex: '5251790, 5251791, 5251792, 5251793, 5251794...'
+    seq_dispensa INTEGER, -- Ex: '795171, 814983, 824562, 838970, 810073...'
+    seq_orgao INTEGER, -- Ex: '302, 303...'
+    cod_orgao INTEGER, -- Ex: '01, 02...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    dsc_tipo_responsavel VARCHAR, -- Ex: '1 - AUTORIZAÇÃO PARA ABERTURA DO PROCEDIMENTO DE DISPENSA OU INEXIGIBILIDADE,...'
+    num_doc_responsavel VARCHAR, -- Ex: '043***986**, 545***686**, 001***196**, 576***516**, 996***356**...'
+    dsc_nome_responsavel VARCHAR, -- Ex: 'FERNANDO SILVA DE ALMEIDA, NADIA CRISTINA ZACARIAS, RENATA APARECIDA DA SILVA...'
+);
+
+CREATE TABLE licitacao_respLicitacao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_resp_licitacao INTEGER, -- Ex: '14280989, 14280990, 14280991, 14280992, 14280993...'
+    seq_licitacao INTEGER, -- Ex: '1449612, 1449611, 1448093, 1448186, 1448185...'
+    seq_orgao INTEGER, -- Ex: '303, 302, 304...'
+    cod_orgao INTEGER, -- Ex: '02, 01, 03...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    dsc_tipo_resp VARCHAR, -- Ex: '1 - AUTORIZAÇÃO PARA ABERTURA DO PROCEDIMENTO LICITATÓRIO, 3 - PESQUISA DE PR...'
+    num_documento VARCHAR, -- Ex: '054***606**, 112***506**, 102***366**, 003***926**, 360***096**...'
+    nom_responsavel VARCHAR, -- Ex: 'JULIO CESAR DOS SANTOS TEIXEIRA, VANESSA SALDANHA FIGUEREDO DIAS, MARCOS LUCI...'
+);
+
+CREATE TABLE licitacao_vencRegadesao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_venc_reg_adesao INTEGER,
+    seq_item_reg_adesao INTEGER,
+    seq_reg_adesao INTEGER,
+    seq_orgao INTEGER,
+    cod_orgao INTEGER,
+    num_ano_referencia INTEGER,
+    num_mes_referencia INTEGER,
+    num_doc_vencedor VARCHAR,
+    nom_vencedor VARCHAR,
+    vlr_preco_unitario DECIMAL,
+    num_quant_licitado INTEGER,
+    num_quant_aderido INTEGER,
+    vlr_pct_desconto DECIMAL,
+);
+
+CREATE TABLE orgao_municipio (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_dim_orgao INTEGER, -- Ex: '339, 337, 335, 336, 338...'
+    cod_orgao INTEGER, -- Ex: '5, 3, 1, 2, 4...'
+    cod_tip_orgao INTEGER, -- Ex: '4, 3, 1, 2...'
+    cod_tip_orgao.1 INTEGER, -- Ex: '22257307000105, 19893791000154, 65174518000197, 18302299000102, 2115552800010...'
+    cnpj_orgao VARCHAR, -- Ex: 'FUNDAÇÃO EDUCACIONAL DE CAETÉ, SERVIÇO AUTONOMO DE AGUA E ESGOTO DE CAETE, Ca...'
+    nom_orgao VARCHAR, -- Ex: 'MUNICIPAL...'
+    nom_grupo_jurisdicionado VARCHAR, -- Ex: 'Fundação, Autarquia (exceto RPPS), Câmara Municipal, Prefeitura Municipal...'
+    dsc_tip_orgao VARCHAR, -- Ex: 'Poder Executivo, Poder Legislativo...'
+    dsc_esfera VARCHAR,
+);
+
+CREATE TABLE orgao_orgao (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_orgao INTEGER, -- Ex: '304, 302, 306, 303, 305...'
+    num_anoexercicio INTEGER, -- Ex: '2025...'
+    cod_orgao INTEGER, -- Ex: '03, 01, 05, 02, 04...'
+    nom_orgao VARCHAR, -- Ex: 'SERVIÇO AUTONOMO DE AGUA E ESGOTO DE CAETE, CAMARA MUNICIPAL DE CAETÉ, FUNDAÇ...'
+    tipo_orgao VARCHAR, -- Ex: '03 - AUTARQUIA (EXCETO RPPS), 01 - CÂMARA MUNICIPAL, 04 - FUNDAÇÃO, 02 - PREF...'
+    cod_uf INTEGER, -- Ex: '31...'
+    sgl_uf VARCHAR, -- Ex: 'MG...'
+    nom_uf VARCHAR, -- Ex: 'Minas Gerais...'
+    dsc_regiaoplanejamento VARCHAR, -- Ex: 'CENTRAL...'
+);
+
+CREATE TABLE orgao_orgaoResp (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_orgao_resp INTEGER, -- Ex: '2701853, 2701857, 2701854, 2701855, 2701856...'
+    seq_orgao INTEGER, -- Ex: '302, 303, 304, 305, 306...'
+    cod_orgao INTEGER, -- Ex: '01, 02, 03, 04, 05...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1, 2, 3, 4, 5...'
+    num_documento_resp VARCHAR, -- Ex: '043***986**, 001***196**, 027***186**, 664***116**, 044***296**...'
+    nom_pessoa_resp VARCHAR, -- Ex: 'FERNANDO SILVA DE ALMEIDA, RENATA APARECIDA DA SILVA VICENTE, CARLA ALESSANDR...'
+    dsc_tipo_resp VARCHAR, -- Ex: '01 - GESTOR, 02 - CONTADOR, 03 - CONTROLE INTERNO, 05 - TESOUREIRO, 06 - RESP...'
+    num_crc_contador INTEGER, -- Ex: '065214, 116407, MG TC 34769, MG120904O, 91422...'
+    dsc_estado_crc VARCHAR, -- Ex: 'MG...'
+    dsc_cargo_ordenador VARCHAR, -- Ex: 'Diretor Administrativo...'
+    dsc_email_resp VARCHAR, -- Ex: 'planejamentocaete@gmail.com, contabilidade@caete.mg.gov.br, controleinterno@c...'
+    dat_inicio_vig DATE, -- Ex: '20250101, 20250201, 20250301, 20250401, 20250501...'
+    dat_fim_vig DATE, -- Ex: '20250131, 20250228, 20250331, 20250430, 20250531...'
+);
+
+CREATE TABLE orgao_orgaoUnidade (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_unidade INTEGER, -- Ex: '623257, 623250, 623238, 623231, 623251...'
+    seq_orgao INTEGER, -- Ex: '302, 303, 305, 304, 306...'
+    cod_orgao INTEGER, -- Ex: '01, 02, 04, 03, 05...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1...'
+    cod_unidade INTEGER, -- Ex: '01001, 02001, 02002, 02003, 02004...'
+    dsc_unidade VARCHAR, -- Ex: 'CAMARA MUNICIPAL DE CAETÉ, SEC MUN DE GOV E REL INSTITUCIONAIS, PROCURADORIA ...'
+    cod_subunidade INTEGER, -- Ex: '-9, 001, 002, 003...'
+    dsc_subunidade VARCHAR, -- Ex: 'NÃO INFORMADO, GESTÃO MUNICIPAL DE EDUCAÇÃO, QESE, FUNDEB, SECRETARIA MUNICIP...'
+);
+
+CREATE TABLE orgao_remessaMunicipio (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    tpo_remessa VARCHAR, -- Ex: 'AM...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '1, 2, 3, 4, 5...'
+    status_remessa VARCHAR, -- Ex: 'ENVIADO, NÃO ENVIADO...'
+);
+
+CREATE TABLE pessoa_municipio (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_dim_pessoa INTEGER, -- Ex: '1656516, 2265416, 281097, 29837719, 4449638...'
+    tip_documento VARCHAR, -- Ex: '1, -1...'
+    num_documento VARCHAR, -- Ex: '36024643691, 05539027680, 06010993628, 10967682754, 03907273265...'
+    nom_pessoa VARCHAR, -- Ex: 'CARMEM ANGELA FERREIRA DO CARMO, GLEICE MARIA SOARES SIRIO, MARILMA APARECIDA...'
+    ind_sexo VARCHAR, -- Ex: 'F, M, X...'
+    seq_dat_nascimento INTEGER, -- Ex: '19530602, 19820806, 19790404, 19810810, 20020321...'
+    cod_orgao INTEGER, -- Ex: '2, 5, 3, 1, 4...'
+);
+
+CREATE TABLE receita_receita (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_orgao INTEGER, -- Ex: '303, 304, 305, 306...'
+    cod_orgao INTEGER, -- Ex: '02, 03, 04, 05...'
+    num_anoexercicio INTEGER, -- Ex: '2025...'
+    num_mesexercicio INTEGER, -- Ex: '1, 2, 3, 4, 5...'
+    dsc_cateconomica VARCHAR, -- Ex: '1.0.0.0.00.0.0 - RECEITAS CORRENTES, 2.0.0.0.00.0.0 - RECEITAS DE CAPITAL...'
+    dsc_origem VARCHAR, -- Ex: '1.1.0.0.00.0.0 - IMPOSTOS, TAXAS E CONTRIBUIÇÕES DE MELHORIA, 1.2.0.0.00.0.0 ...'
+    dsc_especie VARCHAR, -- Ex: '1.1.1.0.00.0.0 - IMPOSTOS, 1.1.2.0.00.0.0 - TAXAS, 1.2.4.0.00.0.0 - CONTRIBUI...'
+    dsc_rubrica VARCHAR, -- Ex: '1.1.1.2.00.0.0 - IMPOSTOS SOBRE O PATRIMÔNIO, 1.1.1.3.00.0.0 - IMPOSTOS SOBRE...'
+    dsc_alinea VARCHAR, -- Ex: '1.1.1.2.50.0.0 - IMPOSTO SOBRE A PROPRIEDADE PREDIAL E TERRITORIAL URBANA, 1....'
+    dsc_subalinea VARCHAR, -- Ex: '1.1.1.2.50.0.0 - IMPOSTO SOBRE A PROPRIEDADE PREDIAL E TERRITORIAL URBANA, 1....'
+    dsc_tipo VARCHAR, -- Ex: '1.1.1.2.50.0.1 - IMPOSTO SOBRE A PROPRIEDADE PREDIAL E TERRITORIAL URBANA - P...'
+    dsc_fonterecurso VARCHAR, -- Ex: '1.500.000 - RECURSOS NÃO VINCULADOS DE IMPOSTOS, 1.501.000 - OUTROS RECURSOS ...'
+    dsc_codorcamentario VARCHAR, -- Ex: '0000 - SEM IDENTIFICAÇÃO DE CO, NÃO INFORMADO, 3110 - IDENTIFICAÇÃO DAS TRANS...'
+    dsc_tipodeducao VARCHAR, -- Ex: '-, 93 - DESCONTOS CONCEDIDOS, 95 - FUNDEB, 99 - OUTRAS DEDUÇÕES, 92 - RESTITU...'
+    vlr_previsaoinicial DECIMAL, -- Ex: '0.0, 4000000.0, 3300.0, 913000.0, 82500.0...'
+    vlr_previsaoatualizada DECIMAL, -- Ex: '0.0, 4000000.0, 3300.0, 913000.0, 82500.0...'
+    vlr_realizadoateperiodo DECIMAL, -- Ex: '1398.57, 0.0, 33.86, 61139.77, 8396.77...'
+);
+
+CREATE TABLE remuneracao_municipio (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_dim_orgao INTEGER, -- Ex: '335, 336, 337, 339, 338...'
+    seq_dim_pessoa INTEGER, -- Ex: '3385864, 2265436, 2211201, 4449641, 78150...'
+    dsc_cargo VARCHAR, -- Ex: 'VICE PRESIDENTE, PREFEITO MUNICIPAL, PROF.ED.INF.ENS.FUND., AUX.SERVICOS GERA...'
+    dsc_lotacao VARCHAR, -- Ex: 'MANUT. DO CORPO LEGISLATIVO, MAN DA SECRETARIA-SUB.PREFEITO, REM PESSOAL FUND...'
+    seq_dat_pagamento INTEGER, -- Ex: '20250701, 20250301, 20250201, 20250401, 20250501...'
+    dsc_regime VARCHAR, -- Ex: 'Civil...'
+    dsc_req_crg VARCHAR, -- Ex: 'Agente Político, Cargo de Professor, Cargo cujo ingresso exige ensino fundame...'
+    dsc_cessao VARCHAR, -- Ex: 'Nao se aplica...'
+    dsc_tipo_pag VARCHAR, -- Ex: 'Mensal, Nao se aplica, Extra, 13º (Décimo Terceiro)...'
+    dsc_sgl_cargo VARCHAR, -- Ex: 'Agente político, Efetivo, Servidor temporário, Estagiário/Aluno aprendiz/Bols...'
+    dsc_situacao VARCHAR, -- Ex: 'NÃO INFORMADO, Efetivo, Servidor temporário, Estagiário/Aluno aprendiz/Bolsis...'
+    cod_orgao INTEGER, -- Ex: '1, 2, 3110004, 5, 4...'
+    seq_dat_ingresso_cargo INTEGER, -- Ex: '20210101, 20250101, 19850712, 20240826, 20090401...'
+    seq_dat_exclusao INTEGER, -- Ex: '20241007, 20241001, 20230515, 20240115, 20230703...'
+    seq_dat_concessao INTEGER, -- Ex: '19920601, 19901105, 19920406, 19930219, 19980901...'
+    dsc_sgl_cargo.1 VARCHAR, -- Ex: 'NÃO INFORMADO...'
+    cod_vinculo INTEGER, -- Ex: '151, 100010733601, 100001299801, 100010669001, 100005929301...'
+    num_matricula INTEGER, -- Ex: '151, 000100010733601, 000100001299801, 000100010669001, 000100005929301...'
+    cod_agepol INTEGER, -- Ex: 'VPC, PRE, -1, 000100010711501, 000100010708501...'
+    dsc_agepol VARCHAR, -- Ex: 'Vice Presidente da Câmara Municipal, Prefeito Municipal, Não se aplica, -1...'
+    cod_tipdep INTEGER, -- Ex: '-1, Não se aplica, 3...'
+    dsc_tipdep VARCHAR, -- Ex: 'Não se aplica, -1, Cônjuge...'
+    dsc_dependencia VARCHAR, -- Ex: 'NÃO INFORMADO, Não se aplica...'
+    seq_dat_afast_pre INTEGER, -- Ex: 'NÃO INFORMADO...'
+    qtd_hora_semana VARCHAR, -- Ex: '0, 25, 40, 30, 20...'
+    vlr_rmn_bruta DECIMAL, -- Ex: '10432.39, 21000.0, 3853.15, 1550.4, 4.52...'
+    vlr_rmn_liquida DECIMAL, -- Ex: '5126.84, 15431.08, 3033.92, 1433.64, 4.0...'
+    vlr_descontos DECIMAL, -- Ex: '5305.55, 5568.92, 819.23, 116.76, 0.52...'
+    cod_sit_serv_pens INTEGER, -- Ex: '02, 1482.8, 477.83, 1204.09, 61.4...'
+    dsc_sit_serv_pens VARCHAR, -- Ex: 'Ativo, 02, Inativo/Reformado, Pensionista...'
+    codcbo VARCHAR, -- Ex: '111120, 111250, 231210, 514225, 411010...'
+    seq_dat_obito_instituidor INTEGER, -- Ex: '252210, 223208, 515105, 515305, 322205...'
+    seq_dat_comissionado INTEGER, -- Ex: '20170216, 20250306, 20250204, 20250207, 20250102...'
+    seq_dat_comissionado_exc INTEGER, -- Ex: '20250102, 20150101, 20130401, 20250613, 20190201...'
+    seq_dim_pessoa_instituidor INTEGER, -- Ex: '-1, 20250113, 20250101, 20250401, 20250403...'
+    dsc_req_cargo VARCHAR, -- Ex: 'NÃO SE APLICA, -1...'
+    dsc_tipo_pagext VARCHAR, -- Ex: 'NÃO INFORMADO, NÃO SE APLICA, FOLHA EXTRA...'
+    ind_natureza_saldo VARCHAR, -- Ex: 'C, NÃO INFORMADO, FOLHA EXTRA...'
+    seq_dat_transf_reserva INTEGER, -- Ex: 'C...'
+    ind_dedic_exclusiva VARCHAR, -- Ex: 'N, S...'
+);
+
+CREATE TABLE saude_saude (
+    ano_referencia INTEGER, -- [CHAVE TEMPORAL] Filtre por esta coluna para buscar anos específicos.
+    seq_orgao INTEGER, -- Ex: '303...'
+    cod_orgao INTEGER, -- Ex: '02...'
+    seq_unidade INTEGER, -- Ex: '623234, 623262...'
+    num_ano_referencia INTEGER, -- Ex: '2025...'
+    num_mes_referencia INTEGER, -- Ex: '7, 1, 3, 2, 4...'
+    dsc_funcao VARCHAR, -- Ex: '10 - SAÚDE...'
+    dsc_subfuncao VARCHAR, -- Ex: '302 - ASSISTÊNCIA HOSPITALAR E AMBULATORIAL, 122 - ADMINISTRAÇÃO GERAL, 301 -...'
+    dsc_programa VARCHAR, -- Ex: '0048 - URGÊNCIA E EMERGÊNCIA, 0047 - MANUTENÇÃO DO SERVIÇO DE TRANSPORTE DE P...'
+    dsc_acao VARCHAR, -- Ex: '2403 - MANUTENÇÃO DO SAMU, 2110 - MANUTENÇÃO DO SETOR DE TRANSPORTE, 2094 - M...'
+    dsc_subacao VARCHAR,
+    dsc_nat_despesa VARCHAR, -- Ex: '3.1.90.13.03 - 3.1.90.13.03, 3.3.90.14.05 - 3.3.90.14.05, 3.3.90.48.00 - 3.3....'
+    dsc_fonte_recurso VARCHAR, -- Ex: '1.500.000 - RECURSOS NÃO VINCULADOS DE IMPOSTOS...'
+    dsc_cod_orcamentario VARCHAR, -- Ex: '1002 - IDENTIFICAÇÃO DAS DESPESAS COM AÇÕES E SERVIÇOS PÚBLICOS DE SAÚDE...'
+    num_empenho INTEGER, -- Ex: '4161, 3641, 1009, 3764, 769...'
+    dat_empenho DATE, -- Ex: '20250730, 20250627, 20250131, 20250707, 20250123...'
+    vlr_empenho DECIMAL, -- Ex: '4054.55, 0.0, 819.2, 3020.78, 8612.17...'
+    vlr_ref_empenho DECIMAL, -- Ex: '0.0...'
+    vlr_anu_empenho DECIMAL, -- Ex: '0.0, 46575.0, 2287.07, 12170.3, 187500.0...'
+    vlr_liquidado DECIMAL, -- Ex: '4054.55, 0.0, 1009.0, 819.2, 4900.0...'
+    vlr_anu_liquidado DECIMAL, -- Ex: '0.0, 8760.0...'
+    vlr_pagamento DECIMAL, -- Ex: '0.0, 2171.5, 1009.0, 819.2, 13790.0...'
+    vlr_anu_pagamento DECIMAL, -- Ex: '0.0, 8760.0...'
+    vlr_outras_baixas DECIMAL, -- Ex: '0.0, 73.5, 4645.63, 41169.9, 603.78...'
+    vlr_anu_outras_baixas DECIMAL, -- Ex: '0.0...'
+    vlr_rsp_proc DECIMAL, -- Ex: '4054.55, -2171.5, 0.0, -8890.0, -1420.77...'
+    vlr_rsp_nao_proc DECIMAL, -- Ex: '0.0, -1009.0, -4900.0, -4900.86, -36710.0...'
+);

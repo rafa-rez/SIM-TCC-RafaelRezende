@@ -1,0 +1,27 @@
+{
+  "id_teste": "42",
+  "source": "golden_reference",
+  "sql": "SELECT ano_referencia, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total FROM despesa_pagamento WHERE ano_referencia IN (2024, 2025) GROUP BY ano_referencia ORDER BY ano_referencia;",
+  "columns": [
+    "ano_referencia",
+    "total"
+  ],
+  "rows": [
+    {
+      "ano_referencia": 2024,
+      "total": 201808076.73
+    },
+    {
+      "ano_referencia": 2025,
+      "total": 102953668.15
+    }
+  ],
+  "row_count": 2,
+  "col_count": 2,
+  "schema_hash": "aff1347c455c79af",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:43.384312+00:00",
+  "input_usuario": "Compare total pago em 2024 e 2025.",
+  "dificuldade": "medio",
+  "categoria": "Despesas Pagamentos"
+}

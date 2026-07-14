@@ -1,0 +1,21 @@
+{
+  "id_teste": "30",
+  "source": "golden_reference",
+  "sql": "SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total FROM educacao_educacao WHERE ano_referencia = 2024;",
+  "columns": [
+    "total"
+  ],
+  "rows": [
+    {
+      "total": 16151033.11
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "11239872d178729a",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:40.504243+00:00",
+  "input_usuario": "Qual o gasto total em educação liquidado em 2024?",
+  "dificuldade": "medio",
+  "categoria": "Calculo Fiscal"
+}

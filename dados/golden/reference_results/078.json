@@ -1,0 +1,70 @@
+{
+  "id_teste": "78",
+  "source": "golden_reference",
+  "sql": "WITH base AS (SELECT h.ano_referencia, h.nom_vencedor, SUM(CAST(h.vlr_global AS DECIMAL)) AS total FROM licitacao_homologLicitacao h WHERE h.ano_referencia IN (2024, 2025) GROUP BY h.ano_referencia, h.seq_licitacao, h.nom_vencedor), ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY total DESC) AS rn FROM base) SELECT ano_referencia, nom_vencedor, total FROM ranked WHERE rn <= 5 ORDER BY ano_referencia, total DESC;",
+  "columns": [
+    "ano_referencia",
+    "nom_vencedor",
+    "total"
+  ],
+  "rows": [
+    {
+      "ano_referencia": 2024,
+      "nom_vencedor": "ALVES SOLUCOES INTEGRADAS LTDA",
+      "total": 4432414.67
+    },
+    {
+      "ano_referencia": 2024,
+      "nom_vencedor": "SEMPRA PAVIMENTACAO EIRELI",
+      "total": 3749659.9
+    },
+    {
+      "ano_referencia": 2024,
+      "nom_vencedor": "IGL ENGENHARIA LTDA EPP",
+      "total": 602986.9
+    },
+    {
+      "ano_referencia": 2024,
+      "nom_vencedor": "CM CONSTRUTORA MINAS LTDA EPP",
+      "total": 507229.0
+    },
+    {
+      "ano_referencia": 2024,
+      "nom_vencedor": "TERRASA ENGENHARIA LTDA - ME",
+      "total": 479671.0
+    },
+    {
+      "ano_referencia": 2025,
+      "nom_vencedor": "CINARA DOS SANTOS MAGALHES LTDA",
+      "total": 54800.0
+    },
+    {
+      "ano_referencia": 2025,
+      "nom_vencedor": "AUTO SUTURE DO BRASIL LTDA.",
+      "total": 0.0
+    },
+    {
+      "ano_referencia": 2025,
+      "nom_vencedor": "KIENTRO BRASIL LTDA",
+      "total": 0.0
+    },
+    {
+      "ano_referencia": 2025,
+      "nom_vencedor": "VISAMED COMERCIO DE MATERIAL HOSPITALAR LTDA",
+      "total": 0.0
+    },
+    {
+      "ano_referencia": 2025,
+      "nom_vencedor": "GOLDMED IMPORTACAO DE PRODUTOS HOSPITALARES LTDA.",
+      "total": 0.0
+    }
+  ],
+  "row_count": 10,
+  "col_count": 3,
+  "schema_hash": "194733bf72388f1c",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:48.592985+00:00",
+  "input_usuario": "Top 5 maiores licitações por ano em 2024 e 2025 usando ROW_NUMBER.",
+  "dificuldade": "medio",
+  "categoria": "Regras Especiais"
+}

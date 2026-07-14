@@ -1,0 +1,23 @@
+{
+  "id_teste": "7",
+  "source": "golden_reference",
+  "sql": "WITH licitacoes_2025 AS (SELECT h.seq_licitacao, h.nom_vencedor, SUM(CAST(h.vlr_global AS DECIMAL)) AS total_valor FROM licitacao_homologLicitacao h JOIN licitacao_licitacao l ON h.seq_licitacao = l.seq_licitacao AND h.ano_referencia = l.ano_referencia WHERE h.ano_referencia = 2025 AND h.vlr_global > 0 GROUP BY h.seq_licitacao, h.nom_vencedor) SELECT nom_vencedor, total_valor FROM licitacoes_2025 ORDER BY total_valor DESC LIMIT 10",
+  "columns": [
+    "nom_vencedor",
+    "total_valor"
+  ],
+  "rows": [
+    {
+      "nom_vencedor": "CINARA DOS SANTOS MAGALHES LTDA",
+      "total_valor": 54800.0
+    }
+  ],
+  "row_count": 1,
+  "col_count": 2,
+  "schema_hash": "af9fcc42e9c94db0",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:37.054314+00:00",
+  "input_usuario": "Liste as 10 maiores licitações homologadas em 2025 e o nome das empresas vencedoras.",
+  "dificuldade": "medio",
+  "categoria": "Regra Anti-Duplicata"
+}

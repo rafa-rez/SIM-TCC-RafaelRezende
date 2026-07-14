@@ -1,0 +1,21 @@
+{
+  "id_teste": "26",
+  "source": "golden_reference",
+  "sql": "WITH receita_corrente AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS r FROM receita_receita WHERE dsc_cateconomica ILIKE '%Corrente%' AND ano_referencia = 2024), despesas_camara AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS d FROM despesa_despesa WHERE cod_orgao = 1 AND ano_referencia = 2024) SELECT (d / NULLIF(r, 0)) * 100 AS iev_c FROM despesas_camara, receita_corrente;",
+  "columns": [
+    "iev_c"
+  ],
+  "rows": [
+    {
+      "iev_c": 2.7178793669
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "7f137b0b287dcb3b",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:39.910417+00:00",
+  "input_usuario": "Qual a porcentagem do gasto da Câmara sobre a receita corrente em 2024?",
+  "dificuldade": "medio",
+  "categoria": "Calculo Fiscal"
+}

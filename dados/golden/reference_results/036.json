@@ -1,0 +1,21 @@
+{
+  "id_teste": "36",
+  "source": "golden_reference",
+  "sql": "SELECT SUM(CAST(vlr_empenhado AS DECIMAL)) AS total FROM empenho_empenho WHERE ano_referencia = 2024;",
+  "columns": [
+    "total"
+  ],
+  "rows": [
+    {
+      "total": 222872519.8
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "11239872d178729a",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:42.138305+00:00",
+  "input_usuario": "Qual o total empenhado em 2024?",
+  "dificuldade": "facil",
+  "categoria": "Despesas Pagamentos"
+}

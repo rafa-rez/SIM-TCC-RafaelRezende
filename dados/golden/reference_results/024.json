@@ -1,0 +1,21 @@
+{
+  "id_teste": "24",
+  "source": "golden_reference",
+  "sql": "WITH receita_corrente AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS r FROM receita_receita WHERE ano_referencia = 2024 AND dsc_cateconomica ILIKE '%Corrente%'), despesa_corrente AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS d FROM despesa_despesa WHERE ano_referencia = 2024 AND dsc_naturezadespesa LIKE '3%') SELECT r / NULLIF(d, 0) AS isf_m FROM receita_corrente, despesa_corrente;",
+  "columns": [
+    "isf_m"
+  ],
+  "rows": [
+    {
+      "isf_m": 1.0665988252
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "358a3fa05a264845",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:39.508628+00:00",
+  "input_usuario": "Qual o ISF-M da prefeitura no ano de 2024?",
+  "dificuldade": "medio",
+  "categoria": "Calculo Fiscal"
+}

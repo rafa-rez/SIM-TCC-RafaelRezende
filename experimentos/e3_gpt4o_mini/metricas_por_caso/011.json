@@ -1,0 +1,27 @@
+{
+  "id_teste": "11",
+  "input_usuario": "Qual foi o total de pagamentos realizados pela prefeitura em 2024?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": true,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1,
+    "ref_cols": 1,
+    "gen_cols": 1,
+    "divergencia_ex": null,
+    "alias_apenas": false,
+    "extra": {},
+    "ex": true
+  },
+  "query_referencia": "SELECT SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pagamentos FROM despesa_pagamento WHERE ano_referencia = 2024 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%';",
+  "query_gerada": "SELECT SUM(CAST(dp.vlr_pag_fonte AS DECIMAL)) AS total_pagamentos FROM despesa_pagamento dp WHERE dp.ano_referencia = 2024 AND COALESCE(dp.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND dp.num_doc_credor NOT IN ('-1', '0');",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

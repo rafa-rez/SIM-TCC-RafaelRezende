@@ -1,0 +1,67 @@
+{
+  "id_teste": "10",
+  "source": "golden_reference",
+  "sql": "SELECT CAST(SUBSTR(CAST(seq_dat_pagamento AS VARCHAR), 5, 2) AS INTEGER) AS mes, SUM(CAST(vlr_rmn_liquida AS DECIMAL)) AS total_pago FROM remuneracao_municipio WHERE ano_referencia = 2024 GROUP BY mes ORDER BY mes",
+  "columns": [
+    "mes",
+    "total_pago"
+  ],
+  "rows": [
+    {
+      "mes": 1,
+      "total_pago": 4498269.57
+    },
+    {
+      "mes": 2,
+      "total_pago": 4122209.95
+    },
+    {
+      "mes": 3,
+      "total_pago": 4223223.17
+    },
+    {
+      "mes": 4,
+      "total_pago": 5735349.33
+    },
+    {
+      "mes": 5,
+      "total_pago": 4797419.61
+    },
+    {
+      "mes": 6,
+      "total_pago": 4669201.89
+    },
+    {
+      "mes": 7,
+      "total_pago": 4791210.77
+    },
+    {
+      "mes": 8,
+      "total_pago": 4938436.96
+    },
+    {
+      "mes": 9,
+      "total_pago": 4820837.54
+    },
+    {
+      "mes": 10,
+      "total_pago": 4694129.56
+    },
+    {
+      "mes": 11,
+      "total_pago": 5159124.31
+    },
+    {
+      "mes": 12,
+      "total_pago": 9079121.52
+    }
+  ],
+  "row_count": 12,
+  "col_count": 2,
+  "schema_hash": "4a9adb139d289dba",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:37.581498+00:00",
+  "input_usuario": "Mostre a evolução mensal do total pago pelo município a título de remuneração de pessoal ao longo do ano de 2024.",
+  "dificuldade": "medio",
+  "categoria": "Manipulacao de Datas"
+}

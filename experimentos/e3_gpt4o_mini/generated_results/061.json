@@ -1,0 +1,65 @@
+{
+  "id_teste": "61",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "WITH salarios AS (SELECT r.seq_dim_pessoa, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS maior_salario FROM remuneracao_municipio r WHERE r.ano_referencia = 2024 GROUP BY r.seq_dim_pessoa) SELECT p.nom_pessoa, s.maior_salario FROM salarios s JOIN pessoa_municipio p ON s.seq_dim_pessoa = p.seq_dim_pessoa WHERE COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%' ORDER BY s.maior_salario DESC LIMIT 10;",
+  "columns": [
+    "nom_pessoa",
+    "maior_salario"
+  ],
+  "rows": [
+    {
+      "nom_pessoa": "LUCAS COELHO FERREIRA",
+      "maior_salario": 82244.67
+    },
+    {
+      "nom_pessoa": "LUCAS COELHO FERREIRA",
+      "maior_salario": 82244.67
+    },
+    {
+      "nom_pessoa": "BERNARDO MOURAO VORCARO",
+      "maior_salario": 42004.39
+    },
+    {
+      "nom_pessoa": "BERNARDO MOURAO VORCARO",
+      "maior_salario": 42004.39
+    },
+    {
+      "nom_pessoa": "BERNARDO MOURAO VORCARO",
+      "maior_salario": 42004.39
+    },
+    {
+      "nom_pessoa": "ALBERTO NAZARE PIRES",
+      "maior_salario": 41240.86
+    },
+    {
+      "nom_pessoa": "ALBERTO NAZARE PIRES",
+      "maior_salario": 41240.86
+    },
+    {
+      "nom_pessoa": "ALBERTO NAZARE PIRES",
+      "maior_salario": 41240.86
+    },
+    {
+      "nom_pessoa": "THAIZA GRAZIELA INDELICATO DE MIRANDA",
+      "maior_salario": 39949.87
+    },
+    {
+      "nom_pessoa": "THAIZA GRAZIELA INDELICATO DE MIRANDA NOGUEIRA",
+      "maior_salario": 39949.87
+    }
+  ],
+  "row_count": 10,
+  "col_count": 2,
+  "schema_hash": "99b352eb4ec736d9",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:18.339479+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 10,
+    "gen_rows": 10
+  }
+}

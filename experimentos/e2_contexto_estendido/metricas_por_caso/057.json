@@ -1,0 +1,27 @@
+{
+  "id_teste": "57",
+  "input_usuario": "Evolução mensal da folha em 2025.",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 8,
+    "gen_rows": 8,
+    "ref_cols": 2,
+    "gen_cols": 2,
+    "divergencia_ex": "alias_colunas",
+    "alias_apenas": true,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT CAST(SUBSTR(CAST(seq_dat_pagamento AS VARCHAR), 5, 2) AS INTEGER) AS mes, SUM(CAST(vlr_rmn_liquida AS DECIMAL)) AS total FROM remuneracao_municipio WHERE ano_referencia = 2025 GROUP BY mes ORDER BY mes;",
+  "query_gerada": "SELECT CAST(SUBSTR(CAST(seq_dat_pagamento AS VARCHAR), 5, 2) AS INTEGER) AS mes, SUM(CAST(vlr_rmn_liquida AS DECIMAL)) AS total_folha FROM remuneracao_municipio WHERE ano_referencia = 2025 GROUP BY mes ORDER BY mes;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

@@ -1,0 +1,31 @@
+{
+  "id_teste": "48",
+  "source": "golden_reference",
+  "sql": "WITH licitacoes AS (SELECT h.nom_vencedor, SUM(CAST(h.vlr_global AS DECIMAL)) AS total_valor FROM licitacao_homologLicitacao h JOIN licitacao_licitacao l ON h.seq_licitacao = l.seq_licitacao AND h.ano_referencia = l.ano_referencia WHERE h.ano_referencia = 2024 GROUP BY h.seq_licitacao, h.nom_vencedor) SELECT nom_vencedor, total_valor FROM licitacoes ORDER BY total_valor DESC LIMIT 3;",
+  "columns": [
+    "nom_vencedor",
+    "total_valor"
+  ],
+  "rows": [
+    {
+      "nom_vencedor": "ALVES SOLUCOES INTEGRADAS LTDA",
+      "total_valor": 4432414.67
+    },
+    {
+      "nom_vencedor": "SEMPRA PAVIMENTACAO EIRELI",
+      "total_valor": 3749659.9
+    },
+    {
+      "nom_vencedor": "IGL ENGENHARIA LTDA EPP",
+      "total_valor": 602986.9
+    }
+  ],
+  "row_count": 3,
+  "col_count": 2,
+  "schema_hash": "af9fcc42e9c94db0",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:43.650058+00:00",
+  "input_usuario": "Top 3 licitações por valor em 2024 com nome do vencedor.",
+  "dificuldade": "dificil",
+  "categoria": "Licitacoes Contratos"
+}

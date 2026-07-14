@@ -1,0 +1,15 @@
+{
+  "id_teste": "74",
+  "source": "golden_reference",
+  "sql": "WITH pag AS (SELECT TRIM(UPPER(nom_credor)) AS nome, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pag FROM despesa_pagamento WHERE ano_referencia = 2024 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY nome), bf AS (SELECT TRIM(UPPER(\"NOME FAVORECIDO\")) AS nome, SUM(CAST(\"VALOR PARCELA\" AS DECIMAL)) AS total_bf FROM cgu_bolsa_familia_pagamentos WHERE ano_referencia = 2024 GROUP BY nome) SELECT p.nome, p.total_pag, b.total_bf FROM pag p JOIN bf b ON p.nome = b.nome LIMIT 20;",
+  "columns": [],
+  "rows": [],
+  "row_count": 0,
+  "col_count": 0,
+  "schema_hash": null,
+  "error": null,
+  "exported_at": "2026-07-14T23:54:48.100270+00:00",
+  "input_usuario": "Credores com pagamentos municipais e bolsa família pagamentos em 2024 (por nome).",
+  "dificuldade": "dificil",
+  "categoria": "Cruzamento Investigativo"
+}

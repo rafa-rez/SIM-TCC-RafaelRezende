@@ -1,0 +1,39 @@
+{
+  "id_teste": "45",
+  "source": "golden_reference",
+  "sql": "WITH lic AS (SELECT h.nom_vencedor, SUM(CAST(h.vlr_global AS DECIMAL)) AS total FROM licitacao_homologLicitacao h WHERE h.ano_referencia = 2024 AND h.vlr_global > 0 GROUP BY h.seq_licitacao, h.nom_vencedor) SELECT nom_vencedor, total FROM lic ORDER BY total DESC LIMIT 5;",
+  "columns": [
+    "nom_vencedor",
+    "total"
+  ],
+  "rows": [
+    {
+      "nom_vencedor": "ALVES SOLUCOES INTEGRADAS LTDA",
+      "total": 4432414.67
+    },
+    {
+      "nom_vencedor": "SEMPRA PAVIMENTACAO EIRELI",
+      "total": 3749659.9
+    },
+    {
+      "nom_vencedor": "IGL ENGENHARIA LTDA EPP",
+      "total": 602986.9
+    },
+    {
+      "nom_vencedor": "CM CONSTRUTORA MINAS LTDA EPP",
+      "total": 507229.0
+    },
+    {
+      "nom_vencedor": "TERRASA ENGENHARIA LTDA - ME",
+      "total": 479671.0
+    }
+  ],
+  "row_count": 5,
+  "col_count": 2,
+  "schema_hash": "583d8e24276ca304",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:43.498901+00:00",
+  "input_usuario": "Liste os 5 vencedores com maior valor homologado em 2024.",
+  "dificuldade": "medio",
+  "categoria": "Licitacoes Contratos"
+}

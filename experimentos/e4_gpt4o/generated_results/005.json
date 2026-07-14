@@ -1,0 +1,27 @@
+{
+  "id_teste": "5",
+  "source": "generated:e4_gpt4o",
+  "sql": "WITH despesa_mde AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa FROM educacao_educacao WHERE ano_referencia = 2023), receita_impostos AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita FROM receita_receita WHERE ano_referencia = 2023 AND dsc_especie ILIKE '%Imposto%') SELECT (d.total_despesa / NULLIF(r.total_receita, 0)) * 100 AS indice_educacao FROM despesa_mde d, receita_impostos r;",
+  "columns": [
+    "indice_educacao"
+  ],
+  "rows": [
+    {
+      "indice_educacao": 80.5776443081
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "b0b16e8e05cf1051",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:37.804925+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

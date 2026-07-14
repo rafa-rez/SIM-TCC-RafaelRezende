@@ -1,0 +1,27 @@
+{
+  "id_teste": "37",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_liquidado FROM despesa_despesa WHERE ano_referencia = 2025 AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5);",
+  "columns": [
+    "total_liquidado"
+  ],
+  "rows": [
+    {
+      "total_liquidado": 102379031.34
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "228f64589366b175",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:14.105627+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 3,
+    "gen_rows": 1
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id_teste": "3",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "WITH pagamentos_prefeitura AS (\n  SELECT\n    num_doc_credor,\n    SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago_prefeitura\n  FROM despesa_pagamento\n  WHERE ano_referencia = 2025\n    AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%'\n    AND num_doc_credor NOT IN ('-1', '0')\n  GROUP BY num_doc_credor\n),\ntransferencias_federal AS (\n  SELECT\n    \"CÓDIGO FAVORECIDO\" AS codigo_favorecido,\n    SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_transferido_federal\n  FROM cgu_transferencias\n  WHERE ano_referencia = 2025\n  GROUP BY \"CÓDIGO FAVORECIDO\"\n)\nSELECT\n  p.num_doc_credor AS documento_empresa,\n  p.total_pago_prefeitura,\n  t.total_transferido_federal\nFROM pagamentos_prefeitura p\nINNER JOIN transferencias_federal t\n  ON CAST(p.num_doc_credor AS VARCHAR) = CAST(t.codigo_favorecido AS VARCHAR)\nORDER BY p.total_pago_prefeitura DESC\nLIMIT 5;",
+  "columns": [
+    "documento_empresa",
+    "total_pago_prefeitura",
+    "total_transferido_federal"
+  ],
+  "rows": [
+    {
+      "documento_empresa": "18979328000167",
+      "total_pago_prefeitura": 9871952.6,
+      "total_transferido_federal": 255467.38
+    },
+    {
+      "documento_empresa": "18302299000102",
+      "total_pago_prefeitura": 710522.27,
+      "total_transferido_federal": 62072359.23
+    }
+  ],
+  "row_count": 2,
+  "col_count": 3,
+  "schema_hash": "d0e16d155d053a3c",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:40.409102+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 2,
+    "gen_rows": 2
+  }
+}

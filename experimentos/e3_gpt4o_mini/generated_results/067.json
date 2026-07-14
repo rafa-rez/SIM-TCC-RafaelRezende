@@ -1,0 +1,30 @@
+{
+  "id_teste": "67",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT DISTINCT COALESCE(dsc_marca, '') AS marca FROM frota_frota WHERE ano_referencia = 2025 AND COALESCE(dsc_marca, '') NOT ILIKE '%DIVERSOS%';",
+  "columns": [
+    "marca"
+  ],
+  "rows": [
+    {
+      "marca": "FORD"
+    },
+    {
+      "marca": "TOYOTA"
+    }
+  ],
+  "row_count": 2,
+  "col_count": 1,
+  "schema_hash": "493fdf88f2302052",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:18.798365+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 0.5,
+    "ref_rows": 2,
+    "gen_rows": 2
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id_teste": "38",
+  "source": "golden_reference",
+  "sql": "SELECT COUNT(*) AS qtd FROM despesa_pagamento WHERE ano_referencia = 2023;",
+  "columns": [
+    "qtd"
+  ],
+  "rows": [
+    {
+      "qtd": 14662
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "1734aaf65549a563",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:42.555400+00:00",
+  "input_usuario": "Quantos pagamentos foram feitos em 2023?",
+  "dificuldade": "facil",
+  "categoria": "Despesas Pagamentos"
+}

@@ -1,0 +1,76 @@
+{
+  "id_teste": "78",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "WITH licitacoes_agrupadas AS (\n  SELECT\n    seq_licitacao,\n    ano_referencia,\n    SUM(CAST(vlr_empenhado AS DECIMAL)) AS valor_empenhado\n  FROM licitacao_licitacao\n  WHERE ano_referencia IN (2024, 2025)\n  GROUP BY seq_licitacao, ano_referencia\n), ranked_licitacoes AS (\n  SELECT\n    seq_licitacao,\n    ano_referencia,\n    valor_empenhado,\n    ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY valor_empenhado DESC) AS rn\n  FROM licitacoes_agrupadas\n)\nSELECT\n  seq_licitacao,\n  ano_referencia,\n  valor_empenhado\nFROM ranked_licitacoes\nWHERE rn <= 5\nORDER BY ano_referencia, valor_empenhado DESC;",
+  "columns": [
+    "seq_licitacao",
+    "ano_referencia",
+    "valor_empenhado"
+  ],
+  "rows": [
+    {
+      "seq_licitacao": 1352416,
+      "ano_referencia": 2024,
+      "valor_empenhado": 4254238.83
+    },
+    {
+      "seq_licitacao": 1433003,
+      "ano_referencia": 2024,
+      "valor_empenhado": 1770085.17
+    },
+    {
+      "seq_licitacao": 1433005,
+      "ano_referencia": 2024,
+      "valor_empenhado": 728700.0
+    },
+    {
+      "seq_licitacao": 1449502,
+      "ano_referencia": 2024,
+      "valor_empenhado": 714000.0
+    },
+    {
+      "seq_licitacao": 1433179,
+      "ano_referencia": 2024,
+      "valor_empenhado": 690000.0
+    },
+    {
+      "seq_licitacao": 1484165,
+      "ano_referencia": 2025,
+      "valor_empenhado": 0.0
+    },
+    {
+      "seq_licitacao": 1488364,
+      "ano_referencia": 2025,
+      "valor_empenhado": 0.0
+    },
+    {
+      "seq_licitacao": 1448186,
+      "ano_referencia": 2025,
+      "valor_empenhado": 0.0
+    },
+    {
+      "seq_licitacao": 1474121,
+      "ano_referencia": 2025,
+      "valor_empenhado": 0.0
+    },
+    {
+      "seq_licitacao": 1464984,
+      "ano_referencia": 2025,
+      "valor_empenhado": 0.0
+    }
+  ],
+  "row_count": 10,
+  "col_count": 3,
+  "schema_hash": "042567b1d01234f2",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:51.988103+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": false,
+    "chs": 1.0,
+    "ref_rows": 10,
+    "gen_rows": 10
+  }
+}

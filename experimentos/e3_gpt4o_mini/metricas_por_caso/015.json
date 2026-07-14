@@ -1,0 +1,27 @@
+{
+  "id_teste": "15",
+  "input_usuario": "Qual a receita corrente realizada em 2025?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": true,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1,
+    "ref_cols": 1,
+    "gen_cols": 1,
+    "divergencia_ex": null,
+    "alias_apenas": false,
+    "extra": {},
+    "ex": true
+  },
+  "query_referencia": "SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS receita_corrente FROM receita_receita WHERE ano_referencia = 2025 AND dsc_cateconomica ILIKE '%Corrente%';",
+  "query_gerada": "SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS receita_corrente FROM receita_receita WHERE ano_referencia = 2025 AND COALESCE(dsc_cateconomica, '') ILIKE '%corrente%';",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

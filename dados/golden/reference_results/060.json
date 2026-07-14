@@ -1,0 +1,21 @@
+{
+  "id_teste": "60",
+  "source": "golden_reference",
+  "sql": "WITH sal AS (SELECT seq_dim_pessoa, MAX(CAST(vlr_rmn_liquida AS DECIMAL)) AS salario FROM remuneracao_municipio WHERE ano_referencia = 2024 AND dsc_sit_serv_pens ILIKE '%Ativo%' GROUP BY seq_dim_pessoa) SELECT AVG(salario) AS media FROM sal;",
+  "columns": [
+    "media"
+  ],
+  "rows": [
+    {
+      "media": 3159.6653191489
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "721c9525ade2ea89",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:45.873732+00:00",
+  "input_usuario": "Média salarial dos servidores ativos em 2024.",
+  "dificuldade": "medio",
+  "categoria": "RH Folha"
+}

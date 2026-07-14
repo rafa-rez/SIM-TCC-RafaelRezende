@@ -1,0 +1,27 @@
+{
+  "id_teste": "71",
+  "input_usuario": "Top 3 empresas SICOM pagamentos 2024 que também têm transferências CGU 2024.",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": false,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 3,
+    "gen_rows": 3,
+    "ref_cols": 3,
+    "gen_cols": 2,
+    "divergencia_ex": "cardinalidade_colunas",
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "WITH pag AS (SELECT num_doc_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS tp FROM despesa_pagamento WHERE ano_referencia = 2024 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY num_doc_credor), tr AS (SELECT \"CÓDIGO FAVORECIDO\" AS doc, SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS tt FROM cgu_transferencias WHERE ano_referencia = 2024 GROUP BY doc) SELECT p.num_doc_credor, p.tp, t.tt FROM pag p JOIN tr t ON CAST(p.num_doc_credor AS VARCHAR) = CAST(t.doc AS VARCHAR) ORDER BY (p.tp + t.tt) DESC LIMIT 3;",
+  "query_gerada": "WITH pagamentos AS (SELECT num_doc_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pagamentos FROM despesa_pagamento WHERE ano_referencia = 2024 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND num_doc_credor NOT IN ('-1', '0') GROUP BY num_doc_credor), transferencias AS (SELECT \"CÓDIGO FAVORECIDO\" AS num_doc_credor, SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_transferencias FROM cgu_transferencias WHERE ano_referencia = 2024 GROUP BY \"CÓDIGO FAVORECIDO\") SELECT p.num_doc_credor, p.total_pagamentos FROM pagamentos p JOIN transferencias t ON CAST(p.num_doc_credor AS VARCHAR) = CAST(t.num_doc_credor AS VARCHAR) ORDER BY p.total_pagamentos DESC LIMIT 3;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

@@ -1,0 +1,213 @@
+{
+  "id_teste": "69",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "SELECT DISTINCT\n  pag.nom_credor AS nome_credor_prefeitura,\n  pag.num_doc_credor AS cnpj,\n  CAST(SUM(CAST(pag.vlr_pag_fonte AS DECIMAL)) AS DECIMAL) AS total_pago_prefeitura,\n  CAST(SUM(CAST(cgu.\"Valor Recebido\" AS DECIMAL)) AS DECIMAL) AS total_recebido_cgu\nFROM despesa_pagamento pag\nJOIN cgu_despesas_favorecidos cgu\n  ON CAST(pag.num_doc_credor AS VARCHAR) = CAST(cgu.\"Código Favorecido\" AS VARCHAR)\nWHERE pag.ano_referencia = 2024\n  AND cgu.ano_referencia = 2024\n  AND COALESCE(pag.nom_credor, '') NOT ILIKE '%NAO INFORMADO%'\n  AND pag.num_doc_credor NOT IN ('-1', '0')\nGROUP BY pag.nom_credor, pag.num_doc_credor\nORDER BY total_pago_prefeitura DESC\nLIMIT 50;",
+  "columns": [
+    "nome_credor_prefeitura",
+    "cnpj",
+    "total_pago_prefeitura",
+    "total_recebido_cgu"
+  ],
+  "rows": [
+    {
+      "nome_credor_prefeitura": "SOC CIVIL DE BENEFICÊNCIA CAETEENSE",
+      "cnpj": "18979328000167",
+      "total_pago_prefeitura": 256770945.0,
+      "total_recebido_cgu": 45984128.4
+    },
+    {
+      "nome_credor_prefeitura": "SERVIDORES MUNICIPAIS",
+      "cnpj": "18302299000102",
+      "total_pago_prefeitura": 34754759.82,
+      "total_recebido_cgu": 478164606.47
+    },
+    {
+      "nome_credor_prefeitura": "SOCIEDADE CIVIL DE BENEFICENCIA CAETEENSE",
+      "cnpj": "18979328000167",
+      "total_pago_prefeitura": 7424429.4,
+      "total_recebido_cgu": 1751776.32
+    },
+    {
+      "nome_credor_prefeitura": "MUNICIPIO DE CAETE",
+      "cnpj": "18302299000102",
+      "total_pago_prefeitura": 3698028.51,
+      "total_recebido_cgu": 42315451.9
+    },
+    {
+      "nome_credor_prefeitura": "SINTAGMA ZENITE COMERCIO EIRELI",
+      "cnpj": "17926188000104",
+      "total_pago_prefeitura": 887210.58,
+      "total_recebido_cgu": 328741.2
+    },
+    {
+      "nome_credor_prefeitura": "SINTAGMA ZENITE COMERCIO LTDA",
+      "cnpj": "17926188000104",
+      "total_pago_prefeitura": 236168.91,
+      "total_recebido_cgu": 189026.19
+    },
+    {
+      "nome_credor_prefeitura": "APAE ASSOCIACAO DE PAIS E AMIGOS DOS EXCEPCIONAIS",
+      "cnpj": "21000203000158",
+      "total_pago_prefeitura": 229301.93,
+      "total_recebido_cgu": 26360.0
+    },
+    {
+      "nome_credor_prefeitura": "SMARTMED REPRESENTACAO COM PROD MED HOSP LTDA",
+      "cnpj": "24789180000109",
+      "total_pago_prefeitura": 164562.0,
+      "total_recebido_cgu": 126280.0
+    },
+    {
+      "nome_credor_prefeitura": "SINTAGMA ZENITE COMERCIO, PAPELARIA E ESPORTES LTDA",
+      "cnpj": "17926188000104",
+      "total_pago_prefeitura": 75527.13,
+      "total_recebido_cgu": 205463.25
+    },
+    {
+      "nome_credor_prefeitura": "SINTAGMA ZENITE COMERCIO EIRELIME",
+      "cnpj": "17926188000104",
+      "total_pago_prefeitura": 55448.7,
+      "total_recebido_cgu": 65748.24
+    },
+    {
+      "nome_credor_prefeitura": "PREFEITURA MUNICIPAL DE CAETE",
+      "cnpj": "18302299000102",
+      "total_pago_prefeitura": 39870.6,
+      "total_recebido_cgu": 8463090.38
+    },
+    {
+      "nome_credor_prefeitura": "CAIXA ESCOLAAR PADRE JOAQUIM SATURNINO DE FREITAS",
+      "cnpj": "03166229000199",
+      "total_pago_prefeitura": 31800.0,
+      "total_recebido_cgu": 15882.0
+    },
+    {
+      "nome_credor_prefeitura": "ANA LUIZA MONTEIRO SANTOS SILVA",
+      "cnpj": "42540202000176",
+      "total_pago_prefeitura": 30000.0,
+      "total_recebido_cgu": 3250.0
+    },
+    {
+      "nome_credor_prefeitura": "CAIXA ESCOLAR DOUTOR JOAO PINHEIRO",
+      "cnpj": "18562405000189",
+      "total_pago_prefeitura": 28800.0,
+      "total_recebido_cgu": 13338.0
+    },
+    {
+      "nome_credor_prefeitura": "CAIXA ESCOLAR PROFESSORA SIRLENE DE PAULA",
+      "cnpj": "03166218000109",
+      "total_pago_prefeitura": 24000.0,
+      "total_recebido_cgu": 11518.0
+    },
+    {
+      "nome_credor_prefeitura": "CAIXA ESCOLAR HÉLIO CERQUEIRA PEIXOTO",
+      "cnpj": "05843803000121",
+      "total_pago_prefeitura": 22500.0,
+      "total_recebido_cgu": 10898.0
+    },
+    {
+      "nome_credor_prefeitura": "CAIXA ESCOLAR JOSE LOURENCO LAUDATE",
+      "cnpj": "18273987000183",
+      "total_pago_prefeitura": 19600.0,
+      "total_recebido_cgu": 27221.0
+    },
+    {
+      "nome_credor_prefeitura": "CAIXA ESCOLAR PADRE GILSON DA SILVEIRA GOULART",
+      "cnpj": "22473558000127",
+      "total_pago_prefeitura": 19600.0,
+      "total_recebido_cgu": 32898.0
+    },
+    {
+      "nome_credor_prefeitura": "CE JOAO MONLEVADE.",
+      "cnpj": "18562413000125",
+      "total_pago_prefeitura": 18000.0,
+      "total_recebido_cgu": 9298.0
+    },
+    {
+      "nome_credor_prefeitura": "CAIXA ESCOLAR HELENA DE BARROS PINHEIRO",
+      "cnpj": "18562439000173",
+      "total_pago_prefeitura": 18000.0,
+      "total_recebido_cgu": 9798.0
+    },
+    {
+      "nome_credor_prefeitura": "CAIXA ESCOLAR JOSÉ HERCULANO",
+      "cnpj": "02002172000120",
+      "total_pago_prefeitura": 15000.0,
+      "total_recebido_cgu": 8061.0
+    },
+    {
+      "nome_credor_prefeitura": "CAIXA ESCOLAR DONA MARIA DE BARROS FERREIRA",
+      "cnpj": "18562454000111",
+      "total_pago_prefeitura": 14700.0,
+      "total_recebido_cgu": 6921.0
+    },
+    {
+      "nome_credor_prefeitura": "CEMAE I CENTRO MUNICIPAL DE ATIV EDUCACIONAL",
+      "cnpj": "10982384000149",
+      "total_pago_prefeitura": 10500.0,
+      "total_recebido_cgu": 7261.0
+    },
+    {
+      "nome_credor_prefeitura": "CAIXA ESCOLAR ANEZIA MARIA PINHEIRO",
+      "cnpj": "18562611000199",
+      "total_pago_prefeitura": 10500.0,
+      "total_recebido_cgu": 9061.0
+    },
+    {
+      "nome_credor_prefeitura": "CEMAE IIICENTRO MUNICIPAL DE ATIV EDUCACIONAL",
+      "cnpj": "10982477000173",
+      "total_pago_prefeitura": 9000.0,
+      "total_recebido_cgu": 6501.0
+    },
+    {
+      "nome_credor_prefeitura": "CEMAE IICENTRO MUNICIPAL DE ATIV EDUCACIONAL",
+      "cnpj": "10982382000150",
+      "total_pago_prefeitura": 9000.0,
+      "total_recebido_cgu": 6081.0
+    },
+    {
+      "nome_credor_prefeitura": "CE ISRAEL PINHEIRO.",
+      "cnpj": "01945924000123",
+      "total_pago_prefeitura": 9000.0,
+      "total_recebido_cgu": 9261.0
+    },
+    {
+      "nome_credor_prefeitura": "CAIXA ESCOLAR COLIBRI DE ENSINO FUND ESPECIAL",
+      "cnpj": "06113342000102",
+      "total_pago_prefeitura": 8400.0,
+      "total_recebido_cgu": 8321.0
+    },
+    {
+      "nome_credor_prefeitura": "CAIXA ESCOLAR OZORIO LEAO",
+      "cnpj": "46784540000104",
+      "total_pago_prefeitura": 6000.0,
+      "total_recebido_cgu": 9141.0
+    },
+    {
+      "nome_credor_prefeitura": "CENTROMED- CENTRO MEDICO LTDA.",
+      "cnpj": "42784496000181",
+      "total_pago_prefeitura": 1800.0,
+      "total_recebido_cgu": 3016.92
+    },
+    {
+      "nome_credor_prefeitura": "CASA JÁCOME LTDA",
+      "cnpj": "42987990000143",
+      "total_pago_prefeitura": 397.34,
+      "total_recebido_cgu": 5196.0
+    }
+  ],
+  "row_count": 31,
+  "col_count": 4,
+  "schema_hash": "644ddbfdc9f1fcd6",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:50.338430+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 10,
+    "gen_rows": 31
+  }
+}

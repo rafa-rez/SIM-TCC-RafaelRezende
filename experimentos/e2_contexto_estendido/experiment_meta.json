@@ -1,0 +1,10 @@
+{
+  "experiment": "ablation_precagada_30k",
+  "started_at": "2026-07-09T15:38:06.321154",
+  "model": "gpt-4.1-mini",
+  "prompt_variant": "precagada_30k",
+  "prompt_file": "D:\\tiokk-n8n\\Précagada.txt",
+  "prompt_tokens_est": 34917,
+  "dataset": "D:\\tiokk-n8n\\eval\\datasets\\golden_dataset_v1.0.csv",
+  "budget_limit_usd": 13.32
+}

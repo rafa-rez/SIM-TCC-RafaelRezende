@@ -1,0 +1,808 @@
+{
+  "total_usd": 3.450257,
+  "total_tokens_in": 1270417,
+  "total_tokens_out": 27422,
+  "calls": 80,
+  "history": [
+    {
+      "ts": "2026-07-09 16:00:46",
+      "model": "gpt-4o",
+      "tokens_in": 15897,
+      "tokens_out": 577,
+      "cost_usd": 0.045512,
+      "meta": {
+        "id_teste": "1"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:01:00",
+      "model": "gpt-4o",
+      "tokens_in": 15905,
+      "tokens_out": 730,
+      "cost_usd": 0.047063,
+      "meta": {
+        "id_teste": "2"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:01:18",
+      "model": "gpt-4o",
+      "tokens_in": 15906,
+      "tokens_out": 645,
+      "cost_usd": 0.046215,
+      "meta": {
+        "id_teste": "3"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:01:48",
+      "model": "gpt-4o",
+      "tokens_in": 15887,
+      "tokens_out": 420,
+      "cost_usd": 0.043917,
+      "meta": {
+        "id_teste": "4"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:02:19",
+      "model": "gpt-4o",
+      "tokens_in": 15894,
+      "tokens_out": 463,
+      "cost_usd": 0.044365,
+      "meta": {
+        "id_teste": "5"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:02:57",
+      "model": "gpt-4o",
+      "tokens_in": 15898,
+      "tokens_out": 303,
+      "cost_usd": 0.042775,
+      "meta": {
+        "id_teste": "6"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:03:25",
+      "model": "gpt-4o",
+      "tokens_in": 15885,
+      "tokens_out": 489,
+      "cost_usd": 0.044602,
+      "meta": {
+        "id_teste": "7"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:03:59",
+      "model": "gpt-4o",
+      "tokens_in": 15904,
+      "tokens_out": 496,
+      "cost_usd": 0.04472,
+      "meta": {
+        "id_teste": "8"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:04:31",
+      "model": "gpt-4o",
+      "tokens_in": 15887,
+      "tokens_out": 502,
+      "cost_usd": 0.044737,
+      "meta": {
+        "id_teste": "9"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:05:04",
+      "model": "gpt-4o",
+      "tokens_in": 15890,
+      "tokens_out": 458,
+      "cost_usd": 0.044305,
+      "meta": {
+        "id_teste": "10"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:05:38",
+      "model": "gpt-4o",
+      "tokens_in": 15878,
+      "tokens_out": 173,
+      "cost_usd": 0.041425,
+      "meta": {
+        "id_teste": "11"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:06:08",
+      "model": "gpt-4o",
+      "tokens_in": 15878,
+      "tokens_out": 199,
+      "cost_usd": 0.041685,
+      "meta": {
+        "id_teste": "12"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:06:37",
+      "model": "gpt-4o",
+      "tokens_in": 15875,
+      "tokens_out": 152,
+      "cost_usd": 0.041208,
+      "meta": {
+        "id_teste": "13"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:07:09",
+      "model": "gpt-4o",
+      "tokens_in": 15876,
+      "tokens_out": 181,
+      "cost_usd": 0.0415,
+      "meta": {
+        "id_teste": "14"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:07:45",
+      "model": "gpt-4o",
+      "tokens_in": 15874,
+      "tokens_out": 236,
+      "cost_usd": 0.042045,
+      "meta": {
+        "id_teste": "15"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:08:15",
+      "model": "gpt-4o",
+      "tokens_in": 15879,
+      "tokens_out": 353,
+      "cost_usd": 0.043228,
+      "meta": {
+        "id_teste": "16"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:08:46",
+      "model": "gpt-4o",
+      "tokens_in": 15875,
+      "tokens_out": 173,
+      "cost_usd": 0.041418,
+      "meta": {
+        "id_teste": "17"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:09:19",
+      "model": "gpt-4o",
+      "tokens_in": 15878,
+      "tokens_out": 191,
+      "cost_usd": 0.041605,
+      "meta": {
+        "id_teste": "18"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:09:50",
+      "model": "gpt-4o",
+      "tokens_in": 15878,
+      "tokens_out": 184,
+      "cost_usd": 0.041535,
+      "meta": {
+        "id_teste": "19"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:10:23",
+      "model": "gpt-4o",
+      "tokens_in": 15877,
+      "tokens_out": 168,
+      "cost_usd": 0.041372,
+      "meta": {
+        "id_teste": "20"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:10:54",
+      "model": "gpt-4o",
+      "tokens_in": 15875,
+      "tokens_out": 159,
+      "cost_usd": 0.041278,
+      "meta": {
+        "id_teste": "21"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:11:27",
+      "model": "gpt-4o",
+      "tokens_in": 15877,
+      "tokens_out": 194,
+      "cost_usd": 0.041632,
+      "meta": {
+        "id_teste": "22"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:12:02",
+      "model": "gpt-4o",
+      "tokens_in": 15882,
+      "tokens_out": 536,
+      "cost_usd": 0.045065,
+      "meta": {
+        "id_teste": "23"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:12:37",
+      "model": "gpt-4o",
+      "tokens_in": 15878,
+      "tokens_out": 480,
+      "cost_usd": 0.044495,
+      "meta": {
+        "id_teste": "24"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:13:09",
+      "model": "gpt-4o",
+      "tokens_in": 15881,
+      "tokens_out": 558,
+      "cost_usd": 0.045283,
+      "meta": {
+        "id_teste": "25"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:13:42",
+      "model": "gpt-4o",
+      "tokens_in": 15881,
+      "tokens_out": 487,
+      "cost_usd": 0.044573,
+      "meta": {
+        "id_teste": "26"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:14:14",
+      "model": "gpt-4o",
+      "tokens_in": 15882,
+      "tokens_out": 589,
+      "cost_usd": 0.045595,
+      "meta": {
+        "id_teste": "27"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:14:44",
+      "model": "gpt-4o",
+      "tokens_in": 15876,
+      "tokens_out": 222,
+      "cost_usd": 0.04191,
+      "meta": {
+        "id_teste": "28"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:15:15",
+      "model": "gpt-4o",
+      "tokens_in": 15878,
+      "tokens_out": 225,
+      "cost_usd": 0.041945,
+      "meta": {
+        "id_teste": "29"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:15:48",
+      "model": "gpt-4o",
+      "tokens_in": 15877,
+      "tokens_out": 187,
+      "cost_usd": 0.041562,
+      "meta": {
+        "id_teste": "30"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:16:20",
+      "model": "gpt-4o",
+      "tokens_in": 15876,
+      "tokens_out": 179,
+      "cost_usd": 0.04148,
+      "meta": {
+        "id_teste": "31"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:16:55",
+      "model": "gpt-4o",
+      "tokens_in": 15882,
+      "tokens_out": 569,
+      "cost_usd": 0.045395,
+      "meta": {
+        "id_teste": "32"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:17:28",
+      "model": "gpt-4o",
+      "tokens_in": 15881,
+      "tokens_out": 429,
+      "cost_usd": 0.043993,
+      "meta": {
+        "id_teste": "33"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:17:57",
+      "model": "gpt-4o",
+      "tokens_in": 15877,
+      "tokens_out": 207,
+      "cost_usd": 0.041763,
+      "meta": {
+        "id_teste": "34"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:18:32",
+      "model": "gpt-4o",
+      "tokens_in": 15878,
+      "tokens_out": 204,
+      "cost_usd": 0.041735,
+      "meta": {
+        "id_teste": "35"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:19:02",
+      "model": "gpt-4o",
+      "tokens_in": 15874,
+      "tokens_out": 182,
+      "cost_usd": 0.041505,
+      "meta": {
+        "id_teste": "36"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:19:35",
+      "model": "gpt-4o",
+      "tokens_in": 15889,
+      "tokens_out": 252,
+      "cost_usd": 0.042243,
+      "meta": {
+        "id_teste": "37"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:20:07",
+      "model": "gpt-4o",
+      "tokens_in": 15874,
+      "tokens_out": 143,
+      "cost_usd": 0.041115,
+      "meta": {
+        "id_teste": "38"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:20:39",
+      "model": "gpt-4o",
+      "tokens_in": 15878,
+      "tokens_out": 343,
+      "cost_usd": 0.043125,
+      "meta": {
+        "id_teste": "39"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:21:11",
+      "model": "gpt-4o",
+      "tokens_in": 15878,
+      "tokens_out": 338,
+      "cost_usd": 0.043075,
+      "meta": {
+        "id_teste": "40"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:21:43",
+      "model": "gpt-4o",
+      "tokens_in": 15880,
+      "tokens_out": 194,
+      "cost_usd": 0.04164,
+      "meta": {
+        "id_teste": "41"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:22:15",
+      "model": "gpt-4o",
+      "tokens_in": 15876,
+      "tokens_out": 196,
+      "cost_usd": 0.04165,
+      "meta": {
+        "id_teste": "42"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:22:48",
+      "model": "gpt-4o",
+      "tokens_in": 15878,
+      "tokens_out": 357,
+      "cost_usd": 0.043265,
+      "meta": {
+        "id_teste": "43"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:23:20",
+      "model": "gpt-4o",
+      "tokens_in": 15876,
+      "tokens_out": 160,
+      "cost_usd": 0.04129,
+      "meta": {
+        "id_teste": "44"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:23:52",
+      "model": "gpt-4o",
+      "tokens_in": 15880,
+      "tokens_out": 259,
+      "cost_usd": 0.04229,
+      "meta": {
+        "id_teste": "45"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:24:25",
+      "model": "gpt-4o",
+      "tokens_in": 15873,
+      "tokens_out": 191,
+      "cost_usd": 0.041593,
+      "meta": {
+        "id_teste": "46"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:24:56",
+      "model": "gpt-4o",
+      "tokens_in": 15878,
+      "tokens_out": 189,
+      "cost_usd": 0.041585,
+      "meta": {
+        "id_teste": "47"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:25:32",
+      "model": "gpt-4o",
+      "tokens_in": 15880,
+      "tokens_out": 548,
+      "cost_usd": 0.04518,
+      "meta": {
+        "id_teste": "48"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:26:01",
+      "model": "gpt-4o",
+      "tokens_in": 15878,
+      "tokens_out": 187,
+      "cost_usd": 0.041565,
+      "meta": {
+        "id_teste": "49"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:26:34",
+      "model": "gpt-4o",
+      "tokens_in": 15877,
+      "tokens_out": 201,
+      "cost_usd": 0.041702,
+      "meta": {
+        "id_teste": "50"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:27:06",
+      "model": "gpt-4o",
+      "tokens_in": 15878,
+      "tokens_out": 315,
+      "cost_usd": 0.042845,
+      "meta": {
+        "id_teste": "51"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:27:38",
+      "model": "gpt-4o",
+      "tokens_in": 15875,
+      "tokens_out": 242,
+      "cost_usd": 0.042107,
+      "meta": {
+        "id_teste": "52"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:28:13",
+      "model": "gpt-4o",
+      "tokens_in": 15875,
+      "tokens_out": 483,
+      "cost_usd": 0.044518,
+      "meta": {
+        "id_teste": "53"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:28:43",
+      "model": "gpt-4o",
+      "tokens_in": 15873,
+      "tokens_out": 344,
+      "cost_usd": 0.043123,
+      "meta": {
+        "id_teste": "54"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:29:16",
+      "model": "gpt-4o",
+      "tokens_in": 15876,
+      "tokens_out": 250,
+      "cost_usd": 0.04219,
+      "meta": {
+        "id_teste": "55"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:29:51",
+      "model": "gpt-4o",
+      "tokens_in": 15879,
+      "tokens_out": 470,
+      "cost_usd": 0.044398,
+      "meta": {
+        "id_teste": "56"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:30:24",
+      "model": "gpt-4o",
+      "tokens_in": 15875,
+      "tokens_out": 509,
+      "cost_usd": 0.044777,
+      "meta": {
+        "id_teste": "57"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:30:55",
+      "model": "gpt-4o",
+      "tokens_in": 15881,
+      "tokens_out": 550,
+      "cost_usd": 0.045202,
+      "meta": {
+        "id_teste": "58"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:31:25",
+      "model": "gpt-4o",
+      "tokens_in": 15875,
+      "tokens_out": 146,
+      "cost_usd": 0.041148,
+      "meta": {
+        "id_teste": "59"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:32:01",
+      "model": "gpt-4o",
+      "tokens_in": 15875,
+      "tokens_out": 431,
+      "cost_usd": 0.043998,
+      "meta": {
+        "id_teste": "60"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:32:33",
+      "model": "gpt-4o",
+      "tokens_in": 15876,
+      "tokens_out": 500,
+      "cost_usd": 0.04469,
+      "meta": {
+        "id_teste": "61"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:33:04",
+      "model": "gpt-4o",
+      "tokens_in": 15874,
+      "tokens_out": 216,
+      "cost_usd": 0.041845,
+      "meta": {
+        "id_teste": "62"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:33:40",
+      "model": "gpt-4o",
+      "tokens_in": 15875,
+      "tokens_out": 521,
+      "cost_usd": 0.044897,
+      "meta": {
+        "id_teste": "63"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:34:08",
+      "model": "gpt-4o",
+      "tokens_in": 15875,
+      "tokens_out": 257,
+      "cost_usd": 0.042258,
+      "meta": {
+        "id_teste": "64"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:34:41",
+      "model": "gpt-4o",
+      "tokens_in": 15874,
+      "tokens_out": 194,
+      "cost_usd": 0.041625,
+      "meta": {
+        "id_teste": "65"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:35:14",
+      "model": "gpt-4o",
+      "tokens_in": 15877,
+      "tokens_out": 374,
+      "cost_usd": 0.043432,
+      "meta": {
+        "id_teste": "66"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:35:45",
+      "model": "gpt-4o",
+      "tokens_in": 15881,
+      "tokens_out": 201,
+      "cost_usd": 0.041712,
+      "meta": {
+        "id_teste": "67"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:36:20",
+      "model": "gpt-4o",
+      "tokens_in": 15876,
+      "tokens_out": 402,
+      "cost_usd": 0.04371,
+      "meta": {
+        "id_teste": "68"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:36:54",
+      "model": "gpt-4o",
+      "tokens_in": 15880,
+      "tokens_out": 572,
+      "cost_usd": 0.04542,
+      "meta": {
+        "id_teste": "69"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:37:26",
+      "model": "gpt-4o",
+      "tokens_in": 15880,
+      "tokens_out": 534,
+      "cost_usd": 0.04504,
+      "meta": {
+        "id_teste": "70"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:37:59",
+      "model": "gpt-4o",
+      "tokens_in": 15885,
+      "tokens_out": 631,
+      "cost_usd": 0.046023,
+      "meta": {
+        "id_teste": "71"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:38:05",
+      "model": "gpt-4o",
+      "tokens_in": 15884,
+      "tokens_out": 304,
+      "cost_usd": 0.04275,
+      "meta": {
+        "id_teste": "72"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:39:01",
+      "model": "gpt-4o",
+      "tokens_in": 15877,
+      "tokens_out": 226,
+      "cost_usd": 0.041952,
+      "meta": {
+        "id_teste": "73"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:39:43",
+      "model": "gpt-4o",
+      "tokens_in": 15881,
+      "tokens_out": 414,
+      "cost_usd": 0.043842,
+      "meta": {
+        "id_teste": "74"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:40:06",
+      "model": "gpt-4o",
+      "tokens_in": 15882,
+      "tokens_out": 277,
+      "cost_usd": 0.042475,
+      "meta": {
+        "id_teste": "75"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:40:39",
+      "model": "gpt-4o",
+      "tokens_in": 15883,
+      "tokens_out": 612,
+      "cost_usd": 0.045828,
+      "meta": {
+        "id_teste": "76"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:41:11",
+      "model": "gpt-4o",
+      "tokens_in": 15877,
+      "tokens_out": 223,
+      "cost_usd": 0.041923,
+      "meta": {
+        "id_teste": "77"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:41:45",
+      "model": "gpt-4o",
+      "tokens_in": 15884,
+      "tokens_out": 582,
+      "cost_usd": 0.04553,
+      "meta": {
+        "id_teste": "78"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:42:23",
+      "model": "gpt-4o",
+      "tokens_in": 15883,
+      "tokens_out": 341,
+      "cost_usd": 0.043118,
+      "meta": {
+        "id_teste": "79"
+      }
+    },
+    {
+      "ts": "2026-07-09 16:42:49",
+      "model": "gpt-4o",
+      "tokens_in": 15880,
+      "tokens_out": 243,
+      "cost_usd": 0.04213,
+      "meta": {
+        "id_teste": "80"
+      }
+    }
+  ]
+}

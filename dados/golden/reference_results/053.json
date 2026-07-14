@@ -1,0 +1,21 @@
+{
+  "id_teste": "53",
+  "source": "golden_reference",
+  "sql": "WITH salarios AS (SELECT seq_dim_pessoa, MAX(CAST(vlr_rmn_liquida AS DECIMAL)) AS salario FROM remuneracao_municipio WHERE ano_referencia = 2024 GROUP BY seq_dim_pessoa) SELECT MAX(salario) AS maior_salario FROM salarios;",
+  "columns": [
+    "maior_salario"
+  ],
+  "rows": [
+    {
+      "maior_salario": 82244.67
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "50a217da992b1421",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:44.010009+00:00",
+  "input_usuario": "Qual o maior salário líquido pago em 2024?",
+  "dificuldade": "medio",
+  "categoria": "RH Folha"
+}

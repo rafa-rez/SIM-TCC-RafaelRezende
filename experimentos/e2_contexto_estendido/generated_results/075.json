@@ -1,0 +1,27 @@
+{
+  "id_teste": "75",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "SELECT SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_fpm_icms FROM cgu_transferencias WHERE ano_referencia = 2024 AND (\"TIPO TRANSFERÊNCIA\" ILIKE '%FPM%' OR \"TIPO TRANSFERÊNCIA\" ILIKE '%ICMS%');",
+  "columns": [
+    "total_fpm_icms"
+  ],
+  "rows": [
+    {
+      "total_fpm_icms": null
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "3bd195d39538bb63",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:51.588961+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 0,
+    "gen_rows": 1
+  }
+}

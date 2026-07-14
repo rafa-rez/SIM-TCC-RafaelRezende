@@ -1,0 +1,27 @@
+{
+  "id_teste": "1",
+  "input_usuario": "Calcule a Saúde Financeira (ISF-M) da prefeitura detalhada ano a ano, cobrindo todo o período de 2020 a 2025.",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": true,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 0.5,
+    "ref_rows": 6,
+    "gen_rows": 6,
+    "ref_cols": 2,
+    "gen_cols": 2,
+    "divergencia_ex": null,
+    "alias_apenas": false,
+    "extra": {},
+    "ex": true
+  },
+  "query_referencia": "WITH receita_corrente AS (SELECT ano_referencia, SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita_corrente FROM receita_receita WHERE dsc_cateconomica ILIKE '%Corrente%' GROUP BY ano_referencia), despesa_corrente AS (SELECT ano_referencia, SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa_corrente FROM despesa_despesa WHERE dsc_naturezadespesa LIKE '3%' GROUP BY ano_referencia) SELECT r.ano_referencia, r.total_receita_corrente / NULLIF(d.total_despesa_corrente, 0) AS isf_m FROM receita_corrente r JOIN despesa_corrente d ON r.ano_referencia = d.ano_referencia WHERE r.ano_referencia BETWEEN 2020 AND 2025",
+  "query_gerada": "WITH receita AS (SELECT ano_referencia, SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS receita_corrente FROM receita_receita WHERE dsc_cateconomica ILIKE '%Corrente%' GROUP BY ano_referencia), despesa AS (SELECT ano_referencia, SUM(CAST(vlr_liquidado AS DECIMAL)) AS despesa_corrente FROM despesa_despesa WHERE dsc_naturezadespesa ILIKE '3%' GROUP BY ano_referencia) SELECT r.ano_referencia, (SUM(r.receita_corrente) / NULLIF(SUM(d.despesa_corrente), 0)) AS isf_m FROM receita r JOIN despesa d ON r.ano_referencia = d.ano_referencia GROUP BY r.ano_referencia ORDER BY r.ano_referencia;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

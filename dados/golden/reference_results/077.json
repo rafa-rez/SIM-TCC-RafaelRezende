@@ -1,0 +1,21 @@
+{
+  "id_teste": "77",
+  "source": "golden_reference",
+  "sql": "SELECT SUM(CAST(vlr_movimentacao AS DECIMAL)) AS total FROM empenho_movimentacaoRsp WHERE ano_referencia = 2025 AND dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5);",
+  "columns": [
+    "total"
+  ],
+  "rows": [
+    {
+      "total": null
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "11239872d178729a",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:48.540987+00:00",
+  "input_usuario": "Total cancelado de RSP pela prefeitura em 2025.",
+  "dificuldade": "medio",
+  "categoria": "Regras Especiais"
+}

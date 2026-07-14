@@ -1,0 +1,27 @@
+{
+  "id_teste": "16",
+  "input_usuario": "Liste os 5 maiores credores por valor pago em 2025.",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 5,
+    "gen_rows": 5,
+    "ref_cols": 2,
+    "gen_cols": 2,
+    "divergencia_ex": "divergencia_valores",
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT nom_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total FROM despesa_pagamento WHERE ano_referencia = 2025 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND num_doc_credor NOT IN ('-1', '0') GROUP BY nom_credor ORDER BY total DESC LIMIT 5;",
+  "query_gerada": "SELECT ce.nom_credor, SUM(CAST(dp.vlr_pag_fonte AS DECIMAL)) AS total_pago FROM despesa_pagamento dp JOIN empenho_credorEmpenho ce ON dp.seq_empenho = ce.seq_empenho AND dp.ano_referencia = ce.ano_referencia WHERE dp.ano_referencia = 2025 AND COALESCE(ce.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND ce.num_doc_credor NOT IN ('-1', '0') GROUP BY ce.nom_credor ORDER BY total_pago DESC LIMIT 5;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

@@ -1,0 +1,27 @@
+{
+  "id_teste": "6",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT SUM(CAST(vlr_movimentacao AS DECIMAL)) AS total_restos_cancelados FROM empenho_movimentacaoRsp WHERE ano_referencia = 2024 AND dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5);",
+  "columns": [
+    "total_restos_cancelados"
+  ],
+  "rows": [
+    {
+      "total_restos_cancelados": 2148830.97
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "c8f9bf922d7b8215",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:09.094333+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

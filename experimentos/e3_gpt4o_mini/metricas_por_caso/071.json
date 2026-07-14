@@ -1,0 +1,27 @@
+{
+  "id_teste": "71",
+  "input_usuario": "Top 3 empresas SICOM pagamentos 2024 que também têm transferências CGU 2024.",
+  "metrics": {
+    "vsr": false,
+    "ex_strict": false,
+    "ex_rows": false,
+    "ex_cols": false,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": false,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 3,
+    "gen_rows": 0,
+    "ref_cols": 3,
+    "gen_cols": 0,
+    "divergencia_ex": null,
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "WITH pag AS (SELECT num_doc_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS tp FROM despesa_pagamento WHERE ano_referencia = 2024 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY num_doc_credor), tr AS (SELECT \"CÓDIGO FAVORECIDO\" AS doc, SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS tt FROM cgu_transferencias WHERE ano_referencia = 2024 GROUP BY doc) SELECT p.num_doc_credor, p.tp, t.tt FROM pag p JOIN tr t ON CAST(p.num_doc_credor AS VARCHAR) = CAST(t.doc AS VARCHAR) ORDER BY (p.tp + t.tt) DESC LIMIT 3;",
+  "query_gerada": "SELECT dp.num_doc_credor, SUM(CAST(dp.vlr_pagamento AS DECIMAL)) AS total_pagamentos FROM despesa_pagamento dp JOIN cgu_transferencias ct ON CAST(dp.num_doc_credor AS VARCHAR) = CAST(ct.\"Código Favorecido\" AS VARCHAR) WHERE dp.ano_referencia = 2024 AND ct.ano_referencia = 2024 AND COALESCE(dp.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(ct.\"NOME FAVORECIDO\", '') NOT ILIKE '%NAO INFORMADO%' GROUP BY dp.num_doc_credor ORDER BY total_pagamentos DESC LIMIT 3;",
+  "erro_sql_gerado": "Binder Error: Values list \"ct\" does not have a column named \"Código Favorecido\"\n\nLINE 1: ...sferencias ct ON CAST(dp.num_doc_credor AS VARCHAR) = CAST(ct.\"Código Favorecido\" AS VARCHAR) WHERE dp.ano_referencia...\n                                                                      ^",
+  "erro_sql_referencia": null
+}

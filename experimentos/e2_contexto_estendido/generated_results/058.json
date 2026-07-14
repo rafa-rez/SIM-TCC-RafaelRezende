@@ -1,0 +1,225 @@
+{
+  "id_teste": "58",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "WITH servidores_ativos AS (\n  SELECT\n    r.seq_dim_pessoa,\n    p.nom_pessoa,\n    p.num_documento\n  FROM remuneracao_municipio r\n  JOIN pessoa_municipio p ON r.seq_dim_pessoa = p.seq_dim_pessoa\n  WHERE r.ano_referencia = 2025\n    AND r.dsc_sit_serv_pens ILIKE '%Ativo%'\n    AND COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%'\n), bpc_2025 AS (\n  SELECT\n    \"NOME BENEFICIÁRIO\"\n  FROM cgu_bpc\n  WHERE ano_referencia = 2025\n)\nSELECT\n  sa.nom_pessoa AS nome_servidor,\n  sa.num_documento AS cpf_servidor\nFROM servidores_ativos sa\nJOIN bpc_2025 b ON TRIM(UPPER(sa.nom_pessoa)) = TRIM(UPPER(b.\"NOME BENEFICIÁRIO\"))\nLIMIT 50;",
+  "columns": [
+    "nome_servidor",
+    "cpf_servidor"
+  ],
+  "rows": [
+    {
+      "nome_servidor": "CARLOS ALBERTO DOS SANTOS",
+      "cpf_servidor": "81775687600"
+    },
+    {
+      "nome_servidor": "DANIELA MARIA DA SILVA",
+      "cpf_servidor": "13984620632"
+    },
+    {
+      "nome_servidor": "MARIA APARECIDA DOS SANTOS",
+      "cpf_servidor": "07974617608"
+    },
+    {
+      "nome_servidor": "MARIA DE FATIMA DA SILVA",
+      "cpf_servidor": "31492070610"
+    },
+    {
+      "nome_servidor": "RAIMUNDO FERREIRA DA SILVA",
+      "cpf_servidor": "39308871691"
+    },
+    {
+      "nome_servidor": "CARLOS ALBERTO DOS SANTOS",
+      "cpf_servidor": "81775687600"
+    },
+    {
+      "nome_servidor": "DANIELA MARIA DA SILVA",
+      "cpf_servidor": "13984620632"
+    },
+    {
+      "nome_servidor": "MARIA APARECIDA DOS SANTOS",
+      "cpf_servidor": "03093806690"
+    },
+    {
+      "nome_servidor": "MARIA DE FATIMA DA SILVA",
+      "cpf_servidor": "31492070610"
+    },
+    {
+      "nome_servidor": "RAIMUNDO FERREIRA DA SILVA",
+      "cpf_servidor": "39308871691"
+    },
+    {
+      "nome_servidor": "CARLOS ALBERTO DOS SANTOS",
+      "cpf_servidor": "81775687600"
+    },
+    {
+      "nome_servidor": "DANIELA MARIA DA SILVA",
+      "cpf_servidor": "13984620632"
+    },
+    {
+      "nome_servidor": "MARIA APARECIDA DOS SANTOS",
+      "cpf_servidor": "07974617608"
+    },
+    {
+      "nome_servidor": "MARIA DE FATIMA DA SILVA",
+      "cpf_servidor": "31492070610"
+    },
+    {
+      "nome_servidor": "RAIMUNDO FERREIRA DA SILVA",
+      "cpf_servidor": "39308871691"
+    },
+    {
+      "nome_servidor": "CARLOS ALBERTO DOS SANTOS",
+      "cpf_servidor": "81775687600"
+    },
+    {
+      "nome_servidor": "MARIA APARECIDA DOS SANTOS",
+      "cpf_servidor": "03093806690"
+    },
+    {
+      "nome_servidor": "MARIA DE FATIMA DA SILVA",
+      "cpf_servidor": "31492070610"
+    },
+    {
+      "nome_servidor": "RAIMUNDO FERREIRA DA SILVA",
+      "cpf_servidor": "39308871691"
+    },
+    {
+      "nome_servidor": "CARLOS ALBERTO DOS SANTOS",
+      "cpf_servidor": "81775687600"
+    },
+    {
+      "nome_servidor": "MARIA APARECIDA DOS SANTOS",
+      "cpf_servidor": "07974617608"
+    },
+    {
+      "nome_servidor": "MARIA DE FATIMA DA SILVA",
+      "cpf_servidor": "31492070610"
+    },
+    {
+      "nome_servidor": "RAIMUNDO FERREIRA DA SILVA",
+      "cpf_servidor": "39308871691"
+    },
+    {
+      "nome_servidor": "CARLOS ALBERTO DOS SANTOS",
+      "cpf_servidor": "81775687600"
+    },
+    {
+      "nome_servidor": "MARIA APARECIDA DOS SANTOS",
+      "cpf_servidor": "03093806690"
+    },
+    {
+      "nome_servidor": "MARIA DE FATIMA DA SILVA",
+      "cpf_servidor": "31492070610"
+    },
+    {
+      "nome_servidor": "RAIMUNDO FERREIRA DA SILVA",
+      "cpf_servidor": "39308871691"
+    },
+    {
+      "nome_servidor": "CARLOS ALBERTO DOS SANTOS",
+      "cpf_servidor": "81775687600"
+    },
+    {
+      "nome_servidor": "MARIA APARECIDA DOS SANTOS",
+      "cpf_servidor": "07974617608"
+    },
+    {
+      "nome_servidor": "MARIA DE FATIMA DA SILVA",
+      "cpf_servidor": "31492070610"
+    },
+    {
+      "nome_servidor": "RAIMUNDO FERREIRA DA SILVA",
+      "cpf_servidor": "39308871691"
+    },
+    {
+      "nome_servidor": "CARLOS ALBERTO DOS SANTOS",
+      "cpf_servidor": "81775687600"
+    },
+    {
+      "nome_servidor": "MARIA APARECIDA DOS SANTOS",
+      "cpf_servidor": "03093806690"
+    },
+    {
+      "nome_servidor": "MARIA DE FATIMA DA SILVA",
+      "cpf_servidor": "31492070610"
+    },
+    {
+      "nome_servidor": "RAIMUNDO FERREIRA DA SILVA",
+      "cpf_servidor": "39308871691"
+    },
+    {
+      "nome_servidor": "CARLOS ALBERTO DOS SANTOS",
+      "cpf_servidor": "81775687600"
+    },
+    {
+      "nome_servidor": "MARIA APARECIDA DOS SANTOS",
+      "cpf_servidor": "07974617608"
+    },
+    {
+      "nome_servidor": "MARIA DE FATIMA DA SILVA",
+      "cpf_servidor": "31492070610"
+    },
+    {
+      "nome_servidor": "RAIMUNDO FERREIRA DA SILVA",
+      "cpf_servidor": "39308871691"
+    },
+    {
+      "nome_servidor": "CARLOS ALBERTO DOS SANTOS",
+      "cpf_servidor": "81775687600"
+    },
+    {
+      "nome_servidor": "MARIA APARECIDA DOS SANTOS",
+      "cpf_servidor": "03093806690"
+    },
+    {
+      "nome_servidor": "MARIA DE FATIMA DA SILVA",
+      "cpf_servidor": "31492070610"
+    },
+    {
+      "nome_servidor": "RAIMUNDO FERREIRA DA SILVA",
+      "cpf_servidor": "39308871691"
+    },
+    {
+      "nome_servidor": "CARLOS ALBERTO DOS SANTOS",
+      "cpf_servidor": "81775687600"
+    },
+    {
+      "nome_servidor": "MARIA APARECIDA DOS SANTOS",
+      "cpf_servidor": "07974617608"
+    },
+    {
+      "nome_servidor": "MARIA DE FATIMA DA SILVA",
+      "cpf_servidor": "31492070610"
+    },
+    {
+      "nome_servidor": "RAIMUNDO FERREIRA DA SILVA",
+      "cpf_servidor": "39308871691"
+    },
+    {
+      "nome_servidor": "CARLOS ALBERTO DOS SANTOS",
+      "cpf_servidor": "81775687600"
+    },
+    {
+      "nome_servidor": "MARIA APARECIDA DOS SANTOS",
+      "cpf_servidor": "03093806690"
+    },
+    {
+      "nome_servidor": "MARIA DE FATIMA DA SILVA",
+      "cpf_servidor": "31492070610"
+    }
+  ],
+  "row_count": 50,
+  "col_count": 2,
+  "schema_hash": "ea34ef96b5459f69",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:48.656379+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 5,
+    "gen_rows": 50
+  }
+}

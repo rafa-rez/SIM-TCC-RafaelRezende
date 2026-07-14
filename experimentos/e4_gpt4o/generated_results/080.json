@@ -1,0 +1,45 @@
+{
+  "id_teste": "80",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT dsc_funcao, SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_liquidado FROM despesa_despesa WHERE ano_referencia = 2025 GROUP BY dsc_funcao ORDER BY total_liquidado DESC LIMIT 5;",
+  "columns": [
+    "dsc_funcao",
+    "total_liquidado"
+  ],
+  "rows": [
+    {
+      "dsc_funcao": "12 - EDUCAÇÃO",
+      "total_liquidado": 31269723.39
+    },
+    {
+      "dsc_funcao": "10 - SAÚDE",
+      "total_liquidado": 27628360.47
+    },
+    {
+      "dsc_funcao": "15 - URBANISMO",
+      "total_liquidado": 15525221.29
+    },
+    {
+      "dsc_funcao": "04 - ADMINISTRAÇÃO",
+      "total_liquidado": 12210001.66
+    },
+    {
+      "dsc_funcao": "17 - SANEAMENTO",
+      "total_liquidado": 7872407.91
+    }
+  ],
+  "row_count": 5,
+  "col_count": 2,
+  "schema_hash": "b2eed5430a49bed9",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:49.860972+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 5,
+    "gen_rows": 5
+  }
+}

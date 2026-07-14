@@ -1,0 +1,41 @@
+{
+  "id_teste": "48",
+  "source": "generated:e4_gpt4o",
+  "sql": "WITH licitacoes_agrupadas AS (SELECT l.seq_licitacao, SUM(CAST(h.vlr_global AS DECIMAL)) AS total_valor, h.nom_vencedor FROM licitacao_licitacao l JOIN licitacao_homologLicitacao h ON l.seq_licitacao = h.seq_licitacao AND l.ano_referencia = h.ano_referencia WHERE l.ano_referencia = 2024 GROUP BY l.seq_licitacao, h.nom_vencedor), licitacoes_rankeadas AS (SELECT seq_licitacao, nom_vencedor, total_valor, ROW_NUMBER() OVER (ORDER BY total_valor DESC) AS rn FROM licitacoes_agrupadas) SELECT seq_licitacao, nom_vencedor, total_valor FROM licitacoes_rankeadas WHERE rn <= 3;",
+  "columns": [
+    "seq_licitacao",
+    "nom_vencedor",
+    "total_valor"
+  ],
+  "rows": [
+    {
+      "seq_licitacao": 1350639,
+      "nom_vencedor": "ALVES SOLUCOES INTEGRADAS LTDA",
+      "total_valor": 4432414.67
+    },
+    {
+      "seq_licitacao": 1433003,
+      "nom_vencedor": "SEMPRA PAVIMENTACAO EIRELI",
+      "total_valor": 3749659.9
+    },
+    {
+      "seq_licitacao": 1368379,
+      "nom_vencedor": "IGL ENGENHARIA LTDA EPP",
+      "total_valor": 602986.9
+    }
+  ],
+  "row_count": 3,
+  "col_count": 3,
+  "schema_hash": "59391dae0e5e69c2",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:44.471282+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 3,
+    "gen_rows": 3
+  }
+}

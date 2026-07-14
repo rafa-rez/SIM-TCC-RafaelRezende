@@ -1,0 +1,27 @@
+{
+  "id_teste": "56",
+  "input_usuario": "Liste os 5 cargos com maior remuneração média em 2024.",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 5,
+    "gen_rows": 5,
+    "ref_cols": 2,
+    "gen_cols": 2,
+    "divergencia_ex": "divergencia_valores",
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "WITH sal AS (SELECT dsc_cargo, seq_dim_pessoa, MAX(CAST(vlr_rmn_liquida AS DECIMAL)) AS salario FROM remuneracao_municipio WHERE ano_referencia = 2024 GROUP BY dsc_cargo, seq_dim_pessoa) SELECT dsc_cargo, AVG(salario) AS media FROM sal GROUP BY dsc_cargo ORDER BY media DESC LIMIT 5;",
+  "query_gerada": "WITH remuneracao_2024 AS (SELECT r.dsc_cargo, AVG(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS media_remuneracao FROM remuneracao_municipio r JOIN pessoa_municipio p ON r.seq_dim_pessoa = p.seq_dim_pessoa WHERE r.ano_referencia = 2024 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' AND COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY r.dsc_cargo) SELECT dsc_cargo, media_remuneracao FROM remuneracao_2024 ORDER BY media_remuneracao DESC LIMIT 5;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

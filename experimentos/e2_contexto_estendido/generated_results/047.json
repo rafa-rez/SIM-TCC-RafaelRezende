@@ -1,0 +1,27 @@
+{
+  "id_teste": "47",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "SELECT SUM(CAST(vlr_global AS DECIMAL)) AS valor_total_homologado FROM licitacao_homologLicitacao WHERE ano_referencia = 2025;",
+  "columns": [
+    "valor_total_homologado"
+  ],
+  "rows": [
+    {
+      "valor_total_homologado": 54800.0
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "a9c3241c84f5ffdc",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:46.769747+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "id_teste": "65",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "SELECT SUM(CAST(g.vlr_gasto AS DECIMAL)) AS total_gasto_frota FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO');",
+  "columns": [
+    "total_gasto_frota"
+  ],
+  "rows": [
+    {
+      "total_gasto_frota": 1008026.6
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "70aeb0a681434b55",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:49.863328+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "id_teste": "3",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "WITH pagamentos AS (\n  SELECT\n    num_doc_credor AS cnpj,\n    nom_credor,\n    SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago\n  FROM despesa_pagamento\n  WHERE ano_referencia = 2025\n    AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%'\n    AND num_doc_credor NOT IN ('-1', '0')\n  GROUP BY num_doc_credor, nom_credor\n),\ntransferencias AS (\n  SELECT\n    \"CÓDIGO FAVORECIDO\" AS cnpj,\n    SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_transferido\n  FROM cgu_transferencias\n  WHERE ano_referencia = 2025\n  GROUP BY \"CÓDIGO FAVORECIDO\"\n)\nSELECT\n  p.cnpj,\n  p.nom_credor,\n  p.total_pago,\n  t.total_transferido\nFROM pagamentos p\nJOIN transferencias t\n  ON CAST(p.cnpj AS VARCHAR) = CAST(t.cnpj AS VARCHAR)\nORDER BY p.total_pago DESC\nLIMIT 5;",
+  "columns": [
+    "cnpj",
+    "nom_credor",
+    "total_pago",
+    "total_transferido"
+  ],
+  "rows": [
+    {
+      "cnpj": "18979328000167",
+      "nom_credor": "SOCIEDADE CIVIL DE BENEFICENCIA CAETEENSE",
+      "total_pago": 9871952.6,
+      "total_transferido": 255467.38
+    },
+    {
+      "cnpj": "18302299000102",
+      "nom_credor": "MUNICIPIO DE CAETE",
+      "total_pago": 710522.27,
+      "total_transferido": 62072359.23
+    }
+  ],
+  "row_count": 2,
+  "col_count": 4,
+  "schema_hash": "1359a8b60af5131f",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:12.887831+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 2,
+    "gen_rows": 2
+  }
+}

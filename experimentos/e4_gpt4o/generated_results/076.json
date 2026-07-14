@@ -1,0 +1,45 @@
+{
+  "id_teste": "76",
+  "source": "generated:e4_gpt4o",
+  "sql": "WITH pagamentos AS (SELECT dp.num_doc_credor, dp.nom_credor, SUM(CAST(dp.vlr_pag_fonte AS DECIMAL)) AS total_pago FROM despesa_pagamento dp WHERE dp.ano_referencia = 2024 AND COALESCE(dp.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND dp.num_doc_credor NOT IN ('-1', '0') GROUP BY dp.num_doc_credor, dp.nom_credor), cgu_favorecidos AS (SELECT \"Código Favorecido\" FROM cgu_despesas_favorecidos WHERE ano_referencia = 2024) SELECT p.nom_credor, p.total_pago FROM pagamentos p JOIN cgu_favorecidos cgu ON CAST(p.num_doc_credor AS VARCHAR) = CAST(cgu.\"Código Favorecido\" AS VARCHAR) ORDER BY p.total_pago DESC LIMIT 5;",
+  "columns": [
+    "nom_credor",
+    "total_pago"
+  ],
+  "rows": [
+    {
+      "nom_credor": "SOC CIVIL DE BENEFICÊNCIA CAETEENSE",
+      "total_pago": 21397578.75
+    },
+    {
+      "nom_credor": "SOC CIVIL DE BENEFICÊNCIA CAETEENSE",
+      "total_pago": 21397578.75
+    },
+    {
+      "nom_credor": "SOC CIVIL DE BENEFICÊNCIA CAETEENSE",
+      "total_pago": 21397578.75
+    },
+    {
+      "nom_credor": "SOC CIVIL DE BENEFICÊNCIA CAETEENSE",
+      "total_pago": 21397578.75
+    },
+    {
+      "nom_credor": "SOC CIVIL DE BENEFICÊNCIA CAETEENSE",
+      "total_pago": 21397578.75
+    }
+  ],
+  "row_count": 5,
+  "col_count": 2,
+  "schema_hash": "44fbb991aba533fe",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:49.525857+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 5,
+    "gen_rows": 5
+  }
+}

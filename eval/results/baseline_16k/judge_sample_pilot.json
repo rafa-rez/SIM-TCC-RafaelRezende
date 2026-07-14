@@ -1,0 +1,33 @@
+{
+  "experiment": "baseline_16k",
+  "ids": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5"
+  ],
+  "count": 5,
+  "meta": {
+    "1": {
+      "dificuldade": "dificil",
+      "categoria": "Calculo Fiscal"
+    },
+    "2": {
+      "dificuldade": "dificil",
+      "categoria": "Cruzamento Investigativo"
+    },
+    "3": {
+      "dificuldade": "dificil",
+      "categoria": "Cruzamento Investigativo"
+    },
+    "4": {
+      "dificuldade": "medio",
+      "categoria": "Regra de Cadastros"
+    },
+    "5": {
+      "dificuldade": "medio",
+      "categoria": "Calculo Fiscal"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id_teste": "71",
+  "source": "generated:e4_gpt4o",
+  "sql": "WITH pagamentos AS (SELECT num_doc_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pagamentos FROM despesa_pagamento WHERE ano_referencia = 2024 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND num_doc_credor NOT IN ('-1', '0') GROUP BY num_doc_credor), transferencias AS (SELECT \"CÓDIGO FAVORECIDO\" AS num_doc_credor, SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_transferencias FROM cgu_transferencias WHERE ano_referencia = 2024 GROUP BY \"CÓDIGO FAVORECIDO\") SELECT p.num_doc_credor, p.total_pagamentos FROM pagamentos p JOIN transferencias t ON CAST(p.num_doc_credor AS VARCHAR) = CAST(t.num_doc_credor AS VARCHAR) ORDER BY p.total_pagamentos DESC LIMIT 3;",
+  "columns": [
+    "num_doc_credor",
+    "total_pagamentos"
+  ],
+  "rows": [
+    {
+      "num_doc_credor": "18979328000167",
+      "total_pagamentos": 22016281.2
+    },
+    {
+      "num_doc_credor": "18302299000102",
+      "total_pagamentos": 1166444.21
+    },
+    {
+      "num_doc_credor": "21000203000158",
+      "total_pagamentos": 229301.93
+    }
+  ],
+  "row_count": 3,
+  "col_count": 2,
+  "schema_hash": "0416612f3929ffa4",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:48.644868+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 3,
+    "gen_rows": 3
+  }
+}

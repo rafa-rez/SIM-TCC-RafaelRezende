@@ -1,0 +1,21 @@
+{
+  "id_teste": "64",
+  "source": "golden_reference",
+  "sql": "SELECT COUNT(DISTINCT seq_veiculo) AS qtd FROM frota_frota WHERE ano_referencia = 2025 AND COALESCE(dsc_marca, '') NOT ILIKE '%DIVERSOS%';",
+  "columns": [
+    "qtd"
+  ],
+  "rows": [
+    {
+      "qtd": 2
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "1734aaf65549a563",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:46.483019+00:00",
+  "input_usuario": "Quantos veículos na frota em 2025?",
+  "dificuldade": "facil",
+  "categoria": "Frota"
+}

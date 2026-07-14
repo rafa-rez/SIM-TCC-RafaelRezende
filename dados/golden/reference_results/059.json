@@ -1,0 +1,21 @@
+{
+  "id_teste": "59",
+  "source": "golden_reference",
+  "sql": "SELECT COUNT(*) AS qtd FROM remuneracao_municipio WHERE ano_referencia = 2023;",
+  "columns": [
+    "qtd"
+  ],
+  "rows": [
+    {
+      "qtd": 0
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "1734aaf65549a563",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:45.635545+00:00",
+  "input_usuario": "Quantos registros de remuneração em 2023?",
+  "dificuldade": "facil",
+  "categoria": "RH Folha"
+}

@@ -1,0 +1,21 @@
+{
+  "id_teste": "55",
+  "source": "golden_reference",
+  "sql": "WITH mensal AS (SELECT seq_dim_pessoa, CAST(SUBSTR(CAST(seq_dat_pagamento AS VARCHAR), 5, 2) AS INTEGER) AS mes, MAX(CAST(vlr_rmn_liquida AS DECIMAL)) AS sal FROM remuneracao_municipio WHERE ano_referencia = 2024 GROUP BY seq_dim_pessoa, mes) SELECT SUM(sal) AS total_folha FROM mensal;",
+  "columns": [
+    "total_folha"
+  ],
+  "rows": [
+    {
+      "total_folha": 54814046.71
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "3e86c7be7b2d4aca",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:44.499754+00:00",
+  "input_usuario": "Qual o total da folha de pagamento em 2024?",
+  "dificuldade": "medio",
+  "categoria": "RH Folha"
+}

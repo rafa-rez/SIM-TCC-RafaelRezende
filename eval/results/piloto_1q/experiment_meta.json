@@ -1,0 +1,10 @@
+{
+  "experiment": "piloto_1q",
+  "started_at": "2026-07-09T15:14:05.065903",
+  "model": "gpt-4.1-mini",
+  "prompt_variant": "poscagada_16k",
+  "prompt_file": "D:\\tiokk-n8n\\Póscagada.txt",
+  "prompt_tokens_est": 16562,
+  "dataset": "D:\\tiokk-n8n\\eval\\datasets\\golden_dataset_v1.0.csv",
+  "budget_limit_usd": 13.32
+}

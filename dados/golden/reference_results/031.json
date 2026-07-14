@@ -1,0 +1,21 @@
+{
+  "id_teste": "31",
+  "source": "golden_reference",
+  "sql": "SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total FROM saude_saude WHERE ano_referencia = 2025;",
+  "columns": [
+    "total"
+  ],
+  "rows": [
+    {
+      "total": 14357832.52
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "11239872d178729a",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:40.610281+00:00",
+  "input_usuario": "Qual o gasto em saúde liquidado em 2025?",
+  "dificuldade": "medio",
+  "categoria": "Calculo Fiscal"
+}

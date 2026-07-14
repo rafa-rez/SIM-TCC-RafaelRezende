@@ -1,0 +1,37 @@
+{
+  "id_teste": "66",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT f.dsc_tipo_veiculo, SUM(CAST(g.vlr_gasto AS DECIMAL)) AS total_gasto_gasolina FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2024 AND g.dsc_tipo_gasto ILIKE '%GASOLINA%' GROUP BY f.dsc_tipo_veiculo;",
+  "columns": [
+    "dsc_tipo_veiculo",
+    "total_gasto_gasolina"
+  ],
+  "rows": [
+    {
+      "dsc_tipo_veiculo": "3 - VEÍCULOS",
+      "total_gasto_gasolina": 407838.38
+    },
+    {
+      "dsc_tipo_veiculo": "99 - OUTROS",
+      "total_gasto_gasolina": 41636.02
+    },
+    {
+      "dsc_tipo_veiculo": "5 - EQUIPAMENTOS",
+      "total_gasto_gasolina": 6568.64
+    }
+  ],
+  "row_count": 3,
+  "col_count": 2,
+  "schema_hash": "05224467e2e72b32",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:47.594763+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 0.5,
+    "ref_rows": 3,
+    "gen_rows": 3
+  }
+}

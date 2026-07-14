@@ -1,0 +1,23 @@
+{
+  "id_teste": "5",
+  "source": "golden_reference",
+  "sql": "WITH despesa_mde AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa FROM educacao_educacao WHERE ano_referencia = 2023), receita_impostos AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita FROM receita_receita WHERE ano_referencia = 2023 AND dsc_especie ILIKE '%Imposto%') SELECT (d.total_despesa / NULLIF(r.total_receita, 0)) * 100 AS indice_educacao, CASE WHEN (d.total_despesa / NULLIF(r.total_receita, 0)) * 100 >= 25 THEN 'Sim' ELSE 'Não' END AS atingiu_minimo_constitucional FROM despesa_mde d, receita_impostos r",
+  "columns": [
+    "indice_educacao",
+    "atingiu_minimo_constitucional"
+  ],
+  "rows": [
+    {
+      "indice_educacao": 80.5776443081,
+      "atingiu_minimo_constitucional": "Sim"
+    }
+  ],
+  "row_count": 1,
+  "col_count": 2,
+  "schema_hash": "ba2d32711f60138c",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:36.948788+00:00",
+  "input_usuario": "Qual foi o Índice de Educação (IEQ-C) do município no ano de 2023? O valor aplicado atingiu o mínimo constitucional?",
+  "dificuldade": "medio",
+  "categoria": "Calculo Fiscal"
+}

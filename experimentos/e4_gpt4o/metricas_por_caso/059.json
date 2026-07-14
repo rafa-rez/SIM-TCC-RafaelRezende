@@ -1,0 +1,27 @@
+{
+  "id_teste": "59",
+  "input_usuario": "Quantos registros de remuneração em 2023?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1,
+    "ref_cols": 1,
+    "gen_cols": 1,
+    "divergencia_ex": "alias_colunas",
+    "alias_apenas": true,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT COUNT(*) AS qtd FROM remuneracao_municipio WHERE ano_referencia = 2023;",
+  "query_gerada": "SELECT COUNT(*) AS total_registros FROM remuneracao_municipio WHERE ano_referencia = 2023;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

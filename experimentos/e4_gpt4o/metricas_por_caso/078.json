@@ -1,0 +1,27 @@
+{
+  "id_teste": "78",
+  "input_usuario": "Top 5 maiores licitações por ano em 2024 e 2025 usando ROW_NUMBER.",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": false,
+    "ex_cols": true,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 10,
+    "gen_rows": 8,
+    "ref_cols": 3,
+    "gen_cols": 3,
+    "divergencia_ex": "cardinalidade_linhas",
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "WITH base AS (SELECT h.ano_referencia, h.nom_vencedor, SUM(CAST(h.vlr_global AS DECIMAL)) AS total FROM licitacao_homologLicitacao h WHERE h.ano_referencia IN (2024, 2025) GROUP BY h.ano_referencia, h.seq_licitacao, h.nom_vencedor), ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY total DESC) AS rn FROM base) SELECT ano_referencia, nom_vencedor, total FROM ranked WHERE rn <= 5 ORDER BY ano_referencia, total DESC;",
+  "query_gerada": "WITH licitacoes_agrupadas AS (SELECT l.ano_referencia, l.seq_licitacao, SUM(CAST(h.vlr_global AS DECIMAL)) AS valor_total FROM licitacao_licitacao l JOIN licitacao_homologLicitacao h ON l.seq_licitacao = h.seq_licitacao AND l.ano_referencia = h.ano_referencia WHERE l.ano_referencia IN (2024, 2025) GROUP BY l.ano_referencia, l.seq_licitacao), licitacoes_rankeadas AS (SELECT ano_referencia, seq_licitacao, valor_total, ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY valor_total DESC) AS rn FROM licitacoes_agrupadas) SELECT ano_referencia, seq_licitacao, valor_total FROM licitacoes_rankeadas WHERE rn <= 5;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

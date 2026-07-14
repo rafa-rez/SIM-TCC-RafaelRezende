@@ -1,0 +1,33 @@
+{
+  "id_teste": "73",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "SELECT \"TIPO TRANSFERÊNCIA\" AS tipo_transferencia, SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_transferido FROM cgu_transferencias WHERE ano_referencia = 2025 GROUP BY \"TIPO TRANSFERÊNCIA\" ORDER BY total_transferido DESC;",
+  "columns": [
+    "tipo_transferencia",
+    "total_transferido"
+  ],
+  "rows": [
+    {
+      "tipo_transferencia": "Constitucionais e Royalties",
+      "total_transferido": 57391700.35
+    },
+    {
+      "tipo_transferencia": "Legais, Voluntárias e Específicas",
+      "total_transferido": 31005755.31
+    }
+  ],
+  "row_count": 2,
+  "col_count": 2,
+  "schema_hash": "42bdad4d84108704",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:51.090429+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 2,
+    "gen_rows": 2
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id_teste": "63",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT f.dsc_veiculo, SUM(CAST(g.vlr_gasto AS DECIMAL)) AS total_gasto_combustivel FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2024 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') AND (g.dsc_tipo_gasto ILIKE '%GASOLINA%' OR g.dsc_tipo_gasto ILIKE '%DIESEL%' OR g.dsc_tipo_gasto ILIKE '%ETANOL%') GROUP BY f.dsc_veiculo ORDER BY total_gasto_combustivel DESC LIMIT 1;",
+  "columns": [
+    "dsc_veiculo",
+    "total_gasto_combustivel"
+  ],
+  "rows": [
+    {
+      "dsc_veiculo": "PA CARREGADEIRA MODELO LW300KV",
+      "total_gasto_combustivel": 121410.71
+    }
+  ],
+  "row_count": 1,
+  "col_count": 2,
+  "schema_hash": "c15a87b39111c53c",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:22.506082+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

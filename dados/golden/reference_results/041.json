@@ -1,0 +1,21 @@
+{
+  "id_teste": "41",
+  "source": "golden_reference",
+  "sql": "SELECT SUM(CAST(\"Valor Recebido\" AS DECIMAL)) AS total FROM cgu_despesas_favorecidos WHERE ano_referencia = 2024;",
+  "columns": [
+    "total"
+  ],
+  "rows": [
+    {
+      "total": 25853943.68
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "11239872d178729a",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:43.101904+00:00",
+  "input_usuario": "Qual o valor total recebido via CGU despesas favorecidos em 2024?",
+  "dificuldade": "facil",
+  "categoria": "Despesas Pagamentos"
+}

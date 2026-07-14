@@ -1,0 +1,27 @@
+{
+  "id_teste": "6",
+  "input_usuario": "Qual o valor total de Restos a Pagar que foram cancelados pela Prefeitura Municipal (excluindo Câmara e Autarquias) no ano de 2024?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1,
+    "ref_cols": 1,
+    "gen_cols": 1,
+    "divergencia_ex": "alias_colunas",
+    "alias_apenas": true,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT SUM(CAST(vlr_movimentacao AS DECIMAL)) AS total_cancelado FROM empenho_movimentacaoRsp WHERE dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5) AND ano_referencia = 2024",
+  "query_gerada": "SELECT SUM(CAST(vlr_movimentacao AS DECIMAL)) AS total_rsp_cancelado FROM empenho_movimentacaoRsp WHERE ano_referencia = 2024 AND dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5);",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

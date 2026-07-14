@@ -1,0 +1,33 @@
+{
+  "id_teste": "5",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "WITH despesa AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa FROM educacao_educacao WHERE ano_referencia = 2023), receita AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita FROM receita_receita WHERE ano_referencia = 2023 AND dsc_especie ILIKE '%Imposto%') SELECT (total_despesa / NULLIF(total_receita, 0)) * 100 AS indice_educacao, total_despesa, total_receita, (total_despesa >= (0.25 * total_receita)) AS atingiu_minimo_constitucional FROM despesa, receita;",
+  "columns": [
+    "indice_educacao",
+    "total_despesa",
+    "total_receita",
+    "atingiu_minimo_constitucional"
+  ],
+  "rows": [
+    {
+      "indice_educacao": 80.5776443081,
+      "total_despesa": 14264663.74,
+      "total_receita": 17703004.18,
+      "atingiu_minimo_constitucional": true
+    }
+  ],
+  "row_count": 1,
+  "col_count": 4,
+  "schema_hash": "7ffbe9c19c4731b5",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:09.051779+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "id_teste": "41",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT SUM(CAST(\"Valor Recebido\" AS DECIMAL)) AS total_recebido FROM cgu_despesas_favorecidos WHERE ano_referencia = 2024;",
+  "columns": [
+    "total_recebido"
+  ],
+  "rows": [
+    {
+      "total_recebido": 25853943.68
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "1e210423d210f845",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:43.924665+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

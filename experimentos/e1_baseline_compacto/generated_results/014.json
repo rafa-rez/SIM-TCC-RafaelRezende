@@ -1,0 +1,27 @@
+{
+  "id_teste": "14",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_liquidado FROM despesa_despesa WHERE ano_referencia = 2024;",
+  "columns": [
+    "total_liquidado"
+  ],
+  "rows": [
+    {
+      "total_liquidado": 201135942.49
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "228f64589366b175",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:14.481746+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

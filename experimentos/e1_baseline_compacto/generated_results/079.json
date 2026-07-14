@@ -1,0 +1,157 @@
+{
+  "id_teste": "79",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT c.seq_contrato, c.dat_assinatura, c.vlr_contrato, t.num_termo_aditivo, t.dat_ass_termo, t.vlr_termo_aditivo FROM contrato_contratos c LEFT JOIN contrato_termoContrato t ON c.seq_contrato = t.seq_contrato WHERE c.ano_referencia = 2022 AND t.ano_referencia = 2023 AND t.dsc_tipo_alteracao ILIKE '%ACRESCIMO%' ORDER BY c.seq_contrato, t.num_termo_aditivo;",
+  "columns": [
+    "seq_contrato",
+    "dat_assinatura",
+    "vlr_contrato",
+    "num_termo_aditivo",
+    "dat_ass_termo",
+    "vlr_termo_aditivo"
+  ],
+  "rows": [
+    {
+      "seq_contrato": 2664048,
+      "dat_assinatura": 20220830,
+      "vlr_contrato": 1173.39,
+      "num_termo_aditivo": 1,
+      "dat_ass_termo": 20230830,
+      "vlr_termo_aditivo": 915.4
+    },
+    {
+      "seq_contrato": 2664049,
+      "dat_assinatura": 20220801,
+      "vlr_contrato": 9987.5,
+      "num_termo_aditivo": 1,
+      "dat_ass_termo": 20230801,
+      "vlr_termo_aditivo": 10173.5
+    },
+    {
+      "seq_contrato": 2733216,
+      "dat_assinatura": 20220413,
+      "vlr_contrato": 323500.0,
+      "num_termo_aditivo": 1,
+      "dat_ass_termo": 20230413,
+      "vlr_termo_aditivo": 14000.0
+    },
+    {
+      "seq_contrato": 2733218,
+      "dat_assinatura": 20220413,
+      "vlr_contrato": 135999.96,
+      "num_termo_aditivo": 2,
+      "dat_ass_termo": 20230416,
+      "vlr_termo_aditivo": 988.52
+    },
+    {
+      "seq_contrato": 2733221,
+      "dat_assinatura": 20220505,
+      "vlr_contrato": 87620.04,
+      "num_termo_aditivo": 1,
+      "dat_ass_termo": 20230505,
+      "vlr_termo_aditivo": 2784.12
+    },
+    {
+      "seq_contrato": 2733224,
+      "dat_assinatura": 20220602,
+      "vlr_contrato": 85173.6,
+      "num_termo_aditivo": 1,
+      "dat_ass_termo": 20230602,
+      "vlr_termo_aditivo": 2826.84
+    },
+    {
+      "seq_contrato": 2733225,
+      "dat_assinatura": 20220630,
+      "vlr_contrato": 233667.56,
+      "num_termo_aditivo": 1,
+      "dat_ass_termo": 20230705,
+      "vlr_termo_aditivo": 4188.0
+    },
+    {
+      "seq_contrato": 2733229,
+      "dat_assinatura": 20220804,
+      "vlr_contrato": 33000.0,
+      "num_termo_aditivo": 1,
+      "dat_ass_termo": 20230804,
+      "vlr_termo_aditivo": 1194.84
+    },
+    {
+      "seq_contrato": 2733233,
+      "dat_assinatura": 20220919,
+      "vlr_contrato": 460692.0,
+      "num_termo_aditivo": 1,
+      "dat_ass_termo": 20230919,
+      "vlr_termo_aditivo": 18684.0
+    },
+    {
+      "seq_contrato": 2733235,
+      "dat_assinatura": 20221026,
+      "vlr_contrato": 349500.0,
+      "num_termo_aditivo": 1,
+      "dat_ass_termo": 20231026,
+      "vlr_termo_aditivo": 15753.38
+    },
+    {
+      "seq_contrato": 2733236,
+      "dat_assinatura": 20221028,
+      "vlr_contrato": 59984.0,
+      "num_termo_aditivo": 1,
+      "dat_ass_termo": 20231028,
+      "vlr_termo_aditivo": 2702.56
+    },
+    {
+      "seq_contrato": 2758209,
+      "dat_assinatura": 20221213,
+      "vlr_contrato": 17160.0,
+      "num_termo_aditivo": 1,
+      "dat_ass_termo": 20231213,
+      "vlr_termo_aditivo": 650.0
+    },
+    {
+      "seq_contrato": 2758214,
+      "dat_assinatura": 20221202,
+      "vlr_contrato": 212988.0,
+      "num_termo_aditivo": 1,
+      "dat_ass_termo": 20231202,
+      "vlr_termo_aditivo": 7982.02
+    },
+    {
+      "seq_contrato": 2758215,
+      "dat_assinatura": 20221214,
+      "vlr_contrato": 44808.8,
+      "num_termo_aditivo": 1,
+      "dat_ass_termo": 20231214,
+      "vlr_termo_aditivo": 1701.6
+    },
+    {
+      "seq_contrato": 2758216,
+      "dat_assinatura": 20221214,
+      "vlr_contrato": 42503.58,
+      "num_termo_aditivo": 1,
+      "dat_ass_termo": 20231214,
+      "vlr_termo_aditivo": 1614.06
+    },
+    {
+      "seq_contrato": 2758217,
+      "dat_assinatura": 20221230,
+      "vlr_contrato": 15616.75,
+      "num_termo_aditivo": 1,
+      "dat_ass_termo": 20230403,
+      "vlr_termo_aditivo": 2090.6
+    }
+  ],
+  "row_count": 16,
+  "col_count": 6,
+  "schema_hash": "b3ac871e4643faeb",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:24.582134+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 0,
+    "gen_rows": 16
+  }
+}

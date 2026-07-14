@@ -1,0 +1,29 @@
+{
+  "id_teste": "42",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "WITH total_pago_2024 AS (SELECT SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago FROM despesa_pagamento WHERE ano_referencia = 2024), total_pago_2025 AS (SELECT SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago FROM despesa_pagamento WHERE ano_referencia = 2025) SELECT (SELECT total_pago FROM total_pago_2024) AS total_pago_2024, (SELECT total_pago FROM total_pago_2025) AS total_pago_2025;",
+  "columns": [
+    "total_pago_2024",
+    "total_pago_2025"
+  ],
+  "rows": [
+    {
+      "total_pago_2024": 201808076.73,
+      "total_pago_2025": 102953668.15
+    }
+  ],
+  "row_count": 1,
+  "col_count": 2,
+  "schema_hash": "33668e293a6f839d",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:15.683190+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 0.0,
+    "ref_rows": 2,
+    "gen_rows": 1
+  }
+}

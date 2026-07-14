@@ -1,0 +1,45 @@
+{
+  "id_teste": "58",
+  "source": "golden_reference",
+  "sql": "WITH servidores AS (SELECT TRIM(UPPER(p.nom_pessoa)) AS nome, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS salario FROM remuneracao_municipio r JOIN pessoa_municipio p ON r.seq_dim_pessoa = p.seq_dim_pessoa WHERE r.ano_referencia = 2025 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' GROUP BY nome), bpc AS (SELECT TRIM(UPPER(\"NOME BENEFICIÁRIO\")) AS nome, SUM(CAST(\"VALOR PARCELA\" AS DECIMAL)) AS total FROM cgu_bpc WHERE ano_referencia = 2025 GROUP BY nome) SELECT s.nome, s.salario, b.total FROM servidores s JOIN bpc b ON s.nome = b.nome;",
+  "columns": [
+    "nome",
+    "salario",
+    "total"
+  ],
+  "rows": [
+    {
+      "nome": "CARLOS ALBERTO DOS SANTOS",
+      "salario": 7185.93,
+      "total": 18216.08
+    },
+    {
+      "nome": "DANIELA MARIA DA SILVA",
+      "salario": 716.14,
+      "total": 18216.0
+    },
+    {
+      "nome": "MARIA APARECIDA DOS SANTOS",
+      "salario": 2383.14,
+      "total": 18217.0
+    },
+    {
+      "nome": "MARIA DE FATIMA DA SILVA",
+      "salario": 1764.65,
+      "total": 18216.0
+    },
+    {
+      "nome": "RAIMUNDO FERREIRA DA SILVA",
+      "salario": 3716.2,
+      "total": 18216.0
+    }
+  ],
+  "row_count": 5,
+  "col_count": 3,
+  "schema_hash": "d58bcbbd48065c4e",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:45.410519+00:00",
+  "input_usuario": "Servidores ativos em 2025 que também recebem BPC em 2025.",
+  "dificuldade": "dificil",
+  "categoria": "RH Folha"
+}

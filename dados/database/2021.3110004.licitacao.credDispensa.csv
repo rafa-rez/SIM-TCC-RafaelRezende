@@ -1,0 +1,5 @@
+seq_cred_dispensa|seq_item_dispensa|seq_dispensa|seq_orgao|cod_orgao|num_ano_referencia|num_mes_referencia|num_doc_credenciado|dsc_nom_credenciado|dat_credenciamento|num_inscr_estadual|dsc_sigla_uf|num_certidao_inss|dat_emi_cert_inss|dat_val_cert_inss|num_cert_fgts|dat_emi_cert_fgts|dat_val_cert_fgts|num_cert_negativa|dat_emi_cert_negativa|dat_val_cert_negativa
+1427813|2991823|436565|304|03|2021|8|60701190000104|BANCO ITAU SA|20210709||SP|||||||CERTIDAOTCU|20210811|20211231
+1427810|2991823|436565|304|03|2021|8|00000000000191|BANCO DO BRASIL-RECEITA FEDERAL-IRRF|20210709||DF|||||||119844532021|20210408|20211004
+1427812|2991823|436565|304|03|2021|8|90400888000142|BANCO SANTANDER (BRASIL) SA|20210709||SP|||||||102788882021|20210323|20210918
+1427811|2991823|436565|304|03|2021|8|60746948000112|BANCO BRADESCO S.A.|20210709|0|SP|||||||210830382021|20210705|20211231

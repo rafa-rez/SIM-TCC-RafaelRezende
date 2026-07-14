@@ -1,0 +1,27 @@
+{
+  "id_teste": "62",
+  "input_usuario": "Total pago em folha extra em 2024.",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1,
+    "ref_cols": 1,
+    "gen_cols": 1,
+    "divergencia_ex": "alias_colunas",
+    "alias_apenas": true,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT SUM(CAST(vlr_rmn_liquida AS DECIMAL)) AS total FROM remuneracao_municipio WHERE ano_referencia = 2024 AND dsc_tipo_pag ILIKE '%Extra%';",
+  "query_gerada": "SELECT SUM(CAST(vlr_rmn_liquida AS DECIMAL)) AS total_pago_folha_extra FROM remuneracao_municipio WHERE ano_referencia = 2024 AND dsc_tipo_pag ILIKE '%Extra%';",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

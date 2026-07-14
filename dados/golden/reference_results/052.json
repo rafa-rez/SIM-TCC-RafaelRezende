@@ -1,0 +1,23 @@
+{
+  "id_teste": "52",
+  "source": "golden_reference",
+  "sql": "SELECT nom_vencedor, COUNT(DISTINCT seq_licitacao) AS qtd FROM licitacao_homologLicitacao WHERE ano_referencia = 2025 AND COALESCE(nom_vencedor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY nom_vencedor ORDER BY qtd DESC LIMIT 1;",
+  "columns": [
+    "nom_vencedor",
+    "qtd"
+  ],
+  "rows": [
+    {
+      "nom_vencedor": "FIGUEROA GOMES COMERCIAL LTDA",
+      "qtd": 1
+    }
+  ],
+  "row_count": 1,
+  "col_count": 2,
+  "schema_hash": "260bbc7dc44c1bc6",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:43.770579+00:00",
+  "input_usuario": "Qual empresa venceu mais licitações em 2025?",
+  "dificuldade": "medio",
+  "categoria": "Licitacoes Contratos"
+}

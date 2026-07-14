@@ -1,0 +1,21 @@
+{
+  "id_teste": "8",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT c.num_contrato, cc.dsc_nome_credor, CAST(t.vlr_termo_aditivo AS DECIMAL) AS valor_aditivo FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia JOIN contrato_termoContrato t ON c.seq_contrato = t.seq_contrato WHERE c.dat_assinatura >= DATE '2023-01-01' AND c.dat_assinatura < DATE '2024-01-01' AND t.dsc_tipo_alteracao ILIKE '%ACRESCIMO%' AND t.ano_referencia = 2024;",
+  "columns": [],
+  "rows": [],
+  "row_count": 0,
+  "col_count": 0,
+  "schema_hash": null,
+  "error": "Binder Error: Cannot compare values of type BIGINT and type DATE - an explicit cast is required\n\nLINE 1: ... t ON c.seq_contrato = t.seq_contrato WHERE c.dat_assinatura >= DATE '2023-01-01' AND c.dat_assinatura < DATE '2024-01...\n                                                                        ^",
+  "exported_at": "2026-07-14T23:55:13.203827+00:00",
+  "metrics_checkpoint": {
+    "vsr": false,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 0,
+    "gen_rows": 0
+  }
+}

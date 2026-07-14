@@ -1,0 +1,27 @@
+{
+  "id_teste": "44",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT COUNT(*) AS total_dispensas FROM licitacao_dispensa WHERE ano_referencia = 2024;",
+  "columns": [
+    "total_dispensas"
+  ],
+  "rows": [
+    {
+      "total_dispensas": 91
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "a9ac295cbc5a2aca",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:44.262299+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

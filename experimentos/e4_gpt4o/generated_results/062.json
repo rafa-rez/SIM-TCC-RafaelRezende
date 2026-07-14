@@ -1,0 +1,27 @@
+{
+  "id_teste": "62",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT SUM(CAST(vlr_rmn_liquida AS DECIMAL)) AS total_folha_extra FROM remuneracao_municipio WHERE ano_referencia = 2024 AND dsc_tipo_pagext ILIKE '%FOLHA EXTRA%';",
+  "columns": [
+    "total_folha_extra"
+  ],
+  "rows": [
+    {
+      "total_folha_extra": 2750989.65
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "8f307b0251b119da",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:47.403615+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

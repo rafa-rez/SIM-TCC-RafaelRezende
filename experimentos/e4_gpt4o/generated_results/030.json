@@ -1,0 +1,27 @@
+{
+  "id_teste": "30",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_liquidado_educacao FROM educacao_educacao WHERE ano_referencia = 2024;",
+  "columns": [
+    "total_liquidado_educacao"
+  ],
+  "rows": [
+    {
+      "total_liquidado_educacao": 16151033.11
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "5d1192bfe6af1e42",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:41.478682+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

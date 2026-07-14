@@ -1,0 +1,65 @@
+{
+  "id_teste": "33",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT ce.nom_credor, SUM(CAST(dp.vlr_pag_fonte AS DECIMAL)) AS total_pagamento FROM despesa_pagamento dp JOIN empenho_credorEmpenho ce ON dp.seq_empenho = ce.seq_empenho AND dp.ano_referencia = ce.ano_referencia WHERE dp.ano_referencia = 2025 AND COALESCE(ce.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND ce.num_doc_credor NOT IN ('-1', '0') GROUP BY ce.nom_credor ORDER BY total_pagamento DESC LIMIT 10;",
+  "columns": [
+    "nom_credor",
+    "total_pagamento"
+  ],
+  "rows": [
+    {
+      "nom_credor": "SOCIEDADE CIVIL DE BENEFICENCIA CAETEENSE",
+      "total_pagamento": 9174043.57
+    },
+    {
+      "nom_credor": "QUANTUM - ENGENHARIA E CONSULTORIA LTDA",
+      "total_pagamento": 6814349.82
+    },
+    {
+      "nom_credor": "EMPRESA TRANSCOL LTDA",
+      "total_pagamento": 5354871.04
+    },
+    {
+      "nom_credor": "INSTITUTO NACIONAL DO SEGURO SOCIAL",
+      "total_pagamento": 4992235.93
+    },
+    {
+      "nom_credor": "UNICAPA - UNIAO DOS APLICADORES DE PAVIMENTO ASFALTICO LTDA",
+      "total_pagamento": 3168251.87
+    },
+    {
+      "nom_credor": "MEGA VALE ADMINISTRADORA DE CARTOES E SERVICOS LTDA",
+      "total_pagamento": 2700000.0
+    },
+    {
+      "nom_credor": "CAIXA ECONOMICA FEDERAL",
+      "total_pagamento": 2308715.43
+    },
+    {
+      "nom_credor": "CEMIG DISTRIBUICAO S.A",
+      "total_pagamento": 1945085.98
+    },
+    {
+      "nom_credor": "MINISTERIO DA FAZENDA",
+      "total_pagamento": 1612129.67
+    },
+    {
+      "nom_credor": "LOK PIRAMIDE LTDA",
+      "total_pagamento": 1580618.99
+    }
+  ],
+  "row_count": 10,
+  "col_count": 2,
+  "schema_hash": "493579b6de3419ec",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:13.402218+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 10,
+    "gen_rows": 10
+  }
+}

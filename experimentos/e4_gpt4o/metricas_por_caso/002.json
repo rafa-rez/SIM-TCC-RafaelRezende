@@ -1,0 +1,27 @@
+{
+  "id_teste": "2",
+  "input_usuario": "Liste todos os servidores municipais ativos em 2024 que também constam como beneficiários do Novo Bolsa Família no mesmo ano. Traga o nome, o salário máximo recebido e o total do benefício federal.",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": true,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 65,
+    "gen_rows": 65,
+    "ref_cols": 3,
+    "gen_cols": 3,
+    "divergencia_ex": null,
+    "alias_apenas": false,
+    "extra": {},
+    "ex": true
+  },
+  "query_referencia": "WITH servidores AS (SELECT TRIM(UPPER(p.nom_pessoa)) AS nome_servidor, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS salario_maximo FROM remuneracao_municipio r JOIN pessoa_municipio p ON r.seq_dim_pessoa = p.seq_dim_pessoa WHERE r.ano_referencia = 2024 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' GROUP BY nome_servidor), beneficios AS (SELECT TRIM(UPPER(cgu.\"NOME FAVORECIDO\")) AS nome_beneficiario, SUM(CAST(cgu.\"VALOR PARCELA\" AS DECIMAL)) AS total_beneficio FROM cgu_novo_bolsa_familia cgu WHERE cgu.ano_referencia = 2024 GROUP BY nome_beneficiario) SELECT s.nome_servidor, s.salario_maximo, b.total_beneficio FROM servidores s JOIN beneficios b ON s.nome_servidor = b.nome_beneficiario",
+  "query_gerada": "WITH servidores AS (SELECT TRIM(UPPER(p.nom_pessoa)) AS nome_servidor, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS salario_maximo FROM remuneracao_municipio r JOIN pessoa_municipio p ON r.seq_dim_pessoa = p.seq_dim_pessoa WHERE r.ano_referencia = 2024 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' AND COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY nome_servidor), beneficios AS (SELECT TRIM(UPPER(cgu.\"NOME FAVORECIDO\")) AS nome_beneficiario, SUM(CAST(cgu.\"VALOR PARCELA\" AS DECIMAL)) AS total_beneficio FROM cgu_novo_bolsa_familia cgu WHERE cgu.ano_referencia = 2024 GROUP BY nome_beneficiario) SELECT s.nome_servidor, s.salario_maximo, b.total_beneficio FROM servidores s JOIN beneficios b ON s.nome_servidor = b.nome_beneficiario;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

@@ -1,0 +1,27 @@
+{
+  "id_teste": "39",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT SUM(CAST(dp.vlr_pag_fonte AS DECIMAL)) AS total_pago_pessoal FROM despesa_pagamento dp JOIN empenho_empenho ee ON dp.seq_empenho = ee.seq_empenho AND dp.ano_referencia = ee.ano_referencia WHERE dp.ano_referencia = 2024 AND ee.dsc_naturezadespesa ILIKE '3.1%';",
+  "columns": [
+    "total_pago_pessoal"
+  ],
+  "rows": [
+    {
+      "total_pago_pessoal": 65798862.76
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "597f05da1fb91ccf",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:43.613842+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

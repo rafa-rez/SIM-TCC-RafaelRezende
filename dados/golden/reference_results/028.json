@@ -1,0 +1,21 @@
+{
+  "id_teste": "28",
+  "source": "golden_reference",
+  "sql": "SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_impostos FROM receita_receita WHERE ano_referencia = 2023 AND dsc_especie ILIKE '%Imposto%';",
+  "columns": [
+    "total_impostos"
+  ],
+  "rows": [
+    {
+      "total_impostos": 17703004.18
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "fa22141ffb7e04a7",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:40.284660+00:00",
+  "input_usuario": "Qual o total de receita de impostos em 2023?",
+  "dificuldade": "medio",
+  "categoria": "Calculo Fiscal"
+}

@@ -1,0 +1,28 @@
+\chapter{Discussão}
+
+\section{Validade sintática versus acurácia de execução}
+
+Os quatro experimentos convergem para um padrão consistente: VSR entre 90\% e 97\% e EX entre 11\% e 19\%. O modelo demonstra domínio da sintaxe SQL e do mapeamento esquema-coluna, mas produz com frequência consultas semanticamente plausíveis que divergem da referência anotada manualmente.
+
+Esse comportamento é compatível com a literatura de Text-to-SQL em bases reais, nas quais múltiplas formulações SQL podem responder adequadamente à mesma pergunta, embora apenas uma tenha sido registrada como gabarito.
+
+\section{Impacto do tamanho do contexto}
+
+O \textit{prompt} estendido (E2) apresentou EX ligeiramente superior ao compacto (15,0\% \textit{versus} 11,25\%), porém com custo aproximadamente duplicado e latência maior. Para o cenário municipal com orçamento limitado, a variante compacta permanece mais custo-efetiva, dado o ganho marginal observado.
+
+\section{Comparação entre modelos}
+
+O GPT-4o-mini (E3) alcançou EX de 16,25\% com o menor custo (US\$~0,21), porém com queda de VSR para 90\%. O GPT-4o (E4) obteve o melhor EX (18,75\%), com destaque em consultas difíceis (42,86\%), à custa de latência e preço incompatíveis com respostas interativas imediatas.
+
+\section{Limitações}
+
+\begin{itemize}
+    \item Lacuna de dados de folha de pagamento e cadastro de servidores para 2020--2022, impactando consultas de recursos humanos;
+    \item Referências do conjunto \textit{golden} podem não abranger todas as SQLs semanticamente corretas;
+    \item A avaliação offline não mede diretamente a qualidade da resposta em linguagem natural ao usuário final;
+    \item As métricas reportadas concentram-se no subsistema Text-to-SQL; a avaliação documental (RAG) permanece como extensão futura.
+\end{itemize}
+
+\section{Implicações práticas}
+
+Apesar do EX estrito modesto, o sistema em produção demonstra utilidade para cidadãos e jornalistas ao combinar consultas válidas, explicação técnica e interface conversacional. Os resultados subsidiam decisões de engenharia quanto a modelo, tamanho de contexto e orçamento operacional.

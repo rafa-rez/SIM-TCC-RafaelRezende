@@ -1,0 +1,225 @@
+{
+  "id_teste": "72",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT TRIM(nf.\"NOME FAVORECIDO\") AS nome_beneficiario, SUM(CAST(nf.\"VALOR PARCELA\" AS DECIMAL)) AS total_recebido FROM cgu_novo_bolsa_familia nf WHERE nf.ano_referencia = 2025 AND COALESCE(nf.\"NOME FAVORECIDO\", '') NOT ILIKE '%NAO INFORMADO%' GROUP BY TRIM(nf.\"NOME FAVORECIDO\") HAVING SUM(CAST(nf.\"VALOR PARCELA\" AS DECIMAL)) > 6000 ORDER BY total_recebido DESC LIMIT 50;",
+  "columns": [
+    "nome_beneficiario",
+    "total_recebido"
+  ],
+  "rows": [
+    {
+      "nome_beneficiario": "FABRICIA DOS SANTOS",
+      "total_recebido": 29552.0
+    },
+    {
+      "nome_beneficiario": "NILZA MARIA CUSTODIO DA SILVA",
+      "total_recebido": 23040.0
+    },
+    {
+      "nome_beneficiario": "MARGARETH DA CONCEICAO LOPES",
+      "total_recebido": 20640.0
+    },
+    {
+      "nome_beneficiario": "RAQUEL DE MELO MACIEL",
+      "total_recebido": 19628.0
+    },
+    {
+      "nome_beneficiario": "CAMILA APARECIDA BRAGA REIS",
+      "total_recebido": 18428.0
+    },
+    {
+      "nome_beneficiario": "CAMILA SANTANA VIEIRA SILVA",
+      "total_recebido": 17832.0
+    },
+    {
+      "nome_beneficiario": "GRACIELA BRASILINA ROSA MARTINS",
+      "total_recebido": 17028.0
+    },
+    {
+      "nome_beneficiario": "FERNANDA CRISTINA DA SILVA",
+      "total_recebido": 16920.0
+    },
+    {
+      "nome_beneficiario": "SOLANGE OLIVEIRA DOS SANTOS AUGUSTO",
+      "total_recebido": 16731.0
+    },
+    {
+      "nome_beneficiario": "DANIELA DE ARAUJO CUNHA",
+      "total_recebido": 16680.0
+    },
+    {
+      "nome_beneficiario": "PAULA DE JESUS MACHADO",
+      "total_recebido": 16128.0
+    },
+    {
+      "nome_beneficiario": "MARIA DA CONCEICAO CAMPOS MENDONCA",
+      "total_recebido": 16128.0
+    },
+    {
+      "nome_beneficiario": "CAMILA CONCEICAO CORREIA",
+      "total_recebido": 16024.0
+    },
+    {
+      "nome_beneficiario": "BETANIA DE FATIMA DOS SANTOS",
+      "total_recebido": 16024.0
+    },
+    {
+      "nome_beneficiario": "LUIARA FONSECA",
+      "total_recebido": 15742.0
+    },
+    {
+      "nome_beneficiario": "CRISTIANE DAS DORES SANTOS",
+      "total_recebido": 15270.0
+    },
+    {
+      "nome_beneficiario": "CRISTIANA SILVA DE ABREU",
+      "total_recebido": 15240.0
+    },
+    {
+      "nome_beneficiario": "LORENA GOMES DO AMARAL",
+      "total_recebido": 15124.0
+    },
+    {
+      "nome_beneficiario": "MARIA JOSE DOS SANTOS",
+      "total_recebido": 15105.0
+    },
+    {
+      "nome_beneficiario": "MARIA APARECIDA DA SILVA",
+      "total_recebido": 15000.0
+    },
+    {
+      "nome_beneficiario": "PAULO HENRIQUE FERNANDES",
+      "total_recebido": 15000.0
+    },
+    {
+      "nome_beneficiario": "EMILENE PEREIRA DO CARMO",
+      "total_recebido": 14928.0
+    },
+    {
+      "nome_beneficiario": "MONICA DOS SANTOS",
+      "total_recebido": 14920.0
+    },
+    {
+      "nome_beneficiario": "YEGLIMAR DEL CARMEN ROJAS LOAIZA",
+      "total_recebido": 14784.0
+    },
+    {
+      "nome_beneficiario": "DARA MARQUES DA SILVA CIRINO",
+      "total_recebido": 14520.0
+    },
+    {
+      "nome_beneficiario": "ANA CRISTINA DOS SANTOS",
+      "total_recebido": 14520.0
+    },
+    {
+      "nome_beneficiario": "ARIANA APARECIDA DE ARAUJO",
+      "total_recebido": 14448.0
+    },
+    {
+      "nome_beneficiario": "BRENDA HELLEN CANDIDO",
+      "total_recebido": 14424.0
+    },
+    {
+      "nome_beneficiario": "ELISANGELA ANTONIA NUNES",
+      "total_recebido": 14424.0
+    },
+    {
+      "nome_beneficiario": "NAYRA MARQUES FERREIRA DUARTE",
+      "total_recebido": 14424.0
+    },
+    {
+      "nome_beneficiario": "ANA CAROLINA DA CRUZ",
+      "total_recebido": 14420.0
+    },
+    {
+      "nome_beneficiario": "IARA CRISTINA GUALBERTO PEREIRA",
+      "total_recebido": 14246.0
+    },
+    {
+      "nome_beneficiario": "SIMONE TEIXEIRA LEAO",
+      "total_recebido": 14076.0
+    },
+    {
+      "nome_beneficiario": "ILCA DOMINGAS DIAS",
+      "total_recebido": 13963.0
+    },
+    {
+      "nome_beneficiario": "DANIELLE ALINE ARAUJO",
+      "total_recebido": 13938.0
+    },
+    {
+      "nome_beneficiario": "RAFAELA MARILAC DA SILVA",
+      "total_recebido": 13920.0
+    },
+    {
+      "nome_beneficiario": "PRISCILA CARLOS DE MAGALHAES",
+      "total_recebido": 13874.0
+    },
+    {
+      "nome_beneficiario": "SUELY DE FATIMA CAMILO",
+      "total_recebido": 13824.0
+    },
+    {
+      "nome_beneficiario": "FABIOLA PATRICIA RODRIGUES DE CASTRO DUARTE",
+      "total_recebido": 13824.0
+    },
+    {
+      "nome_beneficiario": "NAIARA TAVARES DOS SANTOS ELEUTERIO",
+      "total_recebido": 13748.0
+    },
+    {
+      "nome_beneficiario": "ANA ROSA DOS SANTOS",
+      "total_recebido": 13728.0
+    },
+    {
+      "nome_beneficiario": "ELENICE APARECIDA ALVES",
+      "total_recebido": 13630.0
+    },
+    {
+      "nome_beneficiario": "ZELIA PIEDADE DOS SANTOS",
+      "total_recebido": 13620.0
+    },
+    {
+      "nome_beneficiario": "CLAUDIANE DOS SANTOS",
+      "total_recebido": 13420.0
+    },
+    {
+      "nome_beneficiario": "ELIANE FERREIRA MARTINS",
+      "total_recebido": 13320.0
+    },
+    {
+      "nome_beneficiario": "GLEYCIMARA BONSUCESSO ONOFRE DOS SANTOS",
+      "total_recebido": 13320.0
+    },
+    {
+      "nome_beneficiario": "SHEILA CRISTINA DE OLIVEIRA CUNHA",
+      "total_recebido": 13320.0
+    },
+    {
+      "nome_beneficiario": "FRANCISLAINE ANDRADE DE OLIVEIRA",
+      "total_recebido": 13248.0
+    },
+    {
+      "nome_beneficiario": "RAFAELA MARQUES FERREIRA",
+      "total_recebido": 13224.0
+    },
+    {
+      "nome_beneficiario": "MARIA ELOISA DOS SANTOS",
+      "total_recebido": 13219.0
+    }
+  ],
+  "row_count": 50,
+  "col_count": 2,
+  "schema_hash": "042d2eb9b1cb8e99",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:23.675407+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 20,
+    "gen_rows": 50
+  }
+}

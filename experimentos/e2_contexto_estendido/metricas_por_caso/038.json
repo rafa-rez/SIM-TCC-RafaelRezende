@@ -1,0 +1,27 @@
+{
+  "id_teste": "38",
+  "input_usuario": "Quantos pagamentos foram feitos em 2023?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1,
+    "ref_cols": 1,
+    "gen_cols": 1,
+    "divergencia_ex": "divergencia_valores",
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT COUNT(*) AS qtd FROM despesa_pagamento WHERE ano_referencia = 2023;",
+  "query_gerada": "SELECT COUNT(DISTINCT seq_pagamento) AS total_pagamentos FROM despesa_pagamento WHERE ano_referencia = 2023 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(num_doc_credor, '') NOT IN ('-1', '0');",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

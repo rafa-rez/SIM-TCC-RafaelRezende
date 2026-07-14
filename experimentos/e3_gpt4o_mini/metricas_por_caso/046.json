@@ -1,0 +1,27 @@
+{
+  "id_teste": "46",
+  "input_usuario": "Quantos contratos ativos em 2025?",
+  "metrics": {
+    "vsr": false,
+    "ex_strict": false,
+    "ex_rows": false,
+    "ex_cols": false,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": false,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 0,
+    "ref_cols": 1,
+    "gen_cols": 0,
+    "divergencia_ex": null,
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT COUNT(*) AS qtd FROM contrato_contratos WHERE ano_referencia = 2025;",
+  "query_gerada": "SELECT COUNT(*) AS total_contratos_ativos FROM contrato_contratos c WHERE c.ano_referencia = 2025 AND COALESCE(c.dsc_sit_serv_pens, '') ILIKE '%Ativo%';",
+  "erro_sql_gerado": "Binder Error: Values list \"c\" does not have a column named \"dsc_sit_serv_pens\"\n\nLINE 1: ...ato_contratos c WHERE c.ano_referencia = 2025 AND COALESCE(c.dsc_sit_serv_pens, '') ILIKE '%Ativo%';\n                                                                      ^",
+  "erro_sql_referencia": null
+}

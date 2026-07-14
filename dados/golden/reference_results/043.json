@@ -1,0 +1,39 @@
+{
+  "id_teste": "43",
+  "source": "golden_reference",
+  "sql": "SELECT cc.dsc_nome_credor, c.vlr_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND c.vlr_contrato > 0 ORDER BY c.vlr_contrato DESC LIMIT 5;",
+  "columns": [
+    "dsc_nome_credor",
+    "vlr_contrato"
+  ],
+  "rows": [
+    {
+      "dsc_nome_credor": "LOK PIRAMIDE LTDA",
+      "vlr_contrato": 5697980.66
+    },
+    {
+      "dsc_nome_credor": "ZURICH ENGENHARIA LTDA",
+      "vlr_contrato": 1888888.88
+    },
+    {
+      "dsc_nome_credor": "ALVES SOLUCOES INTEGRADAS LTDA",
+      "vlr_contrato": 1500000.0
+    },
+    {
+      "dsc_nome_credor": "EDITORA FTD S A",
+      "vlr_contrato": 1144714.0
+    },
+    {
+      "dsc_nome_credor": "ALVES SOLUCOES INTEGRADAS LTDA",
+      "vlr_contrato": 945293.0
+    }
+  ],
+  "row_count": 5,
+  "col_count": 2,
+  "schema_hash": "c540abc7934d62aa",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:43.422875+00:00",
+  "input_usuario": "Quais os 5 maiores contratos da prefeitura em 2025?",
+  "dificuldade": "medio",
+  "categoria": "Licitacoes Contratos"
+}

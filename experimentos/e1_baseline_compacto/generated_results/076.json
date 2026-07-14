@@ -1,0 +1,51 @@
+{
+  "id_teste": "76",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT r.num_doc_credor, r.nom_credor, SUM(CAST(r.vlr_pag_fonte AS DECIMAL)) AS total_pago FROM despesa_pagamento r JOIN cgu_despesas_favorecidos cgu ON CAST(r.num_doc_credor AS VARCHAR) = CAST(cgu.\"Código Favorecido\" AS VARCHAR) WHERE r.ano_referencia = 2024 AND cgu.ano_referencia = 2024 AND COALESCE(r.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(r.num_doc_credor, '') NOT IN ('-1', '0') GROUP BY r.num_doc_credor, r.nom_credor ORDER BY total_pago DESC LIMIT 5;",
+  "columns": [
+    "num_doc_credor",
+    "nom_credor",
+    "total_pago"
+  ],
+  "rows": [
+    {
+      "num_doc_credor": "18979328000167",
+      "nom_credor": "SOC CIVIL DE BENEFICÊNCIA CAETEENSE",
+      "total_pago": 256770945.0
+    },
+    {
+      "num_doc_credor": "18302299000102",
+      "nom_credor": "SERVIDORES MUNICIPAIS",
+      "total_pago": 34754759.82
+    },
+    {
+      "num_doc_credor": "18979328000167",
+      "nom_credor": "SOCIEDADE CIVIL DE BENEFICENCIA CAETEENSE",
+      "total_pago": 7424429.4
+    },
+    {
+      "num_doc_credor": "18302299000102",
+      "nom_credor": "MUNICIPIO DE CAETE",
+      "total_pago": 3698028.51
+    },
+    {
+      "num_doc_credor": "17926188000104",
+      "nom_credor": "SINTAGMA ZENITE COMERCIO EIRELI",
+      "total_pago": 887210.58
+    }
+  ],
+  "row_count": 5,
+  "col_count": 3,
+  "schema_hash": "d28c52157b731d48",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:24.426012+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 5,
+    "gen_rows": 5
+  }
+}

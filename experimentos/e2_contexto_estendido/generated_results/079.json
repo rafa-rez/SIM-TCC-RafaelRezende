@@ -1,0 +1,174 @@
+{
+  "id_teste": "79",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "SELECT c.seq_contrato, c.vlr_contrato, t.num_ano_referencia AS ano_aditivo, t.num_mes_referencia AS mes_aditivo, t.dsc_tipo_alteracao, t.dsc_alteracao, strftime(strptime(CAST(t.dat_assinatura AS VARCHAR), '%Y%m%d'), '%d/%m/%Y') AS data_assinatura_aditivo FROM contrato_contratos c JOIN contrato_termoContrato t ON c.seq_contrato = t.seq_contrato WHERE c.ano_referencia = 2022 AND t.ano_referencia = 2023 AND t.dsc_tipo_alteracao ILIKE '%acresc%' LIMIT 50;",
+  "columns": [
+    "seq_contrato",
+    "vlr_contrato",
+    "ano_aditivo",
+    "mes_aditivo",
+    "dsc_tipo_alteracao",
+    "dsc_alteracao",
+    "data_assinatura_aditivo"
+  ],
+  "rows": [
+    {
+      "seq_contrato": 2758216,
+      "vlr_contrato": 42503.58,
+      "ano_aditivo": 2023,
+      "mes_aditivo": 12,
+      "dsc_tipo_alteracao": "1 - ACRESCIMO DE VALOR",
+      "dsc_alteracao": null,
+      "data_assinatura_aditivo": "14/12/2022"
+    },
+    {
+      "seq_contrato": 2733233,
+      "vlr_contrato": 460692.0,
+      "ano_aditivo": 2023,
+      "mes_aditivo": 9,
+      "dsc_tipo_alteracao": "1 - ACRESCIMO DE VALOR",
+      "dsc_alteracao": null,
+      "data_assinatura_aditivo": "19/09/2022"
+    },
+    {
+      "seq_contrato": 2733229,
+      "vlr_contrato": 33000.0,
+      "ano_aditivo": 2023,
+      "mes_aditivo": 8,
+      "dsc_tipo_alteracao": "1 - ACRESCIMO DE VALOR",
+      "dsc_alteracao": null,
+      "data_assinatura_aditivo": "04/08/2022"
+    },
+    {
+      "seq_contrato": 2733235,
+      "vlr_contrato": 349500.0,
+      "ano_aditivo": 2023,
+      "mes_aditivo": 10,
+      "dsc_tipo_alteracao": "1 - ACRESCIMO DE VALOR",
+      "dsc_alteracao": null,
+      "data_assinatura_aditivo": "26/10/2022"
+    },
+    {
+      "seq_contrato": 2664049,
+      "vlr_contrato": 9987.5,
+      "ano_aditivo": 2023,
+      "mes_aditivo": 8,
+      "dsc_tipo_alteracao": "1 - ACRESCIMO DE VALOR",
+      "dsc_alteracao": null,
+      "data_assinatura_aditivo": "01/08/2022"
+    },
+    {
+      "seq_contrato": 2664048,
+      "vlr_contrato": 1173.39,
+      "ano_aditivo": 2023,
+      "mes_aditivo": 8,
+      "dsc_tipo_alteracao": "1 - ACRESCIMO DE VALOR",
+      "dsc_alteracao": "ACRECIMO DE PRAZO E DE VALOR",
+      "data_assinatura_aditivo": "30/08/2022"
+    },
+    {
+      "seq_contrato": 2733216,
+      "vlr_contrato": 323500.0,
+      "ano_aditivo": 2023,
+      "mes_aditivo": 4,
+      "dsc_tipo_alteracao": "1 - ACRESCIMO DE VALOR",
+      "dsc_alteracao": null,
+      "data_assinatura_aditivo": "13/04/2022"
+    },
+    {
+      "seq_contrato": 2758209,
+      "vlr_contrato": 17160.0,
+      "ano_aditivo": 2023,
+      "mes_aditivo": 12,
+      "dsc_tipo_alteracao": "1 - ACRESCIMO DE VALOR",
+      "dsc_alteracao": "PRORROGAR PRAZO DE VIGENCIA CONTRATUAL POR MAIS 12 MESES, ATE 13122024 E REAJUSTAR EM 3,74764% O ITEM CONTRATADO",
+      "data_assinatura_aditivo": "13/12/2022"
+    },
+    {
+      "seq_contrato": 2733218,
+      "vlr_contrato": 135999.96,
+      "ano_aditivo": 2023,
+      "mes_aditivo": 4,
+      "dsc_tipo_alteracao": "1 - ACRESCIMO DE VALOR",
+      "dsc_alteracao": null,
+      "data_assinatura_aditivo": "13/04/2022"
+    },
+    {
+      "seq_contrato": 2733236,
+      "vlr_contrato": 59984.0,
+      "ano_aditivo": 2023,
+      "mes_aditivo": 10,
+      "dsc_tipo_alteracao": "1 - ACRESCIMO DE VALOR",
+      "dsc_alteracao": null,
+      "data_assinatura_aditivo": "28/10/2022"
+    },
+    {
+      "seq_contrato": 2733221,
+      "vlr_contrato": 87620.04,
+      "ano_aditivo": 2023,
+      "mes_aditivo": 5,
+      "dsc_tipo_alteracao": "1 - ACRESCIMO DE VALOR",
+      "dsc_alteracao": null,
+      "data_assinatura_aditivo": "05/05/2022"
+    },
+    {
+      "seq_contrato": 2733225,
+      "vlr_contrato": 233667.56,
+      "ano_aditivo": 2023,
+      "mes_aditivo": 7,
+      "dsc_tipo_alteracao": "1 - ACRESCIMO DE VALOR",
+      "dsc_alteracao": "ADITAR O PRAZO DE VIGENCIA CONTRATUAL POR MAIS 12 MESES ACRESCER O PERCENTUAL DE 1,7923% AO ITEM 2111 LOCACAO DO SISTEMA DE COMPRAS E LICITACOES EM VIRTUDE DA IMPLEMENTACAO DE ADEQUACOES NECESSARIAS PARA ATENDIMENTO A LEI 141332021",
+      "data_assinatura_aditivo": "30/06/2022"
+    },
+    {
+      "seq_contrato": 2733224,
+      "vlr_contrato": 85173.6,
+      "ano_aditivo": 2023,
+      "mes_aditivo": 6,
+      "dsc_tipo_alteracao": "1 - ACRESCIMO DE VALOR",
+      "dsc_alteracao": null,
+      "data_assinatura_aditivo": "02/06/2022"
+    },
+    {
+      "seq_contrato": 2758214,
+      "vlr_contrato": 212988.0,
+      "ano_aditivo": 2023,
+      "mes_aditivo": 12,
+      "dsc_tipo_alteracao": "1 - ACRESCIMO DE VALOR",
+      "dsc_alteracao": null,
+      "data_assinatura_aditivo": "02/12/2022"
+    },
+    {
+      "seq_contrato": 2758217,
+      "vlr_contrato": 15616.75,
+      "ano_aditivo": 2023,
+      "mes_aditivo": 4,
+      "dsc_tipo_alteracao": "1 - ACRESCIMO DE VALOR",
+      "dsc_alteracao": null,
+      "data_assinatura_aditivo": "30/12/2022"
+    },
+    {
+      "seq_contrato": 2758215,
+      "vlr_contrato": 44808.8,
+      "ano_aditivo": 2023,
+      "mes_aditivo": 12,
+      "dsc_tipo_alteracao": "1 - ACRESCIMO DE VALOR",
+      "dsc_alteracao": null,
+      "data_assinatura_aditivo": "14/12/2022"
+    }
+  ],
+  "row_count": 16,
+  "col_count": 7,
+  "schema_hash": "085ee312d4a38687",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:52.041105+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 0,
+    "gen_rows": 16
+  }
+}

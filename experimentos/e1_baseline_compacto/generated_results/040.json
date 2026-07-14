@@ -1,0 +1,51 @@
+{
+  "id_teste": "40",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT ec.nom_credor, ec.num_doc_credor, COUNT(*) AS total_empenhos FROM empenho_empenho e JOIN empenho_credorEmpenho ec ON e.seq_empenho = ec.seq_empenho AND e.ano_referencia = ec.ano_referencia WHERE e.ano_referencia = 2025 AND COALESCE(ec.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND ec.num_doc_credor NOT IN ('-1', '0') GROUP BY ec.nom_credor, ec.num_doc_credor ORDER BY total_empenhos DESC LIMIT 5;",
+  "columns": [
+    "nom_credor",
+    "num_doc_credor",
+    "total_empenhos"
+  ],
+  "rows": [
+    {
+      "nom_credor": "INSTITUTO NACIONAL DO SEGURO SOCIAL",
+      "num_doc_credor": "29979036000140",
+      "total_empenhos": 418
+    },
+    {
+      "nom_credor": "CAIXA ECONOMICA FEDERAL",
+      "num_doc_credor": "00360305000104",
+      "total_empenhos": 407
+    },
+    {
+      "nom_credor": "CEMIG DISTRIBUICAO S.A",
+      "num_doc_credor": "06981180000116",
+      "total_empenhos": 47
+    },
+    {
+      "nom_credor": "BANCO DO BRASIL SA",
+      "num_doc_credor": "00000000000191",
+      "total_empenhos": 36
+    },
+    {
+      "nom_credor": "ESTADO DE MINAS GERAIS",
+      "num_doc_credor": "18715615000160",
+      "total_empenhos": 32
+    }
+  ],
+  "row_count": 5,
+  "col_count": 3,
+  "schema_hash": "90a3ae49fa9d6a4a",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:19.005519+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 5,
+    "gen_rows": 5
+  }
+}

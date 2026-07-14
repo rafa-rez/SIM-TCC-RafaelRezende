@@ -1,0 +1,36 @@
+\chapter{Introdução}
+
+\section{Contextualização}
+
+Os dados públicos municipais constituem patrimônio informacional essencial à fiscalização social, à prestação de contas e à tomada de decisão democrática. No entanto, o acesso efetivo a essas informações permanece restrito a usuários com conhecimento técnico em portais de transparência, formatos tabulares e linguagens de consulta estruturada.
+
+Nesse contexto, os Modelos de Linguagem de Grande Escala (\termo{llm}) permitem interfaces conversacionais capazes de interpretar perguntas em linguagem natural e traduzi-las em operações sobre bases governamentais. A combinação de Recuperação Aumentada por Geração (\termo{rag}) para documentos normativos e Text-to-SQL para consultas analíticas configura uma arquitetura híbrida com potencial de ampliar o acesso a dados de transparência.
+
+Este trabalho apresenta o \textbf{CIC --- Centro de Informações Caetense}, agente conversacional voltado ao município de Caeté (MG), integrado ao WhatsApp por meio de fluxos automatizados. O sistema consulta dados públicos do SICOM e da CGU (2020--2025), além do Diário Oficial municipal via busca vetorial.
+
+\section{Problema de pesquisa}
+
+Apesar da abertura crescente de bases governamentais, usuários leigos enfrentam barreiras técnicas para formular consultas sobre despesas, receitas, folha de pagamento, licitações, contratos e programas sociais.
+
+\section{Objetivo geral}
+
+Desenvolver e avaliar empiricamente uma arquitetura de orquestração cognitiva baseada em \termo{llm}s, integrando \termo{rag} e Text-to-SQL para consultas conversacionais sobre dados de transparência municipal.
+
+\section{Objetivos específicos}
+
+\begin{itemize}
+    \item Construir \textit{pipeline} de ingestão e normalização de dados SICOM/CGU para consulta analítica;
+    \item Implementar subsistema Text-to-SQL com minificação de esquema e amostragem inteligente;
+    \item Implementar subsistema de recuperação documental sobre o Diário Oficial;
+    \item Orquestrar os fluxos em ambiente de produção via mensageria instantânea;
+    \item Definir conjunto de referência e conduzir avaliação formal com métricas de execução, validade SQL, latência e custo;
+    \item Realizar estudos de ablação comparando variantes de \textit{prompt} e modelos de linguagem.
+\end{itemize}
+
+\section{Justificativa}
+
+A solução proposta alinha-se à governança digital e ao ODS~16, ao reduzir a barreira técnica de acesso à informação pública. A avaliação quantitativa em dados municipais reais contribui com evidências empíricas para decisões de arquitetura em soluções de tecnologia cívica (\textit{GovTech}).
+
+\section{Organização do trabalho}
+
+O Capítulo~2 apresenta o referencial teórico. O Capítulo~3 descreve metodologia e arquitetura. O Capítulo~4 analisa resultados. O Capítulo~5 discute limitações e implicações. O Capítulo~6 encerra com conclusões.

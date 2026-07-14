@@ -1,0 +1,21 @@
+{
+  "id_teste": "76",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT dp.num_doc_credor, SUM(CAST(dp.vlr_pagamento AS DECIMAL)) AS total_pago FROM despesa_pagamento dp JOIN cgu_despesas_favorecidos cgu ON CAST(dp.num_doc_credor AS VARCHAR) = CAST(cgu.\"Código Favorecido\" AS VARCHAR) WHERE dp.ano_referencia = 2024 AND cgu.ano_referencia = 2024 AND COALESCE(dp.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND dp.num_doc_credor NOT IN ('-1', '0') GROUP BY dp.num_doc_credor ORDER BY total_pago DESC LIMIT 5;",
+  "columns": [],
+  "rows": [],
+  "row_count": 0,
+  "col_count": 0,
+  "schema_hash": null,
+  "error": "Binder Error: Values list \"dp\" does not have a column named \"vlr_pagamento\"\n\nLINE 1: SELECT dp.num_doc_credor, SUM(CAST(dp.vlr_pagamento AS DECIMAL)) AS total_pago FROM despesa_pa...\n                                           ^",
+  "exported_at": "2026-07-14T23:56:20.547230+00:00",
+  "metrics_checkpoint": {
+    "vsr": false,
+    "ex": false,
+    "nea_ok": false,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 5,
+    "gen_rows": 0
+  }
+}

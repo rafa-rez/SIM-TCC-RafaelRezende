@@ -1,0 +1,7 @@
+openai>=1.40.0
+python-dotenv>=1.0.0
+pyyaml>=6.0
+requests>=2.31.0
+tiktoken>=0.7.0
+duckdb>=1.0.0
+pandas>=2.0.0

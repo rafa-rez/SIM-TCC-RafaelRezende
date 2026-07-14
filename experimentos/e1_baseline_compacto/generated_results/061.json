@@ -1,0 +1,65 @@
+{
+  "id_teste": "61",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "WITH salarios AS (SELECT r.seq_dim_pessoa, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS maior_salario FROM remuneracao_municipio r WHERE r.ano_referencia = 2024 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' GROUP BY r.seq_dim_pessoa), nomes AS (SELECT p.seq_dim_pessoa, p.nom_pessoa FROM pessoa_municipio p WHERE COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%') SELECT n.nom_pessoa, s.maior_salario FROM salarios s JOIN nomes n ON s.seq_dim_pessoa = n.seq_dim_pessoa ORDER BY s.maior_salario DESC LIMIT 10;",
+  "columns": [
+    "nom_pessoa",
+    "maior_salario"
+  ],
+  "rows": [
+    {
+      "nom_pessoa": "LUCAS COELHO FERREIRA",
+      "maior_salario": 82244.67
+    },
+    {
+      "nom_pessoa": "LUCAS COELHO FERREIRA",
+      "maior_salario": 82244.67
+    },
+    {
+      "nom_pessoa": "ALBERTO NAZARE PIRES",
+      "maior_salario": 41240.86
+    },
+    {
+      "nom_pessoa": "ALBERTO NAZARE PIRES",
+      "maior_salario": 41240.86
+    },
+    {
+      "nom_pessoa": "ALBERTO NAZARE PIRES",
+      "maior_salario": 41240.86
+    },
+    {
+      "nom_pessoa": "DARLAN CORRADI PERDIGAO DE ALMEIDA",
+      "maior_salario": 21688.46
+    },
+    {
+      "nom_pessoa": "DARLAN CORRADI PERDIGAO DE ALMEIDA",
+      "maior_salario": 21688.46
+    },
+    {
+      "nom_pessoa": "DARLAN CORRADI PERDIGAO DE ALMEIDA",
+      "maior_salario": 21688.46
+    },
+    {
+      "nom_pessoa": "ORLANDO ZANON NETO",
+      "maior_salario": 20901.71
+    },
+    {
+      "nom_pessoa": "ORLANDO ZANON NETO",
+      "maior_salario": 20901.71
+    }
+  ],
+  "row_count": 10,
+  "col_count": 2,
+  "schema_hash": "99b352eb4ec736d9",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:22.198132+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 10,
+    "gen_rows": 10
+  }
+}

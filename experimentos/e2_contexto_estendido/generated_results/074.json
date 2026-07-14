@@ -1,0 +1,21 @@
+{
+  "id_teste": "74",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "WITH pagamentos_municipais AS ( SELECT DISTINCT TRIM(UPPER(nom_credor)) AS nome_credor FROM despesa_pagamento WHERE ano_referencia = 2024 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND num_doc_credor NOT IN ('-1', '0') ), bolsa_familia AS ( SELECT DISTINCT TRIM(UPPER(\"NOME FAVORECIDO\")) AS nome_favorecido FROM cgu_bolsa_familia_pagamentos WHERE ano_referencia = 2024 ) SELECT pm.nome_credor AS nome FROM pagamentos_municipais pm INNER JOIN bolsa_familia bf ON pm.nome_credor = bf.nome_favorecido ORDER BY nome ASC;",
+  "columns": [],
+  "rows": [],
+  "row_count": 0,
+  "col_count": 0,
+  "schema_hash": null,
+  "error": null,
+  "exported_at": "2026-07-14T23:55:51.534437+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 0,
+    "gen_rows": 0
+  }
+}

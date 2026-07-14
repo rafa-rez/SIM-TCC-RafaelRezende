@@ -1,0 +1,27 @@
+{
+  "id_teste": "25",
+  "input_usuario": "Qual o IEQ-C em 2025 e se atingiu 25%?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1,
+    "ref_cols": 2,
+    "gen_cols": 2,
+    "divergencia_ex": "divergencia_valores",
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "WITH despesa_mde AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa FROM educacao_educacao WHERE ano_referencia = 2025), receita_impostos AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita FROM receita_receita WHERE ano_referencia = 2025 AND dsc_especie ILIKE '%Imposto%') SELECT (d.total_despesa / NULLIF(r.total_receita, 0)) * 100 AS ieq_c, CASE WHEN (d.total_despesa / NULLIF(r.total_receita, 0)) * 100 >= 25 THEN 'Sim' ELSE 'Não' END AS atingiu FROM despesa_mde d, receita_impostos r;",
+  "query_gerada": "WITH despesa AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa FROM educacao_educacao WHERE ano_referencia = 2025), receita AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita FROM receita_receita WHERE ano_referencia = 2025 AND dsc_especie ILIKE '%Imposto%') SELECT (CAST(d.total_despesa AS DECIMAL) / NULLIF(CAST(r.total_receita AS DECIMAL), 0)) * 100 AS ieq_c, CASE WHEN (CAST(d.total_despesa AS DECIMAL) / NULLIF(CAST(r.total_receita AS DECIMAL), 0)) * 100 >= 25 THEN TRUE ELSE FALSE END AS atingiu_25_porcento FROM despesa d CROSS JOIN receita r;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

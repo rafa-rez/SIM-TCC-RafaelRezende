@@ -1,0 +1,33 @@
+{
+  "id_teste": "42",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT ano_referencia, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago FROM despesa_pagamento WHERE ano_referencia IN (2024, 2025) AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND num_doc_credor NOT IN ('-1', '0') GROUP BY ano_referencia ORDER BY ano_referencia;",
+  "columns": [
+    "ano_referencia",
+    "total_pago"
+  ],
+  "rows": [
+    {
+      "ano_referencia": 2024,
+      "total_pago": 150660013.62
+    },
+    {
+      "ano_referencia": 2025,
+      "total_pago": 74324540.97
+    }
+  ],
+  "row_count": 2,
+  "col_count": 2,
+  "schema_hash": "7dab2c40afb8cd79",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:19.325614+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 2,
+    "gen_rows": 2
+  }
+}

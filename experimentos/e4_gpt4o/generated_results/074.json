@@ -1,0 +1,21 @@
+{
+  "id_teste": "74",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT DISTINCT TRIM(UPPER(dp.nom_credor)) AS nome_credor FROM despesa_pagamento dp JOIN cgu_bolsa_familia_pagamentos bf ON TRIM(UPPER(dp.nom_credor)) = TRIM(UPPER(bf.\"NOME FAVORECIDO\")) WHERE dp.ano_referencia = 2024 AND bf.ano_referencia = 2024 AND COALESCE(dp.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND dp.num_doc_credor NOT IN ('-1', '0');",
+  "columns": [],
+  "rows": [],
+  "row_count": 0,
+  "col_count": 0,
+  "schema_hash": null,
+  "error": null,
+  "exported_at": "2026-07-14T23:56:49.105223+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 0,
+    "gen_rows": 0
+  }
+}

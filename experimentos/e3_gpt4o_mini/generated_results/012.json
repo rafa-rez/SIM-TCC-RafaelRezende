@@ -1,0 +1,27 @@
+{
+  "id_teste": "12",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_transferencias_federais FROM cgu_transferencias WHERE ano_referencia = 2023;",
+  "columns": [
+    "total_transferencias_federais"
+  ],
+  "rows": [
+    {
+      "total_transferencias_federais": 71085392.34
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "efd1d7dbbdcf153d",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:09.998560+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "id_teste": "39",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT SUM(CAST(vlr_empenhado AS DECIMAL)) AS total_pago_pessoal FROM empenho_empenho WHERE ano_referencia = 2024 AND COALESCE(dsc_naturezadespesa, '') ILIKE '3%';",
+  "columns": [
+    "total_pago_pessoal"
+  ],
+  "rows": [
+    {
+      "total_pago_pessoal": 191231885.34
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "597f05da1fb91ccf",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:18.767377+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 0.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

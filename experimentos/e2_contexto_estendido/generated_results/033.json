@@ -1,0 +1,21 @@
+{
+  "id_teste": "33",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "WITH pagamentos_filtrados AS (\n  SELECT\n    ec.nom_credor,\n    SUM(CAST(dp.vlr_movimentacao AS DECIMAL)) AS total_pago\n  FROM despesa_pagamento dp\n  JOIN empenho_credorEmpenho ec\n    ON dp.seq_empenho = ec.seq_empenho\n    AND dp.ano_referencia = ec.ano_referencia\n  WHERE dp.ano_referencia = 2025\n    AND COALESCE(ec.nom_credor, '') NOT ILIKE '%NAO INFORMADO%'\n    AND COALESCE(ec.nom_credor, '') != ''\n    AND COALESCE(ec.num_doc_credor, '') NOT IN ('-1', '0', '')\n  GROUP BY ec.nom_credor\n)\nSELECT nom_credor, total_pago\nFROM pagamentos_filtrados\nORDER BY total_pago DESC\nLIMIT 10;",
+  "columns": [],
+  "rows": [],
+  "row_count": 0,
+  "col_count": 0,
+  "schema_hash": null,
+  "error": "Binder Error: Values list \"dp\" does not have a column named \"vlr_movimentacao\"\n\nLINE 4:     SUM(CAST(dp.vlr_movimentacao AS DECIMAL)) AS total_pago\n                     ^",
+  "exported_at": "2026-07-14T23:55:45.036908+00:00",
+  "metrics_checkpoint": {
+    "vsr": false,
+    "ex": false,
+    "nea_ok": false,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 10,
+    "gen_rows": 0
+  }
+}

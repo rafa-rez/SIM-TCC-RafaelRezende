@@ -1,0 +1,21 @@
+{
+  "id_teste": "46",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT COUNT(*) AS total_contratos_ativos FROM contrato_contratos c WHERE c.ano_referencia = 2025 AND COALESCE(c.dsc_sit_serv_pens, '') ILIKE '%Ativo%';",
+  "columns": [],
+  "rows": [],
+  "row_count": 0,
+  "col_count": 0,
+  "schema_hash": null,
+  "error": "Binder Error: Values list \"c\" does not have a column named \"dsc_sit_serv_pens\"\n\nLINE 1: ...ato_contratos c WHERE c.ano_referencia = 2025 AND COALESCE(c.dsc_sit_serv_pens, '') ILIKE '%Ativo%';\n                                                                      ^",
+  "exported_at": "2026-07-14T23:56:15.813767+00:00",
+  "metrics_checkpoint": {
+    "vsr": false,
+    "ex": false,
+    "nea_ok": false,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 0
+  }
+}

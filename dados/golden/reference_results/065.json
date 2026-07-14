@@ -1,0 +1,21 @@
+{
+  "id_teste": "65",
+  "source": "golden_reference",
+  "sql": "SELECT SUM(CAST(vlr_gasto AS DECIMAL)) AS total FROM frota_gastoFrota WHERE ano_referencia = 2025;",
+  "columns": [
+    "total"
+  ],
+  "rows": [
+    {
+      "total": 1059246.44
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "11239872d178729a",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:46.524623+00:00",
+  "input_usuario": "Total gasto com frota em 2025.",
+  "dificuldade": "medio",
+  "categoria": "Frota"
+}

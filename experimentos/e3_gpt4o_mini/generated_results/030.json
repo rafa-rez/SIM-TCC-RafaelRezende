@@ -1,0 +1,27 @@
+{
+  "id_teste": "30",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_gasto_educacao FROM educacao_educacao WHERE ano_referencia = 2024;",
+  "columns": [
+    "total_gasto_educacao"
+  ],
+  "rows": [
+    {
+      "total_gasto_educacao": 16151033.11
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "3dff741e89d2901f",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:12.702187+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

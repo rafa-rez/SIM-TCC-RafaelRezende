@@ -1,0 +1,15 @@
+{
+  "id_teste": "8",
+  "source": "golden_reference",
+  "sql": "SELECT c.num_contrato, cc.dsc_nome_credor, t.vlr_termo_aditivo FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia LEFT JOIN contrato_termoContrato t ON c.seq_contrato = t.seq_contrato AND t.ano_referencia = 2024 WHERE c.num_ano_contrato = 2023 AND t.dsc_tipo_alteracao ILIKE '%ACRÉSCIMO%'",
+  "columns": [],
+  "rows": [],
+  "row_count": 0,
+  "col_count": 0,
+  "schema_hash": null,
+  "error": null,
+  "exported_at": "2026-07-14T23:54:37.098319+00:00",
+  "input_usuario": "Quais contratos assinados em 2023 sofreram aditivos com acréscimo de valor em 2024? Liste o número do contrato, a empresa e o valor do aditivo.",
+  "dificuldade": "dificil",
+  "categoria": "Regra de Cadastros"
+}

@@ -1,0 +1,27 @@
+{
+  "id_teste": "53",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "SELECT MAX(max_salario) AS maior_salario_liquido FROM (SELECT r.seq_dim_pessoa, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS max_salario FROM remuneracao_municipio r WHERE r.ano_referencia = 2024 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' GROUP BY r.seq_dim_pessoa) sub;",
+  "columns": [
+    "maior_salario_liquido"
+  ],
+  "rows": [
+    {
+      "maior_salario_liquido": 82244.67
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "2388716f3b5486c7",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:47.256796+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

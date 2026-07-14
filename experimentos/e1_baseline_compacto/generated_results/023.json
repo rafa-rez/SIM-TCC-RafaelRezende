@@ -1,0 +1,27 @@
+{
+  "id_teste": "23",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "WITH despesa_saude AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa FROM saude_saude WHERE ano_referencia = 2024), receita_impostos_transfer AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita FROM receita_receita WHERE ano_referencia = 2024 AND (dsc_especie ILIKE '%Imposto%' OR dsc_origem ILIKE '%Transfer%')) SELECT (total_despesa / NULLIF(total_receita, 0)) * 100 AS ies_c FROM despesa_saude, receita_impostos_transfer;",
+  "columns": [
+    "ies_c"
+  ],
+  "rows": [
+    {
+      "ies_c": 11.9365042267
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "302ece926cb7e684",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:15.700239+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

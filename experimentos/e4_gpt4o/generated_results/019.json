@@ -1,0 +1,27 @@
+{
+  "id_teste": "19",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT SUM(CAST(vlr_empenho AS DECIMAL)) AS total_empenhado_educacao FROM educacao_educacao WHERE ano_referencia = 2023;",
+  "columns": [
+    "total_empenhado_educacao"
+  ],
+  "rows": [
+    {
+      "total_empenhado_educacao": 15468388.49
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "6b4e7d24e81365dd",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:39.987602+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "id_teste": "1",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "WITH receita AS (SELECT ano_referencia, SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS receita_corrente FROM receita_receita WHERE ano_referencia BETWEEN 2020 AND 2025 AND dsc_cateconomica ILIKE '%Corrente%' GROUP BY ano_referencia), despesa AS (SELECT ano_referencia, SUM(CAST(vlr_liquidado AS DECIMAL)) AS despesa_corrente FROM despesa_despesa WHERE ano_referencia BETWEEN 2020 AND 2025 AND dsc_naturezadespesa ILIKE '3%' GROUP BY ano_referencia) SELECT r.ano_referencia, r.receita_corrente, d.despesa_corrente, CAST(r.receita_corrente AS DECIMAL) / NULLIF(CAST(d.despesa_corrente AS DECIMAL), 0) AS isf_m FROM receita r LEFT JOIN despesa d ON r.ano_referencia = d.ano_referencia ORDER BY r.ano_referencia;",
+  "columns": [
+    "ano_referencia",
+    "receita_corrente",
+    "despesa_corrente",
+    "isf_m"
+  ],
+  "rows": [
+    {
+      "ano_referencia": 2020,
+      "receita_corrente": 108117837.53,
+      "despesa_corrente": 96573501.41,
+      "isf_m": 1.1195393762
+    },
+    {
+      "ano_referencia": 2021,
+      "receita_corrente": 121473294.2,
+      "despesa_corrente": 104088609.43,
+      "isf_m": 1.1670181287
+    },
+    {
+      "ano_referencia": 2022,
+      "receita_corrente": 148287366.88,
+      "despesa_corrente": 127843808.31,
+      "isf_m": 1.1599104316
+    },
+    {
+      "ano_referencia": 2023,
+      "receita_corrente": 172963092.8,
+      "despesa_corrente": 163765684.14,
+      "isf_m": 1.0561620019
+    },
+    {
+      "ano_referencia": 2024,
+      "receita_corrente": 189121287.82,
+      "despesa_corrente": 177312484.65,
+      "isf_m": 1.0665988252
+    },
+    {
+      "ano_referencia": 2025,
+      "receita_corrente": 112992183.25,
+      "despesa_corrente": 106431207.63,
+      "isf_m": 1.0616452239
+    }
+  ],
+  "row_count": 6,
+  "col_count": 4,
+  "schema_hash": "e90964d19895a35c",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:12.149663+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 6,
+    "gen_rows": 6
+  }
+}

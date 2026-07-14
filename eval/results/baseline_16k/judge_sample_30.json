@@ -1,0 +1,158 @@
+{
+  "experiment": "baseline_16k",
+  "ids": [
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "4",
+    "5",
+    "6",
+    "7",
+    "9",
+    "10",
+    "23",
+    "24",
+    "25",
+    "26",
+    "1",
+    "2",
+    "3",
+    "8",
+    "32",
+    "48",
+    "58",
+    "69",
+    "70",
+    "71"
+  ],
+  "count": 30,
+  "meta": {
+    "11": {
+      "dificuldade": "facil",
+      "categoria": "Consulta Simples"
+    },
+    "12": {
+      "dificuldade": "facil",
+      "categoria": "Consulta Simples"
+    },
+    "13": {
+      "dificuldade": "facil",
+      "categoria": "Consulta Simples"
+    },
+    "14": {
+      "dificuldade": "facil",
+      "categoria": "Consulta Simples"
+    },
+    "15": {
+      "dificuldade": "facil",
+      "categoria": "Consulta Simples"
+    },
+    "16": {
+      "dificuldade": "facil",
+      "categoria": "Consulta Simples"
+    },
+    "17": {
+      "dificuldade": "facil",
+      "categoria": "Consulta Simples"
+    },
+    "18": {
+      "dificuldade": "facil",
+      "categoria": "Consulta Simples"
+    },
+    "19": {
+      "dificuldade": "facil",
+      "categoria": "Consulta Simples"
+    },
+    "20": {
+      "dificuldade": "facil",
+      "categoria": "Consulta Simples"
+    },
+    "4": {
+      "dificuldade": "medio",
+      "categoria": "Regra de Cadastros"
+    },
+    "5": {
+      "dificuldade": "medio",
+      "categoria": "Calculo Fiscal"
+    },
+    "6": {
+      "dificuldade": "medio",
+      "categoria": "Regra de Orgaos"
+    },
+    "7": {
+      "dificuldade": "medio",
+      "categoria": "Regra Anti-Duplicata"
+    },
+    "9": {
+      "dificuldade": "medio",
+      "categoria": "Calculo Fiscal"
+    },
+    "10": {
+      "dificuldade": "medio",
+      "categoria": "Manipulacao de Datas"
+    },
+    "23": {
+      "dificuldade": "medio",
+      "categoria": "Calculo Fiscal"
+    },
+    "24": {
+      "dificuldade": "medio",
+      "categoria": "Calculo Fiscal"
+    },
+    "25": {
+      "dificuldade": "medio",
+      "categoria": "Calculo Fiscal"
+    },
+    "26": {
+      "dificuldade": "medio",
+      "categoria": "Calculo Fiscal"
+    },
+    "1": {
+      "dificuldade": "dificil",
+      "categoria": "Calculo Fiscal"
+    },
+    "2": {
+      "dificuldade": "dificil",
+      "categoria": "Cruzamento Investigativo"
+    },
+    "3": {
+      "dificuldade": "dificil",
+      "categoria": "Cruzamento Investigativo"
+    },
+    "8": {
+      "dificuldade": "dificil",
+      "categoria": "Regra de Cadastros"
+    },
+    "32": {
+      "dificuldade": "dificil",
+      "categoria": "Calculo Fiscal"
+    },
+    "48": {
+      "dificuldade": "dificil",
+      "categoria": "Licitacoes Contratos"
+    },
+    "58": {
+      "dificuldade": "dificil",
+      "categoria": "RH Folha"
+    },
+    "69": {
+      "dificuldade": "dificil",
+      "categoria": "Cruzamento Investigativo"
+    },
+    "70": {
+      "dificuldade": "dificil",
+      "categoria": "Cruzamento Investigativo"
+    },
+    "71": {
+      "dificuldade": "dificil",
+      "categoria": "Cruzamento Investigativo"
+    }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "id_teste": "7",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT lh.seq_licitacao, lh.nom_vencedor, SUM(CAST(lh.vlr_global AS DECIMAL)) AS valor_total FROM licitacao_homologLicitacao lh WHERE lh.ano_referencia = 2025 GROUP BY lh.seq_licitacao, lh.nom_vencedor ORDER BY valor_total DESC LIMIT 10;",
+  "columns": [
+    "seq_licitacao",
+    "nom_vencedor",
+    "valor_total"
+  ],
+  "rows": [
+    {
+      "seq_licitacao": 1464446,
+      "nom_vencedor": "CINARA DOS SANTOS MAGALHES LTDA",
+      "valor_total": 54800.0
+    },
+    {
+      "seq_licitacao": 1448185,
+      "nom_vencedor": "HOLISTICA COMERCIO DE PRODUTOS E SERVICOS HOSPITALARES LTDA",
+      "valor_total": 0.0
+    },
+    {
+      "seq_licitacao": 1448185,
+      "nom_vencedor": "MG FLEX LTDA.",
+      "valor_total": 0.0
+    },
+    {
+      "seq_licitacao": 1448185,
+      "nom_vencedor": "FIGUEROA GOMES COMERCIAL LTDA",
+      "valor_total": 0.0
+    },
+    {
+      "seq_licitacao": 1448185,
+      "nom_vencedor": "DISTRILAF DISTRIBUIDORA DE MEDICAMENTOS LTDA",
+      "valor_total": 0.0
+    },
+    {
+      "seq_licitacao": 1448185,
+      "nom_vencedor": "LINEHOSP MEDICAL COMERCIO DE PRODUTOS HOSPITALARES LTDA",
+      "valor_total": 0.0
+    },
+    {
+      "seq_licitacao": 1448185,
+      "nom_vencedor": "GOLDMED IMPORTACAO DE PRODUTOS HOSPITALARES LTDA.",
+      "valor_total": 0.0
+    },
+    {
+      "seq_licitacao": 1448185,
+      "nom_vencedor": "AUTO SUTURE DO BRASIL LTDA.",
+      "valor_total": 0.0
+    },
+    {
+      "seq_licitacao": 1448185,
+      "nom_vencedor": "KIENTRO BRASIL LTDA",
+      "valor_total": 0.0
+    },
+    {
+      "seq_licitacao": 1447852,
+      "nom_vencedor": "ACTCON SOLUCOES WEB LTDA.",
+      "valor_total": 0.0
+    }
+  ],
+  "row_count": 10,
+  "col_count": 3,
+  "schema_hash": "a1faa0c9cf4eee90",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:13.166827+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": false,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 10
+  }
+}

@@ -1,0 +1,808 @@
+{
+  "total_usd": 1.160262,
+  "total_tokens_in": 2774657,
+  "total_tokens_out": 31503,
+  "calls": 80,
+  "history": [
+    {
+      "ts": "2026-07-09 15:38:22",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34700,
+      "tokens_out": 654,
+      "cost_usd": 0.014926,
+      "meta": {
+        "id_teste": "1"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:38:40",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34708,
+      "tokens_out": 971,
+      "cost_usd": 0.015437,
+      "meta": {
+        "id_teste": "2"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:39:00",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34709,
+      "tokens_out": 853,
+      "cost_usd": 0.015248,
+      "meta": {
+        "id_teste": "3"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:39:11",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34690,
+      "tokens_out": 545,
+      "cost_usd": 0.014748,
+      "meta": {
+        "id_teste": "4"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:39:21",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34697,
+      "tokens_out": 561,
+      "cost_usd": 0.014776,
+      "meta": {
+        "id_teste": "5"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:39:28",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34701,
+      "tokens_out": 349,
+      "cost_usd": 0.014439,
+      "meta": {
+        "id_teste": "6"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:39:36",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34688,
+      "tokens_out": 403,
+      "cost_usd": 0.01452,
+      "meta": {
+        "id_teste": "7"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:39:47",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34707,
+      "tokens_out": 709,
+      "cost_usd": 0.015017,
+      "meta": {
+        "id_teste": "8"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:39:58",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34690,
+      "tokens_out": 547,
+      "cost_usd": 0.014751,
+      "meta": {
+        "id_teste": "9"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:40:07",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34693,
+      "tokens_out": 386,
+      "cost_usd": 0.014495,
+      "meta": {
+        "id_teste": "10"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:40:14",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34681,
+      "tokens_out": 319,
+      "cost_usd": 0.014383,
+      "meta": {
+        "id_teste": "11"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:40:20",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34681,
+      "tokens_out": 209,
+      "cost_usd": 0.014207,
+      "meta": {
+        "id_teste": "12"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:40:23",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34678,
+      "tokens_out": 175,
+      "cost_usd": 0.014151,
+      "meta": {
+        "id_teste": "13"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:40:28",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34679,
+      "tokens_out": 188,
+      "cost_usd": 0.014172,
+      "meta": {
+        "id_teste": "14"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:40:34",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34677,
+      "tokens_out": 274,
+      "cost_usd": 0.014309,
+      "meta": {
+        "id_teste": "15"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:40:41",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34682,
+      "tokens_out": 367,
+      "cost_usd": 0.01446,
+      "meta": {
+        "id_teste": "16"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:40:47",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34678,
+      "tokens_out": 200,
+      "cost_usd": 0.014191,
+      "meta": {
+        "id_teste": "17"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:40:55",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34681,
+      "tokens_out": 198,
+      "cost_usd": 0.014189,
+      "meta": {
+        "id_teste": "18"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:41:04",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34681,
+      "tokens_out": 282,
+      "cost_usd": 0.014324,
+      "meta": {
+        "id_teste": "19"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:41:08",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34680,
+      "tokens_out": 189,
+      "cost_usd": 0.014174,
+      "meta": {
+        "id_teste": "20"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:41:12",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34678,
+      "tokens_out": 152,
+      "cost_usd": 0.014114,
+      "meta": {
+        "id_teste": "21"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:41:23",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34680,
+      "tokens_out": 200,
+      "cost_usd": 0.014192,
+      "meta": {
+        "id_teste": "22"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:41:37",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34685,
+      "tokens_out": 509,
+      "cost_usd": 0.014688,
+      "meta": {
+        "id_teste": "23"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:41:48",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34681,
+      "tokens_out": 510,
+      "cost_usd": 0.014688,
+      "meta": {
+        "id_teste": "24"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:41:58",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34684,
+      "tokens_out": 531,
+      "cost_usd": 0.014723,
+      "meta": {
+        "id_teste": "25"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:42:09",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34684,
+      "tokens_out": 518,
+      "cost_usd": 0.014702,
+      "meta": {
+        "id_teste": "26"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:42:22",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34685,
+      "tokens_out": 641,
+      "cost_usd": 0.0149,
+      "meta": {
+        "id_teste": "27"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:42:32",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34679,
+      "tokens_out": 270,
+      "cost_usd": 0.014304,
+      "meta": {
+        "id_teste": "28"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:42:38",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34681,
+      "tokens_out": 289,
+      "cost_usd": 0.014335,
+      "meta": {
+        "id_teste": "29"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:42:48",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34680,
+      "tokens_out": 219,
+      "cost_usd": 0.014222,
+      "meta": {
+        "id_teste": "30"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:42:58",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34679,
+      "tokens_out": 215,
+      "cost_usd": 0.014216,
+      "meta": {
+        "id_teste": "31"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:43:14",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34685,
+      "tokens_out": 696,
+      "cost_usd": 0.014988,
+      "meta": {
+        "id_teste": "32"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:43:36",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34684,
+      "tokens_out": 594,
+      "cost_usd": 0.014824,
+      "meta": {
+        "id_teste": "33"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:43:42",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34680,
+      "tokens_out": 260,
+      "cost_usd": 0.014288,
+      "meta": {
+        "id_teste": "34"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:43:49",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34681,
+      "tokens_out": 288,
+      "cost_usd": 0.014333,
+      "meta": {
+        "id_teste": "35"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:43:54",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34677,
+      "tokens_out": 209,
+      "cost_usd": 0.014205,
+      "meta": {
+        "id_teste": "36"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:44:01",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34692,
+      "tokens_out": 314,
+      "cost_usd": 0.014379,
+      "meta": {
+        "id_teste": "37"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:44:13",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34677,
+      "tokens_out": 296,
+      "cost_usd": 0.014344,
+      "meta": {
+        "id_teste": "38"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:44:23",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34681,
+      "tokens_out": 253,
+      "cost_usd": 0.014277,
+      "meta": {
+        "id_teste": "39"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:44:35",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34681,
+      "tokens_out": 365,
+      "cost_usd": 0.014456,
+      "meta": {
+        "id_teste": "40"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:44:43",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34683,
+      "tokens_out": 201,
+      "cost_usd": 0.014195,
+      "meta": {
+        "id_teste": "41"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:44:55",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34679,
+      "tokens_out": 349,
+      "cost_usd": 0.01443,
+      "meta": {
+        "id_teste": "42"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:45:06",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34681,
+      "tokens_out": 358,
+      "cost_usd": 0.014445,
+      "meta": {
+        "id_teste": "43"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:45:14",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34679,
+      "tokens_out": 156,
+      "cost_usd": 0.014121,
+      "meta": {
+        "id_teste": "44"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:45:26",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34683,
+      "tokens_out": 272,
+      "cost_usd": 0.014308,
+      "meta": {
+        "id_teste": "45"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:45:38",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34676,
+      "tokens_out": 210,
+      "cost_usd": 0.014206,
+      "meta": {
+        "id_teste": "46"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:45:46",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34681,
+      "tokens_out": 224,
+      "cost_usd": 0.014231,
+      "meta": {
+        "id_teste": "47"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:46:03",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34683,
+      "tokens_out": 620,
+      "cost_usd": 0.014865,
+      "meta": {
+        "id_teste": "48"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:46:08",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34681,
+      "tokens_out": 193,
+      "cost_usd": 0.014181,
+      "meta": {
+        "id_teste": "49"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:46:19",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34680,
+      "tokens_out": 214,
+      "cost_usd": 0.014214,
+      "meta": {
+        "id_teste": "50"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:46:30",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34681,
+      "tokens_out": 320,
+      "cost_usd": 0.014384,
+      "meta": {
+        "id_teste": "51"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:46:41",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34678,
+      "tokens_out": 419,
+      "cost_usd": 0.014542,
+      "meta": {
+        "id_teste": "52"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:46:51",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34678,
+      "tokens_out": 349,
+      "cost_usd": 0.01443,
+      "meta": {
+        "id_teste": "53"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:47:01",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34676,
+      "tokens_out": 361,
+      "cost_usd": 0.014448,
+      "meta": {
+        "id_teste": "54"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:47:11",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34679,
+      "tokens_out": 340,
+      "cost_usd": 0.014416,
+      "meta": {
+        "id_teste": "55"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:47:23",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34682,
+      "tokens_out": 320,
+      "cost_usd": 0.014385,
+      "meta": {
+        "id_teste": "56"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:47:33",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34678,
+      "tokens_out": 342,
+      "cost_usd": 0.014418,
+      "meta": {
+        "id_teste": "57"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:47:48",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34684,
+      "tokens_out": 703,
+      "cost_usd": 0.014998,
+      "meta": {
+        "id_teste": "58"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:47:54",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34678,
+      "tokens_out": 149,
+      "cost_usd": 0.01411,
+      "meta": {
+        "id_teste": "59"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:48:09",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34678,
+      "tokens_out": 453,
+      "cost_usd": 0.014596,
+      "meta": {
+        "id_teste": "60"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:48:15",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34679,
+      "tokens_out": 483,
+      "cost_usd": 0.014644,
+      "meta": {
+        "id_teste": "61"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:48:22",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34677,
+      "tokens_out": 242,
+      "cost_usd": 0.014258,
+      "meta": {
+        "id_teste": "62"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:48:35",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34678,
+      "tokens_out": 525,
+      "cost_usd": 0.014711,
+      "meta": {
+        "id_teste": "63"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:48:44",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34678,
+      "tokens_out": 292,
+      "cost_usd": 0.014338,
+      "meta": {
+        "id_teste": "64"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:48:58",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34677,
+      "tokens_out": 453,
+      "cost_usd": 0.014596,
+      "meta": {
+        "id_teste": "65"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:49:07",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34680,
+      "tokens_out": 543,
+      "cost_usd": 0.014741,
+      "meta": {
+        "id_teste": "66"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:49:15",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34684,
+      "tokens_out": 233,
+      "cost_usd": 0.014246,
+      "meta": {
+        "id_teste": "67"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:49:28",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34679,
+      "tokens_out": 472,
+      "cost_usd": 0.014627,
+      "meta": {
+        "id_teste": "68"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:49:41",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34683,
+      "tokens_out": 673,
+      "cost_usd": 0.01495,
+      "meta": {
+        "id_teste": "69"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:49:52",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34683,
+      "tokens_out": 531,
+      "cost_usd": 0.014723,
+      "meta": {
+        "id_teste": "70"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:50:07",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34688,
+      "tokens_out": 943,
+      "cost_usd": 0.015384,
+      "meta": {
+        "id_teste": "71"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:50:30",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34687,
+      "tokens_out": 451,
+      "cost_usd": 0.014596,
+      "meta": {
+        "id_teste": "72"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:50:36",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34680,
+      "tokens_out": 282,
+      "cost_usd": 0.014323,
+      "meta": {
+        "id_teste": "73"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:50:54",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34684,
+      "tokens_out": 612,
+      "cost_usd": 0.014853,
+      "meta": {
+        "id_teste": "74"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:51:02",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34685,
+      "tokens_out": 371,
+      "cost_usd": 0.014468,
+      "meta": {
+        "id_teste": "75"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:51:10",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34686,
+      "tokens_out": 498,
+      "cost_usd": 0.014671,
+      "meta": {
+        "id_teste": "76"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:51:18",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34680,
+      "tokens_out": 242,
+      "cost_usd": 0.014259,
+      "meta": {
+        "id_teste": "77"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:51:26",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34687,
+      "tokens_out": 582,
+      "cost_usd": 0.014806,
+      "meta": {
+        "id_teste": "78"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:51:37",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34686,
+      "tokens_out": 513,
+      "cost_usd": 0.014695,
+      "meta": {
+        "id_teste": "79"
+      }
+    },
+    {
+      "ts": "2026-07-09 15:51:44",
+      "model": "gpt-4.1-mini",
+      "tokens_in": 34683,
+      "tokens_out": 301,
+      "cost_usd": 0.014355,
+      "meta": {
+        "id_teste": "80"
+      }
+    }
+  ]
+}

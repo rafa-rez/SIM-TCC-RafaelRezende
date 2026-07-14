@@ -1,0 +1,21 @@
+{
+  "id_teste": "50",
+  "source": "golden_reference",
+  "sql": "SELECT COUNT(*) AS qtd FROM licitacao_licitacao WHERE ano_referencia = 2025 AND dsc_modalidade ILIKE '%PREG%';",
+  "columns": [
+    "qtd"
+  ],
+  "rows": [
+    {
+      "qtd": 26
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "1734aaf65549a563",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:43.695065+00:00",
+  "input_usuario": "Quantas licitações em modalidade pregão em 2025?",
+  "dificuldade": "facil",
+  "categoria": "Licitacoes Contratos"
+}

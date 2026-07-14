@@ -1,0 +1,27 @@
+{
+  "id_teste": "9",
+  "input_usuario": "Qual a porcentagem da Receita Corrente que foi gasta exclusivamente pela Câmara Municipal no ano de 2025?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1,
+    "ref_cols": 1,
+    "gen_cols": 1,
+    "divergencia_ex": "alias_colunas",
+    "alias_apenas": true,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "WITH receita_corrente AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita_corrente FROM receita_receita WHERE dsc_cateconomica ILIKE '%Corrente%' AND ano_referencia = 2025), despesas_camara AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesas_camara FROM despesa_despesa WHERE cod_orgao = 1 AND ano_referencia = 2025) SELECT (despesas_camara.total_despesas_camara / NULLIF(receita_corrente.total_receita_corrente, 0)) * 100 AS porcentagem_gasto_camara FROM receita_corrente, despesas_camara",
+  "query_gerada": "WITH receita_corrente AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita FROM receita_receita WHERE ano_referencia = 2025 AND COALESCE(dsc_cateconomica, '') ILIKE '%Corrente%'), despesa_camara AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa FROM despesa_despesa WHERE ano_referencia = 2025 AND CAST(cod_orgao AS INTEGER) = 1) SELECT (CAST(d.total_despesa AS DECIMAL) / NULLIF(r.total_receita, 0)) * 100 AS porcentagem FROM receita_corrente r, despesa_camara d;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

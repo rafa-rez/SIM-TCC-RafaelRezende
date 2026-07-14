@@ -1,0 +1,54 @@
+# Configuração dos experimentos Text-to-SQL — TCC CIC Caeté
+
+duckdb_url: "http://localhost:8000/query"
+
+# Prompts (caminhos relativos à raiz do repositório)
+prompts:
+  poscagada_16k: "eval/prompts/prompt_sql_compacto.txt"
+  precagada_30k: "eval/prompts/prompt_sql_estendido.txt"
+
+# Orçamento OpenAI (USD) — para ANTES de estourar
+budget_usd: 14.82
+budget_safety_margin_usd: 1.50   # para em ~13.32 USD
+budget_warn_at_usd: 10.00
+
+# Preços por 1M tokens (atualizar se OpenAI mudar tabela)
+model_pricing:
+  gpt-4.1-mini:
+    input_per_1m: 0.40
+    output_per_1m: 1.60
+  gpt-4o-mini:
+    input_per_1m: 0.15
+    output_per_1m: 0.60
+  gpt-4o:
+    input_per_1m: 2.50
+    output_per_1m: 10.00
+
+# Modelos para comparação (baseline primeiro)
+models:
+  - id: gpt-4.1-mini
+    label: "GPT-4.1 Mini (baseline)"
+  - id: gpt-4o-mini
+    label: "GPT-4o Mini"
+  - id: gpt-4o
+    label: "GPT-4o"
+
+# Variantes de prompt para ablation
+prompt_variants:
+  - id: poscagada_16k
+    label: "Prompt 16k (Póscagada)"
+  - id: precagada_30k
+    label: "Prompt 30k (Précagada)"
+
+default_dataset: "dados/golden/golden_dataset_v1.0.csv"
+
+openai:
+  temperature: 0.0
+  response_format: json_object
+  timeout_seconds: 120
+
+execution:
+  checkpoint_every: 1
+  duckdb_timeout_seconds: 60
+  max_retries_openai: 2
+  retry_delay_seconds: 3

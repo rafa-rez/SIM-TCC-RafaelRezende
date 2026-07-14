@@ -1,0 +1,27 @@
+{
+  "id_teste": "15",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS receita_corrente FROM receita_receita WHERE ano_referencia = 2025 AND COALESCE(dsc_cateconomica, '') ILIKE '%corrente%';",
+  "columns": [
+    "receita_corrente"
+  ],
+  "rows": [
+    {
+      "receita_corrente": 112992183.25
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "2c087e4d26d284ae",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:10.459187+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

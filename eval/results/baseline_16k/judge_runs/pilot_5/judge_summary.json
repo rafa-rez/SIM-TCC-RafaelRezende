@@ -1,0 +1,28 @@
+{
+  "experiment": "baseline_16k",
+  "run_name": "pilot_5",
+  "total": 5,
+  "jar_pct": 100.0,
+  "jar_count": 5,
+  "ex_pct": 0.0,
+  "ex_count": 0,
+  "avg_judge_scores": {
+    "adequacao_semantica": 4.8,
+    "fidelidade_dados": 4.6,
+    "completude": 4.2,
+    "clareza_cidadao": 4.6
+  },
+  "by_dificuldade": {
+    "dificil": {
+      "n": 3,
+      "jar_pct": 100.0,
+      "ex_pct": 0.0
+    },
+    "medio": {
+      "n": 2,
+      "jar_pct": 100.0,
+      "ex_pct": 0.0
+    }
+  },
+  "total_cost_usd": 0.0641
+}

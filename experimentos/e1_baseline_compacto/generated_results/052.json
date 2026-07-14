@@ -1,0 +1,29 @@
+{
+  "id_teste": "52",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT lh.nom_vencedor, COUNT(DISTINCT lh.seq_licitacao) AS total_licitacoes FROM licitacao_homologLicitacao lh JOIN licitacao_licitacao l ON lh.seq_licitacao = l.seq_licitacao AND lh.ano_referencia = l.ano_referencia WHERE lh.ano_referencia = 2025 AND COALESCE(lh.nom_vencedor, '') <> '' GROUP BY lh.nom_vencedor ORDER BY total_licitacoes DESC LIMIT 1;",
+  "columns": [
+    "nom_vencedor",
+    "total_licitacoes"
+  ],
+  "rows": [
+    {
+      "nom_vencedor": "AUTO SUTURE DO BRASIL LTDA.",
+      "total_licitacoes": 1
+    }
+  ],
+  "row_count": 1,
+  "col_count": 2,
+  "schema_hash": "3eb0c165c72bf245",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:19.708616+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

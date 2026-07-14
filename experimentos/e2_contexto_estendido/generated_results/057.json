@@ -1,0 +1,57 @@
+{
+  "id_teste": "57",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "SELECT CAST(SUBSTR(CAST(seq_dat_pagamento AS VARCHAR), 5, 2) AS INTEGER) AS mes, SUM(CAST(vlr_rmn_liquida AS DECIMAL)) AS total_folha FROM remuneracao_municipio WHERE ano_referencia = 2025 GROUP BY mes ORDER BY mes;",
+  "columns": [
+    "mes",
+    "total_folha"
+  ],
+  "rows": [
+    {
+      "mes": 1,
+      "total_folha": 5673730.37
+    },
+    {
+      "mes": 2,
+      "total_folha": 4008296.09
+    },
+    {
+      "mes": 3,
+      "total_folha": 4537612.75
+    },
+    {
+      "mes": 4,
+      "total_folha": 5898027.98
+    },
+    {
+      "mes": 5,
+      "total_folha": 4900325.37
+    },
+    {
+      "mes": 6,
+      "total_folha": 4977447.39
+    },
+    {
+      "mes": 7,
+      "total_folha": 5127535.42
+    },
+    {
+      "mes": 8,
+      "total_folha": 4912922.56
+    }
+  ],
+  "row_count": 8,
+  "col_count": 2,
+  "schema_hash": "af34a74171517de4",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:48.245456+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 8,
+    "gen_rows": 8
+  }
+}

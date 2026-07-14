@@ -1,0 +1,27 @@
+{
+  "id_teste": "21",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT COUNT(*) AS total_licitacoes_abertas FROM licitacao_licitacao WHERE ano_referencia = 2024;",
+  "columns": [
+    "total_licitacoes_abertas"
+  ],
+  "rows": [
+    {
+      "total_licitacoes_abertas": 64
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "642a6a93c896c1bc",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:15.478684+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

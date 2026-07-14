@@ -1,0 +1,41 @@
+{
+  "id_teste": "71",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "WITH pagamentos AS (\n  SELECT\n    CAST(num_doc_credor AS VARCHAR) AS doc_credor,\n    SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago\n  FROM despesa_pagamento\n  WHERE ano_referencia = 2024\n    AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%'\n    AND COALESCE(num_doc_credor, '') NOT IN ('-1', '0', '')\n  GROUP BY doc_credor\n),\ntransferencias AS (\n  SELECT\n    CAST(\"CÓDIGO FAVORECIDO\" AS VARCHAR) AS doc_favorecido,\n    SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_transferido\n  FROM cgu_transferencias\n  WHERE ano_referencia = 2024\n  GROUP BY doc_favorecido\n)\nSELECT\n  p.doc_credor,\n  p.total_pago,\n  t.total_transferido\nFROM pagamentos p\nJOIN transferencias t\n  ON p.doc_credor = t.doc_favorecido\nORDER BY p.total_pago DESC\nLIMIT 3;",
+  "columns": [
+    "doc_credor",
+    "total_pago",
+    "total_transferido"
+  ],
+  "rows": [
+    {
+      "doc_credor": "18979328000167",
+      "total_pago": 22016281.2,
+      "total_transferido": 437944.08
+    },
+    {
+      "doc_credor": "18302299000102",
+      "total_pago": 1166444.21,
+      "total_transferido": 66224240.38
+    },
+    {
+      "doc_credor": "21000203000158",
+      "total_pago": 229301.93,
+      "total_transferido": 6590.0
+    }
+  ],
+  "row_count": 3,
+  "col_count": 3,
+  "schema_hash": "077c404000928590",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:23.600881+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 3,
+    "gen_rows": 3
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id_teste": "2",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT TRIM(UPPER(r.dsc_nome_cargo)) AS nome, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS salario_maximo, SUM(CAST(n.\"VALOR PARCELA\" AS DECIMAL)) AS total_beneficio FROM remuneracao_municipio r JOIN cgu_novo_bolsa_familia n ON TRIM(UPPER(r.nom_pessoa)) = TRIM(UPPER(n.\"NOME FAVORECIDO\") ) WHERE r.ano_referencia = 2024 AND n.ano_referencia = 2024 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' GROUP BY nome;",
+  "columns": [],
+  "rows": [],
+  "row_count": 0,
+  "col_count": 0,
+  "schema_hash": null,
+  "error": "Binder Error: Values list \"r\" does not have a column named \"nom_pessoa\"\n\nLINE 1: ...ao_municipio r JOIN cgu_novo_bolsa_familia n ON TRIM(UPPER(r.nom_pessoa)) = TRIM(UPPER(n.\"NOME FAVORECIDO\") ) WHERE...\n                                                                      ^",
+  "exported_at": "2026-07-14T23:56:08.435774+00:00",
+  "metrics_checkpoint": {
+    "vsr": false,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 65,
+    "gen_rows": 0
+  }
+}

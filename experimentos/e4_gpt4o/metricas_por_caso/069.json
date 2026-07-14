@@ -1,0 +1,27 @@
+{
+  "id_teste": "69",
+  "input_usuario": "Empresas que receberam pagamentos da prefeitura e despesas CGU em 2024.",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": false,
+    "ex_cols": true,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 10,
+    "gen_rows": 25,
+    "ref_cols": 3,
+    "gen_cols": 3,
+    "divergencia_ex": "cardinalidade_linhas",
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "WITH pag AS (SELECT num_doc_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pag FROM despesa_pagamento WHERE ano_referencia = 2024 AND num_doc_credor NOT IN ('-1', '0') GROUP BY num_doc_credor), cgu AS (SELECT \"Código Favorecido\" AS doc, SUM(CAST(\"Valor Recebido\" AS DECIMAL)) AS total_cgu FROM cgu_despesas_favorecidos WHERE ano_referencia = 2024 GROUP BY doc) SELECT p.num_doc_credor, p.total_pag, c.total_cgu FROM pag p JOIN cgu c ON CAST(p.num_doc_credor AS VARCHAR) = CAST(c.doc AS VARCHAR) ORDER BY (p.total_pag + c.total_cgu) DESC LIMIT 10;",
+  "query_gerada": "WITH prefeitura_pagamentos AS (SELECT num_doc_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pagamentos FROM despesa_pagamento WHERE ano_referencia = 2024 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND num_doc_credor NOT IN ('-1', '0') GROUP BY num_doc_credor), cgu_despesas AS (SELECT \"Código Favorecido\", SUM(CAST(\"Valor Recebido\" AS DECIMAL)) AS total_despesas FROM cgu_despesas_favorecidos WHERE ano_referencia = 2024 GROUP BY \"Código Favorecido\") SELECT p.num_doc_credor, p.total_pagamentos, c.total_despesas FROM prefeitura_pagamentos p JOIN cgu_despesas c ON CAST(p.num_doc_credor AS VARCHAR) = CAST(c.\"Código Favorecido\" AS VARCHAR);",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

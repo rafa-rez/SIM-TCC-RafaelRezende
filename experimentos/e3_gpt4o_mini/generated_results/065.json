@@ -1,0 +1,27 @@
+{
+  "id_teste": "65",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT SUM(CAST(vlr_gasto AS DECIMAL)) AS total_gasto_frota FROM frota_gastoFrota WHERE ano_referencia = 2025 AND COALESCE(dsc_ori_gasto, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(dsc_tipo_gasto, '') NOT ILIKE '%NÃO INFORMADO%';",
+  "columns": [
+    "total_gasto_frota"
+  ],
+  "rows": [
+    {
+      "total_gasto_frota": 1059246.44
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "70aeb0a681434b55",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:18.720812+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

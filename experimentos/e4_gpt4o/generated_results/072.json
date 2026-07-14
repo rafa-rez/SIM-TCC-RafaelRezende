@@ -1,0 +1,7009 @@
+{
+  "id_teste": "72",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT \"NOME FAVORECIDO\", SUM(CAST(\"VALOR PARCELA\" AS DECIMAL)) AS total_parcela FROM cgu_novo_bolsa_familia WHERE ano_referencia = 2025 GROUP BY \"NOME FAVORECIDO\" HAVING SUM(CAST(\"VALOR PARCELA\" AS DECIMAL)) > 6000;",
+  "columns": [
+    "NOME FAVORECIDO",
+    "total_parcela"
+  ],
+  "rows": [
+    {
+      "NOME FAVORECIDO": "ADRIANA ALVES FERREIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIANA APARECIDA CUSTODIO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIANA CRISTINA DOS REIS SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIANA DA CONCEICAO MOREIRA SIQUEIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIANA DE JESUS SOUZA SANTOS",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIANA FERREIRA DA SILVA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ALIDA FERREIRA DOS ANJOS SANTOS",
+      "total_parcela": 10519.0
+    },
+    {
+      "NOME FAVORECIDO": "ALIETE CUNHA",
+      "total_parcela": 12120.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA FLAVIA DA SILVA CASSIMIRO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA MARIA DA SILVA PAULA",
+      "total_parcela": 10650.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA PAULA DIAS MOREIRA",
+      "total_parcela": 11300.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA PAULA PERDIGAO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA PEREIRA GERVAZIO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ANASTACIA GALDINO PINTO",
+      "total_parcela": 11420.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDREA LUCIANA DE ANDRADE VIEIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDRECY ADRIENE DA SILVA SOUSA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDREIA CRISTINA DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANTONIA DOS ANJOS DO SACRAMENTO FERREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ARIANA DE OLIVEIRA",
+      "total_parcela": 12120.0
+    },
+    {
+      "NOME FAVORECIDO": "BEATRIZ MARIA ALVES DIAS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "BRENDA DIAS GOMES COSTA",
+      "total_parcela": 10500.0
+    },
+    {
+      "NOME FAVORECIDO": "BRUNA VIEIRA DOS SANTOS SOUZA",
+      "total_parcela": 12828.0
+    },
+    {
+      "NOME FAVORECIDO": "CAMILA MOREIRA SIQUEIRA",
+      "total_parcela": 9250.0
+    },
+    {
+      "NOME FAVORECIDO": "CHRISTIENNE SILVA MOREIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "CINTIA ELISA TEIXEIRA LIMA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDIA PIEDADE DA SILVA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "CLEBER DE ALENCAR ANDRE",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CREUZA APARECIDA DE SENA",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "CUSTODIO DA SILVA FILHO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "DALTON SOUZA TEODORO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELA CRISTINA NICOLAU",
+      "total_parcela": 11520.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELA DE FREITAS MONCAO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELLE IOLANDA ALVES DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "DOUGLAS KAIQUE NUNES DIAS",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "DULAMAR QUEIROZ GONCALVES",
+      "total_parcela": 7150.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIZABETH FELIX DE OLIVEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ELUCIENY PEREIRA SANTOS",
+      "total_parcela": 8550.0
+    },
+    {
+      "NOME FAVORECIDO": "EVA JULIANA DOS SANTOS",
+      "total_parcela": 8500.0
+    },
+    {
+      "NOME FAVORECIDO": "EVA PEREIRA DE SOUSA",
+      "total_parcela": 8700.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIANA APARECIDA DIAS",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "FRANCIELE SILVA VALENTINO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "FREDERICO SANCHES SILVA CALDEIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "GEROLIZA SILVA DAMASCENO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "GILDETE FERNANDES DE ARAUJO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "GISELE RODRIGUES SEME",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "GLEICE KELLY SANTOS DA SILVA",
+      "total_parcela": 9350.0
+    },
+    {
+      "NOME FAVORECIDO": "GLEYCIMARA BONSUCESSO ONOFRE DOS SANTOS",
+      "total_parcela": 13320.0
+    },
+    {
+      "NOME FAVORECIDO": "GRAZIELLE CALADO ALVES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "HERICA JULIA MOREIRA PEREIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "HUGO AUGUSTO OLIVEIRA SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ISABELY CAROLINE VIEIRA MARTINS",
+      "total_parcela": 9450.0
+    },
+    {
+      "NOME FAVORECIDO": "JAMARY MOURA JORGE OLIVEIRA",
+      "total_parcela": 6825.0
+    },
+    {
+      "NOME FAVORECIDO": "JANAINA COSTA DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "JANAINA MARIANA DE ARAUJO",
+      "total_parcela": 12120.0
+    },
+    {
+      "NOME FAVORECIDO": "JESICA MONICA MOREIRA",
+      "total_parcela": 8700.0
+    },
+    {
+      "NOME FAVORECIDO": "JHENIFFER KEZIA MARA GOMES MARTINS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JOEL FERNANDES DE MOURA",
+      "total_parcela": 7000.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSIANE CIBELE DOS SANTOS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA APARECIDA SOARES",
+      "total_parcela": 12120.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA FERREIRA DA MATA",
+      "total_parcela": 9100.0
+    },
+    {
+      "NOME FAVORECIDO": "KELLY PEREIRA DE SOUZA",
+      "total_parcela": 8900.0
+    },
+    {
+      "NOME FAVORECIDO": "KLEIDE SOARES SILVIANO",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "LARISSA RANIELLE MIRANDA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LORENA KAREN DINIZ",
+      "total_parcela": 6300.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA DOS SANTOS",
+      "total_parcela": 6300.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA PATRICIA RODRIGUES GUERRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARCIA HELENA MENDES",
+      "total_parcela": 8900.0
+    },
+    {
+      "NOME FAVORECIDO": "MARCOS AURELIO PEREIRA DE JESUS",
+      "total_parcela": 11620.0
+    },
+    {
+      "NOME FAVORECIDO": "MARGARIDA IZABEL SALEME DA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA ANTONIA DA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DA CONSOLACAO VITA MARIANO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DA PIEDADE RODRIGUES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DO CARMO DIAS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA HELENA CALDEIRA SILVA",
+      "total_parcela": 11024.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA JOSE PIRES CALISTO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA LUIZA CANDIDO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA MEIRE DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARILIA APARECIDA DE SOUZA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARILMA EVANGELISTA CUSTODIO",
+      "total_parcela": 12220.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIZA ANA PAULA DO CARMO ARAUJO",
+      "total_parcela": 9800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARLI CORNELIA DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARLUCIA DO CARMO BARBOSA COELHO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MIRIAM MARTINS DA SILVA",
+      "total_parcela": 12720.0
+    },
+    {
+      "NOME FAVORECIDO": "MIRLENE DE LOURDES SANTOS REIS",
+      "total_parcela": 9050.0
+    },
+    {
+      "NOME FAVORECIDO": "NAIAMA REBECA ALMEIDA DE SOUZA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "NAIARA MARIA DA SILVA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "PATRICIA ANDRADE",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "PAULA MOREIRA DE ALVARENGA",
+      "total_parcela": 8850.0
+    },
+    {
+      "NOME FAVORECIDO": "RAFAELA APARECIDA DA SILVA DE JESUS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "RAFAELA KATIA CORREA",
+      "total_parcela": 8450.0
+    },
+    {
+      "NOME FAVORECIDO": "RAFAELA MARQUES FERREIRA",
+      "total_parcela": 13224.0
+    },
+    {
+      "NOME FAVORECIDO": "RANALY BARBARA NASCIMENTO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "RAYANE GABRIELLE SILVA DE ALCANTARA",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "RAYANE MACHADO",
+      "total_parcela": 9900.0
+    },
+    {
+      "NOME FAVORECIDO": "RAYANE MARCELA DE OLIVEIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "REGINALDO JAIME DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "REINALDO TEIXEIRA LEAO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "RENATA MAIMARTE PINTO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "RITA DE CASSIA GOMES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSILENE APARECIDA DE OLIVEIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSILENE NEIVA DE SOUZA RODRIGUES",
+      "total_parcela": 9720.0
+    },
+    {
+      "NOME FAVORECIDO": "SABRINA APARECIDA REIS DE OLIVEIRA",
+      "total_parcela": 10600.0
+    },
+    {
+      "NOME FAVORECIDO": "SCARLLETH DA CONCEICAO RODRIGUES DE SOUZA CRUZ",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "SIMONE DE LOURDES SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "STEPHANIE PAULA TEIXEIRA",
+      "total_parcela": 6900.0
+    },
+    {
+      "NOME FAVORECIDO": "TAMIRES TEIXEIRA SIMOES",
+      "total_parcela": 8000.0
+    },
+    {
+      "NOME FAVORECIDO": "THIAGO AUGUSTO DO COUTO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VERA LUCIA DE LIMA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "WANDERSON MARIANO FARIA",
+      "total_parcela": 10100.0
+    },
+    {
+      "NOME FAVORECIDO": "WILSON LUCAS DE SOUZA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA ROCHA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "EVA MARTA AGUSTINHO HONORATO",
+      "total_parcela": 7150.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA JOSE OLIVEIRA NASCIMENTO",
+      "total_parcela": 8100.0
+    },
+    {
+      "NOME FAVORECIDO": "MICHELE JESSICA DO AMARAL",
+      "total_parcela": 7070.0
+    },
+    {
+      "NOME FAVORECIDO": "ADAO MATEUS DE ALMEIDA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ALENICE DE SOUSA SANTOS",
+      "total_parcela": 9740.0
+    },
+    {
+      "NOME FAVORECIDO": "ALEXIA CONCEICAO FREITAS",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "AMANDA MARIA DA SILVA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDREIA CRISTINA CAMILO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDREZA PIEDADE DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANGELA MARIA DE JESUS FERREIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "BLIENY DE SOUZA SILVA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "BRENDA HELLEN CANDIDO",
+      "total_parcela": 14424.0
+    },
+    {
+      "NOME FAVORECIDO": "CAMILA MOURA DE OLIVEIRA DIAS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CARLA CRISTINA FERNANDES",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "CELI MARTINS DE SOUSA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CIRILO XISTO FERREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDIA APARECIDA GONCALVES",
+      "total_parcela": 7350.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDIANE LUCIA DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CLEUZA DE PAULA BATISTA DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CLISSIA DA SILVA ALMEIDA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELE BATISTA DOS SANTOS",
+      "total_parcela": 10900.0
+    },
+    {
+      "NOME FAVORECIDO": "DAYANE ROSE DOS SANTOS",
+      "total_parcela": 12320.0
+    },
+    {
+      "NOME FAVORECIDO": "DEBORA DALIANA MOREIRA",
+      "total_parcela": 9850.0
+    },
+    {
+      "NOME FAVORECIDO": "DEBORA DUARTE PEREIRA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "DELIANE OLIVEIRA SILVA FARIAS",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "DENISE DE OLIVEIRA BARBOSA BATISTA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "DRIELE DEVENIR FERREIRA LOPES",
+      "total_parcela": 6300.0
+    },
+    {
+      "NOME FAVORECIDO": "EDMAR MARQUES DE ARAUJO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ELENIMAR DA SILVA OLIVEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ELISANGELA ANTONIA NUNES",
+      "total_parcela": 14424.0
+    },
+    {
+      "NOME FAVORECIDO": "ELISANGELA DA CONCEICAO LIMA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ELLEN MARIA COELHO FERREIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "EMANUELLY REGINA BARBOSA DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIANA APARECIDA DE OLIVEIRA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "FERNANDA FLAVIANA DE ARAUJO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "FERNANDA KELLY APARECIDA FONSECA",
+      "total_parcela": 10020.0
+    },
+    {
+      "NOME FAVORECIDO": "FERNANDA MARIA DAMAZIA DE SOUZA",
+      "total_parcela": 11420.0
+    },
+    {
+      "NOME FAVORECIDO": "FRANCIELI PENNA DOS REIS SANTOS",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "FREDERICO HENRIQUE PEREIRA DE SOUZA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "GABRIELA NERIA DE CARVALHO SILVA SANTOS",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "GEANE DE SOUSA MACHADO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "GENNIFER CRISTINA DOS SANTOS",
+      "total_parcela": 8300.0
+    },
+    {
+      "NOME FAVORECIDO": "GISELE GABRIELA DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GISLAINE SILVIA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "GLAUSSIMONE ANTUNES DE SOUZA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GLEIDES DOS SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "GLEYCIANE ALVES CALDEIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "HELLEN MARIANO GOMES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "INGRYD MARCELA ROSA FONTANA",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "ISABELLA MARTINS PRATES",
+      "total_parcela": 6510.0
+    },
+    {
+      "NOME FAVORECIDO": "IVAN MOREIRA CARDOSO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JOELSON FELIX DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIA ISER BATISTA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "KADSY BRENA SANTOS",
+      "total_parcela": 8000.0
+    },
+    {
+      "NOME FAVORECIDO": "KAYLANE ALINE DE FREITAS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "LARISSA OLIVEIRA FIGUEIREDO",
+      "total_parcela": 9700.0
+    },
+    {
+      "NOME FAVORECIDO": "LEILIANE APARECIDA DA CRUZ",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "LIDIANE FERREIRA LAGES",
+      "total_parcela": 10500.0
+    },
+    {
+      "NOME FAVORECIDO": "LIONE PEDRO DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LORRAINE DAIENE SIMOES DA SILVA",
+      "total_parcela": 8800.0
+    },
+    {
+      "NOME FAVORECIDO": "LUANA ALVES DE SANT ANA DIAS",
+      "total_parcela": 7125.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANE DE ALMEIDA MAGALHAES",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCINEIA APARECIDA DOS SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIVANE MARTINHA DE SOUZA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LUDIMILA APARECIDA SIMOES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA CAMILA MUNIZ RODRIGUES",
+      "total_parcela": 8900.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DAS DORES MARTINS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA FRANCISCA OLIVEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA HELENA SILVA RIBEIRO",
+      "total_parcela": 11050.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA NICEA FERNANDES DA COSTA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA RAIMUNDA MARQUES DA PAZ DE MORAES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MILENE DA SILVA DE MIRANDA",
+      "total_parcela": 10950.0
+    },
+    {
+      "NOME FAVORECIDO": "MIRIAN DE CASSIA ARAUJO",
+      "total_parcela": 10400.0
+    },
+    {
+      "NOME FAVORECIDO": "MIRIANE APARECIDA DE SOUZA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "MONICA DOS SANTOS",
+      "total_parcela": 14920.0
+    },
+    {
+      "NOME FAVORECIDO": "NATALIA NASSIS VALAMIEL",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "REBECA HERINGER DA SILVA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "RENATA APARECIDA BRITO",
+      "total_parcela": 12650.0
+    },
+    {
+      "NOME FAVORECIDO": "RONEY ALVES DE SOUZA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSA MARIA FONSECA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSEMEIRE PAULA SIQUEIRA FRAGA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSIMEIRE DA COSTA PIEDADE",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSISLAINE APARECIDA GOMES",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "SAMIRA DE SOUZA PEREIRA SANTOS",
+      "total_parcela": 7650.0
+    },
+    {
+      "NOME FAVORECIDO": "SARA CRISTINA GOMES GONCALVES",
+      "total_parcela": 6300.0
+    },
+    {
+      "NOME FAVORECIDO": "SHEILA VITORIA OLIVEIRA ANDRADE",
+      "total_parcela": 6400.0
+    },
+    {
+      "NOME FAVORECIDO": "SIMONE APARECIDA DA SOUZA",
+      "total_parcela": 8100.0
+    },
+    {
+      "NOME FAVORECIDO": "SIMONE MARIA TRINDADE",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "STTEFANY PRISCILA BARBOSA SOUZA",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "SUELEN DE SOUZA SABINO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "TAILA CRISTINA DA SILVA",
+      "total_parcela": 9100.0
+    },
+    {
+      "NOME FAVORECIDO": "TALIA CONCEICAO DE FREITAS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "TATIANA BATISTA DE OLIVEIRA ALVES SOUZA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "TATIANA CONCEICAO SILVA NACITO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "THALITA STEFANIE CHAGAS BISPO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "THAMIRIS LUIZA DE SOUZA DUTRA",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "WALTER LINO DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "WANDERLEY ROSA MOREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "WANESSA DO NASCIMENTO E SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA PAULA RODRIGUES ALVES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "LORRAINY LOPES DA SILVA GUEDES",
+      "total_parcela": 6500.0
+    },
+    {
+      "NOME FAVORECIDO": "MILTON DOS ANJOS SANTOS",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "ADAIR NEVES DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ADELMA FRANCA DE PAULA",
+      "total_parcela": 10250.0
+    },
+    {
+      "NOME FAVORECIDO": "ALCIONE SOUZA NUNES PEREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ALIETE APARECIDA TORRES RIBEIRO",
+      "total_parcela": 6300.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE CRISTINA DA SILVA",
+      "total_parcela": 8600.0
+    },
+    {
+      "NOME FAVORECIDO": "AMANDA DE CASSIA MARTINS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA CAROLINA DA SILVA BALBINO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA CAROLINA PEREIRA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDERCELAINE CRISTINA CARLOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDERSON SOARES FONSECA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANTONIO BENTO DE OLIVEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "BRUNA GRAZIELE DE PAULA PIRES",
+      "total_parcela": 7875.0
+    },
+    {
+      "NOME FAVORECIDO": "CAMILA APARECIDA BRAGA REIS",
+      "total_parcela": 18428.0
+    },
+    {
+      "NOME FAVORECIDO": "CARLOS ALBERTO TALABAR PINTO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CIBELE SUDARIO DE OLIVEIRA",
+      "total_parcela": 12024.0
+    },
+    {
+      "NOME FAVORECIDO": "CLEONICE BATISTA DO NASCIMENTO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTIANE APARECIDA JULIA",
+      "total_parcela": 9350.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTIANE DAS DORES SANTOS",
+      "total_parcela": 15270.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTIANE SANTOS SILVA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "DAIANE BATISTA SILVA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "DAIANE EMANUELE DA SILVA FONSECA",
+      "total_parcela": 11424.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELA VIEIRA DOS SANTOS",
+      "total_parcela": 7700.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELLE ALINE ARAUJO",
+      "total_parcela": 13938.0
+    },
+    {
+      "NOME FAVORECIDO": "DYEGO DA SILVA SANTOS",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "ELENICE DIAS SOARES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIANE ANTONIA DA COSTA",
+      "total_parcela": 8175.0
+    },
+    {
+      "NOME FAVORECIDO": "ELISANGELA MARIA DIAS DE SOUZA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIANA CRISTINA SOARES",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "FELICIA APARECIDA SOUZA SILVA",
+      "total_parcela": 8800.0
+    },
+    {
+      "NOME FAVORECIDO": "FELIPE SANDRO BEHM DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "FLAVIANA FERNANDA RODRIGUES",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "FRANCIELE CARLOS MAGALHAES",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "GERALDA BENTA VIEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GILSANE ALVES BAILAO DE QUEIROS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "GISELE CRISTINA DA SILVA E SOUZA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "GLEICE KELLY SILVA DE CARVALHO",
+      "total_parcela": 8600.0
+    },
+    {
+      "NOME FAVORECIDO": "HELENA MARIA DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "INGRID ESTEFANY DE ALMEIDA",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "IOLE DAS GRACAS PEREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ISABELA VERONICA LEAO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ISADORA FONTANA PEIXOTO DE MELO",
+      "total_parcela": 10550.0
+    },
+    {
+      "NOME FAVORECIDO": "IVANETE GONCALVES ALVES SANTOS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "IZADORA NAZARETH FERREIRA DOROTEIA NEVES",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "JACKCIRLAINE APARECIDA FERREIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JAVIA JUNIA FERREIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "JESSICA GONCALVES DA SILVA OLIVEIRA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "JOYCE LUISE RODRIGUES",
+      "total_parcela": 9100.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIA DE PAULA COTA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA CONCEICAO DO CARMO",
+      "total_parcela": 12120.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA DA CONCEICAO GUALBERTO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA DE FATIMA SANTOS",
+      "total_parcela": 7500.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIETE FABIANE DE OLIVEIRA COSTA TEIXEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIO ROMER GONCALVES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JULYA ESTHER LEMES FELIPE",
+      "total_parcela": 11200.0
+    },
+    {
+      "NOME FAVORECIDO": "KARINA IMACULADA DO NASCIMENTO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "KATIA SUZAN PEREIRA DE MELO",
+      "total_parcela": 7875.0
+    },
+    {
+      "NOME FAVORECIDO": "KELLY DAYANA FONSECA",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "KHAMYLA CRISTINA DOMINGOS",
+      "total_parcela": 6175.0
+    },
+    {
+      "NOME FAVORECIDO": "LAIS LORAM MARTINS PINHEIRO SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "LARISSA CAROLINE SOARES LACERDA",
+      "total_parcela": 9700.0
+    },
+    {
+      "NOME FAVORECIDO": "LEILA REGINA ROCHA SILVA",
+      "total_parcela": 6825.0
+    },
+    {
+      "NOME FAVORECIDO": "LEONIA EULALIA ADRIANA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LETICIA APARECIDA DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LETICIA RODRIGUES PESSOA",
+      "total_parcela": 8100.0
+    },
+    {
+      "NOME FAVORECIDO": "LORENA SILVA SANTANA",
+      "total_parcela": 10500.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA PIRES DOS SANTOS",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIENE BATISTA DE SOUZA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCILEIA AGOSTINHA DE SOUZA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCILENE GOMES CARDOSO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARCELA CRISTINE DA ROCHA",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "MARCILIS ROBERTO DE FARIAS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARGARETE INEZ DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DO ROSARIO DE OLIVEIRA FARIAS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA EDUARDA FERNANDES BRITO",
+      "total_parcela": 9450.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA EDUARDA MENDONCA DOS SANTOS",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARILIA MACHADO CUSTODIO DO SOCORRO",
+      "total_parcela": 11650.0
+    },
+    {
+      "NOME FAVORECIDO": "MARINALDO FERNANDES BARBOSA",
+      "total_parcela": 8000.0
+    },
+    {
+      "NOME FAVORECIDO": "MARLENE INACIA PEREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MAURO LUCIO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MILENA SANTOS COELHO",
+      "total_parcela": 9200.0
+    },
+    {
+      "NOME FAVORECIDO": "MIRIAM NAYARA SANTOS DE SOUZA",
+      "total_parcela": 10920.0
+    },
+    {
+      "NOME FAVORECIDO": "NADIA DA CONCEICAO SOARES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "NISLENE CRISTINA DE SOUZA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "PATRICIA CORDEIRO DE MACEDO",
+      "total_parcela": 8000.0
+    },
+    {
+      "NOME FAVORECIDO": "PAULA CAROLINA OLIVEIRA GALDINO DA SILVA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "PAULA KELES DIAS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "POLLIANA KELLEN ROSA",
+      "total_parcela": 9200.0
+    },
+    {
+      "NOME FAVORECIDO": "PRISCILA APARECIDA DOS SANTOS SILVA DE JESUS",
+      "total_parcela": 10850.0
+    },
+    {
+      "NOME FAVORECIDO": "RAQUEL OLIVEIRA BARBOSA",
+      "total_parcela": 7000.0
+    },
+    {
+      "NOME FAVORECIDO": "RENATA APARECIDA ALMEIDA SANTOS E SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSANGELA APARECIDA RIBEIRO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSANGELA DO SOCORRO BATISTA SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSE CORREIA PAIM",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ROXANE OLIVEIRA DE SOUZA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ROZIMEIRE DE LOURDES PINTO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "SILVANIA MARIA DA SILVA",
+      "total_parcela": 6500.0
+    },
+    {
+      "NOME FAVORECIDO": "SILVIA GRACIELLA DA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "SIMONE MARILAC DA SILVA DOMINGOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "SUELY DA SILVA GONCALVES",
+      "total_parcela": 8600.0
+    },
+    {
+      "NOME FAVORECIDO": "THAYANE GABRIELLE ONOFRE MARTINS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "VANIA CHAVIER MAGALHAES",
+      "total_parcela": 7875.0
+    },
+    {
+      "NOME FAVORECIDO": "WESLIANA GOMES DA PAIXAO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE VILETE",
+      "total_parcela": 9350.0
+    },
+    {
+      "NOME FAVORECIDO": "NILSON MARQUES COSTA",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "RENATO ELIAS SYRIO",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "NEIVIANE MARQUES DA SILVA",
+      "total_parcela": 7500.0
+    },
+    {
+      "NOME FAVORECIDO": "GABRIELA QUENT BALDINI CAMILO",
+      "total_parcela": 7500.0
+    },
+    {
+      "NOME FAVORECIDO": "MIGUEL ALVES MOREIRA",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIMEIRE SANTOS SILVA TORRES",
+      "total_parcela": 6400.0
+    },
+    {
+      "NOME FAVORECIDO": "AGNES FRANCY DA CRUZ FREITAS ENGRACIO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "AILTON TEREZA SOARES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE NEVES DA SILVA",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "AMANDA MAIRA MARQUES SILVA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA DOS REIS PINTO",
+      "total_parcela": 11520.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA PAULA RODRIGUES",
+      "total_parcela": 10850.0
+    },
+    {
+      "NOME FAVORECIDO": "ANGELA SANTOS PEREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANGELICA APARECIDA DE PAULA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ANNA BARBARA DE OLIVEIRA IBIAPINA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "CAMILA DANIELE DE MOURA ELIAS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "CARLOS ROBERTO MARQUES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CAROLAYNE RANALHA DOS REIS",
+      "total_parcela": 11000.0
+    },
+    {
+      "NOME FAVORECIDO": "CINTIA DOS ANJOS SANTOS",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "CLARICE EDUARDA OLIVEIRA SANTOS",
+      "total_parcela": 12840.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDIANE DOS SANTOS",
+      "total_parcela": 13420.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTIANE REGINA DO COUTO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELE VITORIA GUALBERTO SILVA",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELI CRISTINA SANTOS ARAUJO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "DAYANA GONCALVES SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "DENISE IVONE SOARES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "DIENIFER DAFINY MARQUES DE LIMA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "EDINA AUGUSTA TEIXEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "EDNA PAIM DA CAMARA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ELEN CAROLINE DA LUZ",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIANE VIEIRA DA COSTA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIENE LINA DE ALMEIDA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIZABETH CRISTINA TEIXEIRA AUGUSTO",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIZANGELA DA CONCEICAO DE SOUZA FERNANDES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ERICA SANTOS OLIVEIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIANA CYNTIA DOS SANTOS SOUZA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIANE ANGELINA OLIVEIRA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "FLAVIA BASILIO SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "FLAVIA DA SILVA RAMOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "FRANCISLAINE JESUS SILVA",
+      "total_parcela": 7000.0
+    },
+    {
+      "NOME FAVORECIDO": "GABRIELE COELHO SIMOES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "GABRIELLE CRISTINA APARECIDA MOREIRA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "GABRIELLY CRISTINA SANTOS FERREIRA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "GERALDA APARECIDA DIAS COELHO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GESMIRA ALVES CASSIANO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GLEICIELLE BARBOSA LEITE",
+      "total_parcela": 9216.0
+    },
+    {
+      "NOME FAVORECIDO": "GLEYCIANE APARECIDA BARBOSA SILVA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "INGRED APARECIDA DE FREITAS",
+      "total_parcela": 10400.0
+    },
+    {
+      "NOME FAVORECIDO": "IRLENE APARECIDA DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ISABELLA APARECIDA SILVA FERREIRA",
+      "total_parcela": 10450.0
+    },
+    {
+      "NOME FAVORECIDO": "IVO HENRIQUE DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "IZADORA DE CASSIA FERREIRA SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JAINE FERREIRA DIAS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JANAINA DO BOM SUCESSO SILVA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "JUDITE LUCAS DOS SANTOS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA DA CONCEICAO COSTA",
+      "total_parcela": 10010.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA LOURDES CAMPOS DE SOUZA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIETE BARROSO DA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "KETLEN CAMILY ANSELMO GREGORIO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LARISSA VITORIA DA COSTA FONTANA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "LIANE ROSA DE LIMA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "LIRIANE DOS SANTOS MARTINS",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA DE OLIVEIRA SIQUEIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCILENE BERNARDES VITOR GONCALVES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIMARIA SOUZA SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MAIZA DA SILVA",
+      "total_parcela": 11520.0
+    },
+    {
+      "NOME FAVORECIDO": "MANOELA DE LOURDES SANTOS BRAZ",
+      "total_parcela": 8300.0
+    },
+    {
+      "NOME FAVORECIDO": "MARCIA APARECIDA DE OLIVEIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARCIA CRISTINA FONTANA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA CONCEICAO DO CARMO ARAUJ",
+      "total_parcela": 6375.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA FERREIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA FERREIRA RIBEIRO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DA CONCEICAO ALVES DE SOUZA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA EDUARDA DA MATTA SILVA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA GERALDA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA JOSE DA CONCEICAO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA STELA DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARILIA APARECIDA DAS MERCES",
+      "total_parcela": 9400.0
+    },
+    {
+      "NOME FAVORECIDO": "MARINA VICENTE DOS SANTOS",
+      "total_parcela": 8500.0
+    },
+    {
+      "NOME FAVORECIDO": "MEIREMAR LOURDES SANTOS CRUZ",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MILENA RAFAELA APARECIDA FONTANA COSTA",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "MILLENY APARECIDA DE SENA SOUZA",
+      "total_parcela": 9800.0
+    },
+    {
+      "NOME FAVORECIDO": "MIRIALINE SILVA DE OLIVEIRA",
+      "total_parcela": 12720.0
+    },
+    {
+      "NOME FAVORECIDO": "MIRIAN DE SOUZA",
+      "total_parcela": 11615.0
+    },
+    {
+      "NOME FAVORECIDO": "MOAYKA ANGEL DAS MERCES",
+      "total_parcela": 10350.0
+    },
+    {
+      "NOME FAVORECIDO": "NAIARA KARLA DA PAIXAO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "NATALIA MUNIZ DA SILVA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "NEIDE SOARES DE ANDRADE",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "NICOLY LETICIA FERREIRA DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "NUBIA DOS SANTOS PEREIRA",
+      "total_parcela": 8600.0
+    },
+    {
+      "NOME FAVORECIDO": "OTACILIA DO NASCIMENTO AVELINO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "PALOMA APARECIDA DIAS ANDRADE",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "PAULO CAETANO DE ANDRADE",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "PAULO HENRIQUE FERNANDES",
+      "total_parcela": 15000.0
+    },
+    {
+      "NOME FAVORECIDO": "RAYANE THUANE SENA BATISTA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "REGINA APARECIDA ROMANO CLEMENTE",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ROBERTA CRISTINA SILVA ARAUJO",
+      "total_parcela": 11424.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSIANE APARECIDA SOARES",
+      "total_parcela": 8200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSIMEIRE DE SOUZA SILVA",
+      "total_parcela": 7150.0
+    },
+    {
+      "NOME FAVORECIDO": "RUTH NAYARA DA SILVA SABINO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "SHAIENE MARIA MIGUEL MACEDO",
+      "total_parcela": 11250.0
+    },
+    {
+      "NOME FAVORECIDO": "SHEILA CRISTINA DE OLIVEIRA CUNHA",
+      "total_parcela": 13320.0
+    },
+    {
+      "NOME FAVORECIDO": "SIRLENE FATIMA DE SOUZA OLIVEIRA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "SONIA APARECIDA DIAS",
+      "total_parcela": 6900.0
+    },
+    {
+      "NOME FAVORECIDO": "STAEL ALVARENGA DE ALMEIDA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "STEFANE INIS REIS MORAIS",
+      "total_parcela": 9950.0
+    },
+    {
+      "NOME FAVORECIDO": "SUELEM NAIARA DE SOUZA",
+      "total_parcela": 9200.0
+    },
+    {
+      "NOME FAVORECIDO": "SUELY DE FATIMA CAMILO",
+      "total_parcela": 13824.0
+    },
+    {
+      "NOME FAVORECIDO": "TAIS APARECIDA GONCALVES",
+      "total_parcela": 6300.0
+    },
+    {
+      "NOME FAVORECIDO": "TALITA STEFANY CORREIA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "TATIANA FERNANDA DE SOUZA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "TATIANE SILVA DE OLIVEIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "THAMYRIS CONCEICAO DOS SANTOS COSTA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "THAMYRIS SANTOS VIEIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "VANONE VIRGULINO DE SOUZA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VITORIA CRISTINA OLIVEIRA SILVA",
+      "total_parcela": 10700.0
+    },
+    {
+      "NOME FAVORECIDO": "WEDER RODRIGUES CALADO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "YOLANDA DEBORAH APARECIDA SANTOS",
+      "total_parcela": 10600.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA DA COSTA",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "TAMIRES DOS SANTOS RODRIGUES",
+      "total_parcela": 8800.0
+    },
+    {
+      "NOME FAVORECIDO": "YEGLIMAR DEL CARMEN ROJAS LOAIZA",
+      "total_parcela": 14784.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIANA MONTEIRO DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE DE LOURDES SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE MEDEIROS DE JESUS SOUZA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "AMANDA CRISTINA SILVA GUERRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "AMANDA DA PIEDADE MOREIRA PINTO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "AMARILDO ELADIO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA CAROLINA SABELA DE SOUSA COELHO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA MARIA MARTINS",
+      "total_parcela": 9900.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA PAULA RIBEIRO DOS SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ANTONIA BONSUCESSO DE OLIVEIRA MELO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANTONIA DO BOM SUCESSO DE OLIVEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANTONIO EUSTAQUIO DOS SANTOS GONCALVES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "APARECIDA HELENA OLIVEIRA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "BARBARA DA SILVA BAHIA",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "BRENDA PEIXOTO DUARTE",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDINEIA APARECIDA DE ARAUJO",
+      "total_parcela": 6175.0
+    },
+    {
+      "NOME FAVORECIDO": "DAIANE MOREIRA DE SOUZA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "DERLIAN DE SOUZA PEREIRA",
+      "total_parcela": 7900.0
+    },
+    {
+      "NOME FAVORECIDO": "DEYNEFFER DYULIA FERNANDES DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "EDINOLIA RODRIGUES DE OLIVEIRA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ELISEIA MIQUELINA LISBOA",
+      "total_parcela": 12120.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIZABETE NACITO DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ELZA IMACULADA FERNANDES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "EMILY LUCILIA LOURENCO MIRANDA",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "ERICA APARECIDA MATIAS FERNANDES",
+      "total_parcela": 8975.0
+    },
+    {
+      "NOME FAVORECIDO": "ERILENE GONCALVES DOS SANTOS",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "EVA NAZARE DAS MERCES",
+      "total_parcela": 7150.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIANA MIRIAM SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "FABRICIA DOS SANTOS",
+      "total_parcela": 29552.0
+    },
+    {
+      "NOME FAVORECIDO": "FLAVIA DE OLIVEIRA SIQUEIRA COSTA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "GABRIELLE CAROLINA NAVARRO LIMA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "GEOVANIA DE OLIVEIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "GISELE PAOLA DO COUTO",
+      "total_parcela": 9100.0
+    },
+    {
+      "NOME FAVORECIDO": "GISELLE FELIX GODINHO",
+      "total_parcela": 8850.0
+    },
+    {
+      "NOME FAVORECIDO": "GRACIELE ARCANJO DA SILVA",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "IRIS APARECIDA DIAS SANTOS CORREA",
+      "total_parcela": 8600.0
+    },
+    {
+      "NOME FAVORECIDO": "IZABELLE TAVARES ALMEIDA",
+      "total_parcela": 9150.0
+    },
+    {
+      "NOME FAVORECIDO": "JOICE MARA DA CONCEICAO FREITAS",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "JORDAINE JOANA SOUZA ANTERO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSIANE APARECIDA DE ARAUJO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSIANE MOREIRA BARBOSA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JOZIANA MARQUES CARVALHO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "KARINA ROSA APARECIDA FERREIRA",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "KATIA BONSUCESSO DA PIEDADE",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "KATIA DALIANE PIMENTA",
+      "total_parcela": 9018.0
+    },
+    {
+      "NOME FAVORECIDO": "KELEN JANAINA FELIPE SANTANA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "KETHRIM DAYAN SCARLAT FONSECA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "LAISSA LUCAS MARINHO",
+      "total_parcela": 9400.0
+    },
+    {
+      "NOME FAVORECIDO": "LAYRA TATIANA DE SOUSA",
+      "total_parcela": 11600.0
+    },
+    {
+      "NOME FAVORECIDO": "LORENA DA SILVA GOMES",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "LUANA DA CRUZ SOUZA",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "LUANA REGINA DA CRUZ",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA DA CONCEICAO SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIENE PEREIRA SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARA TRIANA SAMPAIO DA FONSECA",
+      "total_parcela": 6300.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DAS DORES DE MELO NAZARE",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA NILZA RODRIGUES SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARINA GOMES BATISTA DIAS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "MARLENE APARECIDA BENTO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MICHELINE VENTURA DE MELO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "NADIANY CRISTINA MACHADO DE OLIVEIRA DANIEL",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "NAYARA CAMILA MOURA",
+      "total_parcela": 10300.0
+    },
+    {
+      "NOME FAVORECIDO": "NAYRA MARQUES FERREIRA DUARTE",
+      "total_parcela": 14424.0
+    },
+    {
+      "NOME FAVORECIDO": "PALOMA CAROLAINE SILVA MUNIZ",
+      "total_parcela": 8800.0
+    },
+    {
+      "NOME FAVORECIDO": "PAMELA FRANCISCA NERY DA ROCHA",
+      "total_parcela": 7572.0
+    },
+    {
+      "NOME FAVORECIDO": "PAMELA STEFANY SANTOS",
+      "total_parcela": 8600.0
+    },
+    {
+      "NOME FAVORECIDO": "PAMELLA IRINEIA RIBEIRO DA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "PAOLA AMABELE RODRIGUES",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "PATRICIA SILVA FONSECA",
+      "total_parcela": 9950.0
+    },
+    {
+      "NOME FAVORECIDO": "PRISCILA DO BONSUCESSO SILVESTRE",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "RAISSA MIRELE DE SOUZA SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "REGIANNE STELA ROSA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "REINAQUE APARECIDA MOREIRA SANTOS",
+      "total_parcela": 9700.0
+    },
+    {
+      "NOME FAVORECIDO": "RENATA CUPERTINO BENTO",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSELITA PEREIRA NASCIMENTO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "SARAH JANE SANTOS DE ALMEIDA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "SILVANA CORREIA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "SILVANIA DA PIEDADE ALVES",
+      "total_parcela": 7150.0
+    },
+    {
+      "NOME FAVORECIDO": "SONIA DA PIEDADE DIAS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "STEFANY TATIANE DOS SANTOS",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "SUELY ROSALINA DA CONCEICAO MOREIRA REIS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "TAMIRYS ELIAS ALVES",
+      "total_parcela": 9900.0
+    },
+    {
+      "NOME FAVORECIDO": "TATIANA APARECIDA FERREIRA SALGUEIRO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "TATIELE TEIXEIRA SIMOES",
+      "total_parcela": 6650.0
+    },
+    {
+      "NOME FAVORECIDO": "THAIS CAROLINE ALVES DOS SANTOS",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "THAIS MUNIZ SANTOS",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "VANESSA DA PIEDADE REZENDE",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VANESSA SOARES SILVIANO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VERA LUCIA COELHO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VITORIA DE FATIMA REIS DE CARVALHO",
+      "total_parcela": 7260.0
+    },
+    {
+      "NOME FAVORECIDO": "VITORIA MUNIZ DA SILVA",
+      "total_parcela": 9850.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA EDUARDA OLIVEIRA SILVA",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA ELIZABETH CORDEIRO RODRIGUES DE OLIVEIRA",
+      "total_parcela": 6500.0
+    },
+    {
+      "NOME FAVORECIDO": "ADNA MARIA SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIANA MARIA DE OLIVEIRA",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIELLE APARECIDA DOS SANTOS",
+      "total_parcela": 10430.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIELLE CRISTINA NASCIMENTO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIENY CRISTINA VITORIA SOARES",
+      "total_parcela": 10700.0
+    },
+    {
+      "NOME FAVORECIDO": "ALESSANDRA APARECIDA FERNANDES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ALESSANDRA ISABELA PEREIRA DA SILVA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ALICE STHEFANY ARAUJO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE ALVES",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE SILVERIO DE SOUZA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "AMANDA FERREIRA APOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "AMANDA LUISA DA SILVA VIGARIO",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA PAULA BOM SUCESSO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA ROSA DOS SANTOS",
+      "total_parcela": 13728.0
+    },
+    {
+      "NOME FAVORECIDO": "ANITA INEZ DE JESUS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "BARBARA CRISTINA DA CRUZ",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "BEATRIZ ALMEIDA GERVASIO",
+      "total_parcela": 10400.0
+    },
+    {
+      "NOME FAVORECIDO": "BIANCA DE OLIVEIRA BATISTA SILVA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "BRENDA ALICE MELO FURTADO",
+      "total_parcela": 8900.0
+    },
+    {
+      "NOME FAVORECIDO": "BRUNA CRISTINA DO CARMO TAVARES",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "CHIRLEI APARECIDA BARROSO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDIMAR DO CARMO MARTINS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CLEUZA DA SILVA FRANCISCO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CONCEICAO IVETE PEREIRA SANTOS",
+      "total_parcela": 9300.0
+    },
+    {
+      "NOME FAVORECIDO": "DAIANE CRISTINA REIS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELE PEREIRA NASCIMENTO SILVA",
+      "total_parcela": 8100.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELI APARECIDA DOS SANTOS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "DEBORA MARIA DE PAULA",
+      "total_parcela": 11920.0
+    },
+    {
+      "NOME FAVORECIDO": "DEISIANE STHEFANY DE JESUS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "EDYRLENE GUEDES DA SILVA OLIVEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ELAINE MARCIA DA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIANA ANDRE PEREIRA",
+      "total_parcela": 11100.0
+    },
+    {
+      "NOME FAVORECIDO": "EMERSON MARTINS DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "FELIPE GABRIEL DO COUTO ARAUJO",
+      "total_parcela": 9200.0
+    },
+    {
+      "NOME FAVORECIDO": "FERNANDA APARECIDA COSTA SILVA",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "FRANCIELLE DOS SANTOS MACHADO",
+      "total_parcela": 10600.0
+    },
+    {
+      "NOME FAVORECIDO": "GABRIELA DE FATIMA DOS SANTOS COSTA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GEICIQUELE LOURDES ROCHA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "GERALDO SANTOS MANSUETO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GESSICA RENATA APARECIDA VIEIRA",
+      "total_parcela": 7000.0
+    },
+    {
+      "NOME FAVORECIDO": "GEYZIANNE PRISCILA SOUZA VIEIRA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "HELEN CRISTINA DO CARMO DE AQUINO BARBOSA",
+      "total_parcela": 10350.0
+    },
+    {
+      "NOME FAVORECIDO": "IOLANDA FELIX DE PAIVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JAQUELINE MADALENA CARLOS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "JEANNE ESDRAS DE OLIVEIRA SANTOS",
+      "total_parcela": 7650.0
+    },
+    {
+      "NOME FAVORECIDO": "JHIULIA BONSUCESSO DOS SANTOS DIAS",
+      "total_parcela": 9500.0
+    },
+    {
+      "NOME FAVORECIDO": "JICELA COELHO VIEIRA",
+      "total_parcela": 7450.0
+    },
+    {
+      "NOME FAVORECIDO": "JORDANIA APARECIDA LACERDA",
+      "total_parcela": 7050.0
+    },
+    {
+      "NOME FAVORECIDO": "KAREN VITORIA GOMES",
+      "total_parcela": 6950.0
+    },
+    {
+      "NOME FAVORECIDO": "KARINA MARTA MARTINS",
+      "total_parcela": 7050.0
+    },
+    {
+      "NOME FAVORECIDO": "KEITTICILAINE CRISTINA DE ALMEIDA",
+      "total_parcela": 9468.0
+    },
+    {
+      "NOME FAVORECIDO": "KELLY CLAUDIA ROSA DE OLIVEIRA",
+      "total_parcela": 9300.0
+    },
+    {
+      "NOME FAVORECIDO": "KERLINEIA MARIA COSTA DE BARROS E SOUSA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "LARA DIAS GONCALVES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "LARYSSA KAROLINE DA SILVA",
+      "total_parcela": 8905.0
+    },
+    {
+      "NOME FAVORECIDO": "LAYANE APARECIDA HELIODORO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "LEILIANE SILVA MOREIRA GONCALVES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LEONARDA PEREIRA SIQUEIRA",
+      "total_parcela": 9300.0
+    },
+    {
+      "NOME FAVORECIDO": "LETICIA CRISTINA FERREIRA GONCALVES",
+      "total_parcela": 9500.0
+    },
+    {
+      "NOME FAVORECIDO": "LETICIA FERNANDA DA SILVA",
+      "total_parcela": 10216.0
+    },
+    {
+      "NOME FAVORECIDO": "LETICIA FRANCISCA DIAS DE PAULA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LORENA ALEXIA FONSECA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "LORENA VITORIA RAIMUNDO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LUANA DE ANDRADE",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCEIA FERREIRA DA ROCHA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIA DAS GRACAS SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARCELO VENTURINI DE ASSIS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA PIEDADE",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA VILAS NOVA",
+      "total_parcela": 10100.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DA CONCEICAO CAMPOS MENDONCA",
+      "total_parcela": 16128.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DE LOURDES PEREIRA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIANA ESTEVES DO NASCIMENTO",
+      "total_parcela": 9200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARILENE BENTO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "MARINA SIMAO DE DEUS",
+      "total_parcela": 9800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARTA APARECIDA DAS DORES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MELISSA BARBOSA PIRES RODRIGUES DA CRUZ",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "NADIA SILVA DAMASCENO",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "NATALIA CRISTINA SEVERO",
+      "total_parcela": 9300.0
+    },
+    {
+      "NOME FAVORECIDO": "NATALIA NEVES DA SILVA",
+      "total_parcela": 9300.0
+    },
+    {
+      "NOME FAVORECIDO": "PAOLA NATIVIDADE TEIXEIRA",
+      "total_parcela": 9700.0
+    },
+    {
+      "NOME FAVORECIDO": "POLIANA MARA DE SOUZA",
+      "total_parcela": 11710.0
+    },
+    {
+      "NOME FAVORECIDO": "POLLYANE KARINE TERENCIA DRUMOND",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "RAFAELA CAROLINE SANTOS ARAUJO",
+      "total_parcela": 10970.0
+    },
+    {
+      "NOME FAVORECIDO": "RAFAELY CRISTINE ASSIS SOUZA",
+      "total_parcela": 9900.0
+    },
+    {
+      "NOME FAVORECIDO": "RANALY CARLA SEVERO DA SILVA",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "RAPHAELA CAROLINE VENTURA SILVA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "RAPHAELLA CRISTINA FONSECA NAZARE",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "RENATA APARECIDA OLIVEIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "RENE GERALDO DE OLIVEIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "RIVELINO LACERDA DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSANGELA CRISTINA DE LIMA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSELI APARECIDA ELIAS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSIANE FERREIRA DOS SANTOS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSILAINE APARECIDA DOS SANTOS",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "SAMARA FERREIRA BARBOSA",
+      "total_parcela": 9900.0
+    },
+    {
+      "NOME FAVORECIDO": "SAMARA RAYANE DAS DORES",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "SAMILA GONCALVES LABRE",
+      "total_parcela": 8650.0
+    },
+    {
+      "NOME FAVORECIDO": "SANDRA CRISTINA DIAS",
+      "total_parcela": 9112.0
+    },
+    {
+      "NOME FAVORECIDO": "SANDRA LUCIA DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "SIMONE CIRILO CANDIDO",
+      "total_parcela": 6825.0
+    },
+    {
+      "NOME FAVORECIDO": "SIMONE COELHO DE AVELAR",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "SIMONE VALERIA SILVA SOUSA",
+      "total_parcela": 8000.0
+    },
+    {
+      "NOME FAVORECIDO": "SOLANGE CRISTINA DOS SANTOS",
+      "total_parcela": 11520.0
+    },
+    {
+      "NOME FAVORECIDO": "TAIANE MARCELINA",
+      "total_parcela": 10900.0
+    },
+    {
+      "NOME FAVORECIDO": "TAMARA MARIA MARTINS XAVIER",
+      "total_parcela": 7500.0
+    },
+    {
+      "NOME FAVORECIDO": "TANIA COSTA DA SILVEIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "THALISSA APARECIDA DA SILVA CESARIO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "VALDIANA KELLY DO NASCIMENTO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VANESSA URSULA VIEIRA",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "VICERLLY RODRIGUES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VITORIO SILVA SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VIVIANE DEISE SILVA SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "WESLEY JUNIO GARCIA",
+      "total_parcela": 8620.0
+    },
+    {
+      "NOME FAVORECIDO": "EMILIA FERNANDES ARAUJO",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "ALESSANDRA FERREIRA DA MATA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE HELENA DOS SANTOS VIANA",
+      "total_parcela": 11000.0
+    },
+    {
+      "NOME FAVORECIDO": "AMANDA APARECIDA XAVIER DO CARMO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA CAROLINA OLIVEIRA",
+      "total_parcela": 7600.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDREIA LUIZA GOMES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANGELITA FRANCISCA BATISTA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANTONIO LUIS GUIMARAES TAVEIRA PINTO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANTONIO MARCELO DE ALMEIDA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "APARECIDA AQUINO RIBEIRO",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "ARIENE GOMES BARBOSA",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "BARBARA STEFANY DE SOUSA GOMES",
+      "total_parcela": 10500.0
+    },
+    {
+      "NOME FAVORECIDO": "BEIBIANE PIEDADE DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "BETANIA DE FATIMA DOS SANTOS",
+      "total_parcela": 16024.0
+    },
+    {
+      "NOME FAVORECIDO": "CACILDA APARECIDA FERREIRA",
+      "total_parcela": 7250.0
+    },
+    {
+      "NOME FAVORECIDO": "CAMILA STEFANI MOREIRA",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "CARLA CRISTIANE GUERRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "CARLA VITORIA LOPES ORDONES",
+      "total_parcela": 9250.0
+    },
+    {
+      "NOME FAVORECIDO": "CARLOS DAVI DA SILVA CAMPOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CASSIA CRISTINA DO CARMO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CATIA DA SILVA FREITAS SANTOS",
+      "total_parcela": 7650.0
+    },
+    {
+      "NOME FAVORECIDO": "CHRISTIANE BONSUCESSO FONTANA BARREIROS",
+      "total_parcela": 10770.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDIA MARIA APARECIDA SILVA DO ESPIRITO SANTO",
+      "total_parcela": 7700.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDIANA MONTEIRO DE SAO MIGUEL",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "CLEIDIANE MARIA DOS SANTOS",
+      "total_parcela": 8000.0
+    },
+    {
+      "NOME FAVORECIDO": "CONCEICAO DE FREITAS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTIANA MARIA DA SILVA AMARO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTIANA SILVA DE ABREU",
+      "total_parcela": 15240.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTINA RAMOS DE LIMA",
+      "total_parcela": 6300.0
+    },
+    {
+      "NOME FAVORECIDO": "DILMA MARIA DE MORAIS MOREIRA",
+      "total_parcela": 12624.0
+    },
+    {
+      "NOME FAVORECIDO": "EDER EXPEDITO LOPES FILHO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "EDERSON RIBEIRO DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ELAINE CRISTINA SILVA SOUZA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIANE LOURDES DOS REIS SANTOS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ERICA FABIANA PINTO",
+      "total_parcela": 8300.0
+    },
+    {
+      "NOME FAVORECIDO": "EVA APARECIDA DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIANA DE OLIVEIRA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIANA EMILIA BARTOLOMEU",
+      "total_parcela": 11420.0
+    },
+    {
+      "NOME FAVORECIDO": "FABRICIA DOS REIS GOMES",
+      "total_parcela": 9900.0
+    },
+    {
+      "NOME FAVORECIDO": "FRANCIELLE DAS GRACAS DE LIMA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "FRANCIELLE LARISSA NUNES DOS PASSOS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "GERALDO MARTINHO VIANA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GLEICIANE KELLE DE OLIVEIRA SANTOS",
+      "total_parcela": 9900.0
+    },
+    {
+      "NOME FAVORECIDO": "GRACIELLE LOPES DE CASTRO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "GRAZIELA CRISTINA NAZARE FERNANDES",
+      "total_parcela": 10680.0
+    },
+    {
+      "NOME FAVORECIDO": "IRANY PEDROSA DE ALMEIDA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "IRMA GERALDA BARTOLOMEU",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JANAINA IARA SILVA",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "JENIFFER DE SOUZA SILVA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "JESIELI DIAS PEREIRA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "JESSICA MARIA CONCEICAO SILVA ARAUJO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "JOANA CRISTINA ANTERO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "JOANA DARC SANTOS ANDRADE",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSE GERALDO DA COSTA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSE MARIA EVANGELISTA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSILAINE DA SILVA",
+      "total_parcela": 9800.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA DA CONCEICAO PERDIGAO",
+      "total_parcela": 8500.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIETE NAZARE MERCES DOS SANTOS",
+      "total_parcela": 8050.0
+    },
+    {
+      "NOME FAVORECIDO": "JUSCELE DE OLIVEIRA SANTOS SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "KAMILLY DA SILVA GOMES",
+      "total_parcela": 7650.0
+    },
+    {
+      "NOME FAVORECIDO": "KARLA MARCIA DE MORAIS",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "KEILLA JULIETTE SOUZA",
+      "total_parcela": 9150.0
+    },
+    {
+      "NOME FAVORECIDO": "KIARA KAMILA BRANDAO DA SILVA FIGUEIREDO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "KLEITON HUMBERTO SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "LETICIA THAIS FERREIRA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LIDIANE FONSECA SOUZA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "LORRAINE CAROLINE BATISTA SOARES",
+      "total_parcela": 7875.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIA FRANCISCA FERREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "LUIS EDUARDO CIDREIRA DOS SANTOS",
+      "total_parcela": 7150.0
+    },
+    {
+      "NOME FAVORECIDO": "MAGALY MARIA DO CARMO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARCIA CRISTINA RODRIGUES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA ANTONIA TORRES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA DE ARAUJO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA DE JESUS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DE LOURDES POLIANA DOS REIS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DE LOURDES RIBEIRO",
+      "total_parcela": 6300.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA JOSE DAS DORES EVANGELISTA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA NICOLAU GOMES GONCALVES",
+      "total_parcela": 8625.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA RITA DA SILVA FERREIRA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIANA DE LOURDES RAIMUNDO",
+      "total_parcela": 12870.0
+    },
+    {
+      "NOME FAVORECIDO": "MARILMA DE JESUS PORTO",
+      "total_parcela": 8625.0
+    },
+    {
+      "NOME FAVORECIDO": "MARINA DO BONSUCESSO GOMES",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "MARLENE DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MATHEUS HENRIQUE MACHADO QUEIROZ",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MIRIA PEREIRA DE SOUZA",
+      "total_parcela": 11293.0
+    },
+    {
+      "NOME FAVORECIDO": "MORGANA DOROTHEA ELOY DE ALMEIDA",
+      "total_parcela": 10320.0
+    },
+    {
+      "NOME FAVORECIDO": "NATALIA APARECIDA DE SOUSA",
+      "total_parcela": 7970.0
+    },
+    {
+      "NOME FAVORECIDO": "NATALIA PEREIRA FRANCA",
+      "total_parcela": 9400.0
+    },
+    {
+      "NOME FAVORECIDO": "NATANIELE KEIFANIR DE PAULA PEREIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "NATHACE ISABELLE DA SILVA ANSELMO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "PALOMA KEILLA DE ANDRADE",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "PATRICIA EMANUELE BRANDAO PEIXOTO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "PHAMELA STEPHANIE SOCORRO TOMAZ",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "RAFAELA GERALDA SANTIAGO DE FREITAS",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "RENATA BARBOSA BATISTA DOS SANTOS",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "RENATA DE NAZARETH MOREIRA ELEODORO GREGORIO",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "RENATA FERREIRA ARAUJO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "RONILMA DA CONCEICAO PENA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSAINE APARECIDA DE SOUZA",
+      "total_parcela": 12720.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSANE MARIA DE OLIVEIRA",
+      "total_parcela": 12528.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSELI DA FONSECA FERREIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSILENE SOUZA JESUS NASCIMENTO",
+      "total_parcela": 11200.0
+    },
+    {
+      "NOME FAVORECIDO": "SAMARA CRISTINA DE OLIVEIRA SOUZA",
+      "total_parcela": 7900.0
+    },
+    {
+      "NOME FAVORECIDO": "SANDRA DOS SANTOS EVANGELISTA ESTEVES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "SANIA ALVES GARGANO DIAS",
+      "total_parcela": 9650.0
+    },
+    {
+      "NOME FAVORECIDO": "SANTO FRANCISCO FERREIRA MEDEIROS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "SILVANIA PEREIRA DA COSTA",
+      "total_parcela": 11552.0
+    },
+    {
+      "NOME FAVORECIDO": "SOLANGE ANGELA LUCIO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "STEPHANY DE SOUZA PINHEIRO SILVA",
+      "total_parcela": 6800.0
+    },
+    {
+      "NOME FAVORECIDO": "TATIANE DE OLIVEIRA BARBOSA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "URSULA GONCALVES SOARES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VALENIA MARCIANA OLIVEIRA SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "XIOMARA DEL CARMEN GARCIA SOSA",
+      "total_parcela": 6450.0
+    },
+    {
+      "NOME FAVORECIDO": "JAQUELINE SOUSA DE JESUS",
+      "total_parcela": 7150.0
+    },
+    {
+      "NOME FAVORECIDO": "TAINA PEREIRA SILVA",
+      "total_parcela": 10100.0
+    },
+    {
+      "NOME FAVORECIDO": "SILMARA SOUZA MACEDO",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "AGUINOS FERREIRA LOPES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ALEXANDRINA BARBOSA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE BRAGA DE ARAUJO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE MARTA MAGALHAES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ALLEN JUNIA DOS REIS",
+      "total_parcela": 9350.0
+    },
+    {
+      "NOME FAVORECIDO": "AMANDA SOUZA ARAUJO",
+      "total_parcela": 9500.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA CAROLINE DE SOUZA",
+      "total_parcela": 9700.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA CELIA DE SOUZA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA CRISTINA RODRIGUES DE ASSIS",
+      "total_parcela": 8700.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA LUISA GABRIELA DOS SANTOS",
+      "total_parcela": 9250.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA PAULA BRUZINGA",
+      "total_parcela": 6060.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA PAULA SIQUEIRA DA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDREA LUCIA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDREA SOARES DA SILVA",
+      "total_parcela": 8300.0
+    },
+    {
+      "NOME FAVORECIDO": "ANGELA MARTINS FONSECA",
+      "total_parcela": 7500.0
+    },
+    {
+      "NOME FAVORECIDO": "ANNE ROSE DE SOUZA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANTONIA NAZARE DOS SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ANTONIO SEBASTIAO RIBEIRO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "AXCELI RAISSA MARTINS PRATES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "BARBARA REGINA DIAS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "BRUNA RODRIGUES VIANA SILVA",
+      "total_parcela": 6625.0
+    },
+    {
+      "NOME FAVORECIDO": "CAMILA CONCEICAO CORREIA",
+      "total_parcela": 16024.0
+    },
+    {
+      "NOME FAVORECIDO": "CAMILI VITORIA MARQUES ANTONIO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "CARLOS ROBERTO SOARES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CARMEM LUCIA MARIA DO NASCIMENTO SANTOS",
+      "total_parcela": 11520.0
+    },
+    {
+      "NOME FAVORECIDO": "CAROLINE DE SOUZA DO CARMO",
+      "total_parcela": 10250.0
+    },
+    {
+      "NOME FAVORECIDO": "CASSIA ANTONIA BARNABE",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "CINTIA APARECIDA DOS SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "CLEIDE DA SILVA FREITAS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CLEIDIANE BEZERRA DA SILVA",
+      "total_parcela": 10950.0
+    },
+    {
+      "NOME FAVORECIDO": "CLEIDIANE GONCALVES DE SOUZA",
+      "total_parcela": 8700.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTINA ANGELINA VELOSO PEREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "DEBORA CRISTINA DA SILVA TELESFORO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "DEIZIELA NATAN SOARES",
+      "total_parcela": 8900.0
+    },
+    {
+      "NOME FAVORECIDO": "DONIZETE TORRES DOS ANJOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "DORACY PEDROZA SOARES DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "EDNEIA AGUIDA DIAS",
+      "total_parcela": 10770.0
+    },
+    {
+      "NOME FAVORECIDO": "ELENICE APARECIDA FERREIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ELISANGELA APARECIDA MARTINS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ERIKA APARECIDA DAIANA FERREIRA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "ESTEFANE DUARTE PEREIRA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "FERNANDA RODRIGUES MORAES",
+      "total_parcela": 8450.0
+    },
+    {
+      "NOME FAVORECIDO": "FRANCIELE BONSUCESSO MAGALHAES MEIRELLES SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "GERCIANA LUCIA DE OLIVEIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "GLAUCIELLY APARECIDA TEIXEIRA",
+      "total_parcela": 6300.0
+    },
+    {
+      "NOME FAVORECIDO": "GRACIANE DE SOUZA SILVA",
+      "total_parcela": 8425.0
+    },
+    {
+      "NOME FAVORECIDO": "IANE CARLA PAIM SERGIO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "IONARA MABEL BARBOSA MEIRELES",
+      "total_parcela": 6900.0
+    },
+    {
+      "NOME FAVORECIDO": "ISABELA APARECIDA LACERDA SILVA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ISABELA KAREN DOS SANTOS CRUZ",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ISADORA TEIXEIRA DA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "IVONE MARIA DE ALMEIDA FRANCISCO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "IZABEL BATISTA SCHITTINI DA SILVA",
+      "total_parcela": 9450.0
+    },
+    {
+      "NOME FAVORECIDO": "JOELMA DOS SANTOS",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "JORDANA CRISTINA DOS SANTOS",
+      "total_parcela": 10150.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA RETIELY DOS SANTOS",
+      "total_parcela": 9300.0
+    },
+    {
+      "NOME FAVORECIDO": "JUSCELIA FATIMA SANTOS",
+      "total_parcela": 9216.0
+    },
+    {
+      "NOME FAVORECIDO": "JUSELE GRASIELE DA SILVA",
+      "total_parcela": 12024.0
+    },
+    {
+      "NOME FAVORECIDO": "KAMILLY VICTORIA DE MORAIS CASTRO",
+      "total_parcela": 9300.0
+    },
+    {
+      "NOME FAVORECIDO": "KEITI MARRONE DA CRUZ",
+      "total_parcela": 7475.0
+    },
+    {
+      "NOME FAVORECIDO": "KELEN CRISTINA DA SILVA GOMIDES",
+      "total_parcela": 6375.0
+    },
+    {
+      "NOME FAVORECIDO": "LEANDRO ARAUJO LUCIANO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LETICIA CRISTINA AUGUSTA SILVA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LETICIA PIEDADE DA SILVA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA ANGELICA DA CONCEICAO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIENE TAMARA BENTO",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "LUDIMILA SANTOS SIMOES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LUZIA DA PIEDADE BARBOSA LIMA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARA ALICE DA SILVA MAGALHAES",
+      "total_parcela": 8800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA ANTONIA ROSA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA AGANETTI",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA EDUARDA ALVES RIBEIRO",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA HELENA MARTINS DOS SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA JULIANA MOREIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIANA BARBOSA SILVA JORGE",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIANA DE CASSIA ROSA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "MARINES SILVA SANTOS",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "MARLENE BENEDITA DOS SANTOS",
+      "total_parcela": 8150.0
+    },
+    {
+      "NOME FAVORECIDO": "MARLENE DA PIEDADE STUARTE",
+      "total_parcela": 7945.0
+    },
+    {
+      "NOME FAVORECIDO": "MARTA LUIZA DE OLIVEIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARTIANE LETICIA SANCHA SILVA",
+      "total_parcela": 12704.0
+    },
+    {
+      "NOME FAVORECIDO": "MELISSA GUERRA VITOR DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "MILENE ALVES LINO",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "NAIHARA DE FATIMA VALENTINA",
+      "total_parcela": 10039.0
+    },
+    {
+      "NOME FAVORECIDO": "NILZA MARIA CUSTODIO DA SILVA",
+      "total_parcela": 23040.0
+    },
+    {
+      "NOME FAVORECIDO": "PATRICIA DE SOUZA TEODORO",
+      "total_parcela": 6500.0
+    },
+    {
+      "NOME FAVORECIDO": "PRISCILA CARLOS DE MAGALHAES",
+      "total_parcela": 13874.0
+    },
+    {
+      "NOME FAVORECIDO": "RAMAYANE KAROLINE FROES GOMES MARTINS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "RENATA ALVES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROBERTA CAROLINA BARBOSA LIMA",
+      "total_parcela": 6650.0
+    },
+    {
+      "NOME FAVORECIDO": "RODIMAN APARECIDO DE OLIVEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSANA DAS GRACAS PINTO",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSE MARY XAVIER DA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSIMAR LIMA DOS SANTOS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "SABRINA REGINA SILVA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "SALLY ALVES FERREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "SILVANA LUIZA FERNANDES DA ROCHA",
+      "total_parcela": 8415.0
+    },
+    {
+      "NOME FAVORECIDO": "SIMONE LOURDES SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "SUELI RODRIGUES DOS SANTOS",
+      "total_parcela": 12270.0
+    },
+    {
+      "NOME FAVORECIDO": "TAIANDY AMANDA COSTA GONCALVES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "TAIS MARTINS PINHEIRO SILVA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "TATIANE GONCALVES",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "THAISLAINE MENDES DA SILVA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "VANDREIA DE LOURDES RESENDE",
+      "total_parcela": 7300.0
+    },
+    {
+      "NOME FAVORECIDO": "VANILDE APARECIDA DE FREITAS GOMES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "VILMA ALVES DE MIRANDA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VILMA MARIA DOS SANTOS SOBRINHA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "WALDILENE MARCIA DOS SANTOS MOREIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "YENNIMAR ARAY MORENO",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "UEDER ALMEIDA JORGE",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "POLYANA VITORIA MARQUES FERREIRA",
+      "total_parcela": 7500.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSILENE APARECIDA DIAS DE OLIVEIRA",
+      "total_parcela": 6260.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIANA BARBOSA RODRIGUES",
+      "total_parcela": 8050.0
+    },
+    {
+      "NOME FAVORECIDO": "ALESSANDRA MAGELA SAMPAIO BATISTA",
+      "total_parcela": 12220.0
+    },
+    {
+      "NOME FAVORECIDO": "ALEXANDRE GOMES DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE APARECIDA DE ALMEIDA",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA CLAUDIA DOS SANTOS",
+      "total_parcela": 10870.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA LUIZA DO BONSUCESSO CORNELIO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA PAULA SOARES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA VITORIA DIAS FERREIRA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDRE LUIZ MARCELINO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDREIA LUCIENE DE OLIVEIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDREINA APARECIDA FERNANDES DA ROCHA",
+      "total_parcela": 9850.0
+    },
+    {
+      "NOME FAVORECIDO": "ANGELICA DE FATIMA DE OLIVEIRA MEIRELES",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANNE VITORIA DE SOUZA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ANTONIO REGINO ALVES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ARIANA DO CARMO",
+      "total_parcela": 6675.0
+    },
+    {
+      "NOME FAVORECIDO": "ARIANIA DOS SANTOS CHAVES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ARIELY DE OLIVEIRA BARBOSA",
+      "total_parcela": 9200.0
+    },
+    {
+      "NOME FAVORECIDO": "ATAIDE GOMES DE ARAUJO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "BARBARA HELENA BEZERRA SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "BARBARA MARCELLA SILVESTRE",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "CAMYLE VITORIA DOS SANTOS",
+      "total_parcela": 11010.0
+    },
+    {
+      "NOME FAVORECIDO": "CAROLINE DUARTE DE SOUZA",
+      "total_parcela": 9300.0
+    },
+    {
+      "NOME FAVORECIDO": "CLEIDIANE APARECIDA MARTINS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTIANE CRISTINA DE SOUZA",
+      "total_parcela": 7950.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTIANE OLIVEIRA FERNANDES",
+      "total_parcela": 7150.0
+    },
+    {
+      "NOME FAVORECIDO": "DAIANE MARRY GONCALVES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELE NAIARA BATISTA",
+      "total_parcela": 10450.0
+    },
+    {
+      "NOME FAVORECIDO": "DEYSE MARRY DO CARMO SOARES",
+      "total_parcela": 6300.0
+    },
+    {
+      "NOME FAVORECIDO": "DULCILENE SOARES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "DURYIS COROMOTO ROMERO LOPEZ",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "EDITE RAQUEL ALVES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "EDNA MARTA DA CONCEICAO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "EDUARDO FONSECA SOUZA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ELISANGELA APARECIDA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIZETE LUCIANO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "EMANUELLY CAROLINE DE ALMEIDA SOUZA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ERLANDE DA PIEDADE FERREIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "EVANDRO CLAUDIO MARIA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIANA APARECIDA SANTOS OLIVEIRA",
+      "total_parcela": 6300.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIANE DE OLIVEIRA SIQUEIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "FABRICIO DE JESUS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "FERNANDA DE CARVALHO ROCHA BRANDAO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "FLAVIA ALVES DA ROCHA ARAUJO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "FRANCIELE APARECIDA DAS GRACAS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "FRANCILENE MAGALHAES MEIRELLES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "GABRIELLA HELENA MAGALHAES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "GRACIELLE LOPES DA SILVA",
+      "total_parcela": 8500.0
+    },
+    {
+      "NOME FAVORECIDO": "GRACIELLE LUCAS SOUZA",
+      "total_parcela": 10600.0
+    },
+    {
+      "NOME FAVORECIDO": "ISAURA VIANA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "IVONE EUDOXIA RODRIGUES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JANAINA DA CONSOLACAO SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JESSICA ALVES SANTANA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "JOICE APARECIDA DE JESUS",
+      "total_parcela": 9350.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSE ANTONIO RODRIGUES",
+      "total_parcela": 7150.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSIENE MARIA DA COSTA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA DA SILVA THOMAZ",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "KARLA MARA DE QUEIROZ",
+      "total_parcela": 10850.0
+    },
+    {
+      "NOME FAVORECIDO": "KATICILAYNE APARECIDA DE ARAUJO SOUZA PEREIRA",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "LAURENE DE OLIVEIRA COELHO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LETICIA STUARTE DOS REIS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LIDIANA TEIXEIRA MACIEL",
+      "total_parcela": 7000.0
+    },
+    {
+      "NOME FAVORECIDO": "LIDIANE CRISTINA RESENDE PEIXOTO FRANCO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LILIANE GABRIELA DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LOHANDA MAIRA EVANGELISTA DIAS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LORENA CRISTINA SANCHES",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "LORENA GOMES DO AMARAL",
+      "total_parcela": 15124.0
+    },
+    {
+      "NOME FAVORECIDO": "LUANA ALINE DE LIMA MATOS",
+      "total_parcela": 10100.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA FERREIRA PINTO",
+      "total_parcela": 10900.0
+    },
+    {
+      "NOME FAVORECIDO": "LUIARA FONSECA",
+      "total_parcela": 15742.0
+    },
+    {
+      "NOME FAVORECIDO": "MADALENA SANCHA DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARCIA ROSA LIMA DIAS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DA PIEDADE SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DIVINA PEREIRA BUENO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA EDUARDA SANTOS NAZARE",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "NATALIA EMILLI SANTOS DO COUTO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ORISVALDO JOSE DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "PALOMA NILMA JESUS MARTINS DO BONSUCESSO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "PAMELA YASMIM DE OLIVEIRA SANTOS",
+      "total_parcela": 12420.0
+    },
+    {
+      "NOME FAVORECIDO": "PATRICIA CRISTINA DA SILVA COSTA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "PAULA DE JESUS MACHADO",
+      "total_parcela": 16128.0
+    },
+    {
+      "NOME FAVORECIDO": "RAFAELA MARIA DE OLIVEIRA SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "RAFAELA MARILAC DA SILVA",
+      "total_parcela": 13920.0
+    },
+    {
+      "NOME FAVORECIDO": "RAFAELA RODRIGUES DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "RAIMUNDA APARECIDA DOS REIS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "RAISSA EDUARDA PAULINA ARAUJO",
+      "total_parcela": 8675.0
+    },
+    {
+      "NOME FAVORECIDO": "REGIANE GOMES SOARES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "REGINA APARECIDA DE MOURA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "RENATA CAROLINE FELIX",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSARIA APARECIDA MIRANDA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSIANE DE OLIVEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "SHEILA REGINA DE FREITAS PERDIGAO",
+      "total_parcela": 10500.0
+    },
+    {
+      "NOME FAVORECIDO": "SILVANIA ALVES RODRIGUES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "SILVANIA DIAS DUARTE",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "SIMONE DA LUZ PEREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "TAMIRES STEFANE APARECIDA VALADARES",
+      "total_parcela": 7125.0
+    },
+    {
+      "NOME FAVORECIDO": "TAMIRIS STHEFANY ROSA",
+      "total_parcela": 13000.0
+    },
+    {
+      "NOME FAVORECIDO": "TANIA DE OLIVEIRA FERREIRA BARBOSA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "THAINA LAISA MARTINS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "THAIS CHRISTINA PIO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "THAIS RAFAELA DA SILVA RIBEIRO",
+      "total_parcela": 7300.0
+    },
+    {
+      "NOME FAVORECIDO": "THAIS SANTOS MARQUES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "URSULA DANIELE VIANA",
+      "total_parcela": 12673.0
+    },
+    {
+      "NOME FAVORECIDO": "VALQUIMAR SILVA BASTOS",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "VANESSA RODRIGUES DA SILVA",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "VANIMAYRE AQUINO NOGUEIRA SOARES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "WANDA LUCIA SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "YASMIM GABRIELI MARQUES RAMOS",
+      "total_parcela": 11250.0
+    },
+    {
+      "NOME FAVORECIDO": "ZELIA PIEDADE DOS SANTOS",
+      "total_parcela": 13620.0
+    },
+    {
+      "NOME FAVORECIDO": "ELANIA APARECIDA COSTA",
+      "total_parcela": 7700.0
+    },
+    {
+      "NOME FAVORECIDO": "ILCA DOMINGAS DIAS",
+      "total_parcela": 13963.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA MARIA GABRIEL DOS SANTOS",
+      "total_parcela": 6500.0
+    },
+    {
+      "NOME FAVORECIDO": "JANE APARECIDA DE SOUSA",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "KAROLAINE ROSA MOREIRA DOS SANTOS",
+      "total_parcela": 8000.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSELY SOARES",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "ABDAL JORGE DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ADAIR MODESTO RODRIGUES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIANA CRISTINA ANDRE COSTA",
+      "total_parcela": 12670.0
+    },
+    {
+      "NOME FAVORECIDO": "ALANA BATISTA SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ALICE DE CASSIA ARAUJO",
+      "total_parcela": 12220.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE PATRICIA DE SOUZA COELHO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "AMANDA BRAGA DE ARAUJO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "AMELIA DORES DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA PAULA DA SILVA",
+      "total_parcela": 8600.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA PAULA DE OLIVEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDREIA MARIA DE SOUZA",
+      "total_parcela": 6700.0
+    },
+    {
+      "NOME FAVORECIDO": "ARISTANIA FERREIRA XAVIER",
+      "total_parcela": 11040.0
+    },
+    {
+      "NOME FAVORECIDO": "BRUNA CRISTINA DA SILVA DOMINGOS",
+      "total_parcela": 12500.0
+    },
+    {
+      "NOME FAVORECIDO": "DAIANA APARECIDA DA CRUZ",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "DALILA CLAUDIA POLONIA DOS SANTOS",
+      "total_parcela": 6950.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELE DE PAULA SILVA",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "DEBORA DE JESUS ROSA",
+      "total_parcela": 9540.0
+    },
+    {
+      "NOME FAVORECIDO": "DEBORA ESTEVAM ROSA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "DEBORA MARTUCHELLI DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "DRIELY APARECIDA DE PAULA BRAZ",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIS REGINA COELHO",
+      "total_parcela": 10450.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIZENE DE LOURDES LUCIANO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "EVANI MARQUES FERREIRA",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIA CRISTINA SANTOS RAIMUNDO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIANA DANILA FERREIRA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIO DA CRUZ OLIVEIRA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIOLA PATRICIA RODRIGUES DE CASTRO DUARTE",
+      "total_parcela": 13824.0
+    },
+    {
+      "NOME FAVORECIDO": "FABRICIA DE FATIMA ROSA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "FERNANDINA NORBERTA GONCALVES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GABRIELE YASMIN SILVA SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "GISELY LOPES DE SOUZA",
+      "total_parcela": 7000.0
+    },
+    {
+      "NOME FAVORECIDO": "GRACIELLE VITORIA DA SILVA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "ILZA DA PIEDADE DIAS",
+      "total_parcela": 10320.0
+    },
+    {
+      "NOME FAVORECIDO": "INES FERREIRA DE OLIVEIRA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "INGRID GABRIELLE VALADARES FERREIRA",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "IRIS CONCEICAO DA SILVA",
+      "total_parcela": 6500.0
+    },
+    {
+      "NOME FAVORECIDO": "ISABEL CRISTINA TEIXEIRA DE SOUZA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ISABELA PATRICIA APARECIDA DE OLIVEIRA",
+      "total_parcela": 10500.0
+    },
+    {
+      "NOME FAVORECIDO": "IZABELA FERREIRA DOS SANTOS",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "IZABELA VANES MAGALHAES",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "JEAN KENNEDY AGUIAR FRANCA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JENNIFER CANDIDO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "JENNIFER TUANNY FERNANDES DE SOUZA",
+      "total_parcela": 9200.0
+    },
+    {
+      "NOME FAVORECIDO": "JESSICA DA SILVA DO ESPIRITO SANTO",
+      "total_parcela": 11000.0
+    },
+    {
+      "NOME FAVORECIDO": "JESSICA INACIA DIONISIA DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JESSICA PONCIANO SALES DA SILVA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "JOICE FIGUEIREDO DE MENEZES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA RODRIGUES MOREIRA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA SKARLLET CALADO FONSECA",
+      "total_parcela": 8000.0
+    },
+    {
+      "NOME FAVORECIDO": "JURACI PEREIRA DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "JUSSARA APARECIDA LEITE",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "KARLA NAZARE PONCIANO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "KAROLINE CRISTINA DA SILVA OLIVEIRA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "KASSIA EDUARDA SANTOS TEIXEIRA",
+      "total_parcela": 7125.0
+    },
+    {
+      "NOME FAVORECIDO": "KLEBER VIANA DIAS",
+      "total_parcela": 7230.0
+    },
+    {
+      "NOME FAVORECIDO": "LARISSA CRISTINA SOARES PEREIRA",
+      "total_parcela": 9400.0
+    },
+    {
+      "NOME FAVORECIDO": "LARISSA DA SILVA ARAUJO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LARISSA DANUBIA DOS SANTOS ROQUE",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "LARISSA FERREIRA BORGES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LIDIANE ROSA ESTEVAM",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "LIDIANY PAIVA LIMA",
+      "total_parcela": 9300.0
+    },
+    {
+      "NOME FAVORECIDO": "LUANA APARECIDA ALMEIDA",
+      "total_parcela": 8100.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIA APARECIDA DE FREITAS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIENE DE FATIMA MACHADO LUCIANO",
+      "total_parcela": 6800.0
+    },
+    {
+      "NOME FAVORECIDO": "LUDIMILA DE LELES COSTA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LUZIA LOURENCA MACHADO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "LUZINEIA APARECIDA ALVES DA SILVA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "MAGDA APARECIDA PINTO",
+      "total_parcela": 9500.0
+    },
+    {
+      "NOME FAVORECIDO": "MARGARETH DA CONCEICAO LOPES",
+      "total_parcela": 20640.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA ANTONIA MOREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA COSTA SILVA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA FERREIRA DE OLIVEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DAS DORES DE SOUZA OLIVEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA IMACULADA ARAUJO FONSECA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA JOSE DOS SANTOS",
+      "total_parcela": 15105.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA SELESTE DE JESUS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARTA MARTINS MORAIS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "MAURA DA CONCEICAO ALVES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MICAELA SOUZA ANDRADE",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "MICHELE ALVES VIEIRA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "MICHELLE JOZIANE DOS SANTOS SILVA",
+      "total_parcela": 6500.0
+    },
+    {
+      "NOME FAVORECIDO": "MIRELE DA SILVA ROCHA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "NATALINA RODRIGUES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "NEUZA CHAVES DA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "RAIMUNDO SILVANO NEVES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "RAQUEL SILVEIRA DOS SANTOS",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "RAYANE SOUZA DOS SANTOS",
+      "total_parcela": 12996.0
+    },
+    {
+      "NOME FAVORECIDO": "RICHARDSON LUIZ MALAQUIAS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROBERTA CRISTINA DE FREITAS ENGRACIA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ROZIANE APARECIDA SOUZA",
+      "total_parcela": 11772.0
+    },
+    {
+      "NOME FAVORECIDO": "RUTH DE ALENCAR",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "SALETE PIRES MOREIRA",
+      "total_parcela": 7700.0
+    },
+    {
+      "NOME FAVORECIDO": "SANDRA MARIA DIAS CORREIA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "SILVIA MARIA DE SOUZA",
+      "total_parcela": 9200.0
+    },
+    {
+      "NOME FAVORECIDO": "SIMONE DAS GRACAS COELHO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "SIMONE SANTOS DE ALMEIDA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "SONIA CRISTINE OLIVEIRA DE AQUINO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "SUELI DA SILVA MACHADO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "TAMIRES DA SILVA SANTOS",
+      "total_parcela": 11890.0
+    },
+    {
+      "NOME FAVORECIDO": "TATIANA DE JESUS DOS SANTOS",
+      "total_parcela": 7000.0
+    },
+    {
+      "NOME FAVORECIDO": "VANESSA DE FREITAS LOPES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "VANILDA MARTA MOREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VANUZA DUARTE DE QUEIROZ",
+      "total_parcela": 9952.0
+    },
+    {
+      "NOME FAVORECIDO": "VICTORIA CHRISTINE COSTA CALDAS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VIVIANE CRISTINA SOARES",
+      "total_parcela": 9700.0
+    },
+    {
+      "NOME FAVORECIDO": "WANDER ROSA MOREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA DA CUNHA FRADE",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "MIRLANE MARIA DA SILVA",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "HORTENCIA PORTO COTTA DE SOUZA",
+      "total_parcela": 9500.0
+    },
+    {
+      "NOME FAVORECIDO": "JOYCE CRISTINA DA SILVA",
+      "total_parcela": 6500.0
+    },
+    {
+      "NOME FAVORECIDO": "PRISCILA APARECIDA DA CRUZ ENGRACIO",
+      "total_parcela": 9100.0
+    },
+    {
+      "NOME FAVORECIDO": "ARIADILA MILENE SILVA",
+      "total_parcela": 6300.0
+    },
+    {
+      "NOME FAVORECIDO": "CLEUZA LUZIA COELHO",
+      "total_parcela": 6800.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIANA MARQUES MARTINS",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "ALCIONE TEIXEIRA LEAO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE LIMA DOS SANTOS",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE THAIS DE JESUS SOUZA SANTOS",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA FLAVIA APARECIDA DOS SANTOS",
+      "total_parcela": 7175.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA FLAVIA FELIX DA SILVA",
+      "total_parcela": 9775.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDRAMASIA DA PIEDADE FERREIRA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDREIA FONSECA GONCALVES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ANGELA MARCIA FERREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANTONIO JORGE DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "APARECIDA CONCEICAO MARCELINA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "APARECIDA DE FATIMA DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "BIANCA MARIA BATISTA FERREIRA",
+      "total_parcela": 8650.0
+    },
+    {
+      "NOME FAVORECIDO": "BIANCA STEFANY CHAVES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "BRUNA KARINE DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "CACILDA DA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "CHRISTIELLE SILVA MOREIRA",
+      "total_parcela": 8900.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDIA APARECIDA ALVES OLIMPIO PINTO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDIO GONCALVES COSTA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDIOVANA DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTINA VIEIRA RODRIGUES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "DAFNE LUIZA FELIX DE ALMEIDA",
+      "total_parcela": 8625.0
+    },
+    {
+      "NOME FAVORECIDO": "DAIANE SABRINE DOS SANTOS",
+      "total_parcela": 12620.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELA DOS SANTOS HONORIO",
+      "total_parcela": 12600.0
+    },
+    {
+      "NOME FAVORECIDO": "DARA MARQUES DA SILVA CIRINO",
+      "total_parcela": 14520.0
+    },
+    {
+      "NOME FAVORECIDO": "DAYANE APARECIDA ANDRE",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "DEA IZAIAS GOMES",
+      "total_parcela": 6060.0
+    },
+    {
+      "NOME FAVORECIDO": "DELLISNAY DE FATIMA NASCIMENTO",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "EMILLY APARECIDA AGANETTI",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ERICA BARBOSA DE ALMEIDA",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIA TEREZA DE SOUSA CALDAS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "FLAVIO BEZERRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GIOVANNA MARQUES DE DEUS ARAUJO",
+      "total_parcela": 9150.0
+    },
+    {
+      "NOME FAVORECIDO": "IARA NAZARE DE SOUZA",
+      "total_parcela": 12600.0
+    },
+    {
+      "NOME FAVORECIDO": "JACQUELINE APARECIDA BARBOSA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JADE APARECIDA DE SOUZA",
+      "total_parcela": 8500.0
+    },
+    {
+      "NOME FAVORECIDO": "JAQUELINE ESTEVAO DE AMORIM",
+      "total_parcela": 8300.0
+    },
+    {
+      "NOME FAVORECIDO": "JESSICA CARLA DE FREITAS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSIANE APARECIDA FERREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA ANTONIA JACINTO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIETE DA SILVA LIMA",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "KAREN REGINA OLIVEIRA DIAS",
+      "total_parcela": 9500.0
+    },
+    {
+      "NOME FAVORECIDO": "KARINE DE ALBUQUERQUE CAMILO",
+      "total_parcela": 11065.0
+    },
+    {
+      "NOME FAVORECIDO": "KARINE DE FATIMA NASCENTE",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "KEZIA AUGUSTA DOS SANTOS",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "LAIS CRISTINA ELIAS ALVES FERREIRA",
+      "total_parcela": 10450.0
+    },
+    {
+      "NOME FAVORECIDO": "LEA APARECIDA AGANETI MENDES DE OLIVIERA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "LEANDRA PAULA SIMOES",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "LIDIA CRISTINA ARAUJO GONCALVES",
+      "total_parcela": 9900.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIA RODRIGUES VIEIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA REIS DE PAULA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIENE APARECIDA DE SENA SOUZA",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "LUIZA GABRIELA DA SILVA SANTOS",
+      "total_parcela": 10900.0
+    },
+    {
+      "NOME FAVORECIDO": "MANUELA GONCALVES DE SOUZA",
+      "total_parcela": 12060.0
+    },
+    {
+      "NOME FAVORECIDO": "MARCIA CRISTINA SIMAO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARCILENE JOANA DA COSTA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "MARCILIANE ANASTACIA DE MOURA PAULA",
+      "total_parcela": 12528.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA ANDRE",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA ELOISA DOS SANTOS",
+      "total_parcela": 13219.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA HELOISA MOREIRA",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA JOSE DA SILVA RAIMUNDO",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "MARINA DA SILVA MIRANDA",
+      "total_parcela": 10000.0
+    },
+    {
+      "NOME FAVORECIDO": "MENDERSON ANTONIO FONTANA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MOACIR ELOI DA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MOANA EVANGELISTA DIAS",
+      "total_parcela": 10710.0
+    },
+    {
+      "NOME FAVORECIDO": "NAIARA DE SOUZA SANTOS",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "NAIARA TAVARES DOS SANTOS ELEUTERIO",
+      "total_parcela": 13748.0
+    },
+    {
+      "NOME FAVORECIDO": "NATALIA FERNANDES",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "NATHALIA PEREIRA DOS SANTOS",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "NICOLE SANTIAGO CAETANO",
+      "total_parcela": 9300.0
+    },
+    {
+      "NOME FAVORECIDO": "PATRICIA PULCHERA SOUZA DE OLIVEIRA",
+      "total_parcela": 9160.0
+    },
+    {
+      "NOME FAVORECIDO": "PIEDADE DA CONCEICAO DE OLIVEIRA",
+      "total_parcela": 7266.0
+    },
+    {
+      "NOME FAVORECIDO": "PRISCILA FERNANDA MOREIRA LEOCADIO",
+      "total_parcela": 8500.0
+    },
+    {
+      "NOME FAVORECIDO": "PRISCILA SANTOS FELIX",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "RAFAEL CARLOS ELEODORO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "RAFAELA LUIZA FELIX SANTOS",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "REGINA POLONIA DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROBERTO SOARES OLIVEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSILENE FERREIRA",
+      "total_parcela": 7350.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSILENE FREITAS NATIVIDADE",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "SARINY MAYRE RODRIGUES DE OLIVEIRA",
+      "total_parcela": 9400.0
+    },
+    {
+      "NOME FAVORECIDO": "SILVIA APARECIDA DIAS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "SOLANGE OLIVEIRA DOS SANTOS AUGUSTO",
+      "total_parcela": 16731.0
+    },
+    {
+      "NOME FAVORECIDO": "STEFANE CRISTINA OLIVEIRA SOUZA",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "TATIANA APARECIDA FERREIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "TELMA THAIS JULIO",
+      "total_parcela": 9525.0
+    },
+    {
+      "NOME FAVORECIDO": "THALITA DE LOURDES PEIXOTO BOM SUCESSO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "VANESSA APARECIDA FERNANDES DA SILVA",
+      "total_parcela": 9750.0
+    },
+    {
+      "NOME FAVORECIDO": "WALDIRENE FERREIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA ALICE DE OLIVEIRA SILVA",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "PAULO VILELA PINTO",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "PRISCILA DE FATIMA MIRANDA SILVA",
+      "total_parcela": 7100.0
+    },
+    {
+      "NOME FAVORECIDO": "SONIA RODRIGUES DE ASSIS VAZ AMARO",
+      "total_parcela": 6500.0
+    },
+    {
+      "NOME FAVORECIDO": "ALCIONE ROSA CAMILO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ALESSANDRA LEONIA CARLOS ELEODORO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ALEXANDRA REGINA DOS SANTOS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ALFA DA SILVA SANTOS",
+      "total_parcela": 6200.0
+    },
+    {
+      "NOME FAVORECIDO": "ALICE APARECIDA DA SILVA FILIPE",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE ADRIANE FERREIRA MARQUES DOS SANTOS",
+      "total_parcela": 9400.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE APARECIDA DE OLIVEIRA",
+      "total_parcela": 11520.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA CAROLINA DA CRUZ",
+      "total_parcela": 14420.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA CRISTINA DOS SANTOS",
+      "total_parcela": 14520.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA LUCIA MOREIRA SOARES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA MEL DA CONCEICAO BARBOSA DA SILVA",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA PAULA DIAS",
+      "total_parcela": 7450.0
+    },
+    {
+      "NOME FAVORECIDO": "ANGELA CRISTINA FIRME",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "APARECIDA MARIA DOS SANTOS",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "APARECIDA MOREIRA AFONSO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ARIANA APARECIDA DE ARAUJO",
+      "total_parcela": 14448.0
+    },
+    {
+      "NOME FAVORECIDO": "ARIANA VILLACA CAMPOS CARVALHO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ARIANY FIGUEREDO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ARLETE DE FATIMA SOARES",
+      "total_parcela": 10720.0
+    },
+    {
+      "NOME FAVORECIDO": "BRUNO MARTUCHELLI DOS SANTOS",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "CAROLINA DOS SANTOS CALADO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "CAROLINA MERCES LEOCADIO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "CAROLINE GABRIELLE EVANGELISTA SANTOS",
+      "total_parcela": 10900.0
+    },
+    {
+      "NOME FAVORECIDO": "CELIA EVANGIL SANTOS DO NASCIMENTO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "CELSO JOSE FERREIRA ARAUJO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CHIRLENE SOARES BRAGA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDIANA APARECIDA EVANGELISTA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTIANE OLIVEIRA DE ASSIS SANTOS",
+      "total_parcela": 9350.0
+    },
+    {
+      "NOME FAVORECIDO": "DAIANA SARA SILVA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "DALILA CORREA LUCIANO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "DALILA CRISTINA PEREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "DEBORA DA CONCEICAO RODRIGUES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "DEISIANE DA CRUZ LOURENCO",
+      "total_parcela": 11200.0
+    },
+    {
+      "NOME FAVORECIDO": "DOMINGOS SAVIO DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "EDINALDO DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ELENI GOMES PEREIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIETE PEDROSA VIANA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "EVA NILMA DA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "FERNANDA ALVES BRITO",
+      "total_parcela": 10320.0
+    },
+    {
+      "NOME FAVORECIDO": "FERNANDA DIAS BATISTA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "FLAVIA FERNANDA RESENDE SILVA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "GENI MAURA GABRIEL DE JESUS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GERCI RODRIGUES SOARES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GILMARCIA FIDELES DE BARROS",
+      "total_parcela": 6665.0
+    },
+    {
+      "NOME FAVORECIDO": "GLEISON REIS DE PAULA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "HELLEN CRISTINA SOUZA",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "INES BITTENCOURT CHAVES OLIVEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "IVANI GONCALVES DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JORGE ROMUALDO RODRIGUES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSE CARLOS DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSIMARA APARECIDA DE SA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIA DOS SANTOS MARQUES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIA MARCIA BOA VENTURA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA DA SILVA OLIVEIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA DANIELLE FERREIRA",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "JUNIA FERREIRA PASTOR",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "KAMILA HELENA RIBEIRO DE ANDRADE",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "KATIA REGINA MAIA",
+      "total_parcela": 11152.0
+    },
+    {
+      "NOME FAVORECIDO": "LEILA ANTONIO PORTO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "LETICIA APARECIDA MATHEUS",
+      "total_parcela": 7512.0
+    },
+    {
+      "NOME FAVORECIDO": "LETICIA RAPHAELLY DE OLIVEIRA",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "LILIAN CRISTINA MONTEIRO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "LIVIA CRISTINA MOURA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "LORENA MONTEIRO DOMINGOS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIENE AMARAL PORTO",
+      "total_parcela": 8100.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCINEIA DA COSTA",
+      "total_parcela": 7650.0
+    },
+    {
+      "NOME FAVORECIDO": "MARCIA FRANCIS ARAUJO SOARES",
+      "total_parcela": 8175.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA DE ASSIS SOUZA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA EDUARDA DA SILVA PINTO",
+      "total_parcela": 11500.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA EDUARDA MOUTINHO AGUIAR DA SILVA",
+      "total_parcela": 8625.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA JUCELIA EVANGELISTA DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA PIEDADE DO COUTO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIANA RICELLY SANTOS SILVA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "MARILAINE DA CONCEICAO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARINALVA MOTA SANCHES MENDES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MATILDE APARECIDA TEIXEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MAURO LUCIO DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MICHELLE CRISTIANE FERREIRA",
+      "total_parcela": 6375.0
+    },
+    {
+      "NOME FAVORECIDO": "NAIARA VICENTE DOS SANTOS",
+      "total_parcela": 9450.0
+    },
+    {
+      "NOME FAVORECIDO": "NATALIA CRISTINA PEREIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "NATALIA STHEFANY DA SILVA RAMOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "NATHALIA CHRISTIANE BONSUCESSO DE OLIVEIRA",
+      "total_parcela": 8600.0
+    },
+    {
+      "NOME FAVORECIDO": "NAYARA ELIANA DOS REIS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "NELICE PEDRA BARBOSA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "NUBIA GABRIELA APARECIDA ALEME",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "PAOLA ROCHA OLIVEIRA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "PAULA BARBOSA FELIX",
+      "total_parcela": 12520.0
+    },
+    {
+      "NOME FAVORECIDO": "PRISCILA GONCALVES VIEIRA",
+      "total_parcela": 8800.0
+    },
+    {
+      "NOME FAVORECIDO": "RAQUEL AUGUSTA FERREIRA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "REGINA APARECIDA DE PAIVA REIS",
+      "total_parcela": 10920.0
+    },
+    {
+      "NOME FAVORECIDO": "RENATO SOARES DE ANDRADE",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "RICARDO GERALDO BENEVENUTO SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROBERTO DIAS FONSECA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSANE FERREIRA DOS SANTOS",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSIMEIRE APARECIDA DA CRUZ CUPERTINO",
+      "total_parcela": 9700.0
+    },
+    {
+      "NOME FAVORECIDO": "RUTE SALES DA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "SANTA AMANCIO DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "SARAH DEIVID RIVER CAPRI SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "SIMONE APARECIDA DIAS DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "SIMONE DA PIEDADE SACRAMENTO FREITAS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "SIMONE DOS SANTOS REIS",
+      "total_parcela": 8600.0
+    },
+    {
+      "NOME FAVORECIDO": "SIMONE TEIXEIRA LEAO",
+      "total_parcela": 14076.0
+    },
+    {
+      "NOME FAVORECIDO": "SONIA ARCANJO MARTINS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "THAYZE GUEDES DA CRUZ",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VALDIRIANA SILVA MACIEL",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VANDA LUIZA LUCIANO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "VERA LUCIA DA COSTA NASCIMENTO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "VERA MARIA DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VITORIA DE OLIVEIRA SOUZA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "VITORIA MADALENA MENDES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "WAGNER CANDIDO RAMOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "WAGNER COSTA PIRES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "NAELY VICENTE PEREIRA",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "BARBARA SILVA GUEDES DOS SANTOS",
+      "total_parcela": 6400.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA LUCIA VILETE",
+      "total_parcela": 6312.0
+    },
+    {
+      "NOME FAVORECIDO": "MICHELE LURDES ALVES SILVA",
+      "total_parcela": 11700.0
+    },
+    {
+      "NOME FAVORECIDO": "ADENISIA SILVA GONCALVES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ADIL MARTIR DE MAGALHAES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIANA MARCAL DOS SANTOS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIANA SILVESTRE SANTOS",
+      "total_parcela": 7769.0
+    },
+    {
+      "NOME FAVORECIDO": "ALARISSA BATISTA RIBEIRO",
+      "total_parcela": 8050.0
+    },
+    {
+      "NOME FAVORECIDO": "ALESSANDRA DE CASSIA ROSA",
+      "total_parcela": 6500.0
+    },
+    {
+      "NOME FAVORECIDO": "ALEXSANDRA MOREIRA SIQUEIRA ROSA FONTANA",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE LUZIA REIS COSTA CANDIDO",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "ALMERITA ALVES DE SOUZA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "AMANDA EMANUELLE DOS SANTOS",
+      "total_parcela": 6850.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDERSON MOREIRA DA CRUZ",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDREA ROBERTA DOS REIS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDRELINA APARECIDA DA SILVA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "ANGELA AMADA SEVERIANA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "BIANCA DE CASTRO SILVA",
+      "total_parcela": 12120.0
+    },
+    {
+      "NOME FAVORECIDO": "CAMILA MICHELLE FERREIRA",
+      "total_parcela": 6012.0
+    },
+    {
+      "NOME FAVORECIDO": "CASSANDRA DA SILVA SANTOS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "CELIA FERREIRA GOMES",
+      "total_parcela": 7150.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDIONOR GOMES PEREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CLEUZA MARIA DE LIMA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTIANE VIEIRA BARBOSA",
+      "total_parcela": 6775.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTINA LOURDES DE MORAES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "DAIANE SILVA BRAGANCA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "DALIANA FERNANDA CAMARGO",
+      "total_parcela": 9960.0
+    },
+    {
+      "NOME FAVORECIDO": "DAPHINE STERFANINE PEREIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "DAYANA APARECIDA COSTA ARAUJO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "DEBORA MARILIA PEREIRA GOMES",
+      "total_parcela": 9150.0
+    },
+    {
+      "NOME FAVORECIDO": "DEBORA NERTS MAYER",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "EBER MESAQUE SOARES DIAS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ELAINE KATIANA DE OLIVEIRA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIANE FERREIRA MARTINS",
+      "total_parcela": 13320.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIZETH MARIA DA SILVA PEREIRA",
+      "total_parcela": 10300.0
+    },
+    {
+      "NOME FAVORECIDO": "EMANUELE ROCHA SOARES",
+      "total_parcela": 9130.0
+    },
+    {
+      "NOME FAVORECIDO": "EMILENE PEREIRA DO CARMO",
+      "total_parcela": 14928.0
+    },
+    {
+      "NOME FAVORECIDO": "ESPEDITO MOREIRA FERREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "EUFRASIA APOLONIA FERREIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIANA PAULA DOS SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "FERNANDA CRISTINA DA SILVA",
+      "total_parcela": 16920.0
+    },
+    {
+      "NOME FAVORECIDO": "FERNANDA FRANCESCA DA CRUZ SILVA",
+      "total_parcela": 12720.0
+    },
+    {
+      "NOME FAVORECIDO": "FERNANDA QUEIROZ DE SOUZA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "FLAVIANA FERNANDES DE SOUZA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "FRANCIELLE DA FONSECA SOUZA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "FRANCISLAINE ANDRADE DE OLIVEIRA",
+      "total_parcela": 13248.0
+    },
+    {
+      "NOME FAVORECIDO": "GABRIELA KATIA DOS SANTOS",
+      "total_parcela": 12200.0
+    },
+    {
+      "NOME FAVORECIDO": "GERALDA CASSIANA NAZARETH",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GIOVANA CAROLINE MONTEIRO DE SOUZA PEREIRA",
+      "total_parcela": 10900.0
+    },
+    {
+      "NOME FAVORECIDO": "GLEICIARA NASOM SANTOS TORRES",
+      "total_parcela": 9300.0
+    },
+    {
+      "NOME FAVORECIDO": "GLEIDSON CRISTOVAO GONCALVES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "GLORIA JESUS DO ESPIRITO SANTO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "HELIANA FERREIRA DOS SANTOS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "IOLANDA MAGALHAES DE OLIVEIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ISAIAS RODRIGUES DOS REIS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JANILDE PIEDADE DOS SANTOS",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "JAQUELINE PEREIRA RODRIGUES",
+      "total_parcela": 11970.0
+    },
+    {
+      "NOME FAVORECIDO": "JENNIFER CRISTINA PEREIRA SOUZA SANTOS",
+      "total_parcela": 10500.0
+    },
+    {
+      "NOME FAVORECIDO": "JESSYCA DE CASSIA ARAUJO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JOISIELE CANDIDO LOPES",
+      "total_parcela": 9400.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSE DOS SANTOS MARTINS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSE WANDER DAS DORES FERREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSIANE DA SILVA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSIANE MENDES DE MOURA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIA DE OLIVEIRA SILVA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "JUSSARA JUNIA DA SILVA",
+      "total_parcela": 7000.0
+    },
+    {
+      "NOME FAVORECIDO": "LEIDIANE NOGUEIRA DA SILVA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "LETICIA MARIA SILVA COSTA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LORENA ALMEIDA RAIMUNDO",
+      "total_parcela": 10060.0
+    },
+    {
+      "NOME FAVORECIDO": "LORIANE MARCIA SILVA ALMEIDA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "LORRAYNI KEYFANI XAVIER NASCIMENTO",
+      "total_parcela": 10450.0
+    },
+    {
+      "NOME FAVORECIDO": "LUANA ARAUJO LUCIANO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LUANA DE ARAUJO",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA APARECIDA FERREIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANE ANTONIA DO NASCIMENTO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCILAINE MARIA DA SILVA RODRIGUES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARA REJANE BELENDIER DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARCIA MEIRE LUCAS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA DA SILVA",
+      "total_parcela": 15000.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA CARLA BATISTA SOARES",
+      "total_parcela": 9700.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DA PENHA DOS SANTOS ALVES",
+      "total_parcela": 8900.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DA PIEDADE ELIAS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA EDUARDA RODRIGUES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA LUCIA APARECIDA PERDIGAO",
+      "total_parcela": 7616.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA LUIZA GOMES DA SILVA",
+      "total_parcela": 6500.0
+    },
+    {
+      "NOME FAVORECIDO": "MARILENE CRISTINA BERNARDINO",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARTA ROZA DE JESUS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARY CRISTINA FERREIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "MICHELE LOURANA SANTOS ARAUJO",
+      "total_parcela": 11920.0
+    },
+    {
+      "NOME FAVORECIDO": "MICHELE ROSA DOS SANTOS",
+      "total_parcela": 8800.0
+    },
+    {
+      "NOME FAVORECIDO": "NAYRIANE MAIRE FERREIRA",
+      "total_parcela": 9650.0
+    },
+    {
+      "NOME FAVORECIDO": "NELI GERALDA DE SOUZA",
+      "total_parcela": 6825.0
+    },
+    {
+      "NOME FAVORECIDO": "NEUSA APARECIDA FERREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "NEWTON SANTOS SOARES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "NILCE EFIGENIA DE ALMEIDA",
+      "total_parcela": 6300.0
+    },
+    {
+      "NOME FAVORECIDO": "OSWALDO DE CARVALHO JUNIOR",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "PALOMA NEVES DE ALMEIDA",
+      "total_parcela": 10900.0
+    },
+    {
+      "NOME FAVORECIDO": "PAMELA MARIA MARTINS DOS SANTOS",
+      "total_parcela": 8900.0
+    },
+    {
+      "NOME FAVORECIDO": "PAMELA TAMARA APARECIDO",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "PATRICIA FERNANDES MENDES",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "PATRICIA MENDES DOS SANTOS",
+      "total_parcela": 10350.0
+    },
+    {
+      "NOME FAVORECIDO": "POLYANE DO CARMO ANSELMO",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "RAQUEL CUSTODIO DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "RAYANE SOARES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "REGINA AUGUSTA ALMEIDA DE JESUS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "REGINA CELIA DOS SANTOS CONCEICAO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "RENATA CRISTINA ALVES RODRIGUES DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSANA PEREIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSANGELA DA COSTA PIEDADE",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSIMEIRE APARECIDA VENTURA",
+      "total_parcela": 6825.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSYLENE PEREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "SARA ALMEIDA GOMES",
+      "total_parcela": 8650.0
+    },
+    {
+      "NOME FAVORECIDO": "SIRLENE APARECIDA GOMES",
+      "total_parcela": 8640.0
+    },
+    {
+      "NOME FAVORECIDO": "TAYSSA DE SOUZA ANTERO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "THAILISSE OLIVEIRA DE ARAUJO",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "THAIS NASCIMENTO LACERDA",
+      "total_parcela": 8300.0
+    },
+    {
+      "NOME FAVORECIDO": "THIAGO SANTOS OLIVEIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "VICENTE ANTONIO DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VIVIANE CRISTINA PEREIRA",
+      "total_parcela": 10100.0
+    },
+    {
+      "NOME FAVORECIDO": "ANTONIA ELIZABETE BATISTA DO CARMO",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIANA CRISTINA DOS REIS ISABEL",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "INGREDY ALVES MONTEIRO",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "PAULA LUANA MARIA DA CRUZ",
+      "total_parcela": 8800.0
+    },
+    {
+      "NOME FAVORECIDO": "ADAIANIA APARECIDA SOARES",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "ADELUZA MUNIZ DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ALEX FRANCIS DOS SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ALINE APARECIDA PESSOA DUARTE",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "AMANDA DE CASSIA CANDIDO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA MARCIA APARECIDA FONSECA LIMA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDRELINA DOS SANTOS RAIMUNDO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDREZA BRIGIDA SILVA ALVARENGA",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "ANNE CAROLINE ARAUJO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ANTONIO SERGIO DA COSTA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "CARLOS BETO DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDILAINE MICHELLE LEITE COSTA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDINEIA ALVES DOS SANTOS",
+      "total_parcela": 9650.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTIANE REGINA PACHECO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTIANE VILMA DA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "DAIANE MAIARA LORENE DOS SANTOS",
+      "total_parcela": 8814.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELA DE ARAUJO CUNHA",
+      "total_parcela": 16680.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELE CRISTINA GONZAGA",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "EDMAR FRANCISCO GIL",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "EMERSON CASSIMIRO DE AQUINO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ERICA MARA DAS DORES SIRIO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "EVELIN VIEIRA GONCALVES",
+      "total_parcela": 10350.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIANO DOS SANTOS FERREIRA",
+      "total_parcela": 9450.0
+    },
+    {
+      "NOME FAVORECIDO": "FERNANDA LIVIA FERNANDES",
+      "total_parcela": 8225.0
+    },
+    {
+      "NOME FAVORECIDO": "FLAVIA CRISTINA SANTOS",
+      "total_parcela": 7600.0
+    },
+    {
+      "NOME FAVORECIDO": "FRANCISCA DE FATIMA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GABRIELLY EDUARDA SEVERO MARQUES",
+      "total_parcela": 9050.0
+    },
+    {
+      "NOME FAVORECIDO": "GABRIELLY VITORIA XAVIER ERCULANO",
+      "total_parcela": 11000.0
+    },
+    {
+      "NOME FAVORECIDO": "GEANE FERREIRA DOS SANTOS",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "GEOVANA FERNANDES DA CRUZ",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "GERCINA MARIA DE OLIVEIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "GREICY KAREN GALVAO MACHADO",
+      "total_parcela": 6550.0
+    },
+    {
+      "NOME FAVORECIDO": "IGO GABRIEL RIVER CAPRI E SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ISABELA CAROLINA DE SOUSA GOMES",
+      "total_parcela": 11050.0
+    },
+    {
+      "NOME FAVORECIDO": "ISLENE CRISTINA SILVA MAGALHAES",
+      "total_parcela": 8500.0
+    },
+    {
+      "NOME FAVORECIDO": "JACIRA ALVES FERREIRA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "JANAINY PEREIRA ROCHA",
+      "total_parcela": 9400.0
+    },
+    {
+      "NOME FAVORECIDO": "JANETE GIL DA SILVA GRACIANO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "JANIELE LUIZA DOS SANTOS",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "JAQUELINE DE SOUZA ASSIS",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "JOICEANA APARECIDA DE SOUZA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSE EUSTAQUIO DE ALMEIDA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA APARECIDA DE MOURA",
+      "total_parcela": 8700.0
+    },
+    {
+      "NOME FAVORECIDO": "JUNIA DOS SANTOS REIS SABINO",
+      "total_parcela": 11120.0
+    },
+    {
+      "NOME FAVORECIDO": "JUSSIMARA ANTONIA FERREIRA DA CRUZ",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "KENIA REGINA MAGALHAES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LARISSA DE SENA SILVA RODRIGUES",
+      "total_parcela": 7750.0
+    },
+    {
+      "NOME FAVORECIDO": "LARISSA LUIZA FIGUEREDO",
+      "total_parcela": 6950.0
+    },
+    {
+      "NOME FAVORECIDO": "LETICIA CRISTINA SANTOS RODRIGUES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA DIAS RODRIGUES DOS SANTOS",
+      "total_parcela": 6020.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA FIDELES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA MARA BENTO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCILA ALVES DE OLIVEIRA ROCHA",
+      "total_parcela": 8800.0
+    },
+    {
+      "NOME FAVORECIDO": "LUISA GOMES DA ROCHA",
+      "total_parcela": 12624.0
+    },
+    {
+      "NOME FAVORECIDO": "MARCIONELE ROBERTA DA SILVA",
+      "total_parcela": 8625.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA DA COSTA PIEDADE",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA DA SILVA GONCALVES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA AUXILIADORA TEIXEIRA SIMOES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DA PIEDADE LIMA DO NASCIMENTO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DE FATIMA ANTONIO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA EDUARDA FERREIRA MARQUES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA EDUARDA GONCALVES DE DEUS SOUZA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA MADALENA VIEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA MARGARETH DA PAZ PORTO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIZETE DOS REIS COSTA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MICHELLE LOPES SAMPAIO",
+      "total_parcela": 6375.0
+    },
+    {
+      "NOME FAVORECIDO": "NADIA VITORIA GONCALVES DA SILVA",
+      "total_parcela": 9450.0
+    },
+    {
+      "NOME FAVORECIDO": "NAGELA MIDIA DE OLIVEIRA SILVA GERVASIO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "NAIARA CRISTINA DOS SANTOS",
+      "total_parcela": 6400.0
+    },
+    {
+      "NOME FAVORECIDO": "NILMA DIVINA DA CONCEICAO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "PASCOAL BERNARDINO DA CRUZ",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "PATRINY APARECIDA GONCALVES DA SILVA",
+      "total_parcela": 9050.0
+    },
+    {
+      "NOME FAVORECIDO": "POLIANE AUXILIADORA LIMA CASTRO",
+      "total_parcela": 7700.0
+    },
+    {
+      "NOME FAVORECIDO": "POLIANY DOS SANTOS DE JESUS SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "PRISCILA LEITE SABINO",
+      "total_parcela": 9400.0
+    },
+    {
+      "NOME FAVORECIDO": "REGIANE APARECIDA MACHADO",
+      "total_parcela": 8700.0
+    },
+    {
+      "NOME FAVORECIDO": "REGINA KATIA CORREA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "REJANE FERREIRA DE MORAIS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ROBERTA CRISTINA DOS SANTOS",
+      "total_parcela": 10900.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSIMAR IZABEL DE OLIVEIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ROZIMERE CONCEICAO LOPES SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "TAIS LUCIA DA SILVA",
+      "total_parcela": 8700.0
+    },
+    {
+      "NOME FAVORECIDO": "TAMARA CRISTINA DE LIMA",
+      "total_parcela": 8100.0
+    },
+    {
+      "NOME FAVORECIDO": "THAIS ESTEFANI DOS SANTOS COSTA",
+      "total_parcela": 6900.0
+    },
+    {
+      "NOME FAVORECIDO": "THAISA DA SILVA RODRIGUES",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "THAISSA CRISTINA HENRIQUES BARBOSA PIRES",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "THAMARA CRISTINA PAULA SILVA SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "VANESSA CRISTINA DE SENA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "VANESSA LUANA DA SILVA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "VERA LUCIA DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "YASMINE STEFANI CORREA SANTOS",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDIO SANTANA",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "JACQUELINE NONATA FONSECA",
+      "total_parcela": 8550.0
+    },
+    {
+      "NOME FAVORECIDO": "DULCILEA DOS SANTOS MAGALHAES CORREIA",
+      "total_parcela": 6500.0
+    },
+    {
+      "NOME FAVORECIDO": "ENI DENISE MOREIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "IARA MICHELE DOS SANTOS GREGORIO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VERONICA DE FATIMA CERQUEIRA REZENDE",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "RAQUEL DE MELO MACIEL",
+      "total_parcela": 19628.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIANA MARCIA DOS REIS",
+      "total_parcela": 7432.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIANA PERDIGAO MAIA",
+      "total_parcela": 9900.0
+    },
+    {
+      "NOME FAVORECIDO": "AGUINALDO FERREIRA DE ARRUDA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ALEX ANTONIO FERREIRA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ALVILEIA ALVES",
+      "total_parcela": 6825.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA PAULA ARAUJO NASCIMENTO",
+      "total_parcela": 8600.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDREIA ELOIZA PINTO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ANGELA FERNANDA MARIANO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANTONIO HENRIQUE DA ROCHA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ANTONIO JOSE MAGALHAES",
+      "total_parcela": 7450.0
+    },
+    {
+      "NOME FAVORECIDO": "ARIANE ESTEFANY OLIVEIRA ALMEIDA",
+      "total_parcela": 7650.0
+    },
+    {
+      "NOME FAVORECIDO": "ARIELE RODRIGUES PESSOA",
+      "total_parcela": 12168.0
+    },
+    {
+      "NOME FAVORECIDO": "ARLIENE DE LOURDES CARVALHO NASCIMENTO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "BARBARA EMANUELLE DE OLIVEIRA TEIXEIRA MATOS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "CACILDA CRISTINA SOARES DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CAMILA SANTANA VIEIRA SILVA",
+      "total_parcela": 17832.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDIA LUIZA DOS SANTOS JOAO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDIA MARIA FRAGA DOS SANTOS",
+      "total_parcela": 11760.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDIENE MARIANA DA CRUZ SILVA",
+      "total_parcela": 12662.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTIANE APARECIDA DE OLIVEIRA FERREIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "DAIANA STHEFANI DA SILVEIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "DAIANE TAIS DOS SANTOS",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "DALILA GOMES SIMAO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELA APARECIDA DA SILVA",
+      "total_parcela": 7550.0
+    },
+    {
+      "NOME FAVORECIDO": "DAYANA CRISTINA ATANAZIA DIAS",
+      "total_parcela": 9300.0
+    },
+    {
+      "NOME FAVORECIDO": "DIANA CARVALHO DE OLIVEIRA",
+      "total_parcela": 7500.0
+    },
+    {
+      "NOME FAVORECIDO": "ELAINE MARIA DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIANE MARIA DE SOUZA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ELISANGELA DE ASSIS CUSTODIO VIEIRA",
+      "total_parcela": 6650.0
+    },
+    {
+      "NOME FAVORECIDO": "ESTER VITORIA DOS SANTOS",
+      "total_parcela": 11000.0
+    },
+    {
+      "NOME FAVORECIDO": "FABIANA DE LOURDES TORRES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "FLAVIA MARCIA DOS REIS",
+      "total_parcela": 8500.0
+    },
+    {
+      "NOME FAVORECIDO": "GABRIELE CRISTINA DIAS SENA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "GERALDO LUCIANO MIGUEL",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GERALDO PAULO GONCALVES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GESSICA BATISTA DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "GIANE ANGELINA DE LIMA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GILMAR DOS PASSOS SANTIAGO",
+      "total_parcela": 10000.0
+    },
+    {
+      "NOME FAVORECIDO": "GISSELA DA CONCEICAO PORTES GOMES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "GRACIELA BRASILINA ROSA MARTINS",
+      "total_parcela": 17028.0
+    },
+    {
+      "NOME FAVORECIDO": "GRACILAINE ANTERO DA CRUZ DE OLIVEIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "GRASIELE CRISTINA VIEIRA PINTO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "GREY CIQUELLE SANCHES LOPES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "HELOISA MARIANA BARBOSA SANTOS",
+      "total_parcela": 7950.0
+    },
+    {
+      "NOME FAVORECIDO": "HELOISA ROSA DA SILVA",
+      "total_parcela": 6300.0
+    },
+    {
+      "NOME FAVORECIDO": "HENDY NARA PASTOR FONSECA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "IASMIM MARCELLE SENA DA CRUZ",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ILZA FRANCISCA DA SILVA",
+      "total_parcela": 6500.0
+    },
+    {
+      "NOME FAVORECIDO": "ISABELA CRISTINA BARBOSA",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "ISABELA SANTOS DUARTE SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "IZABEL BAMBIRRA ELIAS NETA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "IZINARIA CAMILA MAGALHAES",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "JANAINA CRISTINA SOUZA",
+      "total_parcela": 8550.0
+    },
+    {
+      "NOME FAVORECIDO": "JAQUELINE FATIMA FREITAS",
+      "total_parcela": 9950.0
+    },
+    {
+      "NOME FAVORECIDO": "JEIZA JUNIA GONCALVES",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "JESSICA CAROLINA DE OLIVEIRA",
+      "total_parcela": 9050.0
+    },
+    {
+      "NOME FAVORECIDO": "JESSICA DOS SANTOS",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSE ANTONIO DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSE DO CARMO DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JOZIANE CATIA CORREA",
+      "total_parcela": 10920.0
+    },
+    {
+      "NOME FAVORECIDO": "JUCELLE APARECIDA DA COSTA VIANA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIA CRISTINA SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIE KELLY ALMEIDA SILVA",
+      "total_parcela": 8800.0
+    },
+    {
+      "NOME FAVORECIDO": "JUSSARA FERNANDES BARBOSA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "KAROLAINE NASCIMENTO LEITE",
+      "total_parcela": 8900.0
+    },
+    {
+      "NOME FAVORECIDO": "KATICILAINE APARECIDA SANTOS",
+      "total_parcela": 9200.0
+    },
+    {
+      "NOME FAVORECIDO": "KEILA BATISTA DIAS",
+      "total_parcela": 7900.0
+    },
+    {
+      "NOME FAVORECIDO": "KHETHILIN RAIRA DE OLIVEIRA DA SILVA",
+      "total_parcela": 7950.0
+    },
+    {
+      "NOME FAVORECIDO": "LAIS ADRIANA DAVI TEIXEIRA",
+      "total_parcela": 7475.0
+    },
+    {
+      "NOME FAVORECIDO": "LARISSA IANCA DE ANDRADE",
+      "total_parcela": 10860.0
+    },
+    {
+      "NOME FAVORECIDO": "LIDIA NAARA LOPES DA SILVA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LIDIANE KATIA CORREA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "LISJANE DE LOURDES MORAES",
+      "total_parcela": 9620.0
+    },
+    {
+      "NOME FAVORECIDO": "LIVIA ALVES DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA DA SILVA PINHEIRO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA DAS GRACAS ALVES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA LOPES PEREIRA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCILENE TANAN DE JESUS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIMARA PATRICIA CRUZ",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "LUDIMILA KENIA APARECIDO",
+      "total_parcela": 8600.0
+    },
+    {
+      "NOME FAVORECIDO": "LUIZ CASSIO DE OLIVEIRA JUNIOR",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARCIA DA SILVA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA ANGELICA DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA ANTONIA DOS SANTOS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA MARTINS LOURENCO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DE LOURDES DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARILIA SILVIA DIAS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "MARLENE PINTO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARLI DE FATIMA DIAS FERNANDES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MARRIELI CANDIDO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "MENICA SUELE DOS SANTOS",
+      "total_parcela": 7700.0
+    },
+    {
+      "NOME FAVORECIDO": "MICHELI CLERIA DE OLIVEIRA BARBOSA",
+      "total_parcela": 8800.0
+    },
+    {
+      "NOME FAVORECIDO": "MONICA DE SOUZA ELEOTERIO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "NADIR CHAVES DE JESUS SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "NATALIA LOURDES ROSA BATISTA DIAS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "NAYARA GABRIELA SANTOS FERREIRA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "NILMA ROSA DA SILVA SOARES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "OGINALVA PEREIRA COSTA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "PALOMA DANIELE DA SILVA TELESFORO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "PATRICIA CRISTINA CRUZ MOREIRA",
+      "total_parcela": 10080.0
+    },
+    {
+      "NOME FAVORECIDO": "PATRICIA FERNANDES VIEIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "PATRICK SAMUEL BRANDAO PEIXOTO",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "POLIANA CAMILA PASTOR",
+      "total_parcela": 13114.0
+    },
+    {
+      "NOME FAVORECIDO": "POLIANA SILVA AMORIM CARDINALI",
+      "total_parcela": 9800.0
+    },
+    {
+      "NOME FAVORECIDO": "PRISCILA DE OLIVEIRA SILVA SEVERINO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSAINE CELY NUNES GREGORIO",
+      "total_parcela": 6280.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSANA MARIA DA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "SILVANIA CRISTINA DE FREITAS SILVA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "SIZARA CRISTINA OLIVEIRA NOLASCO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "SOLANGE ALVES DIAS",
+      "total_parcela": 10100.0
+    },
+    {
+      "NOME FAVORECIDO": "STEFANE MARIA DOS SANTOS PEREIRA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "STEFANY GABRIELLE SOARES LOPES",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "SUELEN CARLA DA SILVA",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "SUELY OLIVEIRA DOS SANTOS AUGUSTO SILVA",
+      "total_parcela": 11061.0
+    },
+    {
+      "NOME FAVORECIDO": "TATIANA MARIA OLIVEIRA",
+      "total_parcela": 7150.0
+    },
+    {
+      "NOME FAVORECIDO": "VALDIRENE DA CONCEICAO NASCENTE",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "VALERIA APARECIDA DA FONSECA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "VIVIANE MARIA FERREIRA DO SOCORRO",
+      "total_parcela": 8800.0
+    },
+    {
+      "NOME FAVORECIDO": "WANDERLEIA AUGUSTA DA COSTA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "WIARA CRISTINA XAVIER",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ISAMARA ARAUJO SOUZA",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA LEOCADIA FELIX",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "SILVIA MARIA DOS SANTOS",
+      "total_parcela": 6500.0
+    },
+    {
+      "NOME FAVORECIDO": "LUANA TAMIRES MARIANA SILVA",
+      "total_parcela": 6312.0
+    },
+    {
+      "NOME FAVORECIDO": "ADAILTON DE PAULA SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ADRIANA ABIGAIL LOPES DE MIRANDA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "ALECILDA SILVA DE OLIVEIRA",
+      "total_parcela": 8075.0
+    },
+    {
+      "NOME FAVORECIDO": "ALMIRO DIAS CONCEICAO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "AMANDA DA PAZ SOUZA OLIVEIRA",
+      "total_parcela": 8550.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA CAROLINE DE OLIVEIRA DOS SANTOS",
+      "total_parcela": 12570.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA CLARA DE PAULA COTA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA CRISTINA DA SILVA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA PAULA DE FREITAS ENGRACIO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "ANA PAULA GOMES DA SILVA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDREZA DE PAULA CAMPOS SEVERINO",
+      "total_parcela": 12524.0
+    },
+    {
+      "NOME FAVORECIDO": "ANDRIAMARA EGIDIA SOUZA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ANGELINA DAS NEVES",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "ARQUILENE RIBEIRO GANDRA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "CAMILA FERNANDA PEREIRA DOS REIS",
+      "total_parcela": 10320.0
+    },
+    {
+      "NOME FAVORECIDO": "CAMYLE EMYLAINE DA CRUZ SILVA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDIA DAS GRACAS CHAGAS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDILENE DE OLIVEIRA ROSA",
+      "total_parcela": 7725.0
+    },
+    {
+      "NOME FAVORECIDO": "CLAUDILENE MORAIS DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "DAIANE PEDROSA VIANA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIEL DOS SANTOS CARMO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELA DA PIEDADE SIQUEIRA",
+      "total_parcela": 8100.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELA DIAS PEREIRA",
+      "total_parcela": 8650.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELE ALBUQUERQUE DIAS",
+      "total_parcela": 10500.0
+    },
+    {
+      "NOME FAVORECIDO": "DEBORA CRISTINA ARAUJO LUCIANO",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "DEBORA LETICIA FERREIRA DOS SANTOS",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "DIENE CRISTINA DE ARAUJO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "DIRLENE APARECIDA DOS SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ELENICE APARECIDA ALVES",
+      "total_parcela": 13630.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIANE FRANCELINA DA SILVA",
+      "total_parcela": 10600.0
+    },
+    {
+      "NOME FAVORECIDO": "ELIZETE DA PIEDADE SOARES",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "ESTER MIRIAN DE OLIVEIRA BARBOSA",
+      "total_parcela": 8700.0
+    },
+    {
+      "NOME FAVORECIDO": "GABRIELE BARBOSA DE OLIVEIRA",
+      "total_parcela": 10400.0
+    },
+    {
+      "NOME FAVORECIDO": "GEISIANA KELI SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GERALDO SILVESTRE DA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "GERCINO DIAS FIDELES",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GESSICA DE ARAUJO SILVA",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "GIULIA GABRIELA FERREIRA DE ARAUJO",
+      "total_parcela": 11490.0
+    },
+    {
+      "NOME FAVORECIDO": "GLEDILENE MARCIANA SILVA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "GLEITON ALMEIDA SOUZA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "GLEYCIMAR BONSUCESSO ONOFRE DOS SANTOS",
+      "total_parcela": 10550.0
+    },
+    {
+      "NOME FAVORECIDO": "HINGLAD DA COSTA SILVA BRAGA",
+      "total_parcela": 10950.0
+    },
+    {
+      "NOME FAVORECIDO": "IARA CRISTINA GUALBERTO PEREIRA",
+      "total_parcela": 14246.0
+    },
+    {
+      "NOME FAVORECIDO": "IZADORA DOMINGUES CARDOSO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "JANAINA LUISA DE MIRANDA",
+      "total_parcela": 7700.0
+    },
+    {
+      "NOME FAVORECIDO": "JANAINA PESSOA BATISTA",
+      "total_parcela": 8700.0
+    },
+    {
+      "NOME FAVORECIDO": "JHULY INGRIDY DA SILVA NASCIMENTO",
+      "total_parcela": 10300.0
+    },
+    {
+      "NOME FAVORECIDO": "JORDANA ISABELLA FERNANDES",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSE VALDECIO MIGUEL",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "JOSIELLE KARINA DA SILVA OLIVEIRA",
+      "total_parcela": 10650.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA APARECIDA GREGORIO",
+      "total_parcela": 6300.0
+    },
+    {
+      "NOME FAVORECIDO": "JULIANA DA PIEDADE SANTOS JOAO",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "KAMILLA PEREIRA DOS SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "KAOANNE ANDRESSA VIGARIO DO PRADO",
+      "total_parcela": 9800.0
+    },
+    {
+      "NOME FAVORECIDO": "KARINA TOMAZ LEOCADIO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "KELCIENY DE LOURDES DA PAIXAO",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "KELLY SOUZA SANTOS",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "LEILA DINIZ BARBOSA PIRES",
+      "total_parcela": 7848.0
+    },
+    {
+      "NOME FAVORECIDO": "LESIANE RODRIGUES MOREIRA",
+      "total_parcela": 10200.0
+    },
+    {
+      "NOME FAVORECIDO": "LETICIA YASMIN DE ASSIS",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "LUANA CRISTINA DOS SANTOS",
+      "total_parcela": 9440.0
+    },
+    {
+      "NOME FAVORECIDO": "LUANA CRISTINA PARANHOS",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "LUANA PIRES RODRIGUES",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "LUANE CARLA HELIODORO",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA APARECIDA DIAS",
+      "total_parcela": 10526.0
+    },
+    {
+      "NOME FAVORECIDO": "LUCIANA ZACARIAS ANTONIO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "MARCICLEIA COSTA CARDOSO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA ANTONIA DA COSTA ARAUJO",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA DOS SANTOS",
+      "total_parcela": 11160.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DAS DORES FREITAS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DAS GRACAS DE JESUS",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DE LOURDES DOS SANTOS",
+      "total_parcela": 9600.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA REGINA DAS GRACAS SANCHA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "MARISA SILVA LOURENCO DOS SANTOS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "MAURICIO MARTINS FILHO",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "NAYARA MARILIA FERREIRA",
+      "total_parcela": 7000.0
+    },
+    {
+      "NOME FAVORECIDO": "NIVALDO MARQUES DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "NUBIA TAIZ DIAS NICOLAU",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "PALOMA CAROLINA PAZ ROSA",
+      "total_parcela": 6060.0
+    },
+    {
+      "NOME FAVORECIDO": "POLIANA DA SILVA LOPES",
+      "total_parcela": 10400.0
+    },
+    {
+      "NOME FAVORECIDO": "POLYANA FELICIANO ROCHA",
+      "total_parcela": 8550.0
+    },
+    {
+      "NOME FAVORECIDO": "RAILANE FERNANDES DOS SANTOS",
+      "total_parcela": 12870.0
+    },
+    {
+      "NOME FAVORECIDO": "RANALY NATHALIA PROCOPIO AMORIM",
+      "total_parcela": 11400.0
+    },
+    {
+      "NOME FAVORECIDO": "RAQUEL DE OLIVEIRA ASSIS",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "REGISLANE CAROLINE MAIA DIAS",
+      "total_parcela": 9150.0
+    },
+    {
+      "NOME FAVORECIDO": "ROSEMEIRE XISTO DE CASTRO VIEIRA",
+      "total_parcela": 7800.0
+    },
+    {
+      "NOME FAVORECIDO": "SAYONARA VALERIA DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "TAMARA CRISTINA SANTOS",
+      "total_parcela": 10800.0
+    },
+    {
+      "NOME FAVORECIDO": "TANIA CRUZ MACIEIRA",
+      "total_parcela": 8400.0
+    },
+    {
+      "NOME FAVORECIDO": "TASSIA BEATRIZ PEREIRA PORTO",
+      "total_parcela": 6750.0
+    },
+    {
+      "NOME FAVORECIDO": "VITORIA AUGUSTA DOS SANTOS",
+      "total_parcela": 9000.0
+    },
+    {
+      "NOME FAVORECIDO": "WALLISON ROSA DA SILVA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "WANDERLEY ARAUJO DE SOUZA",
+      "total_parcela": 7200.0
+    },
+    {
+      "NOME FAVORECIDO": "CASSILANE DA PIEDADE FERREIRA",
+      "total_parcela": 6600.0
+    },
+    {
+      "NOME FAVORECIDO": "NATALIA NAYARA CONCEICAO ASSIS",
+      "total_parcela": 8250.0
+    },
+    {
+      "NOME FAVORECIDO": "ADAILZA PEREIRA SANTOS DE OLIVEIRA",
+      "total_parcela": 6400.0
+    }
+  ],
+  "row_count": 1746,
+  "col_count": 2,
+  "schema_hash": "1955e7f19f033d94",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:48.722395+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 20,
+    "gen_rows": 1746
+  }
+}

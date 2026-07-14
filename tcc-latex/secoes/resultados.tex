@@ -1,0 +1,129 @@
+\chapter{Análise de Resultados}
+
+\section{Configuração baseline (E1)}
+
+O experimento E1 avaliou 80 consultas com GPT-4.1-mini e \textit{prompt} compacto ($\approx$16\,500 tokens de contexto). A Tabela~\ref{tab:baseline} resume as métricas agregadas.
+
+\begin{table}[htbp]
+\centering
+\caption{Resultados do experimento E1 --- baseline ($n=80$)}
+\label{tab:baseline}
+\begin{tabular}{lr}
+\toprule
+\textbf{Métrica} & \textbf{Valor} \\
+\midrule
+Execution Accuracy (EX) & 11,25\% (9/80) \\
+Valid SQL Rate (VSR) & 97,50\% (78/80) \\
+Custo total estimado & US\$ 0,56 \\
+Latência média de geração & 6,2 s \\
+Latência média de execução SQL & 1,1 s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Resultados por dificuldade}
+
+\begin{table}[htbp]
+\centering
+\caption{EX e VSR por nível de dificuldade (E1)}
+\label{tab:diff}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Dificuldade} & \textbf{$n$} & \textbf{EX (\%)} & \textbf{VSR (\%)} \\
+\midrule
+Fácil & 22 & 13,64 & 100,00 \\
+Médio & 44 & 9,09 & 97,73 \\
+Difícil & 14 & 14,29 & 92,86 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Resultados por categoria temática}
+
+As categorias com maior EX relativo foram \textit{Cálculo Fiscal} (30,77\%) e \textit{Consulta Simples} (16,67\%). Domínios como \textit{RH/Folha} e \textit{Despesas e Pagamentos} apresentaram EX nulo no baseline, embora o VSR permanecesse elevado --- indicando consultas sintaticamente válidas, porém semanticamente divergentes da referência.
+
+\section{Interpretação}
+
+O alto VSR (97,5\%) combinado ao EX modesto (11,25\%) sugere que a principal limitação observada não está na geração de SQL executável, mas na equivalência estrita entre a intenção da pergunta e a consulta produzida. Em diversos casos, o modelo retornou o mesmo número de linhas da referência com agregações ou filtros distintos.
+
+\section{Comparativo de ablações}
+
+A Tabela~\ref{tab:ablation} consolida os quatro experimentos. O GPT-4o (E4) obteve maior EX (18,75\%) e VSR equivalente ao baseline (97,5\%), porém com custo aproximadamente seis vezes superior (US\$~3,45) e latência média de geração de 29,5~s, o que limita sua adoção direta em canal conversacional síncrono.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparativo dos experimentos de ablação ($n=80$)}
+\label{tab:ablation}
+\small
+\begin{tabular}{p{4.8cm}rrrr}
+\toprule
+\textbf{Experimento} & \textbf{EX (\%)} & \textbf{VSR (\%)} & \textbf{Custo (US\$)} & \textbf{Lat. (s)} \\
+\midrule
+E1 --- Baseline (GPT-4.1-mini, prompt compacto) & 11,25 & 97,50 & 0,56 & 6,2 \\
+E2 --- Contexto estendido (GPT-4.1-mini) & 15,00 & 96,25 & 1,16 & 8,2 \\
+E3 --- Modelo econômico (GPT-4o-mini) & 16,25 & 90,00 & 0,21 & 4,0 \\
+E4 --- Modelo avançado (GPT-4o) & 18,75 & 97,50 & 3,45 & 29,5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Validação funcional}
+
+Além do \textit{benchmark} offline, o sistema foi validado em ambiente operacional via WhatsApp, com consultas reais de usuários, confirmando a viabilidade da orquestração integrada entre automação, mensageria e subsistemas de recuperação documental e consulta analítica.
+\section{Avaliação da resposta em linguagem natural}
+
+Além das métricas sobre a consulta SQL, foi conduzida avaliação da \textbf{cadeia completa} do subsistema analítico: execução da consulta, geração da resposta ao cidadão pelo agente orquestrador e julgamento automático por outro modelo de linguagem (LLM-as-Judge).
+
+\subsection{Protocolo}
+
+Para cada item amostrado do experimento E1, o protocolo registrou: (i)~pergunta do usuário e SQL gerada; (ii)~resultado tabular executado no DuckDB; (iii)~resposta em linguagem natural produzida pelo orquestrador (GPT-4o); (iv)~avaliação do juiz (GPT-4.1-mini) em quatro dimensões Likert (adequação semântica, fidelidade aos dados, completude e clareza).
+
+A métrica \textbf{JAR} (\textit{Judge Agreement Rate}) corresponde à proporção de respostas classificadas como \textit{corretas} ou \textit{parcialmente corretas} pelo juiz.
+
+\subsection{Piloto ($n=5$)}
+
+O piloto inicial confirmou a viabilidade do pipeline. Observou-se JAR de 100\% com EX de 0\%, reforçando que a métrica EX estrita subestima a utilidade percebida quando a resposta natural atende à pergunta com os dados retornados.
+
+\subsection{Resultados estratificados ($n=30$)}
+
+A amostra estratificada compreendeu 10 consultas fáceis, 10 médias e 10 difíceis. A Tabela~\ref{tab:jar} resume os resultados.
+
+\begin{table}[htbp]
+\centering
+\caption{Avaliação LLM-as-Judge sobre respostas naturais (E1, $n=30$)}
+\label{tab:jar}
+\begin{tabular}{lrr}
+\toprule
+\textbf{Métrica} & \textbf{Valor} & \textbf{Observação} \\
+\midrule
+JAR & 100,00\% (30/30) & Respostas corretas ou parcialmente corretas \\
+EX (mesma amostra) & 20,00\% (6/30) & Equivalência estrita SQL \\
+Adequação semântica (média) & 4,87 / 5 & Escala Likert do juiz \\
+Fidelidade aos dados (média) & 4,87 / 5 & \\
+Completude (média) & 4,73 / 5 & \\
+Clareza ao cidadão (média) & 4,77 / 5 & \\
+Custo total da amostra & US\$ 0,30 & Orquestrador + juiz \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{JAR e EX por dificuldade (amostra $n=30$)}
+\label{tab:jar-diff}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Dificuldade} & \textbf{$n$} & \textbf{JAR (\%)} & \textbf{EX (\%)} \\
+\midrule
+Fácil & 10 & 100,00 & 20,00 \\
+Médio & 10 & 100,00 & 20,00 \\
+Difícil & 10 & 100,00 & 20,00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Interpretação}
+
+O contraste entre EX (20\%) e JAR (100\%) na mesma amostra indica que, embora a formulação SQL frequentemente difira da referência manual, o orquestrador consegue comunicar resultados úteis e fidedignos aos dados executados. Essa evidência complementa as limitações da métrica EX e justifica a avaliação em duas camadas: sintaxe/resultado tabular e adequação da resposta ao usuário final.
+
+Os registros completos de entrada e saída de cada etapa foram arquivados para auditoria e reprodutibilidade do experimento.

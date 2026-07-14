@@ -1,0 +1,181 @@
+{
+  "id_teste": "69",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT DISTINCT r.nom_credor, r.num_doc_credor, cgu.\"Nome Favorecido\" FROM despesa_pagamento r JOIN cgu_despesas_favorecidos cgu ON CAST(r.num_doc_credor AS VARCHAR) = CAST(cgu.\"Código Favorecido\" AS VARCHAR) WHERE r.ano_referencia = 2024 AND cgu.ano_referencia = 2024 AND COALESCE(r.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND r.num_doc_credor NOT IN ('-1', '0') LIMIT 50;",
+  "columns": [
+    "nom_credor",
+    "num_doc_credor",
+    "Nome Favorecido"
+  ],
+  "rows": [
+    {
+      "nom_credor": "SINTAGMA ZENITE COMERCIO EIRELIME",
+      "num_doc_credor": "17926188000104",
+      "Nome Favorecido": "SINTAGMA ZENITE COMERCIO LTDA"
+    },
+    {
+      "nom_credor": "CAIXA ESCOLAR HÉLIO CERQUEIRA PEIXOTO",
+      "num_doc_credor": "05843803000121",
+      "Nome Favorecido": "CAIXA ESCOLAR HELIO CERQUEIRA PEIXOTO"
+    },
+    {
+      "nom_credor": "CAIXA ESCOLAR OZORIO LEAO",
+      "num_doc_credor": "46784540000104",
+      "Nome Favorecido": "CAIXA ESCOLAR OZORIO LEAO"
+    },
+    {
+      "nom_credor": "CAIXA ESCOLAAR PADRE JOAQUIM SATURNINO DE FREITAS",
+      "num_doc_credor": "03166229000199",
+      "Nome Favorecido": "CAIXA ESCOLAR PADRE JOAQUIM SATURNINO DE FREITAS"
+    },
+    {
+      "nom_credor": "CE ISRAEL PINHEIRO.",
+      "num_doc_credor": "01945924000123",
+      "Nome Favorecido": "CAIXA ESCOLAR - ISRAEL PINHEIRO"
+    },
+    {
+      "nom_credor": "CAIXA ESCOLAR HELENA DE BARROS PINHEIRO",
+      "num_doc_credor": "18562439000173",
+      "Nome Favorecido": "CAIXA ESCOLAR HELENA DE BARROS PINHEIRO"
+    },
+    {
+      "nom_credor": "CEMAE I CENTRO MUNICIPAL DE ATIV EDUCACIONAL",
+      "num_doc_credor": "10982384000149",
+      "Nome Favorecido": "CENTRO MUNICIPAL DE ATIVIDADE EDUCACIONAL I"
+    },
+    {
+      "nom_credor": "CAIXA ESCOLAR DONA MARIA DE BARROS FERREIRA",
+      "num_doc_credor": "18562454000111",
+      "Nome Favorecido": "CAIXA ESCOLAR DONA MARIA DE BARROS FERREIRA"
+    },
+    {
+      "nom_credor": "CASA JÁCOME LTDA",
+      "num_doc_credor": "42987990000143",
+      "Nome Favorecido": "CASA JACOME LTDA"
+    },
+    {
+      "nom_credor": "CEMAE IICENTRO MUNICIPAL DE ATIV EDUCACIONAL",
+      "num_doc_credor": "10982382000150",
+      "Nome Favorecido": "CENTRO MUNICIPAL DE ATIVIDADE EDUCACIONAL II"
+    },
+    {
+      "nom_credor": "SOCIEDADE CIVIL DE BENEFICENCIA CAETEENSE",
+      "num_doc_credor": "18979328000167",
+      "Nome Favorecido": "SOCIEDADE CIVIL DE BENEFICENCIA CAETEENSE"
+    },
+    {
+      "nom_credor": "CAIXA ESCOLAR COLIBRI DE ENSINO FUND ESPECIAL",
+      "num_doc_credor": "06113342000102",
+      "Nome Favorecido": "CAIXA ESCOLAR COLIBRI DE ENSINO FUNDAMENTAL ESPECIAL"
+    },
+    {
+      "nom_credor": "CAIXA ESCOLAR JOSÉ HERCULANO",
+      "num_doc_credor": "02002172000120",
+      "Nome Favorecido": "CAIXA ESCOLAR JOSE HERCULANO"
+    },
+    {
+      "nom_credor": "CAIXA ESCOLAR PADRE GILSON DA SILVEIRA GOULART",
+      "num_doc_credor": "22473558000127",
+      "Nome Favorecido": "CAIXA ESCOLAR PADRE GILSON DA SILVEIRA GOULART"
+    },
+    {
+      "nom_credor": "CENTROMED- CENTRO MEDICO LTDA.",
+      "num_doc_credor": "42784496000181",
+      "Nome Favorecido": "CENTROMED LTDA"
+    },
+    {
+      "nom_credor": "APAE ASSOCIACAO DE PAIS E AMIGOS DOS EXCEPCIONAIS",
+      "num_doc_credor": "21000203000158",
+      "Nome Favorecido": "ASSOCIACAO DE PAIS E AMIGOS DOS EXCEPCIONAIS"
+    },
+    {
+      "nom_credor": "SINTAGMA ZENITE COMERCIO LTDA",
+      "num_doc_credor": "17926188000104",
+      "Nome Favorecido": "SINTAGMA ZENITE COMERCIO LTDA"
+    },
+    {
+      "nom_credor": "PREFEITURA MUNICIPAL DE CAETE",
+      "num_doc_credor": "18302299000102",
+      "Nome Favorecido": "MUNICIPIO DE CAETE"
+    },
+    {
+      "nom_credor": "CEMAE IIICENTRO MUNICIPAL DE ATIV EDUCACIONAL",
+      "num_doc_credor": "10982477000173",
+      "Nome Favorecido": "CENTRO MUNICIPAL DE ATIVIDADE EDUCACIONAL III"
+    },
+    {
+      "nom_credor": "SINTAGMA ZENITE COMERCIO EIRELI",
+      "num_doc_credor": "17926188000104",
+      "Nome Favorecido": "SINTAGMA ZENITE COMERCIO LTDA"
+    },
+    {
+      "nom_credor": "CE JOAO MONLEVADE.",
+      "num_doc_credor": "18562413000125",
+      "Nome Favorecido": "CAIXA ESCOLAR JOAO MONLEVADE"
+    },
+    {
+      "nom_credor": "CAIXA ESCOLAR JOSE LOURENCO LAUDATE",
+      "num_doc_credor": "18273987000183",
+      "Nome Favorecido": "CAIXA ESCOLAR JOSE LOURENCO LAUDATE"
+    },
+    {
+      "nom_credor": "CAIXA ESCOLAR PROFESSORA SIRLENE DE PAULA",
+      "num_doc_credor": "03166218000109",
+      "Nome Favorecido": "CAIXA ESCOLAR PROFESSORA SIRLENE DE PAULA"
+    },
+    {
+      "nom_credor": "SMARTMED REPRESENTACAO COM PROD MED HOSP LTDA",
+      "num_doc_credor": "24789180000109",
+      "Nome Favorecido": "SMARTMED REPRESENTACAO E COMERCIO DE PRODUTOS MEDICOS E HOSPITALARES LTDA"
+    },
+    {
+      "nom_credor": "MUNICIPIO DE CAETE",
+      "num_doc_credor": "18302299000102",
+      "Nome Favorecido": "MUNICIPIO DE CAETE"
+    },
+    {
+      "nom_credor": "CAIXA ESCOLAR ANEZIA MARIA PINHEIRO",
+      "num_doc_credor": "18562611000199",
+      "Nome Favorecido": "CAIXA ESCOLAR ANEZIA MARIA PINHEIRO"
+    },
+    {
+      "nom_credor": "ANA LUIZA MONTEIRO SANTOS SILVA",
+      "num_doc_credor": "42540202000176",
+      "Nome Favorecido": "42.540.202 ANA LUIZA MONTEIRO SANTOS SILVA"
+    },
+    {
+      "nom_credor": "SOC CIVIL DE BENEFICÊNCIA CAETEENSE",
+      "num_doc_credor": "18979328000167",
+      "Nome Favorecido": "SOCIEDADE CIVIL DE BENEFICENCIA CAETEENSE"
+    },
+    {
+      "nom_credor": "SERVIDORES MUNICIPAIS",
+      "num_doc_credor": "18302299000102",
+      "Nome Favorecido": "MUNICIPIO DE CAETE"
+    },
+    {
+      "nom_credor": "CAIXA ESCOLAR DOUTOR JOAO PINHEIRO",
+      "num_doc_credor": "18562405000189",
+      "Nome Favorecido": "CAIXA ESCOLAR DR JOAO PINHEIRO"
+    },
+    {
+      "nom_credor": "SINTAGMA ZENITE COMERCIO, PAPELARIA E ESPORTES LTDA",
+      "num_doc_credor": "17926188000104",
+      "Nome Favorecido": "SINTAGMA ZENITE COMERCIO LTDA"
+    }
+  ],
+  "row_count": 31,
+  "col_count": 3,
+  "schema_hash": "779d42494c172b0b",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:23.024180+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 10,
+    "gen_rows": 31
+  }
+}

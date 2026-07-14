@@ -1,0 +1,27 @@
+{
+  "id_teste": "5",
+  "input_usuario": "Qual foi o Índice de Educação (IEQ-C) do município no ano de 2023? O valor aplicado atingiu o mínimo constitucional?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": true,
+    "ex_cols": false,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1,
+    "ref_cols": 2,
+    "gen_cols": 4,
+    "divergencia_ex": "cardinalidade_colunas",
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "WITH despesa_mde AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa FROM educacao_educacao WHERE ano_referencia = 2023), receita_impostos AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita FROM receita_receita WHERE ano_referencia = 2023 AND dsc_especie ILIKE '%Imposto%') SELECT (d.total_despesa / NULLIF(r.total_receita, 0)) * 100 AS indice_educacao, CASE WHEN (d.total_despesa / NULLIF(r.total_receita, 0)) * 100 >= 25 THEN 'Sim' ELSE 'Não' END AS atingiu_minimo_constitucional FROM despesa_mde d, receita_impostos r",
+  "query_gerada": "WITH despesa AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa FROM educacao_educacao WHERE ano_referencia = 2023), receita AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita FROM receita_receita WHERE ano_referencia = 2023 AND dsc_especie ILIKE '%Imposto%') SELECT (total_despesa / NULLIF(total_receita, 0)) * 100 AS indice_educacao, total_despesa, total_receita, (total_despesa >= (0.25 * total_receita)) AS atingiu_minimo_constitucional FROM despesa, receita;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

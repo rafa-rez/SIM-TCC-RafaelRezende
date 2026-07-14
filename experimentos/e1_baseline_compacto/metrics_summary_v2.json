@@ -1,0 +1,110 @@
+{
+  "experiment": "e1_baseline_compacto",
+  "total": 80,
+  "metrics_version": "2.0",
+  "execution_accuracy_strict_pct": 10.0,
+  "execution_accuracy_content_pct": 58.75,
+  "execution_accuracy_colmap_pct": 58.75,
+  "execution_accuracy_rows_pct": 85.0,
+  "execution_accuracy_cols_pct": 83.75,
+  "valid_sql_rate_pct": 97.5,
+  "nea_rate_pct": 98.75,
+  "tsa_rate_pct": 95.0,
+  "chs_mean": 0.9313,
+  "alias_apenas_count": 39,
+  "alias_apenas_pct": 48.75,
+  "divergencia_ex": {
+    "cardinalidade_linhas": 6,
+    "cardinalidade_colunas": 4,
+    "alias_colunas": 39,
+    "permutacao_valores_linha": 0,
+    "divergencia_valores": 17
+  },
+  "by_dificuldade": {
+    "dificil": {
+      "n": 14,
+      "ex_strict_pct": 7.14,
+      "ex_colmap_pct": 21.43,
+      "ex_content_pct": 21.43,
+      "vsr_pct": 92.86
+    },
+    "facil": {
+      "n": 22,
+      "ex_strict_pct": 13.64,
+      "ex_colmap_pct": 77.27,
+      "ex_content_pct": 77.27,
+      "vsr_pct": 100.0
+    },
+    "medio": {
+      "n": 44,
+      "ex_strict_pct": 9.09,
+      "ex_colmap_pct": 61.36,
+      "ex_content_pct": 61.36,
+      "vsr_pct": 97.73
+    }
+  },
+  "by_categoria": {
+    "Calculo Fiscal": {
+      "n": 13,
+      "ex_strict_pct": 30.77,
+      "ex_colmap_pct": 69.23
+    },
+    "Consulta Simples": {
+      "n": 12,
+      "ex_strict_pct": 16.67,
+      "ex_colmap_pct": 83.33
+    },
+    "Cruzamento Investigativo": {
+      "n": 10,
+      "ex_strict_pct": 0.0,
+      "ex_colmap_pct": 20.0
+    },
+    "Despesas Pagamentos": {
+      "n": 10,
+      "ex_strict_pct": 0.0,
+      "ex_colmap_pct": 30.0
+    },
+    "Frota": {
+      "n": 6,
+      "ex_strict_pct": 16.67,
+      "ex_colmap_pct": 83.33
+    },
+    "Licitacoes Contratos": {
+      "n": 10,
+      "ex_strict_pct": 10.0,
+      "ex_colmap_pct": 90.0
+    },
+    "Manipulacao de Datas": {
+      "n": 1,
+      "ex_strict_pct": 0.0,
+      "ex_colmap_pct": 0.0
+    },
+    "RH Folha": {
+      "n": 10,
+      "ex_strict_pct": 0.0,
+      "ex_colmap_pct": 50.0
+    },
+    "Regra Anti-Duplicata": {
+      "n": 1,
+      "ex_strict_pct": 0.0,
+      "ex_colmap_pct": 0.0
+    },
+    "Regra de Cadastros": {
+      "n": 2,
+      "ex_strict_pct": 0.0,
+      "ex_colmap_pct": 50.0
+    },
+    "Regra de Orgaos": {
+      "n": 1,
+      "ex_strict_pct": 0.0,
+      "ex_colmap_pct": 100.0
+    },
+    "Regras Especiais": {
+      "n": 4,
+      "ex_strict_pct": 0.0,
+      "ex_colmap_pct": 50.0
+    }
+  },
+  "total_cost_usd": 0.561265,
+  "avg_gen_ms": 6224.86
+}

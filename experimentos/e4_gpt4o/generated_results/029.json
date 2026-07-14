@@ -1,0 +1,27 @@
+{
+  "id_teste": "29",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa_corrente_liquidada FROM despesa_despesa WHERE dsc_naturezadespesa LIKE '3%' AND ano_referencia = 2025;",
+  "columns": [
+    "total_despesa_corrente_liquidada"
+  ],
+  "rows": [
+    {
+      "total_despesa_corrente_liquidada": 106431207.63
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "b70a0870e7f5cbde",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:41.413633+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

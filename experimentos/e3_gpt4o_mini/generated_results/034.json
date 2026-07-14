@@ -1,0 +1,27 @@
+{
+  "id_teste": "34",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT SUM(CAST(vlr_pagamento AS DECIMAL)) AS total_pago_saude FROM saude_saude WHERE ano_referencia = 2024;",
+  "columns": [
+    "total_pago_saude"
+  ],
+  "rows": [
+    {
+      "total_pago_saude": 19053321.2
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "4c44a003632fe722",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:13.524742+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": false,
+    "chs": 0.5,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

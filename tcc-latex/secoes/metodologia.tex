@@ -1,0 +1,96 @@
+\chapter{Metodologia}
+
+\section{Tipo de pesquisa}
+
+Trata-se de pesquisa aplicada, de natureza experimental e desenvolvimento tecnológico, com validação funcional em ambiente real e avaliação quantitativa por \textit{benchmark} reprodutível em ambiente controlado.
+
+\section{Contexto e dados}
+
+O município-alvo é Caeté (MG), código IBGE/SICOM 3110004. As fontes incluem:
+
+\begin{itemize}
+    \item \textbf{SICOM}: receitas, despesas, empenhos, folha, frota, licitações e contratos (2020--2025);
+    \item \textbf{CGU}: transferências federais e programas sociais cruzáveis por documento do credor;
+    \item \textbf{Diário Oficial}: documentos normativos indexados em Qdrant para recuperação aumentada.
+\end{itemize}
+
+Um processo ETL em Python consolida os arquivos tabulares, gera metadados de esquema (\termo{ddl}) e expõe uma API analítica com DuckDB \textit{in-memory}.
+
+\section{Arquitetura do sistema}
+
+A Figura~\ref{fig:arquitetura} (Apêndice) resume o fluxo conversacional:
+
+\begin{enumerate}
+    \item O usuário envia a pergunta via WhatsApp;
+    \item A plataforma de automação recebe o evento e aciona o agente orquestrador (GPT-4o);
+    \item O agente seleciona recuperação documental (Qdrant) ou tradução Text-to-SQL;
+    \item O subsistema SQL utiliza GPT-4.1-mini com \textit{prompt} contendo esquema compactado e amostras de dados;
+    \item O resultado tabular é interpretado pelo orquestrador e devolvido em linguagem natural ao usuário.
+\end{enumerate}
+
+\section{Engenharia de contexto}
+
+\subsection{Minificação de esquema (\textit{DDL minification})}
+
+Consiste na remoção de redundâncias, padronização de descrições e simplificação do esquema relacional enviado ao modelo, reduzindo tokens sem eliminar restrições semânticas críticas.
+
+\subsection{Amostragem inteligente (\textit{smart sampling})}
+
+Inclusão de exemplos reais de valores por coluna relevante, visando melhorar inferência de filtros, \textit{joins} e convenções locais.
+
+\subsection{Variantes de \textit{prompt} avaliadas}
+
+Para o estudo de ablação, foram definidas duas variantes de contexto:
+
+\begin{itemize}
+    \item \textbf{Prompt compacto} ($\approx$16\,500 tokens): esquema minificado e amostras --- configuração adotada em produção;
+    \item \textbf{Prompt estendido} ($\approx$35\,000 tokens): esquema com descrições ampliadas --- hipótese de maior cobertura semântica.
+\end{itemize}
+
+\section{Conjunto de referência (\textit{golden dataset})}
+
+Foi construído um conjunto de 80 consultas em linguagem natural, estratificadas por dificuldade (fácil, médio, difícil) e por domínio temático (recursos humanos, frota, licitações, cruzamentos analíticos e regras especiais). Cada item contém a pergunta do usuário, a consulta SQL de referência validada no DuckDB e metadados para métricas auxiliares.
+
+Dez consultas-base foram expandidas com variações paramétricas (anos, limites e agregações), totalizando 80 casos com SQL executável.
+
+\section{Protocolo de avaliação}
+
+A avaliação Text-to-SQL foi conduzida por um pipeline automatizado, desacoplado do canal WhatsApp, garantindo reprodutibilidade e controle de orçamento de API. O protocolo registra, por consulta: SQL gerada, resultados executados, métricas, latência, consumo de tokens e custo estimado.
+
+\subsection{Métricas de desempenho}
+
+As métricas adotadas seguem a literatura de Text-to-SQL e foram complementadas por indicadores operacionais:
+
+\begin{description}
+    \item[EX --- \textit{Execution Accuracy}] Proporção de consultas em que o resultado da SQL gerada coincide com o da referência (comparação de multiconjunto de linhas normalizadas). Mede se o cidadão receberia os mesmos valores numéricos da consulta validada.
+    \item[VSR --- \textit{Valid SQL Rate}] Proporção de SQLs executadas sem erro no DuckDB. Distingue falha sintática de falha semântica.
+    \item[NEA --- \textit{Non-Empty Answer}] Indica se a consulta retornou dados quando o conjunto de referência espera resultado não vazio.
+    \item[TSA --- \textit{Table Selection Accuracy}] Verifica se as tabelas esperadas foram utilizadas na SQL gerada.
+    \item[CHS --- \textit{Condition Heuristic Score}] Mede a presença de filtros relevantes (ano, órgão, categoria) na consulta produzida.
+\end{description}
+
+Em termos interpretativos, o padrão \textit{VSR elevado com EX moderado} indica que o modelo domina a sintaxe e o esquema relacional, mas frequentemente interpreta a pergunta de forma distinta da referência manual --- limitação conhecida da métrica EX estrita, que não admite consultas semanticamente equivalentes com formulação diferente.
+
+\subsection{Métricas operacionais}
+
+Registraram-se latência de geração, latência de execução SQL, tokens de entrada e saída e custo estimado em dólares, conforme tabela de preços vigente da API OpenAI.
+
+\subsection{Experimentos conduzidos}
+
+\begin{enumerate}
+    \item \textbf{E1 --- Baseline}: GPT-4.1-mini com \textit{prompt} compacto;
+    \item \textbf{E2 --- Ablação de contexto}: GPT-4.1-mini com \textit{prompt} estendido;
+    \item \textbf{E3 --- Ablação de modelo (econômico)}: GPT-4o-mini com \textit{prompt} compacto;
+    \item \textbf{E4 --- Ablação de modelo (avançado)}: GPT-4o com \textit{prompt} compacto.
+\end{enumerate}
+
+O orçamento total de experimentação foi limitado a aproximadamente US\$~14,00, com margem de segurança para interrupção automática.
+
+\section{Ambiente experimental}
+
+\begin{itemize}
+    \item API analítica DuckDB em ambiente local;
+    \item Modelos OpenAI via API oficial, temperatura 0,0;
+    \item Saída estruturada em JSON contendo a consulta SQL e justificativa técnica;
+    \item Persistência incremental de resultados para retomada em caso de interrupção.
+\end{itemize}

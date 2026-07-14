@@ -1,0 +1,106 @@
+{
+  "id_teste": "79",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT c.num_contrato, c.vlr_contrato, t.vlr_termo_aditivo FROM contrato_contratos c JOIN contrato_termoContrato t ON c.seq_contrato = t.seq_contrato WHERE c.ano_referencia = 2022 AND t.ano_referencia = 2023 AND t.dsc_tipo_alteracao ILIKE '%ACRESCIMO%';",
+  "columns": [
+    "num_contrato",
+    "vlr_contrato",
+    "vlr_termo_aditivo"
+  ],
+  "rows": [
+    {
+      "num_contrato": 38,
+      "vlr_contrato": 42503.58,
+      "vlr_termo_aditivo": 1614.06
+    },
+    {
+      "num_contrato": 26,
+      "vlr_contrato": 460692.0,
+      "vlr_termo_aditivo": 18684.0
+    },
+    {
+      "num_contrato": 20,
+      "vlr_contrato": 33000.0,
+      "vlr_termo_aditivo": 1194.84
+    },
+    {
+      "num_contrato": 29,
+      "vlr_contrato": 349500.0,
+      "vlr_termo_aditivo": 15753.38
+    },
+    {
+      "num_contrato": 8,
+      "vlr_contrato": 9987.5,
+      "vlr_termo_aditivo": 10173.5
+    },
+    {
+      "num_contrato": 10,
+      "vlr_contrato": 1173.39,
+      "vlr_termo_aditivo": 915.4
+    },
+    {
+      "num_contrato": 8,
+      "vlr_contrato": 323500.0,
+      "vlr_termo_aditivo": 14000.0
+    },
+    {
+      "num_contrato": 35,
+      "vlr_contrato": 17160.0,
+      "vlr_termo_aditivo": 650.0
+    },
+    {
+      "num_contrato": 7,
+      "vlr_contrato": 135999.96,
+      "vlr_termo_aditivo": 988.52
+    },
+    {
+      "num_contrato": 31,
+      "vlr_contrato": 59984.0,
+      "vlr_termo_aditivo": 2702.56
+    },
+    {
+      "num_contrato": 12,
+      "vlr_contrato": 87620.04,
+      "vlr_termo_aditivo": 2784.12
+    },
+    {
+      "num_contrato": 17,
+      "vlr_contrato": 233667.56,
+      "vlr_termo_aditivo": 4188.0
+    },
+    {
+      "num_contrato": 14,
+      "vlr_contrato": 85173.6,
+      "vlr_termo_aditivo": 2826.84
+    },
+    {
+      "num_contrato": 34,
+      "vlr_contrato": 212988.0,
+      "vlr_termo_aditivo": 7982.02
+    },
+    {
+      "num_contrato": 42,
+      "vlr_contrato": 15616.75,
+      "vlr_termo_aditivo": 2090.6
+    },
+    {
+      "num_contrato": 39,
+      "vlr_contrato": 44808.8,
+      "vlr_termo_aditivo": 1701.6
+    }
+  ],
+  "row_count": 16,
+  "col_count": 3,
+  "schema_hash": "03ff2af9a7475b23",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:49.704454+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 0,
+    "gen_rows": 16
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "id_teste": "29",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa_corrente FROM despesa_despesa WHERE ano_referencia = 2025 AND COALESCE(dsc_naturezadespesa, '') ILIKE '3%'",
+  "columns": [
+    "total_despesa_corrente"
+  ],
+  "rows": [
+    {
+      "total_despesa_corrente": 106431207.63
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "6bbafc7e9e705686",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:12.641663+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

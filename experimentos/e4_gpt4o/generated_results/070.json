@@ -1,0 +1,21 @@
+{
+  "id_teste": "70",
+  "source": "generated:e4_gpt4o",
+  "sql": "WITH servidores_ativos AS (SELECT r.seq_dim_pessoa, TRIM(UPPER(p.nom_pessoa)) AS nome_servidor FROM remuneracao_municipio r JOIN pessoa_municipio p ON r.seq_dim_pessoa = p.seq_dim_pessoa WHERE r.dsc_sit_serv_pens ILIKE '%Ativo%' AND r.ano_referencia = 2023), auxilio_brasil AS (SELECT TRIM(UPPER(\"NOME FAVORECIDO\")) AS nome_favorecido, \"VALOR PARCELA\" FROM cgu_auxilio_brasil WHERE ano_referencia = 2023) SELECT sa.nome_servidor, ab.\"VALOR PARCELA\" FROM servidores_ativos sa JOIN auxilio_brasil ab ON sa.nome_servidor = ab.nome_favorecido;",
+  "columns": [],
+  "rows": [],
+  "row_count": 0,
+  "col_count": 0,
+  "schema_hash": null,
+  "error": null,
+  "exported_at": "2026-07-14T23:56:48.295080+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 0,
+    "gen_rows": 0
+  }
+}

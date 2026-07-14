@@ -1,0 +1,76 @@
+{
+  "id_teste": "61",
+  "source": "generated:e2_contexto_estendido",
+  "sql": "WITH salarios AS (SELECT r.seq_dim_pessoa, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS maior_salario FROM remuneracao_municipio r WHERE r.ano_referencia = 2024 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' GROUP BY r.seq_dim_pessoa) SELECT p.nom_pessoa, p.num_documento, s.maior_salario FROM salarios s JOIN pessoa_municipio p ON s.seq_dim_pessoa = p.seq_dim_pessoa WHERE p.ano_referencia = 2024 ORDER BY s.maior_salario DESC LIMIT 10;",
+  "columns": [
+    "nom_pessoa",
+    "num_documento",
+    "maior_salario"
+  ],
+  "rows": [
+    {
+      "nom_pessoa": "LUCAS COELHO FERREIRA",
+      "num_documento": "84220694668",
+      "maior_salario": 82244.67
+    },
+    {
+      "nom_pessoa": "ALBERTO NAZARE PIRES",
+      "num_documento": "10850993695",
+      "maior_salario": 41240.86
+    },
+    {
+      "nom_pessoa": "DARLAN CORRADI PERDIGAO DE ALMEIDA",
+      "num_documento": "08468922609",
+      "maior_salario": 21688.46
+    },
+    {
+      "nom_pessoa": "ORLANDO ZANON NETO",
+      "num_documento": "77921593615",
+      "maior_salario": 20901.71
+    },
+    {
+      "nom_pessoa": "CINTIA REGINA DOS SANTOS",
+      "num_documento": "99994992600",
+      "maior_salario": 20481.51
+    },
+    {
+      "nom_pessoa": "ISABEL BARBOSA DE OLIVEIRA GONCALVES",
+      "num_documento": "07402634639",
+      "maior_salario": 19660.56
+    },
+    {
+      "nom_pessoa": "MARCO AURELIO CANDIDO ROCHA",
+      "num_documento": "00962866601",
+      "maior_salario": 19378.38
+    },
+    {
+      "nom_pessoa": "MARCELO GARABINI",
+      "num_documento": "27772764634",
+      "maior_salario": 19327.44
+    },
+    {
+      "nom_pessoa": "BRENO ORNELLAS SILVA MAGALHAES",
+      "num_documento": "10223551635",
+      "maior_salario": 18545.59
+    },
+    {
+      "nom_pessoa": "JOAO VITOR DA SILVA JORGE",
+      "num_documento": "11520644604",
+      "maior_salario": 18248.6
+    }
+  ],
+  "row_count": 10,
+  "col_count": 3,
+  "schema_hash": "aada9617644f5ffa",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:49.413144+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 10,
+    "gen_rows": 10
+  }
+}

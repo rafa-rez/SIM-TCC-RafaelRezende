@@ -1,0 +1,149 @@
+{
+  "id_teste": "69",
+  "source": "generated:e3_gpt4o_mini",
+  "sql": "SELECT DISTINCT dp.num_doc_credor, dp.nom_credor FROM despesa_pagamento dp JOIN cgu_despesas_favorecidos cgu ON CAST(dp.num_doc_credor AS VARCHAR) = CAST(cgu.\"Código Favorecido\" AS VARCHAR) WHERE dp.ano_referencia = 2024 AND cgu.ano_referencia = 2024;",
+  "columns": [
+    "num_doc_credor",
+    "nom_credor"
+  ],
+  "rows": [
+    {
+      "num_doc_credor": "42987990000143",
+      "nom_credor": "CASA JÁCOME LTDA"
+    },
+    {
+      "num_doc_credor": "05843803000121",
+      "nom_credor": "CAIXA ESCOLAR HÉLIO CERQUEIRA PEIXOTO"
+    },
+    {
+      "num_doc_credor": "10982382000150",
+      "nom_credor": "CEMAE IICENTRO MUNICIPAL DE ATIV EDUCACIONAL"
+    },
+    {
+      "num_doc_credor": "42540202000176",
+      "nom_credor": "ANA LUIZA MONTEIRO SANTOS SILVA"
+    },
+    {
+      "num_doc_credor": "01945924000123",
+      "nom_credor": "CE ISRAEL PINHEIRO."
+    },
+    {
+      "num_doc_credor": "03166229000199",
+      "nom_credor": "CAIXA ESCOLAAR PADRE JOAQUIM SATURNINO DE FREITAS"
+    },
+    {
+      "num_doc_credor": "18562611000199",
+      "nom_credor": "CAIXA ESCOLAR ANEZIA MARIA PINHEIRO"
+    },
+    {
+      "num_doc_credor": "18562405000189",
+      "nom_credor": "CAIXA ESCOLAR DOUTOR JOAO PINHEIRO"
+    },
+    {
+      "num_doc_credor": "18273987000183",
+      "nom_credor": "CAIXA ESCOLAR JOSE LOURENCO LAUDATE"
+    },
+    {
+      "num_doc_credor": "10982477000173",
+      "nom_credor": "CEMAE IIICENTRO MUNICIPAL DE ATIV EDUCACIONAL"
+    },
+    {
+      "num_doc_credor": "18562439000173",
+      "nom_credor": "CAIXA ESCOLAR HELENA DE BARROS PINHEIRO"
+    },
+    {
+      "num_doc_credor": "18979328000167",
+      "nom_credor": "SOCIEDADE CIVIL DE BENEFICENCIA CAETEENSE"
+    },
+    {
+      "num_doc_credor": "17926188000104",
+      "nom_credor": "SINTAGMA ZENITE COMERCIO EIRELIME"
+    },
+    {
+      "num_doc_credor": "18562454000111",
+      "nom_credor": "CAIXA ESCOLAR DONA MARIA DE BARROS FERREIRA"
+    },
+    {
+      "num_doc_credor": "02002172000120",
+      "nom_credor": "CAIXA ESCOLAR JOSÉ HERCULANO"
+    },
+    {
+      "num_doc_credor": "17926188000104",
+      "nom_credor": "SINTAGMA ZENITE COMERCIO, PAPELARIA E ESPORTES LTDA"
+    },
+    {
+      "num_doc_credor": "46784540000104",
+      "nom_credor": "CAIXA ESCOLAR OZORIO LEAO"
+    },
+    {
+      "num_doc_credor": "22473558000127",
+      "nom_credor": "CAIXA ESCOLAR PADRE GILSON DA SILVEIRA GOULART"
+    },
+    {
+      "num_doc_credor": "24789180000109",
+      "nom_credor": "SMARTMED REPRESENTACAO COM PROD MED HOSP LTDA"
+    },
+    {
+      "num_doc_credor": "42784496000181",
+      "nom_credor": "CENTROMED- CENTRO MEDICO LTDA."
+    },
+    {
+      "num_doc_credor": "10982384000149",
+      "nom_credor": "CEMAE I CENTRO MUNICIPAL DE ATIV EDUCACIONAL"
+    },
+    {
+      "num_doc_credor": "18302299000102",
+      "nom_credor": "PREFEITURA MUNICIPAL DE CAETE"
+    },
+    {
+      "num_doc_credor": "03166218000109",
+      "nom_credor": "CAIXA ESCOLAR PROFESSORA SIRLENE DE PAULA"
+    },
+    {
+      "num_doc_credor": "17926188000104",
+      "nom_credor": "SINTAGMA ZENITE COMERCIO EIRELI"
+    },
+    {
+      "num_doc_credor": "17926188000104",
+      "nom_credor": "SINTAGMA ZENITE COMERCIO LTDA"
+    },
+    {
+      "num_doc_credor": "18979328000167",
+      "nom_credor": "SOC CIVIL DE BENEFICÊNCIA CAETEENSE"
+    },
+    {
+      "num_doc_credor": "18302299000102",
+      "nom_credor": "MUNICIPIO DE CAETE"
+    },
+    {
+      "num_doc_credor": "06113342000102",
+      "nom_credor": "CAIXA ESCOLAR COLIBRI DE ENSINO FUND ESPECIAL"
+    },
+    {
+      "num_doc_credor": "18302299000102",
+      "nom_credor": "SERVIDORES MUNICIPAIS"
+    },
+    {
+      "num_doc_credor": "18562413000125",
+      "nom_credor": "CE JOAO MONLEVADE."
+    },
+    {
+      "num_doc_credor": "21000203000158",
+      "nom_credor": "APAE ASSOCIACAO DE PAIS E AMIGOS DOS EXCEPCIONAIS"
+    }
+  ],
+  "row_count": 31,
+  "col_count": 2,
+  "schema_hash": "3f3e00d4fd36407f",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:19.179571+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 10,
+    "gen_rows": 31
+  }
+}

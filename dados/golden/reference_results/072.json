@@ -1,0 +1,99 @@
+{
+  "id_teste": "72",
+  "source": "golden_reference",
+  "sql": "SELECT \"NOME FAVORECIDO\", SUM(CAST(\"VALOR PARCELA\" AS DECIMAL)) AS total FROM cgu_novo_bolsa_familia WHERE ano_referencia = 2025 GROUP BY \"NOME FAVORECIDO\" HAVING SUM(CAST(\"VALOR PARCELA\" AS DECIMAL)) > 6000 ORDER BY total DESC LIMIT 20;",
+  "columns": [
+    "NOME FAVORECIDO",
+    "total"
+  ],
+  "rows": [
+    {
+      "NOME FAVORECIDO": "FABRICIA DOS SANTOS",
+      "total": 29552.0
+    },
+    {
+      "NOME FAVORECIDO": "NILZA MARIA CUSTODIO DA SILVA",
+      "total": 23040.0
+    },
+    {
+      "NOME FAVORECIDO": "MARGARETH DA CONCEICAO LOPES",
+      "total": 20640.0
+    },
+    {
+      "NOME FAVORECIDO": "RAQUEL DE MELO MACIEL",
+      "total": 19628.0
+    },
+    {
+      "NOME FAVORECIDO": "CAMILA APARECIDA BRAGA REIS",
+      "total": 18428.0
+    },
+    {
+      "NOME FAVORECIDO": "CAMILA SANTANA VIEIRA SILVA",
+      "total": 17832.0
+    },
+    {
+      "NOME FAVORECIDO": "GRACIELA BRASILINA ROSA MARTINS",
+      "total": 17028.0
+    },
+    {
+      "NOME FAVORECIDO": "FERNANDA CRISTINA DA SILVA",
+      "total": 16920.0
+    },
+    {
+      "NOME FAVORECIDO": "SOLANGE OLIVEIRA DOS SANTOS AUGUSTO",
+      "total": 16731.0
+    },
+    {
+      "NOME FAVORECIDO": "DANIELA DE ARAUJO CUNHA",
+      "total": 16680.0
+    },
+    {
+      "NOME FAVORECIDO": "PAULA DE JESUS MACHADO",
+      "total": 16128.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA DA CONCEICAO CAMPOS MENDONCA",
+      "total": 16128.0
+    },
+    {
+      "NOME FAVORECIDO": "BETANIA DE FATIMA DOS SANTOS",
+      "total": 16024.0
+    },
+    {
+      "NOME FAVORECIDO": "CAMILA CONCEICAO CORREIA",
+      "total": 16024.0
+    },
+    {
+      "NOME FAVORECIDO": "LUIARA FONSECA",
+      "total": 15742.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTIANE DAS DORES SANTOS",
+      "total": 15270.0
+    },
+    {
+      "NOME FAVORECIDO": "CRISTIANA SILVA DE ABREU",
+      "total": 15240.0
+    },
+    {
+      "NOME FAVORECIDO": "LORENA GOMES DO AMARAL",
+      "total": 15124.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA JOSE DOS SANTOS",
+      "total": 15105.0
+    },
+    {
+      "NOME FAVORECIDO": "MARIA APARECIDA DA SILVA",
+      "total": 15000.0
+    }
+  ],
+  "row_count": 20,
+  "col_count": 2,
+  "schema_hash": "bd37fa3c533e0c64",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:47.678247+00:00",
+  "input_usuario": "Beneficiários do Novo Bolsa Família em 2025 com total acima de 6000 reais.",
+  "dificuldade": "dificil",
+  "categoria": "Cruzamento Investigativo"
+}

@@ -1,0 +1,27 @@
+{
+  "id_teste": "27",
+  "input_usuario": "Calcule o ISF-M para cada ano entre 2022 e 2024.",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": true,
+    "ex_rows": true,
+    "ex_cols": true,
+    "ex_content": true,
+    "ex_colmap": true,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 3,
+    "gen_rows": 3,
+    "ref_cols": 2,
+    "gen_cols": 2,
+    "divergencia_ex": null,
+    "alias_apenas": false,
+    "extra": {},
+    "ex": true
+  },
+  "query_referencia": "WITH receita_corrente AS (SELECT ano_referencia, SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS r FROM receita_receita WHERE dsc_cateconomica ILIKE '%Corrente%' AND ano_referencia BETWEEN 2022 AND 2024 GROUP BY ano_referencia), despesa_corrente AS (SELECT ano_referencia, SUM(CAST(vlr_liquidado AS DECIMAL)) AS d FROM despesa_despesa WHERE dsc_naturezadespesa LIKE '3%' AND ano_referencia BETWEEN 2022 AND 2024 GROUP BY ano_referencia) SELECT rc.ano_referencia, rc.r / NULLIF(dc.d, 0) AS isf_m FROM receita_corrente rc JOIN despesa_corrente dc ON rc.ano_referencia = dc.ano_referencia ORDER BY rc.ano_referencia;",
+  "query_gerada": "WITH receita_corrente AS (SELECT ano_referencia, SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita_corrente FROM receita_receita WHERE dsc_cateconomica ILIKE '%Corrente%' AND ano_referencia BETWEEN 2022 AND 2024 GROUP BY ano_referencia), despesa_corrente AS (SELECT ano_referencia, SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa_corrente FROM despesa_despesa WHERE dsc_naturezadespesa LIKE '3%' AND ano_referencia BETWEEN 2022 AND 2024 GROUP BY ano_referencia) SELECT r.ano_referencia, r.total_receita_corrente / NULLIF(d.total_despesa_corrente, 0) AS isf_m FROM receita_corrente r JOIN despesa_corrente d ON r.ano_referencia = d.ano_referencia;",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

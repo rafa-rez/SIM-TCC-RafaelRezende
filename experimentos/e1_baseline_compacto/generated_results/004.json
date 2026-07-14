@@ -1,0 +1,149 @@
+{
+  "id_teste": "4",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT f.dsc_marca AS marca_veiculo, SUM(CAST(g.vlr_gasto AS DECIMAL)) AS total_gasto FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') AND (g.dsc_tipo_gasto ILIKE '%GASOLINA%' OR g.dsc_tipo_gasto ILIKE '%DIESEL%') GROUP BY f.dsc_marca ORDER BY total_gasto DESC;",
+  "columns": [
+    "marca_veiculo",
+    "total_gasto"
+  ],
+  "rows": [
+    {
+      "marca_veiculo": "TORO FREEDOM AT9 D",
+      "total_gasto": 105937.38
+    },
+    {
+      "marca_veiculo": "CATERPILLAR XC MG XT870BR",
+      "total_gasto": 77204.26
+    },
+    {
+      "marca_veiculo": "OUTRAS MARCAS DE CAMINHOES E ONIBUS",
+      "total_gasto": 48490.12
+    },
+    {
+      "marca_veiculo": "CHEVROLET",
+      "total_gasto": 45904.16
+    },
+    {
+      "marca_veiculo": "RENAULT",
+      "total_gasto": 40455.79
+    },
+    {
+      "marca_veiculo": "VOLKSWAGEN",
+      "total_gasto": 35056.81
+    },
+    {
+      "marca_veiculo": "FIAT",
+      "total_gasto": 26026.81
+    },
+    {
+      "marca_veiculo": "OUTRAS MARCAS DE CAMINHÕES E ÔNIBUS",
+      "total_gasto": 25370.12
+    },
+    {
+      "marca_veiculo": "AGRALE",
+      "total_gasto": 25162.92
+    },
+    {
+      "marca_veiculo": "IVECO",
+      "total_gasto": 21641.01
+    },
+    {
+      "marca_veiculo": "IVECO GRANCLASS",
+      "total_gasto": 19869.25
+    },
+    {
+      "marca_veiculo": "MITSUBISHI",
+      "total_gasto": 18029.41
+    },
+    {
+      "marca_veiculo": "TOYOTA",
+      "total_gasto": 16513.16
+    },
+    {
+      "marca_veiculo": "MERCEDES BENZ",
+      "total_gasto": 10348.58
+    },
+    {
+      "marca_veiculo": "RANDON",
+      "total_gasto": 10189.59
+    },
+    {
+      "marca_veiculo": "PEUGEOT",
+      "total_gasto": 10064.97
+    },
+    {
+      "marca_veiculo": "GM MONTANA TECFORM AB1",
+      "total_gasto": 9615.89
+    },
+    {
+      "marca_veiculo": "NEW HOLLANAD",
+      "total_gasto": 7546.51
+    },
+    {
+      "marca_veiculo": "RENAULTOROCH",
+      "total_gasto": 7308.34
+    },
+    {
+      "marca_veiculo": "FORD",
+      "total_gasto": 7023.96
+    },
+    {
+      "marca_veiculo": "FIATFIORINO",
+      "total_gasto": 6598.73
+    },
+    {
+      "marca_veiculo": "BUSSCAR",
+      "total_gasto": 4778.66
+    },
+    {
+      "marca_veiculo": "VOLKSWAGEM",
+      "total_gasto": 3901.61
+    },
+    {
+      "marca_veiculo": "CHEVROLETONIX",
+      "total_gasto": 3642.23
+    },
+    {
+      "marca_veiculo": "CITROËN",
+      "total_gasto": 3433.41
+    },
+    {
+      "marca_veiculo": "VEICULOS E UTILITARIOS",
+      "total_gasto": 2635.22
+    },
+    {
+      "marca_veiculo": "BOBCAT",
+      "total_gasto": 2178.58
+    },
+    {
+      "marca_veiculo": "STHIL",
+      "total_gasto": 1199.76
+    },
+    {
+      "marca_veiculo": "ALFA ROMEO",
+      "total_gasto": 1102.94
+    },
+    {
+      "marca_veiculo": "HUSQVARNA 143RII",
+      "total_gasto": 595.47
+    },
+    {
+      "marca_veiculo": "SERRA CLIPPER",
+      "total_gasto": 371.87
+    }
+  ],
+  "row_count": 31,
+  "col_count": 2,
+  "schema_hash": "627ed7c7f18d24e6",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:12.940351+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 31,
+    "gen_rows": 31
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "id_teste": "75",
+  "input_usuario": "Quanto o município recebeu de FPM e ICMS via transferências em 2024?",
+  "metrics": {
+    "vsr": true,
+    "ex_strict": false,
+    "ex_rows": false,
+    "ex_cols": false,
+    "ex_content": false,
+    "ex_colmap": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 0,
+    "gen_rows": 1,
+    "ref_cols": 0,
+    "gen_cols": 1,
+    "divergencia_ex": null,
+    "alias_apenas": false,
+    "extra": {},
+    "ex": false
+  },
+  "query_referencia": "SELECT \"NOME PROGRAMA\", SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total FROM cgu_transferencias WHERE ano_referencia = 2024 AND (\"NOME PROGRAMA\" ILIKE '%FPM%' OR \"NOME PROGRAMA\" ILIKE '%ICMS%') GROUP BY \"NOME PROGRAMA\";",
+  "query_gerada": "SELECT SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_transferencias FROM cgu_transferencias WHERE ano_referencia = 2024 AND (\"NOME PROGRAMA\" ILIKE '%FPM%' OR \"NOME PROGRAMA\" ILIKE '%ICMS%');",
+  "erro_sql_gerado": null,
+  "erro_sql_referencia": null
+}

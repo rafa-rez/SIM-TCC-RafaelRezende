@@ -1,0 +1,27 @@
+{
+  "id_teste": "73",
+  "source": "golden_reference",
+  "sql": "SELECT \"TIPO TRANSFERÊNCIA\", SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total FROM cgu_transferencias WHERE ano_referencia = 2025 GROUP BY \"TIPO TRANSFERÊNCIA\" ORDER BY total DESC;",
+  "columns": [
+    "TIPO TRANSFERÊNCIA",
+    "total"
+  ],
+  "rows": [
+    {
+      "TIPO TRANSFERÊNCIA": "Constitucionais e Royalties",
+      "total": 57391700.35
+    },
+    {
+      "TIPO TRANSFERÊNCIA": "Legais, Voluntárias e Específicas",
+      "total": 31005755.31
+    }
+  ],
+  "row_count": 2,
+  "col_count": 2,
+  "schema_hash": "746ffefbfaac6e83",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:47.742771+00:00",
+  "input_usuario": "Total de transferências CGU por tipo em 2025.",
+  "dificuldade": "medio",
+  "categoria": "Cruzamento Investigativo"
+}

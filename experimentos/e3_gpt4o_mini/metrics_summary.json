@@ -1,0 +1,78 @@
+{
+  "experiment": "ablation_gpt4o_mini",
+  "total": 80,
+  "execution_accuracy_pct": 16.25,
+  "valid_sql_rate_pct": 90.0,
+  "ex_count": 13,
+  "vsr_count": 72,
+  "total_cost_usd": 0.205817,
+  "by_dificuldade": {
+    "dificil": {
+      "n": 14,
+      "ex_pct": 35.71,
+      "vsr_pct": 50.0
+    },
+    "facil": {
+      "n": 22,
+      "ex_pct": 13.64,
+      "vsr_pct": 95.45
+    },
+    "medio": {
+      "n": 44,
+      "ex_pct": 11.36,
+      "vsr_pct": 100.0
+    }
+  },
+  "by_categoria": {
+    "Calculo Fiscal": {
+      "n": 13,
+      "ex_pct": 38.46
+    },
+    "Consulta Simples": {
+      "n": 12,
+      "ex_pct": 25.0
+    },
+    "Cruzamento Investigativo": {
+      "n": 10,
+      "ex_pct": 10.0
+    },
+    "Despesas Pagamentos": {
+      "n": 10,
+      "ex_pct": 0.0
+    },
+    "Frota": {
+      "n": 6,
+      "ex_pct": 0.0
+    },
+    "Licitacoes Contratos": {
+      "n": 10,
+      "ex_pct": 10.0
+    },
+    "Manipulacao de Datas": {
+      "n": 1,
+      "ex_pct": 100.0
+    },
+    "RH Folha": {
+      "n": 10,
+      "ex_pct": 0.0
+    },
+    "Regra Anti-Duplicata": {
+      "n": 1,
+      "ex_pct": 0.0
+    },
+    "Regra de Cadastros": {
+      "n": 2,
+      "ex_pct": 50.0
+    },
+    "Regra de Orgaos": {
+      "n": 1,
+      "ex_pct": 0.0
+    },
+    "Regras Especiais": {
+      "n": 4,
+      "ex_pct": 25.0
+    }
+  },
+  "avg_gen_ms": 3981.23,
+  "avg_sql_gen_ms": 1135.24
+}

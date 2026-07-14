@@ -1,0 +1,76 @@
+{
+  "id_teste": "7",
+  "source": "generated:e4_gpt4o",
+  "sql": "WITH licitacoes_agrupadas AS (SELECT h.seq_licitacao, SUM(CAST(h.vlr_global AS DECIMAL)) AS total_licitacao, h.nom_vencedor FROM licitacao_homologLicitacao h WHERE h.ano_referencia = 2025 GROUP BY h.seq_licitacao, h.nom_vencedor) SELECT l.seq_licitacao, la.total_licitacao, la.nom_vencedor FROM licitacao_licitacao l JOIN licitacoes_agrupadas la ON l.seq_licitacao = la.seq_licitacao AND l.ano_referencia = 2025 ORDER BY la.total_licitacao DESC LIMIT 10;",
+  "columns": [
+    "seq_licitacao",
+    "total_licitacao",
+    "nom_vencedor"
+  ],
+  "rows": [
+    {
+      "seq_licitacao": 1464446,
+      "total_licitacao": 54800.0,
+      "nom_vencedor": "CINARA DOS SANTOS MAGALHES LTDA"
+    },
+    {
+      "seq_licitacao": 1448185,
+      "total_licitacao": 0.0,
+      "nom_vencedor": "LINEHOSP MEDICAL COMERCIO DE PRODUTOS HOSPITALARES LTDA"
+    },
+    {
+      "seq_licitacao": 1448185,
+      "total_licitacao": 0.0,
+      "nom_vencedor": "FIGUEROA GOMES COMERCIAL LTDA"
+    },
+    {
+      "seq_licitacao": 1447852,
+      "total_licitacao": 0.0,
+      "nom_vencedor": "ACTCON SOLUCOES WEB LTDA."
+    },
+    {
+      "seq_licitacao": 1448185,
+      "total_licitacao": 0.0,
+      "nom_vencedor": "VISAMED COMERCIO DE MATERIAL HOSPITALAR LTDA"
+    },
+    {
+      "seq_licitacao": 1448185,
+      "total_licitacao": 0.0,
+      "nom_vencedor": "ALFALAGOS LTDA."
+    },
+    {
+      "seq_licitacao": 1448185,
+      "total_licitacao": 0.0,
+      "nom_vencedor": "PEROLA IMPORTADORA E DISTRIBUIDORA HOSPITALAR LTDA"
+    },
+    {
+      "seq_licitacao": 1448185,
+      "total_licitacao": 0.0,
+      "nom_vencedor": "DISTRILAF DISTRIBUIDORA DE MEDICAMENTOS LTDA"
+    },
+    {
+      "seq_licitacao": 1448185,
+      "total_licitacao": 0.0,
+      "nom_vencedor": "MG FLEX LTDA."
+    },
+    {
+      "seq_licitacao": 1448185,
+      "total_licitacao": 0.0,
+      "nom_vencedor": "HOLISTICA COMERCIO DE PRODUTOS E SERVICOS HOSPITALARES LTDA"
+    }
+  ],
+  "row_count": 10,
+  "col_count": 3,
+  "schema_hash": "b4b5e4f8f4b996e0",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:37.927289+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 10
+  }
+}

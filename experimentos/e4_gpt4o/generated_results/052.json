@@ -1,0 +1,29 @@
+{
+  "id_teste": "52",
+  "source": "generated:e4_gpt4o",
+  "sql": "SELECT nom_vencedor, COUNT(*) AS total_vitorias FROM licitacao_homologLicitacao WHERE ano_referencia = 2025 GROUP BY nom_vencedor ORDER BY total_vitorias DESC LIMIT 1;",
+  "columns": [
+    "nom_vencedor",
+    "total_vitorias"
+  ],
+  "rows": [
+    {
+      "nom_vencedor": "FIGUEROA GOMES COMERCIAL LTDA",
+      "total_vitorias": 189
+    }
+  ],
+  "row_count": 1,
+  "col_count": 2,
+  "schema_hash": "6a4ccd8f90ce0e15",
+  "error": null,
+  "exported_at": "2026-07-14T23:56:44.599333+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 1,
+    "gen_rows": 1
+  }
+}

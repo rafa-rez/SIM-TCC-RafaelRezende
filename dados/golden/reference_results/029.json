@@ -1,0 +1,21 @@
+{
+  "id_teste": "29",
+  "source": "golden_reference",
+  "sql": "SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total FROM despesa_despesa WHERE ano_referencia = 2025 AND dsc_naturezadespesa LIKE '3%';",
+  "columns": [
+    "total"
+  ],
+  "rows": [
+    {
+      "total": 106431207.63
+    }
+  ],
+  "row_count": 1,
+  "col_count": 1,
+  "schema_hash": "11239872d178729a",
+  "error": null,
+  "exported_at": "2026-07-14T23:54:40.443714+00:00",
+  "input_usuario": "Qual o total de despesa corrente liquidada em 2025?",
+  "dificuldade": "medio",
+  "categoria": "Calculo Fiscal"
+}

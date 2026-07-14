@@ -1,0 +1,45 @@
+{
+  "id_teste": "16",
+  "source": "generated:e1_baseline_compacto",
+  "sql": "SELECT nom_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago FROM despesa_pagamento WHERE ano_referencia = 2025 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND num_doc_credor NOT IN ('-1', '0') GROUP BY nom_credor ORDER BY total_pago DESC LIMIT 5;",
+  "columns": [
+    "nom_credor",
+    "total_pago"
+  ],
+  "rows": [
+    {
+      "nom_credor": "SOCIEDADE CIVIL DE BENEFICENCIA CAETEENSE",
+      "total_pago": 9871952.6
+    },
+    {
+      "nom_credor": "QUANTUM - ENGENHARIA E CONSULTORIA LTDA",
+      "total_pago": 6814349.82
+    },
+    {
+      "nom_credor": "INSTITUTO NACIONAL DO SEGURO SOCIAL",
+      "total_pago": 5623735.76
+    },
+    {
+      "nom_credor": "EMPRESA TRANSCOL LTDA",
+      "total_pago": 5354871.04
+    },
+    {
+      "nom_credor": "UNICAPA - UNIAO DOS APLICADORES DE PAVIMENTO ASFALTICO LTDA",
+      "total_pago": 3168251.87
+    }
+  ],
+  "row_count": 5,
+  "col_count": 2,
+  "schema_hash": "44fbb991aba533fe",
+  "error": null,
+  "exported_at": "2026-07-14T23:55:14.899836+00:00",
+  "metrics_checkpoint": {
+    "vsr": true,
+    "ex": false,
+    "nea_ok": true,
+    "tsa": true,
+    "chs": 1.0,
+    "ref_rows": 5,
+    "gen_rows": 5
+  }
+}
