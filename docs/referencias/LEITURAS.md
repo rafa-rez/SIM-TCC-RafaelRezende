@@ -6,7 +6,7 @@ Legenda: `[ ]` pendente · `[B]` baixado · `[L]` lido · `[C]` citado no texto
 
 | Status | Referência | PDF | Notas |
 |:---:|---|---|---|
-| [ ] | Yu et al. 2018 — Spider | `pdfs/Yu2018-spider.pdf` | `notas/Yu2018.md` |
+| [B] | Yu et al. 2018 — Spider | `pdfs/Yu2018-spider.pdf` | `notas/Yu2018.md` |
 | [ ] | Zhong et al. 2020 — Test Suite | `pdfs/Zhong2020-test-suite.pdf` | `notas/Zhong2020.md` |
 | [ ] | Li et al. 2024 — BIRD | `pdfs/Li2024-bird.pdf` | `notas/Li2024.md` |
 | [ ] | Lewis et al. 2020 — RAG | `pdfs/Lewis2020-rag.pdf` | `notas/Lewis2020.md` |
