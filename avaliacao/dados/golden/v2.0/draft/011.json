@@ -1,0 +1,240 @@
+{
+  "id_teste": "011",
+  "input_usuario": "Mostre as 10 maiores licitações/contratos por ano (23,24 e 25), monte uma tabela conciliando os dados enviados de licitação e contrato (caso forem os mesmos), onde mostra a data da licitação, a data do contrato, o nome do vencedor/contratante, o objeto, o valor , o número da licitação e o número do contrato.",
+  "assisted_at": "2026-07-15T01:34:26.845908+00:00",
+  "model": "gpt-4.1-mini",
+  "generation": {
+    "ok": true,
+    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Usarei licitacao_licitacao (l) para dados da licitação, licitacao_homologLicitacao (h) para o vencedor e valor, contrato_contratos (c) para dados do contrato e contrato_contContrato (cc) para o nome do contratante. 2. JOINs: Para licitação, farei LEFT JOIN entre licitacao_licitacao e licitacao_homologLicitacao por seq_licitacao e ano_referencia para agregar o valor total por licitação (somando vlr_global). Para contratos, farei LEFT JOIN entre contrato_contratos e contrato_contContrato por seq_contrato e ano_referencia para obter o nome do contratante. 3. Conciliar licitação e contrato: Como podem ser os mesmos, farei FULL OUTER JOIN entre a agregação de licitação e contratos pelo número da licitação (num_processo e num_ano_processo) e número do contrato (num_contrato e num_ano_contrato) e ano_referencia. 4. Filtros: ano_referencia IN (2023, 2024, 2025). 5. Anti-duplicatas: Para licitação, somo vlr_global agrupando por licitação. Para contratos, uso vlr_contrato direto. 6. Ordenação e limite: Para cada ano, uso ROW_NUMBER() PARTITION BY ano_referencia ORDER BY valor DESC para pegar os 10 maiores. 7. Campos: Data da licitação (dat_abert_proc_adm), data do contrato (dat_assinatura), nome do vencedor/contratante, objeto (dsc_objeto_licitacao para licitação e dsc_objetocontrato para contrato), valor, número da licitação e número do contrato. 8. Uso COALESCE para mostrar dados conciliados e evitar nulos. 9. Uso CAST e filtros de higiene não são necessários pois os dados são de cadastro e movimentação com ano_referencia filtrado. 10. Uso NULLIF para divisão segura não aplicável aqui. 11. Uso LIMIT 10 por ano com ROW_NUMBER para evitar limite global.\",\n  \"query_sql\": \"WITH licitacoes_agg AS (\\n  SELECT\\n    l.ano_referencia,\\n    l.num_processo AS num_licitacao,\\n    l.num_ano_processo AS ano_licitacao,\\n    l.dat_abert_proc_adm AS data_licitacao,\\n    SUM(CAST(h.vlr_global AS DECIMAL)) AS valor_licitacao,\\n    MAX(TRIM(h.nom_vencedor)) AS nome_vencedor,\\n    MAX(TRIM(l.dsc_objeto_licitacao)) AS objeto_licitacao\\n  FROM licitacao_licitacao l\\n  LEFT JOIN licitacao_homologLicitacao h\\n    ON l.seq_licitacao = h.seq_licitacao\\n    AND l.ano_referencia = h.ano_referencia\\n  WHERE l.ano_referencia IN (2023, 2024, 2025)\\n  GROUP BY l.ano_referencia, l.num_processo, l.num_ano_processo, l.dat_abert_proc_adm\\n),\\ncontratos_agg AS (\\n  SELECT\\n    c.ano_referencia,\\n    c.num_contrato,\\n    c.num_ano_contrato,\\n    c.dat_assinatura AS data_contrato,\\n    c.vlr_contrato AS valor_contrato,\\n    MAX(TRIM(cc.dsc_nome_credor)) AS nome_contratante,\\n    MAX(TRIM(c.dsc_objetocontrato)) AS objeto_contrato,\\n    c.num_anoexercicio AS ano_licitacao_contrato,\\n    c.seq_licitacao,\\n    c.num_contrato AS num_contrato_contrato\\n  FROM contrato_contratos c\\n  LEFT JOIN contrato_contContrato cc\\n    ON c.seq_contrato = cc.seq_contrato\\n    AND c.ano_referencia = cc.ano_referencia\\n  WHERE c.ano_referencia IN (2023, 2024, 2025)\\n  GROUP BY c.ano_referencia, c.num_contrato, c.num_ano_contrato, c.dat_assinatura, c.vlr_contrato, c.num_anoexercicio, c.seq_licitacao\\n),\\nconciliacao AS (\\n  SELECT\\n    COALESCE(l.ano_referencia, c.ano_referencia) AS ano_referencia,\\n    l.num_licitacao,\\n    l.ano_licitacao,\\n    l.data_licitacao,\\n    c.num_contrato,\\n    c.num_ano_contrato,\\n    c.data_contrato,\\n    COALESCE(l.nome_vencedor, c.nome_contratante) AS nome,\\n    COALESCE(l.objeto_licitacao, c.objeto_contrato) AS objeto,\\n    COALESCE(l.valor_licitacao, 0) AS valor_licitacao,\\n    COALESCE(c.valor_contrato, 0) AS valor_contrato,\\n    GREATEST(COALESCE(l.valor_licitacao, 0), COALESCE(c.valor_contrato, 0)) AS valor\\n  FROM licitacoes_agg l\\n  FULL OUTER JOIN contratos_agg c\\n    ON l.num_licitacao = c.seq_licitacao\\n    AND l.ano_referencia = c.ano_referencia\\n)\\nSELECT\\n  ano_referencia,\\n  num_licitacao,\\n  data_licitacao,\\n  num_contrato,\\n  data_contrato,\\n  nome,\\n  objeto,\\n  valor\\nFROM (\\n  SELECT\\n    ano_referencia,\\n    num_licitacao,\\n    data_licitacao,\\n    num_contrato,\\n    data_contrato,\\n    nome,\\n    objeto,\\n    valor,\\n    ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY valor DESC) AS rn\\n  FROM conciliacao\\n) t\\nWHERE rn <= 10\\nORDER BY ano_referencia, valor DESC;\",\n  \"query_formatada\": \"WITH licitacoes_agg AS (\\n  SELECT\\n    l.ano_referencia,\\n    l.num_processo AS num_licitacao,\\n    l.num_ano_processo AS ano_licitacao,\\n    l.dat_abert_proc_adm AS data_licitacao,\\n    SUM(CAST(h.vlr_global AS DECIMAL)) AS valor_licitacao,\\n    MAX(TRIM(h.nom_vencedor)) AS nome_vencedor,\\n    MAX(TRIM(l.dsc_objeto_licitacao)) AS objeto_licitacao\\n  FROM licitacao_licitacao l\\n  LEFT JOIN licitacao_homologLicitacao h\\n    ON l.seq_licitacao = h.seq_licitacao\\n    AND l.ano_referencia = h.ano_referencia\\n  WHERE l.ano_referencia IN (2023, 2024, 2025)\\n  GROUP BY l.ano_referencia, l.num_processo, l.num_ano_processo, l.dat_abert_proc_adm\\n),\\ncontratos_agg AS (\\n  SELECT\\n    c.ano_referencia,\\n    c.num_contrato,\\n    c.num_ano_contrato,\\n    c.dat_assinatura AS data_contrato,\\n    c.vlr_contrato AS valor_contrato,\\n    MAX(TRIM(cc.dsc_nome_credor)) AS nome_contratante,\\n    MAX(TRIM(c.dsc_objetocontrato)) AS objeto_contrato,\\n    c.num_anoexercicio AS ano_licitacao_contrato,\\n    c.seq_licitacao,\\n    c.num_contrato AS num_contrato_contrato\\n  FROM contrato_contratos c\\n  LEFT JOIN contrato_contContrato cc\\n    ON c.seq_contrato = cc.seq_contrato\\n    AND c.ano_referencia = cc.ano_referencia\\n  WHERE c.ano_referencia IN (2023, 2024, 2025)\\n  GROUP BY c.ano_referencia, c.num_contrato, c.num_ano_contrato, c.dat_assinatura, c.vlr_contrato, c.num_anoexercicio, c.seq_licitacao\\n),\\nconciliacao AS (\\n  SELECT\\n    COALESCE(l.ano_referencia, c.ano_referencia) AS ano_referencia,\\n    l.num_licitacao,\\n    l.ano_licitacao,\\n    l.data_licitacao,\\n    c.num_contrato,\\n    c.num_ano_contrato,\\n    c.data_contrato,\\n    COALESCE(l.nome_vencedor, c.nome_contratante) AS nome,\\n    COALESCE(l.objeto_licitacao, c.objeto_contrato) AS objeto,\\n    COALESCE(l.valor_licitacao, 0) AS valor_licitacao,\\n    COALESCE(c.valor_contrato, 0) AS valor_contrato,\\n    GREATEST(COALESCE(l.valor_licitacao, 0), COALESCE(c.valor_contrato, 0)) AS valor\\n  FROM licitacoes_agg l\\n  FULL OUTER JOIN contratos_agg c\\n    ON l.num_licitacao = c.seq_licitacao\\n    AND l.ano_referencia = c.ano_referencia\\n)\\nSELECT\\n  ano_referencia,\\n  num_licitacao,\\n  data_licitacao,\\n  num_contrato,\\n  data_contrato,\\n  nome,\\n  objeto,\\n  valor\\nFROM (\\n  SELECT\\n    ano_referencia,\\n    num_licitacao,\\n    data_licitacao,\\n    num_contrato,\\n    data_contrato,\\n    nome,\\n    objeto,\\n    valor,\\n    ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY valor DESC) AS rn\\n  FROM conciliacao\\n) t\\nWHERE rn <= 10\\nORDER BY ano_referencia, valor DESC;\"\n}",
+    "parsed": {
+      "explicacao_tecnica": "1. Tabelas: Usarei licitacao_licitacao (l) para dados da licitação, licitacao_homologLicitacao (h) para o vencedor e valor, contrato_contratos (c) para dados do contrato e contrato_contContrato (cc) para o nome do contratante. 2. JOINs: Para licitação, farei LEFT JOIN entre licitacao_licitacao e licitacao_homologLicitacao por seq_licitacao e ano_referencia para agregar o valor total por licitação (somando vlr_global). Para contratos, farei LEFT JOIN entre contrato_contratos e contrato_contContrato por seq_contrato e ano_referencia para obter o nome do contratante. 3. Conciliar licitação e contrato: Como podem ser os mesmos, farei FULL OUTER JOIN entre a agregação de licitação e contratos pelo número da licitação (num_processo e num_ano_processo) e número do contrato (num_contrato e num_ano_contrato) e ano_referencia. 4. Filtros: ano_referencia IN (2023, 2024, 2025). 5. Anti-duplicatas: Para licitação, somo vlr_global agrupando por licitação. Para contratos, uso vlr_contrato direto. 6. Ordenação e limite: Para cada ano, uso ROW_NUMBER() PARTITION BY ano_referencia ORDER BY valor DESC para pegar os 10 maiores. 7. Campos: Data da licitação (dat_abert_proc_adm), data do contrato (dat_assinatura), nome do vencedor/contratante, objeto (dsc_objeto_licitacao para licitação e dsc_objetocontrato para contrato), valor, número da licitação e número do contrato. 8. Uso COALESCE para mostrar dados conciliados e evitar nulos. 9. Uso CAST e filtros de higiene não são necessários pois os dados são de cadastro e movimentação com ano_referencia filtrado. 10. Uso NULLIF para divisão segura não aplicável aqui. 11. Uso LIMIT 10 por ano com ROW_NUMBER para evitar limite global.",
+      "query_sql": "WITH licitacoes_agg AS (\n  SELECT\n    l.ano_referencia,\n    l.num_processo AS num_licitacao,\n    l.num_ano_processo AS ano_licitacao,\n    l.dat_abert_proc_adm AS data_licitacao,\n    SUM(CAST(h.vlr_global AS DECIMAL)) AS valor_licitacao,\n    MAX(TRIM(h.nom_vencedor)) AS nome_vencedor,\n    MAX(TRIM(l.dsc_objeto_licitacao)) AS objeto_licitacao\n  FROM licitacao_licitacao l\n  LEFT JOIN licitacao_homologLicitacao h\n    ON l.seq_licitacao = h.seq_licitacao\n    AND l.ano_referencia = h.ano_referencia\n  WHERE l.ano_referencia IN (2023, 2024, 2025)\n  GROUP BY l.ano_referencia, l.num_processo, l.num_ano_processo, l.dat_abert_proc_adm\n),\ncontratos_agg AS (\n  SELECT\n    c.ano_referencia,\n    c.num_contrato,\n    c.num_ano_contrato,\n    c.dat_assinatura AS data_contrato,\n    c.vlr_contrato AS valor_contrato,\n    MAX(TRIM(cc.dsc_nome_credor)) AS nome_contratante,\n    MAX(TRIM(c.dsc_objetocontrato)) AS objeto_contrato,\n    c.num_anoexercicio AS ano_licitacao_contrato,\n    c.seq_licitacao,\n    c.num_contrato AS num_contrato_contrato\n  FROM contrato_contratos c\n  LEFT JOIN contrato_contContrato cc\n    ON c.seq_contrato = cc.seq_contrato\n    AND c.ano_referencia = cc.ano_referencia\n  WHERE c.ano_referencia IN (2023, 2024, 2025)\n  GROUP BY c.ano_referencia, c.num_contrato, c.num_ano_contrato, c.dat_assinatura, c.vlr_contrato, c.num_anoexercicio, c.seq_licitacao\n),\nconciliacao AS (\n  SELECT\n    COALESCE(l.ano_referencia, c.ano_referencia) AS ano_referencia,\n    l.num_licitacao,\n    l.ano_licitacao,\n    l.data_licitacao,\n    c.num_contrato,\n    c.num_ano_contrato,\n    c.data_contrato,\n    COALESCE(l.nome_vencedor, c.nome_contratante) AS nome,\n    COALESCE(l.objeto_licitacao, c.objeto_contrato) AS objeto,\n    COALESCE(l.valor_licitacao, 0) AS valor_licitacao,\n    COALESCE(c.valor_contrato, 0) AS valor_contrato,\n    GREATEST(COALESCE(l.valor_licitacao, 0), COALESCE(c.valor_contrato, 0)) AS valor\n  FROM licitacoes_agg l\n  FULL OUTER JOIN contratos_agg c\n    ON l.num_licitacao = c.seq_licitacao\n    AND l.ano_referencia = c.ano_referencia\n)\nSELECT\n  ano_referencia,\n  num_licitacao,\n  data_licitacao,\n  num_contrato,\n  data_contrato,\n  nome,\n  objeto,\n  valor\nFROM (\n  SELECT\n    ano_referencia,\n    num_licitacao,\n    data_licitacao,\n    num_contrato,\n    data_contrato,\n    nome,\n    objeto,\n    valor,\n    ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY valor DESC) AS rn\n  FROM conciliacao\n) t\nWHERE rn <= 10\nORDER BY ano_referencia, valor DESC;",
+      "query_formatada": "WITH licitacoes_agg AS (\n  SELECT\n    l.ano_referencia,\n    l.num_processo AS num_licitacao,\n    l.num_ano_processo AS ano_licitacao,\n    l.dat_abert_proc_adm AS data_licitacao,\n    SUM(CAST(h.vlr_global AS DECIMAL)) AS valor_licitacao,\n    MAX(TRIM(h.nom_vencedor)) AS nome_vencedor,\n    MAX(TRIM(l.dsc_objeto_licitacao)) AS objeto_licitacao\n  FROM licitacao_licitacao l\n  LEFT JOIN licitacao_homologLicitacao h\n    ON l.seq_licitacao = h.seq_licitacao\n    AND l.ano_referencia = h.ano_referencia\n  WHERE l.ano_referencia IN (2023, 2024, 2025)\n  GROUP BY l.ano_referencia, l.num_processo, l.num_ano_processo, l.dat_abert_proc_adm\n),\ncontratos_agg AS (\n  SELECT\n    c.ano_referencia,\n    c.num_contrato,\n    c.num_ano_contrato,\n    c.dat_assinatura AS data_contrato,\n    c.vlr_contrato AS valor_contrato,\n    MAX(TRIM(cc.dsc_nome_credor)) AS nome_contratante,\n    MAX(TRIM(c.dsc_objetocontrato)) AS objeto_contrato,\n    c.num_anoexercicio AS ano_licitacao_contrato,\n    c.seq_licitacao,\n    c.num_contrato AS num_contrato_contrato\n  FROM contrato_contratos c\n  LEFT JOIN contrato_contContrato cc\n    ON c.seq_contrato = cc.seq_contrato\n    AND c.ano_referencia = cc.ano_referencia\n  WHERE c.ano_referencia IN (2023, 2024, 2025)\n  GROUP BY c.ano_referencia, c.num_contrato, c.num_ano_contrato, c.dat_assinatura, c.vlr_contrato, c.num_anoexercicio, c.seq_licitacao\n),\nconciliacao AS (\n  SELECT\n    COALESCE(l.ano_referencia, c.ano_referencia) AS ano_referencia,\n    l.num_licitacao,\n    l.ano_licitacao,\n    l.data_licitacao,\n    c.num_contrato,\n    c.num_ano_contrato,\n    c.data_contrato,\n    COALESCE(l.nome_vencedor, c.nome_contratante) AS nome,\n    COALESCE(l.objeto_licitacao, c.objeto_contrato) AS objeto,\n    COALESCE(l.valor_licitacao, 0) AS valor_licitacao,\n    COALESCE(c.valor_contrato, 0) AS valor_contrato,\n    GREATEST(COALESCE(l.valor_licitacao, 0), COALESCE(c.valor_contrato, 0)) AS valor\n  FROM licitacoes_agg l\n  FULL OUTER JOIN contratos_agg c\n    ON l.num_licitacao = c.seq_licitacao\n    AND l.ano_referencia = c.ano_referencia\n)\nSELECT\n  ano_referencia,\n  num_licitacao,\n  data_licitacao,\n  num_contrato,\n  data_contrato,\n  nome,\n  objeto,\n  valor\nFROM (\n  SELECT\n    ano_referencia,\n    num_licitacao,\n    data_licitacao,\n    num_contrato,\n    data_contrato,\n    nome,\n    objeto,\n    valor,\n    ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY valor DESC) AS rn\n  FROM conciliacao\n) t\nWHERE rn <= 10\nORDER BY ano_referencia, valor DESC;"
+    },
+    "query_sql": "WITH licitacoes_agg AS (\n  SELECT\n    l.ano_referencia,\n    l.num_processo AS num_licitacao,\n    l.num_ano_processo AS ano_licitacao,\n    l.dat_abert_proc_adm AS data_licitacao,\n    SUM(CAST(h.vlr_global AS DECIMAL)) AS valor_licitacao,\n    MAX(TRIM(h.nom_vencedor)) AS nome_vencedor,\n    MAX(TRIM(l.dsc_objeto_licitacao)) AS objeto_licitacao\n  FROM licitacao_licitacao l\n  LEFT JOIN licitacao_homologLicitacao h\n    ON l.seq_licitacao = h.seq_licitacao\n    AND l.ano_referencia = h.ano_referencia\n  WHERE l.ano_referencia IN (2023, 2024, 2025)\n  GROUP BY l.ano_referencia, l.num_processo, l.num_ano_processo, l.dat_abert_proc_adm\n),\ncontratos_agg AS (\n  SELECT\n    c.ano_referencia,\n    c.num_contrato,\n    c.num_ano_contrato,\n    c.dat_assinatura AS data_contrato,\n    c.vlr_contrato AS valor_contrato,\n    MAX(TRIM(cc.dsc_nome_credor)) AS nome_contratante,\n    MAX(TRIM(c.dsc_objetocontrato)) AS objeto_contrato,\n    c.num_anoexercicio AS ano_licitacao_contrato,\n    c.seq_licitacao,\n    c.num_contrato AS num_contrato_contrato\n  FROM contrato_contratos c\n  LEFT JOIN contrato_contContrato cc\n    ON c.seq_contrato = cc.seq_contrato\n    AND c.ano_referencia = cc.ano_referencia\n  WHERE c.ano_referencia IN (2023, 2024, 2025)\n  GROUP BY c.ano_referencia, c.num_contrato, c.num_ano_contrato, c.dat_assinatura, c.vlr_contrato, c.num_anoexercicio, c.seq_licitacao\n),\nconciliacao AS (\n  SELECT\n    COALESCE(l.ano_referencia, c.ano_referencia) AS ano_referencia,\n    l.num_licitacao,\n    l.ano_licitacao,\n    l.data_licitacao,\n    c.num_contrato,\n    c.num_ano_contrato,\n    c.data_contrato,\n    COALESCE(l.nome_vencedor, c.nome_contratante) AS nome,\n    COALESCE(l.objeto_licitacao, c.objeto_contrato) AS objeto,\n    COALESCE(l.valor_licitacao, 0) AS valor_licitacao,\n    COALESCE(c.valor_contrato, 0) AS valor_contrato,\n    GREATEST(COALESCE(l.valor_licitacao, 0), COALESCE(c.valor_contrato, 0)) AS valor\n  FROM licitacoes_agg l\n  FULL OUTER JOIN contratos_agg c\n    ON l.num_licitacao = c.seq_licitacao\n    AND l.ano_referencia = c.ano_referencia\n)\nSELECT\n  ano_referencia,\n  num_licitacao,\n  data_licitacao,\n  num_contrato,\n  data_contrato,\n  nome,\n  objeto,\n  valor\nFROM (\n  SELECT\n    ano_referencia,\n    num_licitacao,\n    data_licitacao,\n    num_contrato,\n    data_contrato,\n    nome,\n    objeto,\n    valor,\n    ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY valor DESC) AS rn\n  FROM conciliacao\n) t\nWHERE rn <= 10\nORDER BY ano_referencia, valor DESC;",
+    "explicacao": "1. Tabelas: Usarei licitacao_licitacao (l) para dados da licitação, licitacao_homologLicitacao (h) para o vencedor e valor, contrato_contratos (c) para dados do contrato e contrato_contContrato (cc) para o nome do contratante. 2. JOINs: Para licitação, farei LEFT JOIN entre licitacao_licitacao e licitacao_homologLicitacao por seq_licitacao e ano_referencia para agregar o valor total por licitação (somando vlr_global). Para contratos, farei LEFT JOIN entre contrato_contratos e contrato_contContrato por seq_contrato e ano_referencia para obter o nome do contratante. 3. Conciliar licitação e contrato: Como podem ser os mesmos, farei FULL OUTER JOIN entre a agregação de licitação e contratos pelo número da licitação (num_processo e num_ano_processo) e número do contrato (num_contrato e num_ano_contrato) e ano_referencia. 4. Filtros: ano_referencia IN (2023, 2024, 2025). 5. Anti-duplicatas: Para licitação, somo vlr_global agrupando por licitação. Para contratos, uso vlr_contrato direto. 6. Ordenação e limite: Para cada ano, uso ROW_NUMBER() PARTITION BY ano_referencia ORDER BY valor DESC para pegar os 10 maiores. 7. Campos: Data da licitação (dat_abert_proc_adm), data do contrato (dat_assinatura), nome do vencedor/contratante, objeto (dsc_objeto_licitacao para licitação e dsc_objetocontrato para contrato), valor, número da licitação e número do contrato. 8. Uso COALESCE para mostrar dados conciliados e evitar nulos. 9. Uso CAST e filtros de higiene não são necessários pois os dados são de cadastro e movimentação com ano_referencia filtrado. 10. Uso NULLIF para divisão segura não aplicável aqui. 11. Uso LIMIT 10 por ano com ROW_NUMBER para evitar limite global.",
+    "tokens_in": 15944,
+    "tokens_out": 2156,
+    "gen_ms": 36095.93,
+    "attempt": 1
+  },
+  "query_sql": "WITH licitacoes_agg AS (\n  SELECT\n    l.ano_referencia,\n    l.num_processo AS num_licitacao,\n    l.num_ano_processo AS ano_licitacao,\n    l.dat_abert_proc_adm AS data_licitacao,\n    SUM(CAST(h.vlr_global AS DECIMAL)) AS valor_licitacao,\n    MAX(TRIM(h.nom_vencedor)) AS nome_vencedor,\n    MAX(TRIM(l.dsc_objeto_licitacao)) AS objeto_licitacao\n  FROM licitacao_licitacao l\n  LEFT JOIN licitacao_homologLicitacao h\n    ON l.seq_licitacao = h.seq_licitacao\n    AND l.ano_referencia = h.ano_referencia\n  WHERE l.ano_referencia IN (2023, 2024, 2025)\n  GROUP BY l.ano_referencia, l.num_processo, l.num_ano_processo, l.dat_abert_proc_adm\n),\ncontratos_agg AS (\n  SELECT\n    c.ano_referencia,\n    c.num_contrato,\n    c.num_ano_contrato,\n    c.dat_assinatura AS data_contrato,\n    c.vlr_contrato AS valor_contrato,\n    MAX(TRIM(cc.dsc_nome_credor)) AS nome_contratante,\n    MAX(TRIM(c.dsc_objetocontrato)) AS objeto_contrato,\n    c.num_anoexercicio AS ano_licitacao_contrato,\n    c.seq_licitacao,\n    c.num_contrato AS num_contrato_contrato\n  FROM contrato_contratos c\n  LEFT JOIN contrato_contContrato cc\n    ON c.seq_contrato = cc.seq_contrato\n    AND c.ano_referencia = cc.ano_referencia\n  WHERE c.ano_referencia IN (2023, 2024, 2025)\n  GROUP BY c.ano_referencia, c.num_contrato, c.num_ano_contrato, c.dat_assinatura, c.vlr_contrato, c.num_anoexercicio, c.seq_licitacao\n),\nconciliacao AS (\n  SELECT\n    COALESCE(l.ano_referencia, c.ano_referencia) AS ano_referencia,\n    l.num_licitacao,\n    l.ano_licitacao,\n    l.data_licitacao,\n    c.num_contrato,\n    c.num_ano_contrato,\n    c.data_contrato,\n    COALESCE(l.nome_vencedor, c.nome_contratante) AS nome,\n    COALESCE(l.objeto_licitacao, c.objeto_contrato) AS objeto,\n    COALESCE(l.valor_licitacao, 0) AS valor_licitacao,\n    COALESCE(c.valor_contrato, 0) AS valor_contrato,\n    GREATEST(COALESCE(l.valor_licitacao, 0), COALESCE(c.valor_contrato, 0)) AS valor\n  FROM licitacoes_agg l\n  FULL OUTER JOIN contratos_agg c\n    ON l.num_licitacao = c.seq_licitacao\n    AND l.ano_referencia = c.ano_referencia\n)\nSELECT\n  ano_referencia,\n  num_licitacao,\n  data_licitacao,\n  num_contrato,\n  data_contrato,\n  nome,\n  objeto,\n  valor\nFROM (\n  SELECT\n    ano_referencia,\n    num_licitacao,\n    data_licitacao,\n    num_contrato,\n    data_contrato,\n    nome,\n    objeto,\n    valor,\n    ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY valor DESC) AS rn\n  FROM conciliacao\n) t\nWHERE rn <= 10\nORDER BY ano_referencia, valor DESC;",
+  "execution": {
+    "ok": true,
+    "row_count": 30,
+    "columns": [
+      "ano_referencia",
+      "num_licitacao",
+      "data_licitacao",
+      "num_contrato",
+      "data_contrato",
+      "nome",
+      "objeto",
+      "valor"
+    ],
+    "preview_rows": [
+      {
+        "ano_referencia": 2023,
+        "num_licitacao": null,
+        "data_licitacao": null,
+        "num_contrato": 32,
+        "data_contrato": 20230530,
+        "nome": "UNICAPA UNIAO DOS APLIC DE PAV ASFALTICO LTDA",
+        "objeto": "Contratacao de empresa especializada para execucao de Pavimentacao asfaltica em CBUQ concreto betuminoso a usinado quentee Drenagem na estrada que liga o Distrito do Morro Vermelho ao Distrito sede Caeté",
+        "valor": 12633819.21
+      },
+      {
+        "ano_referencia": 2023,
+        "num_licitacao": null,
+        "data_licitacao": null,
+        "num_contrato": 30,
+        "data_contrato": 20230530,
+        "nome": "QUANTUM ENGENHARIA E CONSULTORIA LTDA",
+        "objeto": "Contratacao de empresa especializada para prestacao de servicos de limpeza pública compreendendo a coleta manual e conteinerizada e transporte de resíduos sólidos domiciliares até unidade de disposicao final disponibilizacao manutencao e higienizacao de contêineres PEAD coleta transporte e tratamento de resíduos de servicos de saúde varricao manual de vias e logradouros públicos capina mecanizada fornecimento de equipe padrao para execucao de servicos diversos incluído a capina manual e",
+        "valor": 8933093.64
+      },
+      {
+        "ano_referencia": 2023,
+        "num_licitacao": "000000000103",
+        "data_licitacao": 20230315,
+        "num_contrato": null,
+        "data_contrato": null,
+        "nome": "QUANTUM ENGENHARIA E CONSULTORIA LTDA",
+        "objeto": "CONTRATACAO DE EMPRESA ESPECIALIZADA PARA PRESTACAO DE SERVICOS DE LIMPEZA PÚBLICA COMPREENDENDO A COLETA MANUAL E CONTEINERIZADA E TRANSPORTE DE RESÍDUOS SÓLIDOS DOMICILIARES ATÉ UNIDADE DE DISPOSICAO FINAL DISPONIBILIZACAO MANUTENCAO E HIGIENIZACAO DE CONTÊINERES PEAD COLETA TRANSPORTE E TRATAMENTO DE RESÍDUOS DE SERVICOS DE SAÚDE VARRICAO MANUAL DE VIAS E LOGRADOUROS PÚBLICOS CAPINA MECANIZADA FORNECIMENTO DE EQUIPE PADRAO PARA EXECUCAO DE SERVICOS DIVERSOS INCLUÍDO A CAPINA MANUAL E ROCADA LIMPEZA DE CÓRREGOS PINTURA DE MEIO FIO E LIMPEZA DE BOCA DE LOBO MEDIANTE ESPECIFICACOES DO EDITAL EM ATENDIMENTO À SECRETARIA MUNICIPAL DE OBRAS PELO PERÍODO DE 12 DOZE MESES",
+        "valor": 8933093.64
+      },
+      {
+        "ano_referencia": 2023,
+        "num_licitacao": "000000000158",
+        "data_licitacao": 20230518,
+        "num_contrato": null,
+        "data_contrato": null,
+        "nome": "SERMEP SERVICOS MEDICOS SA",
+        "objeto": "CONTRATACAO DE EMPRESAS ESPECIALIZADAS NA PRESTACAO DE SERVICOS MEDICOS GENERALISTAS PARA ATENDIMENTO A SAUDE DA FAMILIA E COMUNIDADE EM UNIDADES PUBLICAS DE SAUDE DO MUNICIPIODEVENDO CADA PROFISSIONAL CUMPRIR NO MINIMO UMA CARGA DE 08 HORAS TODOS OS DIAS UTEIS DO MES",
+        "valor": 2227200.0
+      },
+      {
+        "ano_referencia": 2023,
+        "num_licitacao": null,
+        "data_licitacao": null,
+        "num_contrato": 3,
+        "data_contrato": 20230117,
+        "nome": "BRUSAL PROJETO E CONSTRUCAO LTDA",
+        "objeto": "Contratacao de empresa especializada para a construcao da Escola infantilfundamental denominada Escola Municipal Ozório Leao no Distrito de Antônio dos Santosconforme convênio N° 1261000095 firmado com o governo do Estado de Minas Gerais",
+        "valor": 1995939.43
+      },
+      {
+        "ano_referencia": 2023,
+        "num_licitacao": "000000000197",
+        "data_licitacao": 20230613,
+        "num_contrato": null,
+        "data_contrato": null,
+        "nome": "ZURICH ENGENHARIA LTDA ME",
+        "objeto": "CONTRATACAO DE EMPRESA ESPECIALIZADA EM SERVICOS DE CONSTRUCAO CIVIL PARA CONSTRUCAO DA UNIDADE BASICA DE SAUDE TIPO 01UNIDADE PEDRA BRANCA RUA JOAO MAGDALENA BRITOSN BAIRRO BELA VISTACAETEMG",
+        "valor": 1689643.99
+      },
+      {
+        "ano_referencia": 2023,
+        "num_licitacao": null,
+        "data_licitacao": null,
+        "num_contrato": 11,
+        "data_contrato": 20230308,
+        "nome": "BRUSAL PROJETO E CONSTRUCAO LTDA",
+        "objeto": "Obras e instalacoes Contratacao de empresa especializada para execucao de obrasservicos complementares de reforma e ampliacao para operacionalizacao do Sistema de Esgotamento Sanitario no Município de CaetéMG com fornecimento de material mao de obra necessaria para executar a construcao no âmbito do Termo de Compromisso n° 0016002019 e Termos Aditivos firmados entre o Ministério do Desenvolvimento RegionalCODEVASF e este Município de Caeté",
+        "valor": 1395395.15
+      },
+      {
+        "ano_referencia": 2023,
+        "num_licitacao": "000000000338",
+        "data_licitacao": 20221024,
+        "num_contrato": null,
+        "data_contrato": null,
+        "nome": "BRUSAL PROJETO E CONSTRUCAO LTDA",
+        "objeto": "OBRAS E INSTALACOES CONTRATACAO DE EMPRESA ESPECIALIZADA PARA EXECUCAO DE OBRASSERVICOS COMPLEMENTARES DE REFORMA E AMPLIACAO PARA OPERACIONALIZACAO DO SISTEMA DE ESGOTAMENTO SANITARIO NO MUNICÍPIO DE CAETÉMG COM FORNECIMENTO DE MATERIAL MAO DE OBRA NECESSARIA PARA EXECUTAR A CONSTRUCAO NO ÂMBITO DO TERMO DE COMPROMISSO N° 0016002019 E TERMOS ADITIVOS FIRMADOS ENTRE O MINISTÉRIO DO DESENVOLVIMENTO REGIONALCODEVASF E ESTE MUNICÍPIO DE CAETÉ",
+        "valor": 1395395.15
+      },
+      {
+        "ano_referencia": 2023,
+        "num_licitacao": null,
+        "data_licitacao": null,
+        "num_contrato": 91,
+        "data_contrato": 20231211,
+        "nome": "ZURICH ENGENHARIA LTDA ME",
+        "objeto": "Contratacao de empresa especializada para construcao da Quadra Poliesportiva na escola Municipal Jose Herculano com destinacao de recurso financeiro oriundo do Convenio N° 12610024232022 firmado entre o Governo do Estado de MG e esta Prefeitura Municipal de Caete",
+        "valor": 1094876.0
+      },
+      {
+        "ano_referencia": 2023,
+        "num_licitacao": "000000000318",
+        "data_licitacao": 20231005,
+        "num_contrato": null,
+        "data_contrato": null,
+        "nome": "ZURICH ENGENHARIA LTDA ME",
+        "objeto": "CONTRATACAO DE EMPRESA ESPECIALIZADA PARA CONSTRUCAO DA QUADRA POLIESPORTIVA NA ESCOLA MUNICIPAL JOSE HERCULANO COM DESTINACAO DE RECURSO FINANCEIRO ORIUNDO DO CONVENIO N° 12610024232022 FIRMADO ENTRE O GOVERNO DO ESTADO DE MG E ESTA PREFEITURA MUNICIPAL DE CAETE",
+        "valor": 1094876.0
+      },
+      {
+        "ano_referencia": 2024,
+        "num_licitacao": "000000000378",
+        "data_licitacao": 20231208,
+        "num_contrato": null,
+        "data_contrato": null,
+        "nome": "ALVES SOLUCOES INTEGRADAS LTDA",
+        "objeto": "CONTRATACAO DE EMPRESA ESPECIALIZADA EM CONSTRUCAO CIVILPARA EXECUCAO DA OBRAS DE CONSTRUCAO DO CEMAE IV LOCALIZADO NA RUA JOAO MAGDALENO DE BRITON°335 NO BAIRRO BELA VISTA NA CIDADE DE CAETEMGTOTALIZANDO UMA AREA DE 151430M² A SER CONSTRUIDA COM FORNECIMENTO DE MATERIAL E MAODEOBRA NECESSARIA PARA EXECUTAR OS SERVICOS CONFORME TERMO DE COMPROMISSO N°20210474612023PAR PROINFANCIA TIPO 1FIRMADO ENTRE O MINISTERIO DA EDUCACAOFNDE X PREFEITURA MUNICIPAL DE CAETE",
+        "valor": 4432414.67
+      },
+      {
+        "ano_referencia": 2024,
+        "num_licitacao": null,
+        "data_licitacao": null,
+        "num_contrato": 17,
+        "data_contrato": 20240305,
+        "nome": "ALVES SOLUCOES INTEGRADAS LTDA",
+        "objeto": "Contratacao de empresa especializada em construcao civilpara execucao da obras de construcao do CEMAE IV localizado na Rua Joao Magdaleno de Briton°335 no Bairro Bela Vista na cidade de CaeteMGtotalizando uma area de 151430m² a ser construida com fornecimento de material e maodeobra necessaria para executar os servicos conforme Termo de Compromisso n°20210474612023PAR Proinfancia tipo 1firmado entre o Ministerio da EducacaoFNDE x Prefeitura Municipal de Caete",
+        "valor": 4432414.67
+      },
+      {
+        "ano_referencia": 2024,
+        "num_licitacao": "000000000135",
+        "data_licitacao": 20240813,
+        "num_contrato": null,
+        "data_contrato": null,
+        "nome": "SEMPRA PAVIMENTACAO EIRELI",
+        "objeto": "CONTRATACAO DE EMPRESA ESPECIALIZADA EM CONSTRUCAO CIVIL PARA EXECUCAO DA OBRA DE RECAPEAMENTO ASFALTICO EM CONCRETO BETUMINOSO USINADO A QUENTE CBUQ NA AVENIDA DOUTOR JOAO PINHEIRO COM DRENAGEM SUPERFICIAL POR SARJETA FORNECIMENTO DE MATERIAL E MAODEOBRA NECESSARIOS PARA EXECUTAR A PAVIMENTACAO CONFORME PLANO DE TRABALHO DEVIDAMENTE APROVADO PELO ESTADO DE MINAS GERAIS POR INTERMEDIO DA SECRETARIA DE ESTADO DE INFRAESTRUTURA MOBILIDADE E PARCERIAS",
+        "valor": 3749659.9
+      },
+      {
+        "ano_referencia": 2024,
+        "num_licitacao": null,
+        "data_licitacao": null,
+        "num_contrato": 93,
+        "data_contrato": 20240930,
+        "nome": "SEMPRA PAVIMENTACAO EIRELI",
+        "objeto": "Contratacao de empresa especializada em construcao civil para execucao da obra de recapeamento asfaltico em Concreto Betuminoso Usinado a quente CBUQ na Avenida Doutor Joao Pinheiro com drenagem superficial por sarjeta fornecimento de material e maodeobra necessarios para executar a pavimentacao conforme Plano de Trabalho devidamente aprovado pelo Estado de Minas Gerais por intermedio da Secretaria de Estado de Infraestrutura Mobilidade e Parcerias",
+        "valor": 3749659.9
+      },
+      {
+        "ano_referencia": 2024,
+        "num_licitacao": null,
+        "data_licitacao": null,
+        "num_contrato": 95,
+        "data_contrato": 20241007,
+        "nome": "BEEFALLO CARNES DO BRASIL EIRELI",
+        "objeto": "Registro de Precos para futuras e eventuais aquisicoes de aves carnes e embutidos destinados a suprir as necessidades da manutencao das Secretarias Municipais mediante Procedimento Licitatorio tipo menor preco por lote",
+        "valor": 1591791.0
+      },
+      {
+        "ano_referencia": 2024,
+        "num_licitacao": null,
+        "data_licitacao": null,
+        "num_contrato": 97,
+        "data_contrato": 20241015,
+        "nome": "SERVITECNO ENGENHARIA E CONSTRUCOES LTDA",
+        "objeto": "Contratacao de empresa especializada em construcao civil para execucao da instalacao de guardacorpo metalico na Avenida Doutor Joao Pinheiro com fornecimento de material e maodeobra necessario",
+        "valor": 690000.0
+      },
+      {
+        "ano_referencia": 2024,
+        "num_licitacao": "000000000060",
+        "data_licitacao": 20240327,
+        "num_contrato": null,
+        "data_contrato": null,
+        "nome": "IGL ENGENHARIA LTDA EPP",
+        "objeto": "CONTRATACAO DE EMPRESA ESPECIALIZADA EM CONSTRUCAO CIVIL PARA EXECUCAO DA OBRA DE CONSTRUCAO DA UBS UNIDADE BASICA DE SAUDE QUE SERA DENOMINADA UNIDADE ROCAS NOVAS NA LOCALIDADE DA RUA BANDEIRINHA SN° BAIRRO CENTRO ROCAS NOVASCAETE COM FORNECIMENTO DE MATERIAL E MAODEOBRA NECESSARIA PARA EXECUTAR A CONSTRUCAO",
+        "valor": 602986.9
+      },
+      {
+        "ano_referencia": 2024,
+        "num_licitacao": null,
+        "data_licitacao": null,
+        "num_contrato": 52,
+        "data_contrato": 20240701,
+        "nome": "CM CONSTRUTORA MINAS LTDA EPP",
+        "objeto": "Contratacao de empresa especializada em construcao civil para execucao da obra de pavimentacao asfaltica em Concreto Betuminoso Usinado a Quente CBUQ na Rua Joaquim Goncalves de Barros bairro bonsucesso com drenagem superficial por sarjeta fornecimento de material e mao deobra necessarios para executar a pavimentacao conforme Plano de Trabalho devidamente aprovado pelo Estado de Minas Gerais por intermedio da Secretaria de Estado de InfraestruturaMobilidade e Parcerias no Termo de conv",
+        "valor": 507229.0
+      },
+      {
+        "ano_referencia": 2024,
+        "num_licitacao": "000000000081",
+        "data_licitacao": 20240503,
+        "num_contrato": null,
+        "data_contrato": null,
+        "nome": "CM CONSTRUTORA MINAS LTDA EPP",
+        "objeto": "CONTRATACAO DE EMPRESA ESPECIALIZADA EM CONSTRUCAO CIVIL PARA EXECUCAO DA OBRA DE PAVIMENTACAO ASFALTICA EM CONCRETO BETUMINOSO USINADO A QUENTE CBUQ NA RUA JOAQUIM GONCALVES DE BARROS BAIRRO BONSUCESSO COM DRENAGEM SUPERFICIAL POR SARJETA FORNECIMENTO DE MATERIAL E MAO DEOBRA NECESSARIOS PARA EXECUTAR A PAVIMENTACAO CONFORME PLANO DE TRABALHO DEVIDAMENTE APROVADO PELO ESTADO DE MINAS GERAIS POR INTERMEDIO DA SECRETARIA DE ESTADO DE INFRAESTRUTURAMOBILIDADE E PARCERIAS NO TERMO DE CONVENIO DE SAIDA N°13010000592024 SEINFRA",
+        "valor": 507229.0
+      },
+      {
+        "ano_referencia": 2024,
+        "num_licitacao": "000000000080",
+        "data_licitacao": 20240503,
+        "num_contrato": null,
+        "data_contrato": null,
+        "nome": "TERRASA ENGENHARIA LTDA - ME",
+        "objeto": "CONTRATACAO DE EMPRESA ESPECIALIZADA EM CONSTRUCAO CIVIL PARA EXECUCAO DA OBRA DE PAVIMENTACAO ASFALTICA EM CONCRETO BETUMINOSO USINADO A QUENTECBUQ NAS RUAS 15 E 7 DO BAIRRO VISTA DA SERRA COM DRENAGEM SUPERFICIAL POR SARJETA FORNECIMENTO DE MATERIAL E MAO DE OBRA NECESSARIOS PARA EXECUTAR A PAVIMENTACAO CONFORME PLANO DE TRABALHO DEVIDAMENTE APROVADO PELO ESTADO DE MINAS GERAIS POR INTERMEDIO DA SECRETARIA DE ESTADO DE INFRAESTRUTURA MOBILIDADE E PARCERIAS NO TERMO DE CONVENIO DE SAIDA N° 13010000582024 SEINFRA",
+        "valor": 479671.0
+      }
+    ],
+    "error": null
+  },
+  "colunas_resposta_sugeridas": "nome,objeto,valor"
+}

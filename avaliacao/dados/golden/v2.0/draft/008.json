@@ -1,0 +1,51 @@
+{
+  "id_teste": "008",
+  "input_usuario": "Qual a empresa de transporte presta serviço em Caeté mg",
+  "assisted_at": "2026-07-15T01:33:29.477261+00:00",
+  "model": "gpt-4.1-mini",
+  "generation": {
+    "ok": true,
+    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Usarei frota_frota (f) para cadastro dos veículos e frota_gastoFrota (g) para os gastos relacionados à frota, que indicam os serviços prestados. 2. JOINs: Cruzarei frota_gastoFrota com frota_frota pelo seq_veiculo, sem exigir igualdade de ano no ON, pois frota_frota é tabela de cadastro. 3. Filtros: ano_referencia = 2025 na tabela frota_gastoFrota para garantir dados do ano solicitado. Também aplicarei filtros para remover registros sujos: em frota_frota, dsc_marca não pode conter 'DIVERSOS' e dsc_num_placa não pode ser '-1' ou 'NÃO INFORMADO'. 4. Seleção: Listarei os nomes dos proprietários (nom_proprietario) que prestam serviço, agrupando para evitar duplicatas. 5. Limite: Limitarei a 50 registros para listagem exploratória.\",\n  \"query_sql\": \"SELECT DISTINCT f.nom_proprietario FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') AND COALESCE(f.nom_proprietario, '') NOT ILIKE '%NAO INFORMADO%' LIMIT 50;\",\n  \"query_formatada\": \"SELECT\\n  DISTINCT f.nom_proprietario\\nFROM frota_gastoFrota g\\nJOIN frota_frota f\\n  ON g.seq_veiculo = f.seq_veiculo\\nWHERE g.ano_referencia = 2025\\n  AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%'\\n  AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO')\\n  AND COALESCE(f.nom_proprietario, '') NOT ILIKE '%NAO INFORMADO%'\\nLIMIT 50;\"\n}",
+    "parsed": {
+      "explicacao_tecnica": "1. Tabelas: Usarei frota_frota (f) para cadastro dos veículos e frota_gastoFrota (g) para os gastos relacionados à frota, que indicam os serviços prestados. 2. JOINs: Cruzarei frota_gastoFrota com frota_frota pelo seq_veiculo, sem exigir igualdade de ano no ON, pois frota_frota é tabela de cadastro. 3. Filtros: ano_referencia = 2025 na tabela frota_gastoFrota para garantir dados do ano solicitado. Também aplicarei filtros para remover registros sujos: em frota_frota, dsc_marca não pode conter 'DIVERSOS' e dsc_num_placa não pode ser '-1' ou 'NÃO INFORMADO'. 4. Seleção: Listarei os nomes dos proprietários (nom_proprietario) que prestam serviço, agrupando para evitar duplicatas. 5. Limite: Limitarei a 50 registros para listagem exploratória.",
+      "query_sql": "SELECT DISTINCT f.nom_proprietario FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') AND COALESCE(f.nom_proprietario, '') NOT ILIKE '%NAO INFORMADO%' LIMIT 50;",
+      "query_formatada": "SELECT\n  DISTINCT f.nom_proprietario\nFROM frota_gastoFrota g\nJOIN frota_frota f\n  ON g.seq_veiculo = f.seq_veiculo\nWHERE g.ano_referencia = 2025\n  AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%'\n  AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO')\n  AND COALESCE(f.nom_proprietario, '') NOT ILIKE '%NAO INFORMADO%'\nLIMIT 50;"
+    },
+    "query_sql": "SELECT DISTINCT f.nom_proprietario FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') AND COALESCE(f.nom_proprietario, '') NOT ILIKE '%NAO INFORMADO%' LIMIT 50;",
+    "explicacao": "1. Tabelas: Usarei frota_frota (f) para cadastro dos veículos e frota_gastoFrota (g) para os gastos relacionados à frota, que indicam os serviços prestados. 2. JOINs: Cruzarei frota_gastoFrota com frota_frota pelo seq_veiculo, sem exigir igualdade de ano no ON, pois frota_frota é tabela de cadastro. 3. Filtros: ano_referencia = 2025 na tabela frota_gastoFrota para garantir dados do ano solicitado. Também aplicarei filtros para remover registros sujos: em frota_frota, dsc_marca não pode conter 'DIVERSOS' e dsc_num_placa não pode ser '-1' ou 'NÃO INFORMADO'. 4. Seleção: Listarei os nomes dos proprietários (nom_proprietario) que prestam serviço, agrupando para evitar duplicatas. 5. Limite: Limitarei a 50 registros para listagem exploratória.",
+    "tokens_in": 15875,
+    "tokens_out": 477,
+    "gen_ms": 15051.57,
+    "attempt": 1
+  },
+  "query_sql": "SELECT DISTINCT f.nom_proprietario FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') AND COALESCE(f.nom_proprietario, '') NOT ILIKE '%NAO INFORMADO%' LIMIT 50;",
+  "execution": {
+    "ok": true,
+    "row_count": 6,
+    "columns": [
+      "nom_proprietario"
+    ],
+    "preview_rows": [
+      {
+        "nom_proprietario": "ESTRELA LOGISTICA LTDA"
+      },
+      {
+        "nom_proprietario": "VALOR LOCACOES EIRELI."
+      },
+      {
+        "nom_proprietario": "ESTRELA LOCACOES EIRELIEPP"
+      },
+      {
+        "nom_proprietario": "ESTRELA PRESTADORA DE SERVICOS LTDA-ME"
+      },
+      {
+        "nom_proprietario": "VALOR LOCACOES EIRELI - ME"
+      },
+      {
+        "nom_proprietario": "MATOS & SILVA, TRANSPORTES,COM. E SERVICOS LTDA"
+      }
+    ],
+    "error": null
+  },
+  "colunas_resposta_sugeridas": "nom_proprietario"
+}

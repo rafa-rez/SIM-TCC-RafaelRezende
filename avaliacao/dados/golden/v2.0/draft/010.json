@@ -1,0 +1,219 @@
+{
+  "id_teste": "010",
+  "input_usuario": "Liste os 20 maiores salários de servidores da Prefeitura. Quero nome, cargo, salário, benefícios, data de admissão, lotação. Faça a lista pedida para os anos de 2024 e 2025.",
+  "assisted_at": "2026-07-15T01:33:50.620724+00:00",
+  "model": "gpt-4.1-mini",
+  "generation": {
+    "ok": true,
+    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Usarei remuneracao_municipio (r) para salários e dados funcionais, e pessoa_municipio (p) para obter o nome do servidor. 2. JOINs: Cruzarei remuneracao_municipio com pessoa_municipio exclusivamente por r.seq_dim_pessoa = p.seq_dim_pessoa, sem igualdade de ano para evitar erros estruturais. 3. Filtros: Ano de referência será filtrado em r (remuneracao_municipio) para 2024 e 2025. Também filtrarei servidores ativos usando r.dsc_sit_serv_pens ILIKE '%Ativo%'. 4. Higiene: Excluirei registros com nome 'NÃO INFORMADO' em pessoa_municipio. 5. Agrupamento: Para evitar duplicatas mensais, agruparei por servidor (seq_dim_pessoa) e ano_referencia, selecionando o maior salário líquido (MAX(vlr_rmn_liquida)). 6. Seleção: Selecionarei nome, cargo, maior salário líquido, benefícios (vlr_descontos), data de admissão (seq_dat_ingresso_cargo), e lotação. 7. Ordenação: Ordenarei por ano_referencia e salário líquido decrescente. 8. Limite: Aplicarei ranking por ano para listar os 20 maiores salários por ano, usando ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY salário DESC).\",\n  \"query_sql\": \"WITH remuneracao_filtrada AS (\\n  SELECT\\n    r.ano_referencia,\\n    r.seq_dim_pessoa,\\n    MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS salario_maximo,\\n    MAX(CAST(r.vlr_descontos AS DECIMAL)) AS beneficios,\\n    MAX(r.dsc_cargo) AS cargo,\\n    MAX(r.seq_dat_ingresso_cargo) AS data_admissao,\\n    MAX(r.dsc_lotacao) AS lotacao\\n  FROM remuneracao_municipio r\\n  WHERE r.ano_referencia IN (2024, 2025)\\n    AND r.dsc_sit_serv_pens ILIKE '%Ativo%'\\n  GROUP BY r.ano_referencia, r.seq_dim_pessoa\\n),\\nservidores_nome AS (\\n  SELECT\\n    p.seq_dim_pessoa,\\n    TRIM(p.nom_pessoa) AS nome\\n  FROM pessoa_municipio p\\n  WHERE COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%'\\n),\\nranking_salarios AS (\\n  SELECT\\n    rf.ano_referencia,\\n    sn.nome,\\n    rf.cargo,\\n    rf.salario_maximo AS salario,\\n    rf.beneficios,\\n    rf.data_admissao,\\n    rf.lotacao,\\n    ROW_NUMBER() OVER (PARTITION BY rf.ano_referencia ORDER BY rf.salario_maximo DESC) AS rn\\n  FROM remuneracao_filtrada rf\\n  JOIN servidores_nome sn ON rf.seq_dim_pessoa = sn.seq_dim_pessoa\\n)\\nSELECT\\n  ano_referencia,\\n  nome,\\n  cargo,\\n  salario,\\n  beneficios,\\n  data_admissao,\\n  lotacao\\nFROM ranking_salarios\\nWHERE rn <= 20\\nORDER BY ano_referencia, salario DESC;\",\n  \"query_formatada\": \"WITH remuneracao_filtrada AS (\\n  SELECT\\n    r.ano_referencia,\\n    r.seq_dim_pessoa,\\n    MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS salario_maximo,\\n    MAX(CAST(r.vlr_descontos AS DECIMAL)) AS beneficios,\\n    MAX(r.dsc_cargo) AS cargo,\\n    MAX(r.seq_dat_ingresso_cargo) AS data_admissao,\\n    MAX(r.dsc_lotacao) AS lotacao\\n  FROM remuneracao_municipio r\\n  WHERE r.ano_referencia IN (2024, 2025)\\n    AND r.dsc_sit_serv_pens ILIKE '%Ativo%'\\n  GROUP BY r.ano_referencia, r.seq_dim_pessoa\\n),\\nservidores_nome AS (\\n  SELECT\\n    p.seq_dim_pessoa,\\n    TRIM(p.nom_pessoa) AS nome\\n  FROM pessoa_municipio p\\n  WHERE COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%'\\n),\\nranking_salarios AS (\\n  SELECT\\n    rf.ano_referencia,\\n    sn.nome,\\n    rf.cargo,\\n    rf.salario_maximo AS salario,\\n    rf.beneficios,\\n    rf.data_admissao,\\n    rf.lotacao,\\n    ROW_NUMBER() OVER (PARTITION BY rf.ano_referencia ORDER BY rf.salario_maximo DESC) AS rn\\n  FROM remuneracao_filtrada rf\\n  JOIN servidores_nome sn ON rf.seq_dim_pessoa = sn.seq_dim_pessoa\\n)\\nSELECT\\n  ano_referencia,\\n  nome,\\n  cargo,\\n  salario,\\n  beneficios,\\n  data_admissao,\\n  lotacao\\nFROM ranking_salarios\\nWHERE rn <= 20\\nORDER BY ano_referencia, salario DESC;\"\n}",
+    "parsed": {
+      "explicacao_tecnica": "1. Tabelas: Usarei remuneracao_municipio (r) para salários e dados funcionais, e pessoa_municipio (p) para obter o nome do servidor. 2. JOINs: Cruzarei remuneracao_municipio com pessoa_municipio exclusivamente por r.seq_dim_pessoa = p.seq_dim_pessoa, sem igualdade de ano para evitar erros estruturais. 3. Filtros: Ano de referência será filtrado em r (remuneracao_municipio) para 2024 e 2025. Também filtrarei servidores ativos usando r.dsc_sit_serv_pens ILIKE '%Ativo%'. 4. Higiene: Excluirei registros com nome 'NÃO INFORMADO' em pessoa_municipio. 5. Agrupamento: Para evitar duplicatas mensais, agruparei por servidor (seq_dim_pessoa) e ano_referencia, selecionando o maior salário líquido (MAX(vlr_rmn_liquida)). 6. Seleção: Selecionarei nome, cargo, maior salário líquido, benefícios (vlr_descontos), data de admissão (seq_dat_ingresso_cargo), e lotação. 7. Ordenação: Ordenarei por ano_referencia e salário líquido decrescente. 8. Limite: Aplicarei ranking por ano para listar os 20 maiores salários por ano, usando ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY salário DESC).",
+      "query_sql": "WITH remuneracao_filtrada AS (\n  SELECT\n    r.ano_referencia,\n    r.seq_dim_pessoa,\n    MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS salario_maximo,\n    MAX(CAST(r.vlr_descontos AS DECIMAL)) AS beneficios,\n    MAX(r.dsc_cargo) AS cargo,\n    MAX(r.seq_dat_ingresso_cargo) AS data_admissao,\n    MAX(r.dsc_lotacao) AS lotacao\n  FROM remuneracao_municipio r\n  WHERE r.ano_referencia IN (2024, 2025)\n    AND r.dsc_sit_serv_pens ILIKE '%Ativo%'\n  GROUP BY r.ano_referencia, r.seq_dim_pessoa\n),\nservidores_nome AS (\n  SELECT\n    p.seq_dim_pessoa,\n    TRIM(p.nom_pessoa) AS nome\n  FROM pessoa_municipio p\n  WHERE COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%'\n),\nranking_salarios AS (\n  SELECT\n    rf.ano_referencia,\n    sn.nome,\n    rf.cargo,\n    rf.salario_maximo AS salario,\n    rf.beneficios,\n    rf.data_admissao,\n    rf.lotacao,\n    ROW_NUMBER() OVER (PARTITION BY rf.ano_referencia ORDER BY rf.salario_maximo DESC) AS rn\n  FROM remuneracao_filtrada rf\n  JOIN servidores_nome sn ON rf.seq_dim_pessoa = sn.seq_dim_pessoa\n)\nSELECT\n  ano_referencia,\n  nome,\n  cargo,\n  salario,\n  beneficios,\n  data_admissao,\n  lotacao\nFROM ranking_salarios\nWHERE rn <= 20\nORDER BY ano_referencia, salario DESC;",
+      "query_formatada": "WITH remuneracao_filtrada AS (\n  SELECT\n    r.ano_referencia,\n    r.seq_dim_pessoa,\n    MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS salario_maximo,\n    MAX(CAST(r.vlr_descontos AS DECIMAL)) AS beneficios,\n    MAX(r.dsc_cargo) AS cargo,\n    MAX(r.seq_dat_ingresso_cargo) AS data_admissao,\n    MAX(r.dsc_lotacao) AS lotacao\n  FROM remuneracao_municipio r\n  WHERE r.ano_referencia IN (2024, 2025)\n    AND r.dsc_sit_serv_pens ILIKE '%Ativo%'\n  GROUP BY r.ano_referencia, r.seq_dim_pessoa\n),\nservidores_nome AS (\n  SELECT\n    p.seq_dim_pessoa,\n    TRIM(p.nom_pessoa) AS nome\n  FROM pessoa_municipio p\n  WHERE COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%'\n),\nranking_salarios AS (\n  SELECT\n    rf.ano_referencia,\n    sn.nome,\n    rf.cargo,\n    rf.salario_maximo AS salario,\n    rf.beneficios,\n    rf.data_admissao,\n    rf.lotacao,\n    ROW_NUMBER() OVER (PARTITION BY rf.ano_referencia ORDER BY rf.salario_maximo DESC) AS rn\n  FROM remuneracao_filtrada rf\n  JOIN servidores_nome sn ON rf.seq_dim_pessoa = sn.seq_dim_pessoa\n)\nSELECT\n  ano_referencia,\n  nome,\n  cargo,\n  salario,\n  beneficios,\n  data_admissao,\n  lotacao\nFROM ranking_salarios\nWHERE rn <= 20\nORDER BY ano_referencia, salario DESC;"
+    },
+    "query_sql": "WITH remuneracao_filtrada AS (\n  SELECT\n    r.ano_referencia,\n    r.seq_dim_pessoa,\n    MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS salario_maximo,\n    MAX(CAST(r.vlr_descontos AS DECIMAL)) AS beneficios,\n    MAX(r.dsc_cargo) AS cargo,\n    MAX(r.seq_dat_ingresso_cargo) AS data_admissao,\n    MAX(r.dsc_lotacao) AS lotacao\n  FROM remuneracao_municipio r\n  WHERE r.ano_referencia IN (2024, 2025)\n    AND r.dsc_sit_serv_pens ILIKE '%Ativo%'\n  GROUP BY r.ano_referencia, r.seq_dim_pessoa\n),\nservidores_nome AS (\n  SELECT\n    p.seq_dim_pessoa,\n    TRIM(p.nom_pessoa) AS nome\n  FROM pessoa_municipio p\n  WHERE COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%'\n),\nranking_salarios AS (\n  SELECT\n    rf.ano_referencia,\n    sn.nome,\n    rf.cargo,\n    rf.salario_maximo AS salario,\n    rf.beneficios,\n    rf.data_admissao,\n    rf.lotacao,\n    ROW_NUMBER() OVER (PARTITION BY rf.ano_referencia ORDER BY rf.salario_maximo DESC) AS rn\n  FROM remuneracao_filtrada rf\n  JOIN servidores_nome sn ON rf.seq_dim_pessoa = sn.seq_dim_pessoa\n)\nSELECT\n  ano_referencia,\n  nome,\n  cargo,\n  salario,\n  beneficios,\n  data_admissao,\n  lotacao\nFROM ranking_salarios\nWHERE rn <= 20\nORDER BY ano_referencia, salario DESC;",
+    "explicacao": "1. Tabelas: Usarei remuneracao_municipio (r) para salários e dados funcionais, e pessoa_municipio (p) para obter o nome do servidor. 2. JOINs: Cruzarei remuneracao_municipio com pessoa_municipio exclusivamente por r.seq_dim_pessoa = p.seq_dim_pessoa, sem igualdade de ano para evitar erros estruturais. 3. Filtros: Ano de referência será filtrado em r (remuneracao_municipio) para 2024 e 2025. Também filtrarei servidores ativos usando r.dsc_sit_serv_pens ILIKE '%Ativo%'. 4. Higiene: Excluirei registros com nome 'NÃO INFORMADO' em pessoa_municipio. 5. Agrupamento: Para evitar duplicatas mensais, agruparei por servidor (seq_dim_pessoa) e ano_referencia, selecionando o maior salário líquido (MAX(vlr_rmn_liquida)). 6. Seleção: Selecionarei nome, cargo, maior salário líquido, benefícios (vlr_descontos), data de admissão (seq_dat_ingresso_cargo), e lotação. 7. Ordenação: Ordenarei por ano_referencia e salário líquido decrescente. 8. Limite: Aplicarei ranking por ano para listar os 20 maiores salários por ano, usando ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY salário DESC).",
+    "tokens_in": 15909,
+    "tokens_out": 1134,
+    "gen_ms": 20868.02,
+    "attempt": 1
+  },
+  "query_sql": "WITH remuneracao_filtrada AS (\n  SELECT\n    r.ano_referencia,\n    r.seq_dim_pessoa,\n    MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS salario_maximo,\n    MAX(CAST(r.vlr_descontos AS DECIMAL)) AS beneficios,\n    MAX(r.dsc_cargo) AS cargo,\n    MAX(r.seq_dat_ingresso_cargo) AS data_admissao,\n    MAX(r.dsc_lotacao) AS lotacao\n  FROM remuneracao_municipio r\n  WHERE r.ano_referencia IN (2024, 2025)\n    AND r.dsc_sit_serv_pens ILIKE '%Ativo%'\n  GROUP BY r.ano_referencia, r.seq_dim_pessoa\n),\nservidores_nome AS (\n  SELECT\n    p.seq_dim_pessoa,\n    TRIM(p.nom_pessoa) AS nome\n  FROM pessoa_municipio p\n  WHERE COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%'\n),\nranking_salarios AS (\n  SELECT\n    rf.ano_referencia,\n    sn.nome,\n    rf.cargo,\n    rf.salario_maximo AS salario,\n    rf.beneficios,\n    rf.data_admissao,\n    rf.lotacao,\n    ROW_NUMBER() OVER (PARTITION BY rf.ano_referencia ORDER BY rf.salario_maximo DESC) AS rn\n  FROM remuneracao_filtrada rf\n  JOIN servidores_nome sn ON rf.seq_dim_pessoa = sn.seq_dim_pessoa\n)\nSELECT\n  ano_referencia,\n  nome,\n  cargo,\n  salario,\n  beneficios,\n  data_admissao,\n  lotacao\nFROM ranking_salarios\nWHERE rn <= 20\nORDER BY ano_referencia, salario DESC;",
+  "execution": {
+    "ok": true,
+    "row_count": 40,
+    "columns": [
+      "ano_referencia",
+      "nome",
+      "cargo",
+      "salario",
+      "beneficios",
+      "data_admissao",
+      "lotacao"
+    ],
+    "preview_rows": [
+      {
+        "ano_referencia": 2024,
+        "nome": "LUCAS COELHO FERREIRA",
+        "cargo": "PREFEITO MUNICIPAL",
+        "salario": 82244.67,
+        "beneficios": 5048.06,
+        "data_admissao": 20170101,
+        "lotacao": "MAN DA SECRETARIA-SUB.PREFEITO"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "LUCAS COELHO FERREIRA",
+        "cargo": "PREFEITO MUNICIPAL",
+        "salario": 82244.67,
+        "beneficios": 5048.06,
+        "data_admissao": 20170101,
+        "lotacao": "MAN DA SECRETARIA-SUB.PREFEITO"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "ALBERTO NAZARE PIRES",
+        "cargo": "VICE-PREFEITO",
+        "salario": 41240.86,
+        "beneficios": 3979.66,
+        "data_admissao": 20210101,
+        "lotacao": "MAN DA SECRETARIA-SUB.VICE.PRE"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "ALBERTO NAZARE PIRES",
+        "cargo": "VICE-PREFEITO",
+        "salario": 41240.86,
+        "beneficios": 3979.66,
+        "data_admissao": 20210101,
+        "lotacao": "MAN DA SECRETARIA-SUB.VICE.PRE"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "ALBERTO NAZARE PIRES",
+        "cargo": "VICE-PREFEITO",
+        "salario": 41240.86,
+        "beneficios": 3979.66,
+        "data_admissao": 20210101,
+        "lotacao": "MAN DA SECRETARIA-SUB.VICE.PRE"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "DARLAN CORRADI PERDIGAO DE ALMEIDA",
+        "cargo": "DIRETOR PRESIDENTE",
+        "salario": 21688.46,
+        "beneficios": 3349.57,
+        "data_admissao": 20170102,
+        "lotacao": "REMUNERACAO DOS PROFISSIONAIS"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "DARLAN CORRADI PERDIGAO DE ALMEIDA",
+        "cargo": "DIRETOR PRESIDENTE",
+        "salario": 21688.46,
+        "beneficios": 3349.57,
+        "data_admissao": 20170102,
+        "lotacao": "REMUNERACAO DOS PROFISSIONAIS"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "DARLAN CORRADI PERDIGAO DE ALMEIDA",
+        "cargo": "DIRETOR PRESIDENTE",
+        "salario": 21688.46,
+        "beneficios": 3349.57,
+        "data_admissao": 20170102,
+        "lotacao": "REMUNERACAO DOS PROFISSIONAIS"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "ORLANDO ZANON NETO",
+        "cargo": "SECRETARIO MUNICIPAL",
+        "salario": 20901.71,
+        "beneficios": 3522.85,
+        "data_admissao": 20170102,
+        "lotacao": "MAN SECRET-SUB.SECRET (2500)"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "ORLANDO ZANON NETO",
+        "cargo": "SECRETARIO MUNICIPAL",
+        "salario": 20901.71,
+        "beneficios": 3522.85,
+        "data_admissao": 20170102,
+        "lotacao": "MAN SECRET-SUB.SECRET (2500)"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "ORLANDO ZANON NETO",
+        "cargo": "SECRETARIO MUNICIPAL",
+        "salario": 20901.71,
+        "beneficios": 3522.85,
+        "data_admissao": 20170102,
+        "lotacao": "MAN SECRET-SUB.SECRET (2500)"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "CINTIA REGINA DOS SANTOS",
+        "cargo": "SEC.MUNICIPAL DE FAZENDA",
+        "salario": 20481.51,
+        "beneficios": 3401.71,
+        "data_admissao": 20190204,
+        "lotacao": "MAN DA SECRETARIA-SUB.SECRET"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "CINTIA REGINA DOS SANTOS",
+        "cargo": "SEC.MUNICIPAL DE FAZENDA",
+        "salario": 20481.51,
+        "beneficios": 3401.71,
+        "data_admissao": 20190204,
+        "lotacao": "MAN DA SECRETARIA-SUB.SECRET"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "CINTIA REGINA DOS SANTOS",
+        "cargo": "SEC.MUNICIPAL DE FAZENDA",
+        "salario": 20481.51,
+        "beneficios": 3401.71,
+        "data_admissao": 20190204,
+        "lotacao": "MAN DA SECRETARIA-SUB.SECRET"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "ISABEL BARBOSA DE OLIVEIRA GONCALVES",
+        "cargo": "PROCURADOR GERAL",
+        "salario": 19660.56,
+        "beneficios": 6803.42,
+        "data_admissao": 20220404,
+        "lotacao": "MAN PROC JURIDICA-SUB.SECRET"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "ISABEL BARBOSA DE OLIVEIRA GONCALVES",
+        "cargo": "PROCURADOR GERAL",
+        "salario": 19660.56,
+        "beneficios": 6803.42,
+        "data_admissao": 20220404,
+        "lotacao": "MAN PROC JURIDICA-SUB.SECRET"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "ISABEL BARBOSA DE OLIVEIRA GONCALVES",
+        "cargo": "PROCURADOR GERAL",
+        "salario": 19660.56,
+        "beneficios": 6803.42,
+        "data_admissao": 20220404,
+        "lotacao": "MAN PROC JURIDICA-SUB.SECRET"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "MARCO AURELIO CANDIDO ROCHA",
+        "cargo": "SECRETARIO MUNICIPAL",
+        "salario": 19378.38,
+        "beneficios": 2320.95,
+        "data_admissao": 20210105,
+        "lotacao": "MAN DA SECRETARIA-SUB.SECRET"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "MARCO AURELIO CANDIDO ROCHA",
+        "cargo": "SECRETARIO MUNICIPAL",
+        "salario": 19378.38,
+        "beneficios": 2320.95,
+        "data_admissao": 20210105,
+        "lotacao": "MAN DA SECRETARIA-SUB.SECRET"
+      },
+      {
+        "ano_referencia": 2024,
+        "nome": "MARCELO GARABINI",
+        "cargo": "SEC.MUN.DES.SUST.E M.AMB.",
+        "salario": 19327.44,
+        "beneficios": 4590.28,
+        "data_admissao": 20190125,
+        "lotacao": "MANUTENCAO SEDESMA-SUB.SECRET"
+      }
+    ],
+    "error": null
+  },
+  "colunas_resposta_sugeridas": "nome,salario"
+}

@@ -1,0 +1,38 @@
+{
+  "id_teste": "003",
+  "input_usuario": "Qual a empresa ou prestador de serviços está trabalhando com o município de Caeté a mais tempo",
+  "assisted_at": "2026-07-15T01:32:29.824456+00:00",
+  "model": "gpt-4.1-mini",
+  "generation": {
+    "ok": true,
+    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Para identificar a empresa ou prestador de serviços que trabalha há mais tempo com o município, usarei a tabela contrato_contratos (c) para contratos e contrato_contContrato (cc) para o nome do credor. 2. JOINs: Farei LEFT JOIN entre contrato_contratos e contrato_contContrato por seq_contrato e ano_referencia para garantir correspondência correta. 3. Filtros: Considerarei apenas contratos da prefeitura ampla filtrando cod_orgao IN (2,4,5) e ano_referencia = 2025 (ano padrão). 4. Cálculo do tempo: Usarei a menor data de assinatura (dat_assinatura) para cada credor para identificar quem está há mais tempo. 5. Limpeza de dados: Excluirei registros com nome do credor nulo ou contendo 'NAO INFORMADO' para evitar lixo cadastral. 6. Ordenação: Ordenarei pelo menor dat_assinatura para encontrar o credor mais antigo. 7. Limite: Limitarei a 1 para retornar apenas o prestador mais antigo.\",\n  \"query_sql\": \"SELECT cc.dsc_nome_credor, MIN(c.dat_assinatura) AS data_primeiro_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY cc.dsc_nome_credor ORDER BY data_primeiro_contrato ASC LIMIT 1;\",\n  \"query_formatada\": \"SELECT\\n  cc.dsc_nome_credor,\\n  MIN(c.dat_assinatura) AS data_primeiro_contrato\\nFROM contrato_contratos c\\nLEFT JOIN contrato_contContrato cc\\n  ON c.seq_contrato = cc.seq_contrato\\n  AND c.ano_referencia = cc.ano_referencia\\nWHERE c.ano_referencia = 2025\\n  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)\\n  AND COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%'\\nGROUP BY cc.dsc_nome_credor\\nORDER BY data_primeiro_contrato ASC\\nLIMIT 1;\"\n}",
+    "parsed": {
+      "explicacao_tecnica": "1. Tabelas: Para identificar a empresa ou prestador de serviços que trabalha há mais tempo com o município, usarei a tabela contrato_contratos (c) para contratos e contrato_contContrato (cc) para o nome do credor. 2. JOINs: Farei LEFT JOIN entre contrato_contratos e contrato_contContrato por seq_contrato e ano_referencia para garantir correspondência correta. 3. Filtros: Considerarei apenas contratos da prefeitura ampla filtrando cod_orgao IN (2,4,5) e ano_referencia = 2025 (ano padrão). 4. Cálculo do tempo: Usarei a menor data de assinatura (dat_assinatura) para cada credor para identificar quem está há mais tempo. 5. Limpeza de dados: Excluirei registros com nome do credor nulo ou contendo 'NAO INFORMADO' para evitar lixo cadastral. 6. Ordenação: Ordenarei pelo menor dat_assinatura para encontrar o credor mais antigo. 7. Limite: Limitarei a 1 para retornar apenas o prestador mais antigo.",
+      "query_sql": "SELECT cc.dsc_nome_credor, MIN(c.dat_assinatura) AS data_primeiro_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY cc.dsc_nome_credor ORDER BY data_primeiro_contrato ASC LIMIT 1;",
+      "query_formatada": "SELECT\n  cc.dsc_nome_credor,\n  MIN(c.dat_assinatura) AS data_primeiro_contrato\nFROM contrato_contratos c\nLEFT JOIN contrato_contContrato cc\n  ON c.seq_contrato = cc.seq_contrato\n  AND c.ano_referencia = cc.ano_referencia\nWHERE c.ano_referencia = 2025\n  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)\n  AND COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%'\nGROUP BY cc.dsc_nome_credor\nORDER BY data_primeiro_contrato ASC\nLIMIT 1;"
+    },
+    "query_sql": "SELECT cc.dsc_nome_credor, MIN(c.dat_assinatura) AS data_primeiro_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY cc.dsc_nome_credor ORDER BY data_primeiro_contrato ASC LIMIT 1;",
+    "explicacao": "1. Tabelas: Para identificar a empresa ou prestador de serviços que trabalha há mais tempo com o município, usarei a tabela contrato_contratos (c) para contratos e contrato_contContrato (cc) para o nome do credor. 2. JOINs: Farei LEFT JOIN entre contrato_contratos e contrato_contContrato por seq_contrato e ano_referencia para garantir correspondência correta. 3. Filtros: Considerarei apenas contratos da prefeitura ampla filtrando cod_orgao IN (2,4,5) e ano_referencia = 2025 (ano padrão). 4. Cálculo do tempo: Usarei a menor data de assinatura (dat_assinatura) para cada credor para identificar quem está há mais tempo. 5. Limpeza de dados: Excluirei registros com nome do credor nulo ou contendo 'NAO INFORMADO' para evitar lixo cadastral. 6. Ordenação: Ordenarei pelo menor dat_assinatura para encontrar o credor mais antigo. 7. Limite: Limitarei a 1 para retornar apenas o prestador mais antigo.",
+    "tokens_in": 15883,
+    "tokens_out": 532,
+    "gen_ms": 18213.59,
+    "attempt": 1
+  },
+  "query_sql": "SELECT cc.dsc_nome_credor, MIN(c.dat_assinatura) AS data_primeiro_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY cc.dsc_nome_credor ORDER BY data_primeiro_contrato ASC LIMIT 1;",
+  "execution": {
+    "ok": true,
+    "row_count": 1,
+    "columns": [
+      "dsc_nome_credor",
+      "data_primeiro_contrato"
+    ],
+    "preview_rows": [
+      {
+        "dsc_nome_credor": "ALVES SOLUCOES INTEGRADAS LTDA",
+        "data_primeiro_contrato": 20230703
+      }
+    ],
+    "error": null
+  },
+  "colunas_resposta_sugeridas": "dsc_nome_credor"
+}

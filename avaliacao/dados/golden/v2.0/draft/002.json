@@ -1,0 +1,135 @@
+{
+  "id_teste": "002",
+  "input_usuario": "Maiores fornecedores e valores pagos pela prefeitura municipal de Caeté",
+  "assisted_at": "2026-07-15T01:32:11.578244+00:00",
+  "model": "gpt-4.1-mini",
+  "generation": {
+    "ok": true,
+    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Usarei despesa_pagamento (pagamentos) para valores pagos e credores. 2. Filtros: ano_referencia = 2025 (ano padrão), filtro para excluir registros sujos no credor: COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' e num_doc_credor NOT IN ('-1', '0'). 3. Órgão: Filtrarei cod_orgao IN (2, 4, 5) para focar na prefeitura municipal. 4. Agregação: Agruparei por nome do credor e documento do credor para evitar duplicatas e somar os valores pagos (CAST para DECIMAL). 5. Ordenação: Ordenarei pelo valor pago total em ordem decrescente para obter os maiores fornecedores. 6. Limite: Listarei os top 50 fornecedores para consulta exploratória.\",\n  \"query_sql\": \"SELECT nom_credor, num_doc_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago FROM despesa_pagamento WHERE ano_referencia = 2025 AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5) AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND num_doc_credor NOT IN ('-1', '0') GROUP BY nom_credor, num_doc_credor ORDER BY total_pago DESC LIMIT 50;\",\n  \"query_formatada\": \"SELECT\\n  nom_credor,\\n  num_doc_credor,\\n  SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago\\nFROM despesa_pagamento\\nWHERE ano_referencia = 2025\\n  AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5)\\n  AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%'\\n  AND num_doc_credor NOT IN ('-1', '0')\\nGROUP BY\\n  nom_credor,\\n  num_doc_credor\\nORDER BY\\n  total_pago DESC\\nLIMIT 50;\"\n}",
+    "parsed": {
+      "explicacao_tecnica": "1. Tabelas: Usarei despesa_pagamento (pagamentos) para valores pagos e credores. 2. Filtros: ano_referencia = 2025 (ano padrão), filtro para excluir registros sujos no credor: COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' e num_doc_credor NOT IN ('-1', '0'). 3. Órgão: Filtrarei cod_orgao IN (2, 4, 5) para focar na prefeitura municipal. 4. Agregação: Agruparei por nome do credor e documento do credor para evitar duplicatas e somar os valores pagos (CAST para DECIMAL). 5. Ordenação: Ordenarei pelo valor pago total em ordem decrescente para obter os maiores fornecedores. 6. Limite: Listarei os top 50 fornecedores para consulta exploratória.",
+      "query_sql": "SELECT nom_credor, num_doc_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago FROM despesa_pagamento WHERE ano_referencia = 2025 AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5) AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND num_doc_credor NOT IN ('-1', '0') GROUP BY nom_credor, num_doc_credor ORDER BY total_pago DESC LIMIT 50;",
+      "query_formatada": "SELECT\n  nom_credor,\n  num_doc_credor,\n  SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago\nFROM despesa_pagamento\nWHERE ano_referencia = 2025\n  AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5)\n  AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%'\n  AND num_doc_credor NOT IN ('-1', '0')\nGROUP BY\n  nom_credor,\n  num_doc_credor\nORDER BY\n  total_pago DESC\nLIMIT 50;"
+    },
+    "query_sql": "SELECT nom_credor, num_doc_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago FROM despesa_pagamento WHERE ano_referencia = 2025 AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5) AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND num_doc_credor NOT IN ('-1', '0') GROUP BY nom_credor, num_doc_credor ORDER BY total_pago DESC LIMIT 50;",
+    "explicacao": "1. Tabelas: Usarei despesa_pagamento (pagamentos) para valores pagos e credores. 2. Filtros: ano_referencia = 2025 (ano padrão), filtro para excluir registros sujos no credor: COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' e num_doc_credor NOT IN ('-1', '0'). 3. Órgão: Filtrarei cod_orgao IN (2, 4, 5) para focar na prefeitura municipal. 4. Agregação: Agruparei por nome do credor e documento do credor para evitar duplicatas e somar os valores pagos (CAST para DECIMAL). 5. Ordenação: Ordenarei pelo valor pago total em ordem decrescente para obter os maiores fornecedores. 6. Limite: Listarei os top 50 fornecedores para consulta exploratória.",
+    "tokens_in": 15876,
+    "tokens_out": 471,
+    "gen_ms": 17540.01,
+    "attempt": 1
+  },
+  "query_sql": "SELECT nom_credor, num_doc_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago FROM despesa_pagamento WHERE ano_referencia = 2025 AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5) AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND num_doc_credor NOT IN ('-1', '0') GROUP BY nom_credor, num_doc_credor ORDER BY total_pago DESC LIMIT 50;",
+  "execution": {
+    "ok": true,
+    "row_count": 50,
+    "columns": [
+      "nom_credor",
+      "num_doc_credor",
+      "total_pago"
+    ],
+    "preview_rows": [
+      {
+        "nom_credor": "SOCIEDADE CIVIL DE BENEFICENCIA CAETEENSE",
+        "num_doc_credor": "18979328000167",
+        "total_pago": 9871952.6
+      },
+      {
+        "nom_credor": "QUANTUM - ENGENHARIA E CONSULTORIA LTDA",
+        "num_doc_credor": "20839994000141",
+        "total_pago": 6814349.82
+      },
+      {
+        "nom_credor": "EMPRESA TRANSCOL LTDA",
+        "num_doc_credor": "18979005000173",
+        "total_pago": 5354871.04
+      },
+      {
+        "nom_credor": "INSTITUTO NACIONAL DO SEGURO SOCIAL",
+        "num_doc_credor": "29979036000140",
+        "total_pago": 4794526.29
+      },
+      {
+        "nom_credor": "UNICAPA - UNIAO DOS APLICADORES DE PAVIMENTO ASFALTICO LTDA",
+        "num_doc_credor": "03103468000108",
+        "total_pago": 3168251.87
+      },
+      {
+        "nom_credor": "CAIXA ECONOMICA FEDERAL",
+        "num_doc_credor": "00360305000104",
+        "total_pago": 2729221.88
+      },
+      {
+        "nom_credor": "MEGA VALE ADMINISTRADORA DE CARTOES E SERVICOS LTDA",
+        "num_doc_credor": "21922507000172",
+        "total_pago": 2700000.0
+      },
+      {
+        "nom_credor": "LOK PIRAMIDE LTDA",
+        "num_doc_credor": "04057221000157",
+        "total_pago": 1580618.99
+      },
+      {
+        "nom_credor": "MINISTERIO DA FAZENDA",
+        "num_doc_credor": "00394460005887",
+        "total_pago": 1525796.99
+      },
+      {
+        "nom_credor": "CONSORCIO INTERMUNICIPAL ALIANCA PARA A SAUDE CIAS",
+        "num_doc_credor": "97550393000149",
+        "total_pago": 1509437.5
+      },
+      {
+        "nom_credor": "TRIVALE INSTITUICAO DE PAGAMENTO LTDA",
+        "num_doc_credor": "00604122000197",
+        "total_pago": 1499364.59
+      },
+      {
+        "nom_credor": "TRIBUNAL DA JUSTICA DO ESTADO DE MINAS GERAIS",
+        "num_doc_credor": "21154554000113",
+        "total_pago": 1246239.1
+      },
+      {
+        "nom_credor": "CEMIG DISTRIBUICAO S.A",
+        "num_doc_credor": "06981180000116",
+        "total_pago": 1101390.82
+      },
+      {
+        "nom_credor": "ALVES SOLUCOES INTEGRADAS LTDA",
+        "num_doc_credor": "28231621000103",
+        "total_pago": 1009015.31
+      },
+      {
+        "nom_credor": "ESTRELA LOGISTICA LTDA",
+        "num_doc_credor": "04309564000161",
+        "total_pago": 965151.28
+      },
+      {
+        "nom_credor": "SCL CONSTRUTORA E ENERGIA LTDA",
+        "num_doc_credor": "26777222000109",
+        "total_pago": 947487.97
+      },
+      {
+        "nom_credor": "C&F EDUCACIONAL E COMERCIO DE PAPELARIA LTDA",
+        "num_doc_credor": "06959645000132",
+        "total_pago": 845453.63
+      },
+      {
+        "nom_credor": "FUTURA SOLUCOES EDUCACIONAIS LTDA",
+        "num_doc_credor": "25258056000171",
+        "total_pago": 816452.38
+      },
+      {
+        "nom_credor": "EDITORA FTD S A",
+        "num_doc_credor": "61186490000157",
+        "total_pago": 794617.42
+      },
+      {
+        "nom_credor": "MUNICIPIO DE CAETE",
+        "num_doc_credor": "18302299000102",
+        "total_pago": 710522.27
+      }
+    ],
+    "error": null
+  },
+  "colunas_resposta_sugeridas": "total_pago"
+}

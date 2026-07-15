@@ -1,0 +1,30 @@
+{
+  "id_teste": "007",
+  "input_usuario": "Maiores contratos da autarquia SAAE em Caeté",
+  "assisted_at": "2026-07-15T01:33:14.260786+00:00",
+  "model": "gpt-4.1-mini",
+  "generation": {
+    "ok": true,
+    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Usarei contrato_contratos (c) para os valores dos contratos e contrato_contContrato (cc) para o nome do credor. 2. JOINs: Farei LEFT JOIN entre contrato_contratos e contrato_contContrato por seq_contrato e ano_referencia para evitar produto cartesiano. 3. Filtros: ano_referencia = 2025 (ano padrão), cod_orgao IN (2, 4, 5) para focar na prefeitura ampla, e filtro para autarquia SAAE no nome do órgão. Como o nome do órgão não está diretamente na tabela contrato_contratos, farei um JOIN com orgao_orgao para filtrar pelo nome do órgão contendo 'SAAE' (usando ILIKE e COALESCE para evitar problemas de acentuação e nulos). 4. Ordenação: Ordenarei os contratos pelo valor do contrato em ordem decrescente e limitarei a 10 maiores contratos para listagem clara.\",\n  \"query_sql\": \"SELECT cc.dsc_nome_credor, c.vlr_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia JOIN orgao_orgao o ON c.cod_orgao = o.cod_orgao WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND COALESCE(o.nom_orgao, '') ILIKE '%SAAE%' AND c.vlr_contrato > 0 ORDER BY c.vlr_contrato DESC LIMIT 10;\",\n  \"query_formatada\": \"SELECT\\n  cc.dsc_nome_credor,\\n  c.vlr_contrato\\nFROM contrato_contratos c\\nLEFT JOIN contrato_contContrato cc\\n  ON c.seq_contrato = cc.seq_contrato\\n  AND c.ano_referencia = cc.ano_referencia\\nJOIN orgao_orgao o\\n  ON c.cod_orgao = o.cod_orgao\\nWHERE c.ano_referencia = 2025\\n  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)\\n  AND COALESCE(o.nom_orgao, '') ILIKE '%SAAE%'\\n  AND c.vlr_contrato > 0\\nORDER BY c.vlr_contrato DESC\\nLIMIT 10;\"\n}",
+    "parsed": {
+      "explicacao_tecnica": "1. Tabelas: Usarei contrato_contratos (c) para os valores dos contratos e contrato_contContrato (cc) para o nome do credor. 2. JOINs: Farei LEFT JOIN entre contrato_contratos e contrato_contContrato por seq_contrato e ano_referencia para evitar produto cartesiano. 3. Filtros: ano_referencia = 2025 (ano padrão), cod_orgao IN (2, 4, 5) para focar na prefeitura ampla, e filtro para autarquia SAAE no nome do órgão. Como o nome do órgão não está diretamente na tabela contrato_contratos, farei um JOIN com orgao_orgao para filtrar pelo nome do órgão contendo 'SAAE' (usando ILIKE e COALESCE para evitar problemas de acentuação e nulos). 4. Ordenação: Ordenarei os contratos pelo valor do contrato em ordem decrescente e limitarei a 10 maiores contratos para listagem clara.",
+      "query_sql": "SELECT cc.dsc_nome_credor, c.vlr_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia JOIN orgao_orgao o ON c.cod_orgao = o.cod_orgao WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND COALESCE(o.nom_orgao, '') ILIKE '%SAAE%' AND c.vlr_contrato > 0 ORDER BY c.vlr_contrato DESC LIMIT 10;",
+      "query_formatada": "SELECT\n  cc.dsc_nome_credor,\n  c.vlr_contrato\nFROM contrato_contratos c\nLEFT JOIN contrato_contContrato cc\n  ON c.seq_contrato = cc.seq_contrato\n  AND c.ano_referencia = cc.ano_referencia\nJOIN orgao_orgao o\n  ON c.cod_orgao = o.cod_orgao\nWHERE c.ano_referencia = 2025\n  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)\n  AND COALESCE(o.nom_orgao, '') ILIKE '%SAAE%'\n  AND c.vlr_contrato > 0\nORDER BY c.vlr_contrato DESC\nLIMIT 10;"
+    },
+    "query_sql": "SELECT cc.dsc_nome_credor, c.vlr_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia JOIN orgao_orgao o ON c.cod_orgao = o.cod_orgao WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND COALESCE(o.nom_orgao, '') ILIKE '%SAAE%' AND c.vlr_contrato > 0 ORDER BY c.vlr_contrato DESC LIMIT 10;",
+    "explicacao": "1. Tabelas: Usarei contrato_contratos (c) para os valores dos contratos e contrato_contContrato (cc) para o nome do credor. 2. JOINs: Farei LEFT JOIN entre contrato_contratos e contrato_contContrato por seq_contrato e ano_referencia para evitar produto cartesiano. 3. Filtros: ano_referencia = 2025 (ano padrão), cod_orgao IN (2, 4, 5) para focar na prefeitura ampla, e filtro para autarquia SAAE no nome do órgão. Como o nome do órgão não está diretamente na tabela contrato_contratos, farei um JOIN com orgao_orgao para filtrar pelo nome do órgão contendo 'SAAE' (usando ILIKE e COALESCE para evitar problemas de acentuação e nulos). 4. Ordenação: Ordenarei os contratos pelo valor do contrato em ordem decrescente e limitarei a 10 maiores contratos para listagem clara.",
+    "tokens_in": 15876,
+    "tokens_out": 516,
+    "gen_ms": 15728.69,
+    "attempt": 1
+  },
+  "query_sql": "SELECT cc.dsc_nome_credor, c.vlr_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia JOIN orgao_orgao o ON c.cod_orgao = o.cod_orgao WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND COALESCE(o.nom_orgao, '') ILIKE '%SAAE%' AND c.vlr_contrato > 0 ORDER BY c.vlr_contrato DESC LIMIT 10;",
+  "execution": {
+    "ok": true,
+    "row_count": 0,
+    "columns": [],
+    "preview_rows": [],
+    "error": null
+  },
+  "colunas_resposta_sugeridas": ""
+}

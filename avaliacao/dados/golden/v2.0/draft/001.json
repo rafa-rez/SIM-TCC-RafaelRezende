@@ -1,0 +1,36 @@
+{
+  "id_teste": "001",
+  "input_usuario": "Diárias pagas na secretaria de assistência social de Caeté mg",
+  "assisted_at": "2026-07-15T01:31:53.799684+00:00",
+  "model": "gpt-4.1-mini",
+  "generation": {
+    "ok": true,
+    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Usarei despesa_pagamento (pagamentos) para obter os valores pagos e orgao_orgao (órgãos) para filtrar a secretaria de assistência social. 2. JOINs: Como despesa_pagamento tem cod_orgao e orgao_orgao também, farei JOIN por cod_orgao e ano_referencia para garantir o ano correto. 3. Filtros: ano_referencia = 2025 (ano padrão), nome do órgão contendo 'ASSISTÊNCIA SOCIAL' usando ILIKE para evitar problemas de acentuação e caixa. 4. HIGIENE: Filtrarei pagamentos com credor válido, removendo registros com nom_credor contendo 'NAO INFORMADO' e num_doc_credor em ('-1', '0'). 5. Agregação: Somarei o valor pago (vlr_pag_fonte) para obter o total de diárias pagas. 6. Consideração: Como a pergunta não especifica detalhamento, retornarei o total geral das diárias pagas na secretaria.\",\n  \"query_sql\": \"SELECT SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS total_diarias FROM despesa_pagamento p JOIN orgao_orgao o ON p.cod_orgao = o.cod_orgao AND p.ano_referencia = o.ano_referencia WHERE p.ano_referencia = 2025 AND TRIM(UPPER(o.nom_orgao)) ILIKE '%ASSISTENCIA SOCIAL%' AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND p.num_doc_credor NOT IN ('-1', '0') AND p.dsc_pagamento ILIKE '%DIARIA%';\",\n  \"query_formatada\": \"SELECT\\n  SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS total_diarias\\nFROM despesa_pagamento p\\nJOIN orgao_orgao o\\n  ON p.cod_orgao = o.cod_orgao\\n  AND p.ano_referencia = o.ano_referencia\\nWHERE p.ano_referencia = 2025\\n  AND TRIM(UPPER(o.nom_orgao)) ILIKE '%ASSISTENCIA SOCIAL%'\\n  AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%'\\n  AND p.num_doc_credor NOT IN ('-1', '0')\\n  AND p.dsc_pagamento ILIKE '%DIARIA%';\"\n}",
+    "parsed": {
+      "explicacao_tecnica": "1. Tabelas: Usarei despesa_pagamento (pagamentos) para obter os valores pagos e orgao_orgao (órgãos) para filtrar a secretaria de assistência social. 2. JOINs: Como despesa_pagamento tem cod_orgao e orgao_orgao também, farei JOIN por cod_orgao e ano_referencia para garantir o ano correto. 3. Filtros: ano_referencia = 2025 (ano padrão), nome do órgão contendo 'ASSISTÊNCIA SOCIAL' usando ILIKE para evitar problemas de acentuação e caixa. 4. HIGIENE: Filtrarei pagamentos com credor válido, removendo registros com nom_credor contendo 'NAO INFORMADO' e num_doc_credor em ('-1', '0'). 5. Agregação: Somarei o valor pago (vlr_pag_fonte) para obter o total de diárias pagas. 6. Consideração: Como a pergunta não especifica detalhamento, retornarei o total geral das diárias pagas na secretaria.",
+      "query_sql": "SELECT SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS total_diarias FROM despesa_pagamento p JOIN orgao_orgao o ON p.cod_orgao = o.cod_orgao AND p.ano_referencia = o.ano_referencia WHERE p.ano_referencia = 2025 AND TRIM(UPPER(o.nom_orgao)) ILIKE '%ASSISTENCIA SOCIAL%' AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND p.num_doc_credor NOT IN ('-1', '0') AND p.dsc_pagamento ILIKE '%DIARIA%';",
+      "query_formatada": "SELECT\n  SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS total_diarias\nFROM despesa_pagamento p\nJOIN orgao_orgao o\n  ON p.cod_orgao = o.cod_orgao\n  AND p.ano_referencia = o.ano_referencia\nWHERE p.ano_referencia = 2025\n  AND TRIM(UPPER(o.nom_orgao)) ILIKE '%ASSISTENCIA SOCIAL%'\n  AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%'\n  AND p.num_doc_credor NOT IN ('-1', '0')\n  AND p.dsc_pagamento ILIKE '%DIARIA%';"
+    },
+    "query_sql": "SELECT SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS total_diarias FROM despesa_pagamento p JOIN orgao_orgao o ON p.cod_orgao = o.cod_orgao AND p.ano_referencia = o.ano_referencia WHERE p.ano_referencia = 2025 AND TRIM(UPPER(o.nom_orgao)) ILIKE '%ASSISTENCIA SOCIAL%' AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND p.num_doc_credor NOT IN ('-1', '0') AND p.dsc_pagamento ILIKE '%DIARIA%';",
+    "explicacao": "1. Tabelas: Usarei despesa_pagamento (pagamentos) para obter os valores pagos e orgao_orgao (órgãos) para filtrar a secretaria de assistência social. 2. JOINs: Como despesa_pagamento tem cod_orgao e orgao_orgao também, farei JOIN por cod_orgao e ano_referencia para garantir o ano correto. 3. Filtros: ano_referencia = 2025 (ano padrão), nome do órgão contendo 'ASSISTÊNCIA SOCIAL' usando ILIKE para evitar problemas de acentuação e caixa. 4. HIGIENE: Filtrarei pagamentos com credor válido, removendo registros com nom_credor contendo 'NAO INFORMADO' e num_doc_credor em ('-1', '0'). 5. Agregação: Somarei o valor pago (vlr_pag_fonte) para obter o total de diárias pagas. 6. Consideração: Como a pergunta não especifica detalhamento, retornarei o total geral das diárias pagas na secretaria.",
+    "tokens_in": 15877,
+    "tokens_out": 529,
+    "gen_ms": 12279.01,
+    "attempt": 1
+  },
+  "query_sql": "SELECT SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS total_diarias FROM despesa_pagamento p JOIN orgao_orgao o ON p.cod_orgao = o.cod_orgao AND p.ano_referencia = o.ano_referencia WHERE p.ano_referencia = 2025 AND TRIM(UPPER(o.nom_orgao)) ILIKE '%ASSISTENCIA SOCIAL%' AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND p.num_doc_credor NOT IN ('-1', '0') AND p.dsc_pagamento ILIKE '%DIARIA%';",
+  "execution": {
+    "ok": true,
+    "row_count": 1,
+    "columns": [
+      "total_diarias"
+    ],
+    "preview_rows": [
+      {
+        "total_diarias": null
+      }
+    ],
+    "error": null
+  },
+  "colunas_resposta_sugeridas": "total_diarias"
+}

@@ -1,0 +1,30 @@
+{
+  "id_teste": "004",
+  "input_usuario": "Contratos de empresa terceirizada na prefeitura de Caeté",
+  "assisted_at": "2026-07-15T01:32:42.338706+00:00",
+  "model": "gpt-4.1-mini",
+  "generation": {
+    "ok": true,
+    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Utilizarei contrato_contratos (c) para os contratos e contrato_contContrato (cc) para obter o nome do credor (empresa). 2. JOINs: Farei LEFT JOIN entre contrato_contratos e contrato_contContrato usando seq_contrato e ano_referencia para evitar produto cartesiano. 3. Filtros: ano_referencia = 2025 (ano padrão), cod_orgao IN (2,4,5) para focar na prefeitura ampla. 4. Critério para empresa terceirizada: Considerando que contratos de empresas terceirizadas geralmente possuem natureza de contrato ou objeto que contenha palavras como 'terceirizada' ou 'terceirização', aplicarei filtro ILIKE '%terceiriz%' em dsc_objetocontrato para identificar esses contratos. 5. Exclusão de registros sujos: Não aplicável diretamente aqui, mas mantive filtro para cod_orgao. 6. Ordenação: Ordenarei pelo valor do contrato decrescente para listar os contratos mais relevantes. 7. Limite: Limitarei a 50 registros para listagem exploratória.\",\n  \"query_sql\": \"SELECT cc.dsc_nome_credor, c.vlr_contrato, c.dsc_objetocontrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND c.dsc_objetocontrato ILIKE '%terceiriz%' ORDER BY c.vlr_contrato DESC LIMIT 50;\",\n  \"query_formatada\": \"SELECT\\n  cc.dsc_nome_credor,\\n  c.vlr_contrato,\\n  c.dsc_objetocontrato\\nFROM contrato_contratos c\\nLEFT JOIN contrato_contContrato cc\\n  ON c.seq_contrato = cc.seq_contrato\\n  AND c.ano_referencia = cc.ano_referencia\\nWHERE c.ano_referencia = 2025\\n  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)\\n  AND c.dsc_objetocontrato ILIKE '%terceiriz%'\\nORDER BY c.vlr_contrato DESC\\nLIMIT 50;\"\n}",
+    "parsed": {
+      "explicacao_tecnica": "1. Tabelas: Utilizarei contrato_contratos (c) para os contratos e contrato_contContrato (cc) para obter o nome do credor (empresa). 2. JOINs: Farei LEFT JOIN entre contrato_contratos e contrato_contContrato usando seq_contrato e ano_referencia para evitar produto cartesiano. 3. Filtros: ano_referencia = 2025 (ano padrão), cod_orgao IN (2,4,5) para focar na prefeitura ampla. 4. Critério para empresa terceirizada: Considerando que contratos de empresas terceirizadas geralmente possuem natureza de contrato ou objeto que contenha palavras como 'terceirizada' ou 'terceirização', aplicarei filtro ILIKE '%terceiriz%' em dsc_objetocontrato para identificar esses contratos. 5. Exclusão de registros sujos: Não aplicável diretamente aqui, mas mantive filtro para cod_orgao. 6. Ordenação: Ordenarei pelo valor do contrato decrescente para listar os contratos mais relevantes. 7. Limite: Limitarei a 50 registros para listagem exploratória.",
+      "query_sql": "SELECT cc.dsc_nome_credor, c.vlr_contrato, c.dsc_objetocontrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND c.dsc_objetocontrato ILIKE '%terceiriz%' ORDER BY c.vlr_contrato DESC LIMIT 50;",
+      "query_formatada": "SELECT\n  cc.dsc_nome_credor,\n  c.vlr_contrato,\n  c.dsc_objetocontrato\nFROM contrato_contratos c\nLEFT JOIN contrato_contContrato cc\n  ON c.seq_contrato = cc.seq_contrato\n  AND c.ano_referencia = cc.ano_referencia\nWHERE c.ano_referencia = 2025\n  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)\n  AND c.dsc_objetocontrato ILIKE '%terceiriz%'\nORDER BY c.vlr_contrato DESC\nLIMIT 50;"
+    },
+    "query_sql": "SELECT cc.dsc_nome_credor, c.vlr_contrato, c.dsc_objetocontrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND c.dsc_objetocontrato ILIKE '%terceiriz%' ORDER BY c.vlr_contrato DESC LIMIT 50;",
+    "explicacao": "1. Tabelas: Utilizarei contrato_contratos (c) para os contratos e contrato_contContrato (cc) para obter o nome do credor (empresa). 2. JOINs: Farei LEFT JOIN entre contrato_contratos e contrato_contContrato usando seq_contrato e ano_referencia para evitar produto cartesiano. 3. Filtros: ano_referencia = 2025 (ano padrão), cod_orgao IN (2,4,5) para focar na prefeitura ampla. 4. Critério para empresa terceirizada: Considerando que contratos de empresas terceirizadas geralmente possuem natureza de contrato ou objeto que contenha palavras como 'terceirizada' ou 'terceirização', aplicarei filtro ILIKE '%terceiriz%' em dsc_objetocontrato para identificar esses contratos. 5. Exclusão de registros sujos: Não aplicável diretamente aqui, mas mantive filtro para cod_orgao. 6. Ordenação: Ordenarei pelo valor do contrato decrescente para listar os contratos mais relevantes. 7. Limite: Limitarei a 50 registros para listagem exploratória.",
+    "tokens_in": 15876,
+    "tokens_out": 508,
+    "gen_ms": 12382.16,
+    "attempt": 1
+  },
+  "query_sql": "SELECT cc.dsc_nome_credor, c.vlr_contrato, c.dsc_objetocontrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND c.dsc_objetocontrato ILIKE '%terceiriz%' ORDER BY c.vlr_contrato DESC LIMIT 50;",
+  "execution": {
+    "ok": true,
+    "row_count": 0,
+    "columns": [],
+    "preview_rows": [],
+    "error": null
+  },
+  "colunas_resposta_sugeridas": ""
+}
