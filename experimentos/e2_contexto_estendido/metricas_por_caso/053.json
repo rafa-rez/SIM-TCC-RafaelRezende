@@ -1,6 +1,7 @@
 {
   "id_teste": "53",
   "input_usuario": "Qual o maior salário líquido pago em 2024?",
+  "colunas_resposta": "maior_salario",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": true,
     "ex_colmap": true,
+    "ex_proj": true,
+    "ex_proj_tol": true,
+    "ex_resposta": true,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 1,
     "divergencia_ex": "alias_colunas",
     "alias_apenas": true,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "maior_salario",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": true
   },
   "query_referencia": "WITH salarios AS (SELECT seq_dim_pessoa, MAX(CAST(vlr_rmn_liquida AS DECIMAL)) AS salario FROM remuneracao_municipio WHERE ano_referencia = 2024 GROUP BY seq_dim_pessoa) SELECT MAX(salario) AS maior_salario FROM salarios;",
   "query_gerada": "SELECT MAX(max_salario) AS maior_salario_liquido FROM (SELECT r.seq_dim_pessoa, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS max_salario FROM remuneracao_municipio r WHERE r.ano_referencia = 2024 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' GROUP BY r.seq_dim_pessoa) sub;",

@@ -2,9 +2,13 @@
   "experiment": "e4_gpt4o",
   "total": 80,
   "metrics_version": "2.0",
+  "tau_rel_tol": 0.005,
+  "execution_accuracy_principal_pct": 57.5,
+  "execution_accuracy_proj_pct": 57.5,
+  "execution_accuracy_proj_tol_pct": 57.5,
   "execution_accuracy_strict_pct": 16.25,
-  "execution_accuracy_content_pct": 56.25,
   "execution_accuracy_colmap_pct": 56.25,
+  "execution_accuracy_content_pct": 56.25,
   "execution_accuracy_rows_pct": 86.25,
   "execution_accuracy_cols_pct": 78.75,
   "valid_sql_rate_pct": 97.5,
@@ -13,96 +17,103 @@
   "chs_mean": 0.9281,
   "alias_apenas_count": 32,
   "alias_apenas_pct": 40.0,
+  "colunas_extras_aceitas_count": 1,
+  "tolerancia_numerica_count": 0,
   "divergencia_ex": {
     "cardinalidade_linhas": 5,
-    "cardinalidade_colunas": 9,
+    "cardinalidade_colunas": 8,
     "alias_colunas": 32,
+    "colunas_extras_aceitas": 1,
+    "tolerancia_numerica": 0,
     "permutacao_valores_linha": 0,
     "divergencia_valores": 15
   },
   "by_dificuldade": {
     "dificil": {
       "n": 14,
-      "ex_strict_pct": 28.57,
+      "ex_resposta_pct": 28.57,
+      "ex_proj_pct": 28.57,
       "ex_colmap_pct": 28.57,
-      "ex_content_pct": 28.57,
+      "ex_strict_pct": 28.57,
       "vsr_pct": 92.86
     },
     "facil": {
       "n": 22,
-      "ex_strict_pct": 9.09,
+      "ex_resposta_pct": 68.18,
+      "ex_proj_pct": 68.18,
       "ex_colmap_pct": 68.18,
-      "ex_content_pct": 68.18,
+      "ex_strict_pct": 9.09,
       "vsr_pct": 95.45
     },
     "medio": {
       "n": 44,
-      "ex_strict_pct": 15.91,
+      "ex_resposta_pct": 61.36,
+      "ex_proj_pct": 61.36,
       "ex_colmap_pct": 59.09,
-      "ex_content_pct": 59.09,
+      "ex_strict_pct": 15.91,
       "vsr_pct": 100.0
     }
   },
   "by_categoria": {
     "Calculo Fiscal": {
       "n": 13,
-      "ex_strict_pct": 38.46,
-      "ex_colmap_pct": 84.62
+      "ex_resposta_pct": 84.62,
+      "ex_proj_pct": 84.62
     },
     "Consulta Simples": {
       "n": 12,
-      "ex_strict_pct": 8.33,
-      "ex_colmap_pct": 75.0
+      "ex_resposta_pct": 75.0,
+      "ex_proj_pct": 75.0
     },
     "Cruzamento Investigativo": {
       "n": 10,
-      "ex_strict_pct": 20.0,
-      "ex_colmap_pct": 30.0
+      "ex_resposta_pct": 30.0,
+      "ex_proj_pct": 30.0
     },
     "Despesas Pagamentos": {
       "n": 10,
-      "ex_strict_pct": 0.0,
-      "ex_colmap_pct": 40.0
+      "ex_resposta_pct": 40.0,
+      "ex_proj_pct": 40.0
     },
     "Frota": {
       "n": 6,
-      "ex_strict_pct": 33.33,
-      "ex_colmap_pct": 66.67
+      "ex_resposta_pct": 66.67,
+      "ex_proj_pct": 66.67
     },
     "Licitacoes Contratos": {
       "n": 10,
-      "ex_strict_pct": 10.0,
-      "ex_colmap_pct": 60.0
+      "ex_resposta_pct": 60.0,
+      "ex_proj_pct": 60.0
     },
     "Manipulacao de Datas": {
       "n": 1,
-      "ex_strict_pct": 0.0,
-      "ex_colmap_pct": 0.0
+      "ex_resposta_pct": 0.0,
+      "ex_proj_pct": 0.0
     },
     "RH Folha": {
       "n": 10,
-      "ex_strict_pct": 0.0,
-      "ex_colmap_pct": 40.0
+      "ex_resposta_pct": 50.0,
+      "ex_proj_pct": 50.0
     },
     "Regra Anti-Duplicata": {
       "n": 1,
-      "ex_strict_pct": 0.0,
-      "ex_colmap_pct": 0.0
+      "ex_resposta_pct": 0.0,
+      "ex_proj_pct": 0.0
     },
     "Regra de Cadastros": {
       "n": 2,
-      "ex_strict_pct": 50.0,
-      "ex_colmap_pct": 50.0
+      "ex_resposta_pct": 50.0,
+      "ex_proj_pct": 50.0
     },
     "Regra de Orgaos": {
       "n": 1,
-      "ex_strict_pct": 100.0,
-      "ex_colmap_pct": 100.0
+      "ex_resposta_pct": 100.0,
+      "ex_proj_pct": 100.0
     },
     "Regras Especiais": {
       "n": 4,
-      "ex_strict_pct": 0.0,
-      "ex_colmap_pct": 50.0
+      "ex_resposta_pct": 50.0,
+      "ex_proj_pct": 50.0
     }
   },
   "total_cost_usd": 3.450257,

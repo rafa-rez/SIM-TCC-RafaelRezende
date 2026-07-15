@@ -1,6 +1,7 @@
 {
   "id_teste": "17",
   "input_usuario": "Qual o total pago em saúde em 2024?",
+  "colunas_resposta": "total_saude",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": false,
     "ex_colmap": false,
+    "ex_proj": false,
+    "ex_proj_tol": false,
+    "ex_resposta": false,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 1,
     "divergencia_ex": "divergencia_valores",
     "alias_apenas": false,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "total_saude",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": false
   },
   "query_referencia": "SELECT SUM(CAST(vlr_pagamento AS DECIMAL)) AS total_saude FROM saude_saude WHERE ano_referencia = 2024;",
   "query_gerada": "SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_pago_saude FROM saude_saude WHERE ano_referencia = 2024;",

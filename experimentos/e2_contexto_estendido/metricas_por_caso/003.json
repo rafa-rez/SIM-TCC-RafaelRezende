@@ -1,6 +1,7 @@
 {
   "id_teste": "3",
   "input_usuario": "Quais foram as 5 empresas que mais receberam pagamentos da prefeitura (SICOM) em 2025 e que também receberam transferências diretas do Governo Federal (CGU Transferências) no mesmo ano?",
+  "colunas_resposta": "num_doc_credor,total_pagamentos,total_transferencias",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": true,
     "ex_colmap": true,
+    "ex_proj": true,
+    "ex_proj_tol": true,
+    "ex_resposta": true,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 3,
     "divergencia_ex": "alias_colunas",
     "alias_apenas": true,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "num_doc_credor,total_pagamentos,total_transferencias",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": true
   },
   "query_referencia": "WITH cte_pagamentos AS (SELECT dp.num_doc_credor, SUM(CAST(dp.vlr_pag_fonte AS DECIMAL)) AS total_pagamentos FROM despesa_pagamento dp WHERE dp.ano_referencia = 2025 AND COALESCE(dp.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND dp.num_doc_credor NOT IN ('-1', '0') GROUP BY dp.num_doc_credor), cte_transferencias AS (SELECT ct.\"CÓDIGO FAVORECIDO\" AS num_doc_credor, SUM(CAST(ct.\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_transferencias FROM cgu_transferencias ct WHERE ct.ano_referencia = 2025 GROUP BY ct.\"CÓDIGO FAVORECIDO\") SELECT p.num_doc_credor, p.total_pagamentos, t.total_transferencias FROM cte_pagamentos p JOIN cte_transferencias t ON CAST(p.num_doc_credor AS VARCHAR) = CAST(t.num_doc_credor AS VARCHAR) ORDER BY (p.total_pagamentos + t.total_transferencias) DESC LIMIT 5",
   "query_gerada": "WITH pagamentos_prefeitura AS (\n  SELECT\n    num_doc_credor,\n    SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago_prefeitura\n  FROM despesa_pagamento\n  WHERE ano_referencia = 2025\n    AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%'\n    AND num_doc_credor NOT IN ('-1', '0')\n  GROUP BY num_doc_credor\n),\ntransferencias_federal AS (\n  SELECT\n    \"CÓDIGO FAVORECIDO\" AS codigo_favorecido,\n    SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_transferido_federal\n  FROM cgu_transferencias\n  WHERE ano_referencia = 2025\n  GROUP BY \"CÓDIGO FAVORECIDO\"\n)\nSELECT\n  p.num_doc_credor AS documento_empresa,\n  p.total_pago_prefeitura,\n  t.total_transferido_federal\nFROM pagamentos_prefeitura p\nINNER JOIN transferencias_federal t\n  ON CAST(p.num_doc_credor AS VARCHAR) = CAST(t.codigo_favorecido AS VARCHAR)\nORDER BY p.total_pago_prefeitura DESC\nLIMIT 5;",

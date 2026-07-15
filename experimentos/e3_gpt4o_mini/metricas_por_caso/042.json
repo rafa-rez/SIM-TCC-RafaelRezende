@@ -1,6 +1,7 @@
 {
   "id_teste": "42",
   "input_usuario": "Compare total pago em 2024 e 2025.",
+  "colunas_resposta": "ano_referencia,total",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": false,
     "ex_colmap": false,
+    "ex_proj": false,
+    "ex_proj_tol": false,
+    "ex_resposta": false,
     "nea_ok": true,
     "tsa": true,
     "chs": 0.0,
@@ -17,8 +21,12 @@
     "gen_cols": 2,
     "divergencia_ex": "cardinalidade_linhas",
     "alias_apenas": false,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "ano_referencia,total",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": false
   },
   "query_referencia": "SELECT ano_referencia, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total FROM despesa_pagamento WHERE ano_referencia IN (2024, 2025) GROUP BY ano_referencia ORDER BY ano_referencia;",
   "query_gerada": "WITH total_pago_2024 AS (SELECT SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago FROM despesa_pagamento WHERE ano_referencia = 2024), total_pago_2025 AS (SELECT SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago FROM despesa_pagamento WHERE ano_referencia = 2025) SELECT (SELECT total_pago FROM total_pago_2024) AS total_pago_2024, (SELECT total_pago FROM total_pago_2025) AS total_pago_2025;",

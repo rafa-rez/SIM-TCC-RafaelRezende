@@ -1,0 +1,121 @@
+{
+  "experiment": "e3_gpt4o_mini",
+  "total": 80,
+  "metrics_version": "3.0",
+  "tau_rel_tol": 0.005,
+  "execution_accuracy_principal_pct": 46.25,
+  "execution_accuracy_proj_pct": 46.25,
+  "execution_accuracy_proj_tol_pct": 46.25,
+  "execution_accuracy_strict_pct": 12.5,
+  "execution_accuracy_colmap_pct": 46.25,
+  "execution_accuracy_content_pct": 46.25,
+  "execution_accuracy_rows_pct": 75.0,
+  "execution_accuracy_cols_pct": 75.0,
+  "valid_sql_rate_pct": 90.0,
+  "nea_rate_pct": 91.25,
+  "tsa_rate_pct": 95.0,
+  "chs_mean": 0.8281,
+  "alias_apenas_count": 27,
+  "alias_apenas_pct": 33.75,
+  "colunas_extras_aceitas_count": 0,
+  "tolerancia_numerica_count": 0,
+  "divergencia_ex": {
+    "cardinalidade_linhas": 8,
+    "cardinalidade_colunas": 4,
+    "alias_colunas": 27,
+    "colunas_extras_aceitas": 0,
+    "tolerancia_numerica": 0,
+    "permutacao_valores_linha": 0,
+    "divergencia_valores": 19
+  },
+  "by_dificuldade": {
+    "dificil": {
+      "n": 14,
+      "ex_resposta_pct": 14.29,
+      "ex_proj_pct": 14.29,
+      "ex_colmap_pct": 14.29,
+      "ex_strict_pct": 14.29,
+      "vsr_pct": 50.0
+    },
+    "facil": {
+      "n": 22,
+      "ex_resposta_pct": 63.64,
+      "ex_proj_pct": 63.64,
+      "ex_colmap_pct": 63.64,
+      "ex_strict_pct": 13.64,
+      "vsr_pct": 95.45
+    },
+    "medio": {
+      "n": 44,
+      "ex_resposta_pct": 47.73,
+      "ex_proj_pct": 47.73,
+      "ex_colmap_pct": 47.73,
+      "ex_strict_pct": 11.36,
+      "vsr_pct": 100.0
+    }
+  },
+  "by_categoria": {
+    "Calculo Fiscal": {
+      "n": 13,
+      "ex_resposta_pct": 84.62,
+      "ex_proj_pct": 84.62
+    },
+    "Consulta Simples": {
+      "n": 12,
+      "ex_resposta_pct": 66.67,
+      "ex_proj_pct": 66.67
+    },
+    "Cruzamento Investigativo": {
+      "n": 10,
+      "ex_resposta_pct": 0.0,
+      "ex_proj_pct": 0.0
+    },
+    "Despesas Pagamentos": {
+      "n": 10,
+      "ex_resposta_pct": 30.0,
+      "ex_proj_pct": 30.0
+    },
+    "Frota": {
+      "n": 6,
+      "ex_resposta_pct": 50.0,
+      "ex_proj_pct": 50.0
+    },
+    "Licitacoes Contratos": {
+      "n": 10,
+      "ex_resposta_pct": 50.0,
+      "ex_proj_pct": 50.0
+    },
+    "Manipulacao de Datas": {
+      "n": 1,
+      "ex_resposta_pct": 100.0,
+      "ex_proj_pct": 100.0
+    },
+    "RH Folha": {
+      "n": 10,
+      "ex_resposta_pct": 30.0,
+      "ex_proj_pct": 30.0
+    },
+    "Regra Anti-Duplicata": {
+      "n": 1,
+      "ex_resposta_pct": 0.0,
+      "ex_proj_pct": 0.0
+    },
+    "Regra de Cadastros": {
+      "n": 2,
+      "ex_resposta_pct": 0.0,
+      "ex_proj_pct": 0.0
+    },
+    "Regra de Orgaos": {
+      "n": 1,
+      "ex_resposta_pct": 100.0,
+      "ex_proj_pct": 100.0
+    },
+    "Regras Especiais": {
+      "n": 4,
+      "ex_resposta_pct": 50.0,
+      "ex_proj_pct": 50.0
+    }
+  },
+  "total_cost_usd": 0.205817,
+  "avg_gen_ms": 3981.23
+}

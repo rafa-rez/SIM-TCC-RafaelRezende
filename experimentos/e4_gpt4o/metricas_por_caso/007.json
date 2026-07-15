@@ -1,6 +1,7 @@
 {
   "id_teste": "7",
   "input_usuario": "Liste as 10 maiores licitações homologadas em 2025 e o nome das empresas vencedoras.",
+  "colunas_resposta": "total_valor",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": false,
     "ex_content": false,
     "ex_colmap": false,
+    "ex_proj": false,
+    "ex_proj_tol": false,
+    "ex_resposta": false,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 3,
     "divergencia_ex": "cardinalidade_linhas",
     "alias_apenas": false,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "total_valor",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": false
   },
   "query_referencia": "WITH licitacoes_2025 AS (SELECT h.seq_licitacao, h.nom_vencedor, SUM(CAST(h.vlr_global AS DECIMAL)) AS total_valor FROM licitacao_homologLicitacao h JOIN licitacao_licitacao l ON h.seq_licitacao = l.seq_licitacao AND h.ano_referencia = l.ano_referencia WHERE h.ano_referencia = 2025 AND h.vlr_global > 0 GROUP BY h.seq_licitacao, h.nom_vencedor) SELECT nom_vencedor, total_valor FROM licitacoes_2025 ORDER BY total_valor DESC LIMIT 10",
   "query_gerada": "WITH licitacoes_agrupadas AS (SELECT h.seq_licitacao, SUM(CAST(h.vlr_global AS DECIMAL)) AS total_licitacao, h.nom_vencedor FROM licitacao_homologLicitacao h WHERE h.ano_referencia = 2025 GROUP BY h.seq_licitacao, h.nom_vencedor) SELECT l.seq_licitacao, la.total_licitacao, la.nom_vencedor FROM licitacao_licitacao l JOIN licitacoes_agrupadas la ON l.seq_licitacao = la.seq_licitacao AND l.ano_referencia = 2025 ORDER BY la.total_licitacao DESC LIMIT 10;",

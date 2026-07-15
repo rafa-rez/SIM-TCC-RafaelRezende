@@ -9,6 +9,9 @@ from dataclasses import asdict, dataclass, field
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
+# Tolerância relativa padrão para EX_proj_tol (0,5%)
+DEFAULT_TAU = 0.005
+
 
 def _normalize_value(v: Any) -> Any:
     if v is None:
@@ -33,13 +36,6 @@ def _normalize_value(v: Any) -> Any:
     return str(v)
 
 
-def row_signature(row: dict[str, Any]) -> tuple:
-    items = []
-    for k in sorted(row.keys()):
-        items.append((k.lower(), _normalize_value(row[k])))
-    return tuple(items)
-
-
 def _sort_key(v: Any) -> tuple:
     nv = _normalize_value(v)
     if isinstance(nv, (int, float)):
@@ -47,6 +43,13 @@ def _sort_key(v: Any) -> tuple:
     if isinstance(nv, bool):
         return (1, int(nv))
     return (2, str(nv))
+
+
+def row_signature(row: dict[str, Any]) -> tuple:
+    items = []
+    for k in sorted(row.keys()):
+        items.append((k.lower(), _normalize_value(row[k])))
+    return tuple(items)
 
 
 def row_value_signature(row: dict[str, Any]) -> tuple:
@@ -76,6 +79,54 @@ def column_vectors(rows: list[dict[str, Any]]) -> list[tuple]:
     return sorted(vectors)
 
 
+def selected_column_vectors(
+    rows: list[dict[str, Any]],
+    columns: list[str],
+) -> list[tuple]:
+    if not rows or not columns:
+        return []
+    sorted_rows = sorted(rows, key=row_value_signature)
+    vectors = []
+    for col in columns:
+        if col not in rows[0]:
+            continue
+        vectors.append(tuple(_sort_key(r[col]) for r in sorted_rows))
+    return vectors
+
+
+def _numeric_from_sort_key(sk: tuple) -> float | None:
+    if sk[0] == 0:
+        return float(sk[1])
+    return None
+
+
+def cells_match_sort_key(a: tuple, b: tuple, tau: float = 0.0) -> bool:
+    if a == b:
+        return True
+    na = _numeric_from_sort_key(a)
+    nb = _numeric_from_sort_key(b)
+    if na is not None and nb is not None:
+        if tau <= 0:
+            return na == nb
+        denom = max(abs(nb), 1e-9)
+        return abs(na - nb) / denom <= tau
+    return a == b
+
+
+def vectors_match(v1: tuple, v2: tuple, tau: float = 0.0) -> bool:
+    if len(v1) != len(v2):
+        return False
+    return all(cells_match_sort_key(a, b, tau) for a, b in zip(v1, v2))
+
+
+def vector_in_list(
+    ref_vec: tuple,
+    gen_vectors: list[tuple],
+    tau: float = 0.0,
+) -> bool:
+    return any(vectors_match(ref_vec, gv, tau) for gv in gen_vectors)
+
+
 def execution_match_strict(
     generated: list[dict[str, Any]],
     reference: list[dict[str, Any]],
@@ -91,9 +142,7 @@ def execution_match_content(
         return False
     if not reference:
         return True
-    ncol_ref = len(reference[0])
-    ncol_gen = len(generated[0]) if generated else 0
-    if ncol_ref != ncol_gen:
+    if len(reference[0]) != len(generated[0] if generated else []):
         return False
     return multiset_values(generated) == multiset_values(reference)
 
@@ -106,14 +155,39 @@ def execution_match_colmap(
         return False
     if not reference:
         return True
-    ncol_ref = len(reference[0])
-    ncol_gen = len(generated[0]) if generated else 0
-    if ncol_ref != ncol_gen:
+    if len(reference[0]) != len(generated[0] if generated else []):
         return False
     return column_vectors(generated) == column_vectors(reference)
 
 
-# Retrocompatibilidade
+def execution_match_proj(
+    generated: list[dict[str, Any]],
+    reference: list[dict[str, Any]],
+    *,
+    tau: float = 0.0,
+    colunas_resposta: list[str] | None = None,
+) -> bool:
+    if not reference:
+        return True
+    if len(generated) != len(reference):
+        return False
+    if not generated:
+        return False
+    if len(generated[0]) < len(reference[0]):
+        return False
+
+    gen_vectors = column_vectors(generated)
+    if colunas_resposta:
+        ref_vectors = selected_column_vectors(reference, colunas_resposta)
+    else:
+        ref_vectors = column_vectors(reference)
+
+    if not ref_vectors:
+        return False
+
+    return all(vector_in_list(rv, gen_vectors, tau) for rv in ref_vectors)
+
+
 execution_match = execution_match_strict
 
 
@@ -169,14 +243,31 @@ def condition_heuristic_score(sql: str, conditions: list[str]) -> float:
     return hits / len(conditions)
 
 
+def parse_colunas_resposta(value: str | None) -> list[str]:
+    if not value:
+        return []
+    return [c.strip() for c in value.split(",") if c.strip()]
+
+
 def classify_ex_divergence(
     generated: list[dict[str, Any]],
     reference: list[dict[str, Any]],
+    *,
+    colunas_resposta: list[str] | None = None,
+    tau: float = DEFAULT_TAU,
 ) -> str | None:
     if execution_match_strict(generated, reference):
         return None
     if not row_count_match(generated, reference):
         return "cardinalidade_linhas"
+    if execution_match_proj(
+        generated, reference, tau=tau, colunas_resposta=colunas_resposta
+    ):
+        if execution_match_colmap(generated, reference):
+            return "alias_colunas"
+        if not col_count_match(generated, reference):
+            return "colunas_extras_aceitas"
+        return "tolerancia_numerica"
     if not col_count_match(generated, reference):
         return "cardinalidade_colunas"
     if execution_match_colmap(generated, reference):
@@ -194,6 +285,9 @@ class MetricBundle:
     ex_cols: bool = False
     ex_content: bool = False
     ex_colmap: bool = False
+    ex_proj: bool = False
+    ex_proj_tol: bool = False
+    ex_resposta: bool = False
     nea_ok: bool = True
     tsa: bool = False
     chs: float = 0.0
@@ -203,11 +297,15 @@ class MetricBundle:
     gen_cols: int = 0
     divergencia_ex: str | None = None
     alias_apenas: bool = False
+    proj_sem_tol_apenas: bool = False
+    tau: float = DEFAULT_TAU
+    colunas_resposta: str = ""
     extra: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
         d["ex"] = d["ex_strict"]
+        d["ex_principal"] = d["ex_resposta"]
         return d
 
 
@@ -220,33 +318,45 @@ def compute_metrics(
     expected_tables: list[str] | None = None,
     conditions: list[str] | None = None,
     espera_dados: str = "sim",
+    colunas_resposta: str | None = None,
+    tau: float = DEFAULT_TAU,
 ) -> MetricBundle:
     ref_cols = len(reference[0]) if reference else 0
     gen_cols = len(generated[0]) if generated else 0
+    cols_resp = parse_colunas_resposta(colunas_resposta)
 
-    ex_strict = (
-        vsr
-        and bool(reference)
-        and execution_match_strict(generated, reference)
+    has_ref = bool(reference) and vsr
+
+    ex_strict = has_ref and execution_match_strict(generated, reference)
+    ex_rows = has_ref and row_count_match(generated, reference)
+    ex_cols = has_ref and col_count_match(generated, reference)
+    ex_content = has_ref and execution_match_content(generated, reference)
+    ex_colmap = has_ref and execution_match_colmap(generated, reference)
+    ex_proj = has_ref and execution_match_proj(generated, reference, tau=0.0)
+    ex_proj_tol = has_ref and execution_match_proj(
+        generated, reference, tau=tau
     )
-    ex_rows = vsr and bool(reference) and row_count_match(generated, reference)
-    ex_cols = vsr and bool(reference) and col_count_match(generated, reference)
-    ex_content = (
-        vsr
-        and bool(reference)
-        and execution_match_content(generated, reference)
-    )
-    ex_colmap = (
-        vsr
-        and bool(reference)
-        and execution_match_colmap(generated, reference)
+    ex_resposta = has_ref and execution_match_proj(
+        generated,
+        reference,
+        tau=tau,
+        colunas_resposta=cols_resp if cols_resp else None,
     )
 
     divergencia = None
     alias_apenas = False
-    if vsr and reference and not ex_strict:
-        divergencia = classify_ex_divergence(generated, reference)
+    proj_sem_tol_apenas = False
+    if has_ref and not ex_strict:
+        divergencia = classify_ex_divergence(
+            generated,
+            reference,
+            colunas_resposta=cols_resp if cols_resp else None,
+            tau=tau,
+        )
         alias_apenas = divergencia == "alias_colunas"
+        proj_sem_tol_apenas = (
+            not ex_proj and ex_proj_tol and divergencia == "tolerancia_numerica"
+        )
 
     nea_ok = (
         rows_nonempty(generated)
@@ -261,6 +371,9 @@ def compute_metrics(
         ex_cols=ex_cols,
         ex_content=ex_content,
         ex_colmap=ex_colmap,
+        ex_proj=ex_proj,
+        ex_proj_tol=ex_proj_tol,
+        ex_resposta=ex_resposta,
         nea_ok=nea_ok,
         tsa=table_selection_accuracy(sql_generated, expected_tables or []),
         chs=condition_heuristic_score(sql_generated, conditions or []),
@@ -270,6 +383,9 @@ def compute_metrics(
         gen_cols=gen_cols,
         divergencia_ex=divergencia,
         alias_apenas=alias_apenas,
+        proj_sem_tol_apenas=proj_sem_tol_apenas,
+        tau=tau,
+        colunas_resposta=colunas_resposta or "",
     )
 
 

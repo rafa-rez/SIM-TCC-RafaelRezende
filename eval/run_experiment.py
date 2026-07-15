@@ -228,6 +228,7 @@ def main() -> None:
             expected_tables=tables_exp,
             conditions=conds,
             espera_dados=row.get("espera_dados", "sim"),
+            colunas_resposta=row.get("colunas_resposta", ""),
         ) if ref_sql else compute_metrics(
             [],
             [],
@@ -236,6 +237,7 @@ def main() -> None:
             expected_tables=tables_exp,
             conditions=conds,
             espera_dados=row.get("espera_dados", "sim"),
+            colunas_resposta=row.get("colunas_resposta", ""),
         )
 
         record = {
@@ -269,10 +271,9 @@ def main() -> None:
         append_checkpoint(checkpoint_path, record)
         m = record["metrics"]
         print(
-            f"  EXs={'SIM' if m.get('ex_strict') else 'NAO'} | "
-            f"EXc={'SIM' if m.get('ex_colmap') else 'NAO'} | "
-            f"VSR={'SIM' if m['vsr'] else 'NAO'} | "
-            f"TSA={'SIM' if m['tsa'] else 'NAO'} | US$ {cost:.4f} | {budget.status_line()}"
+            f"  EXr={'SIM' if m.get('ex_resposta') else 'NAO'} | "
+            f"EXp={'SIM' if m.get('ex_proj') else 'NAO'} | "
+            f"VSR={'SIM' if m['vsr'] else 'NAO'} | US$ {cost:.4f} | {budget.status_line()}"
         )
 
     print(f"\n[OK] Experimento concluido: {checkpoint_path}")

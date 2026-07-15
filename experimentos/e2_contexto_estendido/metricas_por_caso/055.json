@@ -1,6 +1,7 @@
 {
   "id_teste": "55",
   "input_usuario": "Qual o total da folha de pagamento em 2024?",
+  "colunas_resposta": "total_folha",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": false,
     "ex_colmap": false,
+    "ex_proj": false,
+    "ex_proj_tol": false,
+    "ex_resposta": false,
     "nea_ok": true,
     "tsa": true,
     "chs": 0.0,
@@ -17,8 +21,12 @@
     "gen_cols": 1,
     "divergencia_ex": "divergencia_valores",
     "alias_apenas": false,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "total_folha",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": false
   },
   "query_referencia": "WITH mensal AS (SELECT seq_dim_pessoa, CAST(SUBSTR(CAST(seq_dat_pagamento AS VARCHAR), 5, 2) AS INTEGER) AS mes, MAX(CAST(vlr_rmn_liquida AS DECIMAL)) AS sal FROM remuneracao_municipio WHERE ano_referencia = 2024 GROUP BY seq_dim_pessoa, mes) SELECT SUM(sal) AS total_folha FROM mensal;",
   "query_gerada": "SELECT SUM(CAST(vlr_rmn_liquida AS DECIMAL)) AS total_folha_pagamento FROM remuneracao_municipio WHERE ano_referencia = 2024 AND dsc_sit_serv_pens ILIKE '%Ativo%';",

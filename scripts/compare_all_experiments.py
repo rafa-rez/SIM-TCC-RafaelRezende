@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Gera tabela comparativa dos experimentos com métricas v2."""
+"""Gera tabela comparativa dos experimentos com métricas v3."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ EXPERIMENTS = [
 def main() -> None:
     rows = []
     for exp_id, label in EXPERIMENTS:
-        path = REPO / "experimentos" / exp_id / "metrics_summary_v2.json"
+        path = REPO / "experimentos" / exp_id / "metrics_summary_v3.json"
         if not path.exists():
             print(f"Ausente: {path}", file=sys.stderr)
             continue
@@ -28,25 +28,28 @@ def main() -> None:
         rows.append((label, data))
 
     header = (
-        "| Experimento | EX estrita | EX colmap | EX conteúdo | EX linhas | VSR | Alias apenas | Custo USD |"
+        "| Experimento | EX resposta | EX proj | EX proj+tol | EX colmap | "
+        "EX estrita | VSR | Alias | Col+ | Tol num |"
     )
-    sep = "|---|---:|---:|---:|---:|---:|---:|---:|"
+    sep = "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|"
     lines = [header, sep]
     for label, d in rows:
         lines.append(
             f"| {label} "
-            f"| {d['execution_accuracy_strict_pct']} "
+            f"| {d['execution_accuracy_principal_pct']} "
+            f"| {d['execution_accuracy_proj_pct']} "
+            f"| {d['execution_accuracy_proj_tol_pct']} "
             f"| {d['execution_accuracy_colmap_pct']} "
-            f"| {d['execution_accuracy_content_pct']} "
-            f"| {d['execution_accuracy_rows_pct']} "
+            f"| {d['execution_accuracy_strict_pct']} "
             f"| {d['valid_sql_rate_pct']} "
             f"| {d['alias_apenas_pct']} "
-            f"| {d.get('total_cost_usd', 'n/d')} |"
+            f"| {d['colunas_extras_aceitas_count']} "
+            f"| {d['tolerancia_numerica_count']} |"
         )
 
     table = "\n".join(lines)
     print(table)
-    out = REPO / "experimentos" / "comparison_table_v2.md"
+    out = REPO / "experimentos" / "comparison_table_v3.md"
     out.write_text(table + "\n", encoding="utf-8")
     print(f"\nSalvo em {out}")
 

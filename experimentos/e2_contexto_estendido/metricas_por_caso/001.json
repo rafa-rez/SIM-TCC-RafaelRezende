@@ -1,6 +1,7 @@
 {
   "id_teste": "1",
   "input_usuario": "Calcule a Saúde Financeira (ISF-M) da prefeitura detalhada ano a ano, cobrindo todo o período de 2020 a 2025.",
+  "colunas_resposta": "ano_referencia,isf_m",
   "metrics": {
     "vsr": false,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": false,
     "ex_content": false,
     "ex_colmap": false,
+    "ex_proj": false,
+    "ex_proj_tol": false,
+    "ex_resposta": false,
     "nea_ok": false,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 0,
     "divergencia_ex": null,
     "alias_apenas": false,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "ano_referencia,isf_m",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": false
   },
   "query_referencia": "WITH receita_corrente AS (SELECT ano_referencia, SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita_corrente FROM receita_receita WHERE dsc_cateconomica ILIKE '%Corrente%' GROUP BY ano_referencia), despesa_corrente AS (SELECT ano_referencia, SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa_corrente FROM despesa_despesa WHERE dsc_naturezadespesa LIKE '3%' GROUP BY ano_referencia) SELECT r.ano_referencia, r.total_receita_corrente / NULLIF(d.total_despesa_corrente, 0) AS isf_m FROM receita_corrente r JOIN despesa_corrente d ON r.ano_referencia = d.ano_referencia WHERE r.ano_referencia BETWEEN 2020 AND 2025",
   "query_gerada": "WITH receita AS (SELECT ano_referencia, SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS receita_corrente FROM receita_receita WHERE ano_referencia BETWEEN 2020 AND 2025 AND dsc_cateconomica ILIKE '%Corrente%'), despesa AS (SELECT ano_referencia, SUM(CAST(vlr_liquidado AS DECIMAL)) AS despesa_corrente FROM despesa_despesa WHERE ano_referencia BETWEEN 2020 AND 2025 AND dsc_naturezadespesa ILIKE '3%') SELECT r.ano_referencia, r.receita_corrente, d.despesa_corrente, CAST(r.receita_corrente AS DECIMAL) / NULLIF(CAST(d.despesa_corrente AS DECIMAL), 0) AS isf_m FROM receita r LEFT JOIN despesa d ON r.ano_referencia = d.ano_referencia ORDER BY r.ano_referencia;",

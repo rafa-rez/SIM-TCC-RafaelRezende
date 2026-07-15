@@ -1,6 +1,7 @@
 {
   "id_teste": "71",
   "input_usuario": "Top 3 empresas SICOM pagamentos 2024 que também têm transferências CGU 2024.",
+  "colunas_resposta": "num_doc_credor,tp,tt",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": true,
     "ex_colmap": true,
+    "ex_proj": true,
+    "ex_proj_tol": true,
+    "ex_resposta": true,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 3,
     "divergencia_ex": "alias_colunas",
     "alias_apenas": true,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "num_doc_credor,tp,tt",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": true
   },
   "query_referencia": "WITH pag AS (SELECT num_doc_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS tp FROM despesa_pagamento WHERE ano_referencia = 2024 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY num_doc_credor), tr AS (SELECT \"CÓDIGO FAVORECIDO\" AS doc, SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS tt FROM cgu_transferencias WHERE ano_referencia = 2024 GROUP BY doc) SELECT p.num_doc_credor, p.tp, t.tt FROM pag p JOIN tr t ON CAST(p.num_doc_credor AS VARCHAR) = CAST(t.doc AS VARCHAR) ORDER BY (p.tp + t.tt) DESC LIMIT 3;",
   "query_gerada": "WITH pagamentos AS (\n  SELECT\n    CAST(num_doc_credor AS VARCHAR) AS doc_credor,\n    SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago\n  FROM despesa_pagamento\n  WHERE ano_referencia = 2024\n    AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%'\n    AND COALESCE(num_doc_credor, '') NOT IN ('-1', '0', '')\n  GROUP BY doc_credor\n),\ntransferencias AS (\n  SELECT\n    CAST(\"CÓDIGO FAVORECIDO\" AS VARCHAR) AS doc_favorecido,\n    SUM(CAST(\"VALOR TRANSFERIDO\" AS DECIMAL)) AS total_transferido\n  FROM cgu_transferencias\n  WHERE ano_referencia = 2024\n  GROUP BY doc_favorecido\n)\nSELECT\n  p.doc_credor,\n  p.total_pago,\n  t.total_transferido\nFROM pagamentos p\nJOIN transferencias t\n  ON p.doc_credor = t.doc_favorecido\nORDER BY p.total_pago DESC\nLIMIT 3;",

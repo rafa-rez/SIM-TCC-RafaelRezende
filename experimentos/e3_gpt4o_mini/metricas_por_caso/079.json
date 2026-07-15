@@ -1,6 +1,7 @@
 {
   "id_teste": "79",
   "input_usuario": "Contratos de 2022 com aditivo de acréscimo em 2023.",
+  "colunas_resposta": "",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": false,
     "ex_content": false,
     "ex_colmap": false,
+    "ex_proj": false,
+    "ex_proj_tol": false,
+    "ex_resposta": false,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 0,
     "divergencia_ex": null,
     "alias_apenas": false,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": false
   },
   "query_referencia": "SELECT c.num_contrato, cc.dsc_nome_credor, t.vlr_termo_aditivo FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia LEFT JOIN contrato_termoContrato t ON c.seq_contrato = t.seq_contrato AND t.ano_referencia = 2023 WHERE c.num_ano_contrato = 2022 AND t.dsc_tipo_alteracao ILIKE '%ACRÉSCIMO%';",
   "query_gerada": "SELECT c.seq_contrato, c.vlr_contrato, t.seq_termo_aditivo, t.vlr_termo_aditivo FROM contrato_contratos c JOIN contrato_termoContrato t ON c.seq_contrato = t.seq_contrato AND c.ano_referencia = t.ano_referencia WHERE c.ano_referencia = 2022 AND t.ano_referencia = 2023 AND t.dsc_tipo_termo ILIKE '%ACRÉSCIMO%';",

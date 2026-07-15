@@ -1,6 +1,7 @@
 {
   "id_teste": "67",
   "input_usuario": "Marcas de veículos na frota em 2025 excluindo DIVERSOS.",
+  "colunas_resposta": "dsc_marca",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": true,
     "ex_colmap": true,
+    "ex_proj": true,
+    "ex_proj_tol": true,
+    "ex_resposta": true,
     "nea_ok": true,
     "tsa": true,
     "chs": 0.5,
@@ -17,8 +21,12 @@
     "gen_cols": 1,
     "divergencia_ex": "alias_colunas",
     "alias_apenas": true,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "dsc_marca",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": true
   },
   "query_referencia": "SELECT DISTINCT dsc_marca FROM frota_frota WHERE ano_referencia = 2025 AND COALESCE(dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') LIMIT 50;",
   "query_gerada": "SELECT DISTINCT COALESCE(dsc_marca, '') AS marca FROM frota_frota WHERE ano_referencia = 2025 AND COALESCE(dsc_marca, '') NOT ILIKE '%DIVERSOS%';",

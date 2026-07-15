@@ -1,6 +1,7 @@
 {
   "id_teste": "80",
   "input_usuario": "Despesa liquidada por função em 2025 (top 5 funções).",
+  "colunas_resposta": "total",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": true,
     "ex_colmap": true,
+    "ex_proj": true,
+    "ex_proj_tol": true,
+    "ex_resposta": true,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 2,
     "divergencia_ex": "alias_colunas",
     "alias_apenas": true,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "total",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": true
   },
   "query_referencia": "SELECT dsc_funcao, SUM(CAST(vlr_liquidado AS DECIMAL)) AS total FROM despesa_despesa WHERE ano_referencia = 2025 GROUP BY dsc_funcao ORDER BY total DESC LIMIT 5;",
   "query_gerada": "SELECT dsc_funcao, SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_liquidado FROM despesa_despesa WHERE ano_referencia = 2025 GROUP BY dsc_funcao ORDER BY total_liquidado DESC LIMIT 5;",

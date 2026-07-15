@@ -2,7 +2,7 @@
 
 Documento de referência para o repositório de validação do TCC *Sistema de Informações Municipais* (agente CIC, Caeté/MG).
 
-Versão das métricas: **2.0** (julho/2026).
+Versão das métricas: **3.0** (julho/2026). Relatório: `docs/RELATORIO_METRICAS_V3.md`.
 
 ---
 
@@ -189,16 +189,48 @@ JAR = (1/M) Σⱼ 𝟙[ vereditoⱼ ∈ {correto, parcialmente_correto} ]
 
 ---
 
-## 6. Tabela comparativa dos experimentos (v2)
+---
 
-| Experimento | EX estrita | EX colmap | EX linhas | VSR | Alias apenas |
-|-------------|----------:|----------:|----------:|----:|-------------:|
-| E1 baseline compacto | 10,0 | 58,75 | 85,0 | 97,5 | 48,75 |
-| E2 contexto estendido | 13,75 | 56,25 | 85,0 | 96,25 | 42,5 |
-| E3 GPT-4o-mini | 12,5 | 46,25 | 75,0 | 90,0 | 33,75 |
-| E4 GPT-4o | 16,25 | 56,25 | 86,25 | 97,5 | 40,0 |
+## 4.7 EX por projeção (EX proj, `ex_proj`)
 
-Fonte: `experimentos/comparison_table_v2.md`, gerado por `scripts/compare_all_experiments.py`.
+**Definição.** Exige |Rᵢ| = |Gᵢ| e |cols(Gᵢ)| ≥ |cols(Rᵢ)|. Para cada coluna do gabarito, deve existir alguma coluna no resultado gerado com o **mesmo vetor de valores** (linhas ordenadas por assinatura de conteúdo).
+
+**Uso.** Perguntas abertas em que o modelo pode incluir colunas de contextualização (`receita_corrente`, `nom_credor`) além do pedido.
+
+**Resultado E1:** 60,0%.
+
+---
+
+## 4.8 EX com tolerância numérica (EX proj + τ, `ex_proj_tol`)
+
+**Definição.** Igual a EX proj, porém células numéricas aceitas se:
+
+```
+|ν(a) − ν(b)| / max(|ν(b)|, ε) ≤ τ,   τ = 0,005 (0,5%)
+```
+
+**Resultado E1:** 61,25%.
+
+---
+
+## 4.9 EX resposta (métrica principal, `ex_resposta`)
+
+**Definição.** EX proj + τ restrito às colunas em `colunas_resposta` no golden (chaves + grandezas de resposta). Campo preenchido por `scripts/enrich_golden_colunas.py` (75/80 consultas).
+
+**Resultado E1:** **62,50%** (métrica principal proposta para o documento final).
+
+---
+
+## 6. Tabela comparativa dos experimentos (v3)
+
+| Experimento | EX resposta | EX proj | EX proj+τ | EX colmap | EX estrita | VSR |
+|-------------|------------:|--------:|----------:|----------:|-----------:|----:|
+| E1 baseline | **62,50** | 60,00 | 61,25 | 57,50 | 10,00 | 97,50 |
+| E2 contexto estendido | 58,75 | 56,25 | 57,50 | 56,25 | 13,75 | 96,25 |
+| E3 GPT-4o-mini | 46,25 | 46,25 | 46,25 | 46,25 | 12,50 | 90,00 |
+| E4 GPT-4o | 57,50 | 57,50 | 57,50 | 56,25 | 16,25 | 97,50 |
+
+Fonte: `experimentos/comparison_table_v3.md`.
 
 ---
 
@@ -218,7 +250,7 @@ Fonte: `experimentos/comparison_table_v2.md`, gerado por `scripts/compare_all_ex
 |---------|----------|
 | `eval/lib/compare.py` | Implementação |
 | `scripts/recompute_metrics.py` | Recálculo por experimento |
-| `experimentos/*/metrics_summary_v2.json` | Agregados |
+| `experimentos/*/metrics_summary_v3.json` | Agregados v3 |
 | `experimentos/*/metricas_por_caso/` | Detalhe por `id_teste` |
 | `dados/golden/reference_results/` | Resultado tabular de cada SQL de referência |
 | `experimentos/*/generated_results/` | Resultado tabular de cada SQL gerada |

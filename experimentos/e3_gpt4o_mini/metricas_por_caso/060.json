@@ -1,6 +1,7 @@
 {
   "id_teste": "60",
   "input_usuario": "Média salarial dos servidores ativos em 2024.",
+  "colunas_resposta": "media",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": false,
     "ex_colmap": false,
+    "ex_proj": false,
+    "ex_proj_tol": false,
+    "ex_resposta": false,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 1,
     "divergencia_ex": "divergencia_valores",
     "alias_apenas": false,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "media",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": false
   },
   "query_referencia": "WITH sal AS (SELECT seq_dim_pessoa, MAX(CAST(vlr_rmn_liquida AS DECIMAL)) AS salario FROM remuneracao_municipio WHERE ano_referencia = 2024 AND dsc_sit_serv_pens ILIKE '%Ativo%' GROUP BY seq_dim_pessoa) SELECT AVG(salario) AS media FROM sal;",
   "query_gerada": "SELECT AVG(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS media_salarial FROM remuneracao_municipio r JOIN pessoa_municipio p ON r.seq_dim_pessoa = p.seq_dim_pessoa WHERE r.ano_referencia = 2024 AND COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%' AND r.dsc_sit_serv_pens ILIKE '%Ativo%'",

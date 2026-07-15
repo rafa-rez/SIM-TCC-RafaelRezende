@@ -1,6 +1,7 @@
 {
   "id_teste": "27",
   "input_usuario": "Calcule o ISF-M para cada ano entre 2022 e 2024.",
+  "colunas_resposta": "ano_referencia,isf_m",
   "metrics": {
     "vsr": true,
     "ex_strict": true,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": true,
     "ex_colmap": true,
+    "ex_proj": true,
+    "ex_proj_tol": true,
+    "ex_resposta": true,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 2,
     "divergencia_ex": null,
     "alias_apenas": false,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "ano_referencia,isf_m",
     "extra": {},
-    "ex": true
+    "ex": true,
+    "ex_principal": true
   },
   "query_referencia": "WITH receita_corrente AS (SELECT ano_referencia, SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS r FROM receita_receita WHERE dsc_cateconomica ILIKE '%Corrente%' AND ano_referencia BETWEEN 2022 AND 2024 GROUP BY ano_referencia), despesa_corrente AS (SELECT ano_referencia, SUM(CAST(vlr_liquidado AS DECIMAL)) AS d FROM despesa_despesa WHERE dsc_naturezadespesa LIKE '3%' AND ano_referencia BETWEEN 2022 AND 2024 GROUP BY ano_referencia) SELECT rc.ano_referencia, rc.r / NULLIF(dc.d, 0) AS isf_m FROM receita_corrente rc JOIN despesa_corrente dc ON rc.ano_referencia = dc.ano_referencia ORDER BY rc.ano_referencia;",
   "query_gerada": "WITH receita_corrente AS ( SELECT ano_referencia, SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS receita_corrente FROM receita_receita WHERE ano_referencia BETWEEN 2022 AND 2024 AND dsc_cateconomica ILIKE '%Corrente%' GROUP BY ano_referencia ), despesa_corrente AS ( SELECT ano_referencia, SUM(CAST(vlr_liquidado AS DECIMAL)) AS despesa_corrente FROM despesa_despesa WHERE ano_referencia BETWEEN 2022 AND 2024 AND dsc_naturezadespesa ILIKE '3%' GROUP BY ano_referencia ) SELECT r.ano_referencia, CAST(r.receita_corrente AS DOUBLE) / NULLIF(CAST(d.despesa_corrente AS DOUBLE), 0) AS isf_m FROM receita_corrente r LEFT JOIN despesa_corrente d ON r.ano_referencia = d.ano_referencia ORDER BY r.ano_referencia;",

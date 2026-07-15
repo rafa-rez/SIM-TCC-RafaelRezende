@@ -1,6 +1,7 @@
 {
   "id_teste": "37",
   "input_usuario": "Quanto foi liquidado em 2025 por órgão da prefeitura (cod_orgao 2, 4, 5)?",
+  "colunas_resposta": "cod_orgao,total",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": true,
     "ex_colmap": true,
+    "ex_proj": true,
+    "ex_proj_tol": true,
+    "ex_resposta": true,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 2,
     "divergencia_ex": "alias_colunas",
     "alias_apenas": true,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "cod_orgao,total",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": true
   },
   "query_referencia": "SELECT cod_orgao, SUM(CAST(vlr_liquidado AS DECIMAL)) AS total FROM despesa_despesa WHERE ano_referencia = 2025 AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5) GROUP BY cod_orgao ORDER BY total DESC;",
   "query_gerada": "SELECT cod_orgao, SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_liquidado FROM despesa_despesa WHERE ano_referencia = 2025 AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5) GROUP BY cod_orgao;",

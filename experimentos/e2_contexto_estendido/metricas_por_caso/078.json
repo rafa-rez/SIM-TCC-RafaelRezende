@@ -1,6 +1,7 @@
 {
   "id_teste": "78",
   "input_usuario": "Top 5 maiores licitações por ano em 2024 e 2025 usando ROW_NUMBER.",
+  "colunas_resposta": "ano_referencia,total",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": false,
     "ex_colmap": false,
+    "ex_proj": false,
+    "ex_proj_tol": false,
+    "ex_resposta": false,
     "nea_ok": true,
     "tsa": false,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 3,
     "divergencia_ex": "divergencia_valores",
     "alias_apenas": false,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "ano_referencia,total",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": false
   },
   "query_referencia": "WITH base AS (SELECT h.ano_referencia, h.nom_vencedor, SUM(CAST(h.vlr_global AS DECIMAL)) AS total FROM licitacao_homologLicitacao h WHERE h.ano_referencia IN (2024, 2025) GROUP BY h.ano_referencia, h.seq_licitacao, h.nom_vencedor), ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY total DESC) AS rn FROM base) SELECT ano_referencia, nom_vencedor, total FROM ranked WHERE rn <= 5 ORDER BY ano_referencia, total DESC;",
   "query_gerada": "WITH licitacoes_agrupadas AS (\n  SELECT\n    seq_licitacao,\n    ano_referencia,\n    SUM(CAST(vlr_empenhado AS DECIMAL)) AS valor_empenhado\n  FROM licitacao_licitacao\n  WHERE ano_referencia IN (2024, 2025)\n  GROUP BY seq_licitacao, ano_referencia\n), ranked_licitacoes AS (\n  SELECT\n    seq_licitacao,\n    ano_referencia,\n    valor_empenhado,\n    ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY valor_empenhado DESC) AS rn\n  FROM licitacoes_agrupadas\n)\nSELECT\n  seq_licitacao,\n  ano_referencia,\n  valor_empenhado\nFROM ranked_licitacoes\nWHERE rn <= 5\nORDER BY ano_referencia, valor_empenhado DESC;",

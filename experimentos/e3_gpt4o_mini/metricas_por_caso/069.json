@@ -1,6 +1,7 @@
 {
   "id_teste": "69",
   "input_usuario": "Empresas que receberam pagamentos da prefeitura e despesas CGU em 2024.",
+  "colunas_resposta": "num_doc_credor,total_pag,total_cgu",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": false,
     "ex_content": false,
     "ex_colmap": false,
+    "ex_proj": false,
+    "ex_proj_tol": false,
+    "ex_resposta": false,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 2,
     "divergencia_ex": "cardinalidade_linhas",
     "alias_apenas": false,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "num_doc_credor,total_pag,total_cgu",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": false
   },
   "query_referencia": "WITH pag AS (SELECT num_doc_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pag FROM despesa_pagamento WHERE ano_referencia = 2024 AND num_doc_credor NOT IN ('-1', '0') GROUP BY num_doc_credor), cgu AS (SELECT \"Código Favorecido\" AS doc, SUM(CAST(\"Valor Recebido\" AS DECIMAL)) AS total_cgu FROM cgu_despesas_favorecidos WHERE ano_referencia = 2024 GROUP BY doc) SELECT p.num_doc_credor, p.total_pag, c.total_cgu FROM pag p JOIN cgu c ON CAST(p.num_doc_credor AS VARCHAR) = CAST(c.doc AS VARCHAR) ORDER BY (p.total_pag + c.total_cgu) DESC LIMIT 10;",
   "query_gerada": "SELECT DISTINCT dp.num_doc_credor, dp.nom_credor FROM despesa_pagamento dp JOIN cgu_despesas_favorecidos cgu ON CAST(dp.num_doc_credor AS VARCHAR) = CAST(cgu.\"Código Favorecido\" AS VARCHAR) WHERE dp.ano_referencia = 2024 AND cgu.ano_referencia = 2024;",

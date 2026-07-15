@@ -1,6 +1,7 @@
 {
   "id_teste": "9",
   "input_usuario": "Qual a porcentagem da Receita Corrente que foi gasta exclusivamente pela Câmara Municipal no ano de 2025?",
+  "colunas_resposta": "porcentagem_gasto_camara",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": false,
     "ex_colmap": false,
+    "ex_proj": false,
+    "ex_proj_tol": true,
+    "ex_resposta": true,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -15,10 +19,14 @@
     "gen_rows": 1,
     "ref_cols": 1,
     "gen_cols": 1,
-    "divergencia_ex": "divergencia_valores",
+    "divergencia_ex": "tolerancia_numerica",
     "alias_apenas": false,
+    "proj_sem_tol_apenas": true,
+    "tau": 0.005,
+    "colunas_resposta": "porcentagem_gasto_camara",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": true
   },
   "query_referencia": "WITH receita_corrente AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita_corrente FROM receita_receita WHERE dsc_cateconomica ILIKE '%Corrente%' AND ano_referencia = 2025), despesas_camara AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesas_camara FROM despesa_despesa WHERE cod_orgao = 1 AND ano_referencia = 2025) SELECT (despesas_camara.total_despesas_camara / NULLIF(receita_corrente.total_receita_corrente, 0)) * 100 AS porcentagem_gasto_camara FROM receita_corrente, despesas_camara",
   "query_gerada": "WITH receita_corrente AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita_corrente FROM receita_receita WHERE ano_referencia = 2025 AND dsc_cateconomica ILIKE '%Corrente%'), despesa_corrente_camara AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa_corrente_camara FROM despesa_despesa WHERE ano_referencia = 2025 AND CAST(cod_orgao AS INTEGER) = 1 AND dsc_naturezadespesa ILIKE '3%') SELECT (total_despesa_corrente_camara / NULLIF(total_receita_corrente, 0)) * 100 AS porcentagem_gasto_camara FROM receita_corrente CROSS JOIN despesa_corrente_camara;",

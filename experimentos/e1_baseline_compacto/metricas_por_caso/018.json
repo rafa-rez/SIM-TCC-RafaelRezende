@@ -1,6 +1,7 @@
 {
   "id_teste": "18",
   "input_usuario": "Quantos beneficiários do BPC constam em 2024?",
+  "colunas_resposta": "qtd",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": true,
     "ex_colmap": true,
+    "ex_proj": true,
+    "ex_proj_tol": true,
+    "ex_resposta": true,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 1,
     "divergencia_ex": "alias_colunas",
     "alias_apenas": true,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "qtd",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": true
   },
   "query_referencia": "SELECT COUNT(DISTINCT \"NIS BENEFICIÁRIO\") AS qtd FROM cgu_bpc WHERE ano_referencia = 2024;",
   "query_gerada": "SELECT COUNT(DISTINCT \"NIS BENEFICIÁRIO\") AS total_beneficiarios FROM cgu_bpc WHERE ano_referencia = 2024 AND COALESCE(\"NOME BENEFICIÁRIO\", '') NOT ILIKE '%NAO INFORMADO%';",

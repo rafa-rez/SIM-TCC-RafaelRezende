@@ -14,7 +14,7 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 from eval.lib.checkpoint import read_all_checkpoints
-from eval.lib.compare import compute_metrics
+from eval.lib.compare import DEFAULT_TAU, compute_metrics
 from eval.lib.duckdb_engine import execute_query_local as execute_query
 
 
@@ -36,29 +36,108 @@ def load_golden_map(path: Path) -> dict[str, dict]:
     return rows
 
 
+def build_summary(
+    experiment: str,
+    updated: list[dict],
+    tau: float,
+) -> dict:
+    n = len(updated)
+    by_diff: dict[str, list] = defaultdict(list)
+    by_cat: dict[str, list] = defaultdict(list)
+    for r in updated:
+        by_diff[r.get("dificuldade") or "nao_definido"].append(r)
+        by_cat[r.get("categoria") or "nao_definido"].append(r)
+
+    divergencia_keys = [
+        "cardinalidade_linhas",
+        "cardinalidade_colunas",
+        "alias_colunas",
+        "colunas_extras_aceitas",
+        "tolerancia_numerica",
+        "permutacao_valores_linha",
+        "divergencia_valores",
+    ]
+
+    return {
+        "experiment": experiment,
+        "total": n,
+        "metrics_version": "3.0",
+        "tau_rel_tol": tau,
+        "execution_accuracy_principal_pct": metric_rate(updated, "ex_resposta"),
+        "execution_accuracy_proj_pct": metric_rate(updated, "ex_proj"),
+        "execution_accuracy_proj_tol_pct": metric_rate(updated, "ex_proj_tol"),
+        "execution_accuracy_strict_pct": metric_rate(updated, "ex_strict"),
+        "execution_accuracy_colmap_pct": metric_rate(updated, "ex_colmap"),
+        "execution_accuracy_content_pct": metric_rate(updated, "ex_content"),
+        "execution_accuracy_rows_pct": metric_rate(updated, "ex_rows"),
+        "execution_accuracy_cols_pct": metric_rate(updated, "ex_cols"),
+        "valid_sql_rate_pct": metric_rate(updated, "vsr"),
+        "nea_rate_pct": metric_rate(updated, "nea_ok"),
+        "tsa_rate_pct": metric_rate(updated, "tsa"),
+        "chs_mean": round(
+            sum(r["metrics"].get("chs", 0) for r in updated) / n, 4
+        ),
+        "alias_apenas_count": sum(
+            1 for r in updated if r["metrics"].get("alias_apenas")
+        ),
+        "alias_apenas_pct": metric_rate(updated, "alias_apenas"),
+        "colunas_extras_aceitas_count": sum(
+            1
+            for r in updated
+            if r["metrics"].get("divergencia_ex") == "colunas_extras_aceitas"
+        ),
+        "tolerancia_numerica_count": sum(
+            1
+            for r in updated
+            if r["metrics"].get("divergencia_ex") == "tolerancia_numerica"
+        ),
+        "divergencia_ex": {
+            k: sum(
+                1
+                for r in updated
+                if r["metrics"].get("divergencia_ex") == k
+            )
+            for k in divergencia_keys
+        },
+        "by_dificuldade": {
+            k: {
+                "n": len(v),
+                "ex_resposta_pct": metric_rate(v, "ex_resposta"),
+                "ex_proj_pct": metric_rate(v, "ex_proj"),
+                "ex_colmap_pct": metric_rate(v, "ex_colmap"),
+                "ex_strict_pct": metric_rate(v, "ex_strict"),
+                "vsr_pct": metric_rate(v, "vsr"),
+            }
+            for k, v in sorted(by_diff.items())
+        },
+        "by_categoria": {
+            k: {
+                "n": len(v),
+                "ex_resposta_pct": metric_rate(v, "ex_resposta"),
+                "ex_proj_pct": metric_rate(v, "ex_proj"),
+            }
+            for k, v in sorted(by_cat.items())
+        },
+        "total_cost_usd": updated[-1].get("budget_total_usd"),
+        "avg_gen_ms": round(
+            sum(r.get("timing", {}).get("gen_ms") or 0 for r in updated) / n,
+            2,
+        ),
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--experiment", required=True)
+    parser.add_argument("--checkpoint", help="Caminho alternativo para checkpoint.jsonl")
+    parser.add_argument("--dataset", default="dados/golden/golden_dataset_v1.0.csv")
+    parser.add_argument("--output", help="Saída JSON")
+    parser.add_argument("--timeout", type=int, default=60)
     parser.add_argument(
-        "--checkpoint",
-        help="Caminho alternativo para checkpoint.jsonl",
-    )
-    parser.add_argument(
-        "--duckdb-url",
-        default="http://localhost:8000/query",
-    )
-    parser.add_argument(
-        "--timeout",
-        type=int,
-        default=60,
-    )
-    parser.add_argument(
-        "--dataset",
-        default="dados/golden/golden_dataset_v1.0.csv",
-    )
-    parser.add_argument(
-        "--output",
-        help="Saída JSON (default: ao lado do checkpoint)",
+        "--tau",
+        type=float,
+        default=DEFAULT_TAU,
+        help="Tolerância relativa numérica (padrão 0,005 = 0,5%%)",
     )
     args = parser.parse_args()
 
@@ -119,12 +198,15 @@ def main() -> None:
             expected_tables=tables_exp,
             conditions=conds,
             espera_dados=g.get("espera_dados", "sim"),
+            colunas_resposta=g.get("colunas_resposta", ""),
+            tau=args.tau,
         )
 
         metrics = bundle.to_dict()
         case_detail = {
             "id_teste": tid,
             "input_usuario": rec.get("input_usuario") or g.get("input_usuario"),
+            "colunas_resposta": g.get("colunas_resposta", ""),
             "metrics": metrics,
             "query_referencia": ref_sql,
             "query_gerada": gen_sql,
@@ -140,73 +222,23 @@ def main() -> None:
         new_rec["metrics"] = metrics
         updated.append(new_rec)
 
-    n = len(updated)
-    by_diff: dict[str, list] = defaultdict(list)
-    by_cat: dict[str, list] = defaultdict(list)
-    for r in updated:
-        by_diff[r.get("dificuldade") or "nao_definido"].append(r)
-        by_cat[r.get("categoria") or "nao_definido"].append(r)
+    summary = build_summary(args.experiment, updated, args.tau)
 
-    alias_only = sum(1 for r in updated if r["metrics"].get("alias_apenas"))
-
-    summary = {
-        "experiment": args.experiment,
-        "total": n,
-        "metrics_version": "2.0",
-        "execution_accuracy_strict_pct": metric_rate(updated, "ex_strict"),
-        "execution_accuracy_content_pct": metric_rate(updated, "ex_content"),
-        "execution_accuracy_colmap_pct": metric_rate(updated, "ex_colmap"),
-        "execution_accuracy_rows_pct": metric_rate(updated, "ex_rows"),
-        "execution_accuracy_cols_pct": metric_rate(updated, "ex_cols"),
-        "valid_sql_rate_pct": metric_rate(updated, "vsr"),
-        "nea_rate_pct": metric_rate(updated, "nea_ok"),
-        "tsa_rate_pct": metric_rate(updated, "tsa"),
-        "chs_mean": round(
-            sum(r["metrics"].get("chs", 0) for r in updated) / n, 4
-        ),
-        "alias_apenas_count": alias_only,
-        "alias_apenas_pct": pct(alias_only, n),
-        "divergencia_ex": {
-            k: sum(
-                1
-                for r in updated
-                if r["metrics"].get("divergencia_ex") == k
-            )
-            for k in [
-                "cardinalidade_linhas",
-                "cardinalidade_colunas",
-                "alias_colunas",
-                "permutacao_valores_linha",
-                "divergencia_valores",
-            ]
-        },
-        "by_dificuldade": {
-            k: {
-                "n": len(v),
-                "ex_strict_pct": metric_rate(v, "ex_strict"),
-                "ex_colmap_pct": metric_rate(v, "ex_colmap"),
-                "ex_content_pct": metric_rate(v, "ex_content"),
-                "vsr_pct": metric_rate(v, "vsr"),
-            }
-            for k, v in sorted(by_diff.items())
-        },
-        "by_categoria": {
-            k: {
-                "n": len(v),
-                "ex_strict_pct": metric_rate(v, "ex_strict"),
-                "ex_colmap_pct": metric_rate(v, "ex_colmap"),
-            }
-            for k, v in sorted(by_cat.items())
-        },
-        "total_cost_usd": updated[-1].get("budget_total_usd"),
-        "avg_gen_ms": round(
-            sum(r.get("timing", {}).get("gen_ms") or 0 for r in updated) / n,
-            2,
-        ),
-    }
-
-    out_path = Path(args.output) if args.output else ckpt_path.parent / "metrics_summary_v2.json"
+    out_path = (
+        Path(args.output)
+        if args.output
+        else ckpt_path.parent / "metrics_summary_v3.json"
+    )
     out_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
+    # Mantém v2 como alias da principal para compatibilidade
+    legacy = dict(summary)
+    legacy["metrics_version"] = "2.0"
+    legacy["execution_accuracy_content_pct"] = summary["execution_accuracy_content_pct"]
+    (ckpt_path.parent / "metrics_summary_v2.json").write_text(
+        json.dumps(legacy, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
     print(json.dumps(summary, indent=2, ensure_ascii=False))
     print(f"\nSalvo em: {out_path}")
     print(f"Detalhes por caso: {per_case_dir}")

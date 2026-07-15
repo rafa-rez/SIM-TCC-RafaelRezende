@@ -1,6 +1,7 @@
 {
   "id_teste": "52",
   "input_usuario": "Qual empresa venceu mais licitações em 2025?",
+  "colunas_resposta": "qtd",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": false,
     "ex_colmap": false,
+    "ex_proj": false,
+    "ex_proj_tol": false,
+    "ex_resposta": true,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -15,10 +19,14 @@
     "gen_rows": 1,
     "ref_cols": 2,
     "gen_cols": 2,
-    "divergencia_ex": "divergencia_valores",
+    "divergencia_ex": "tolerancia_numerica",
     "alias_apenas": false,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "qtd",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": true
   },
   "query_referencia": "SELECT nom_vencedor, COUNT(DISTINCT seq_licitacao) AS qtd FROM licitacao_homologLicitacao WHERE ano_referencia = 2025 AND COALESCE(nom_vencedor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY nom_vencedor ORDER BY qtd DESC LIMIT 1;",
   "query_gerada": "SELECT lh.nom_vencedor, COUNT(DISTINCT lh.seq_licitacao) AS total_licitacoes_vencidas FROM licitacao_homologLicitacao lh JOIN licitacao_licitacao l ON lh.seq_licitacao = l.seq_licitacao AND lh.ano_referencia = l.ano_referencia WHERE lh.ano_referencia = 2025 GROUP BY lh.nom_vencedor ORDER BY total_licitacoes_vencidas DESC LIMIT 1;",

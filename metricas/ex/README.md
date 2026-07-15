@@ -2,26 +2,38 @@
 
 Família de métricas que compara o resultado tabular da SQL gerada com o gabarito.
 
-## Variantes
+## Métrica principal (documento final)
 
-| Campo | Nome | Arquivo de saída |
-|-------|------|------------------|
-| `ex_strict` | EX estrita (literatura) | `metrics_summary_v2.json` |
-| `ex_colmap` | EX com mapeamento de colunas | idem |
-| `ex_content` | EX por conteúdo sem nomes | idem |
-| `ex_rows` | Igualdade de linhas | idem |
-| `ex_cols` | Igualdade de colunas | idem |
-| `alias_apenas` | Falha estrita só por alias | `metricas_por_caso/` |
+**EX resposta** (`ex_resposta`): equivalência nas colunas listadas em `colunas_resposta` do golden, com colunas extras permitidas no resultado gerado e tolerância numérica τ = 0,5%.
+
+## Variantes no repositório
+
+| Campo | Nome | Uso |
+|-------|------|-----|
+| `ex_resposta` | EX resposta | **Principal** para o TCC |
+| `ex_proj` | EX projeção | Colunas do gabarito encontradas no gerado (sem τ) |
+| `ex_proj_tol` | EX projeção + τ | Com tolerância numérica |
+| `ex_colmap` | EX colmap | Mesmo número de colunas + vetores |
+| `ex_strict` | EX estrita | Literatura (Spider); repo apenas |
+| `ex_rows` | EX linhas | Diagnóstico de cardinalidade |
 
 ## Implementação
 
 - `eval/lib/compare.py`
-- Recálculo: `python scripts/recompute_metrics.py --experiment e1_baseline_compacto`
+- `scripts/recompute_metrics.py` → `metrics_summary_v3.json`
+- `scripts/enrich_golden_colunas.py` → preenche `colunas_resposta`
 
-## Documentação formal
+## Documentação
 
-Ver `docs/METRICAS.md`, seções 4.1 a 4.6.
+- Formal: `docs/METRICAS.md`
+- Relatório v3: `docs/RELATORIO_METRICAS_V3.md`
+- Casos: `experimentos/*/metricas_por_caso/`
 
-## Exemplo de caso (alias)
+## Exemplos
 
-Consultas em que `ex_strict=false`, `ex_colmap=true` e `divergencia_ex=alias_colunas` estão listadas nos JSON em `experimentos/*/metricas_por_caso/`.
+| Caso | Situação | EX resposta |
+|------|----------|-------------|
+| 80 | Alias `total` vs `total_liquidado` | passa (via colmap/proj) |
+| 1 | 4 colunas geradas, gabarito com 2 | passa (`colunas_extras_aceitas`) |
+| 9 | Diferença ~0,36% no percentual | passa (`tolerancia_numerica`) |
+| 3 | Empresas/valores diferentes | falha (erro real) |

@@ -17,21 +17,24 @@ Repositório de artefatos, dados e scripts de avaliação do agente **CIC** (Cen
 | `scripts/` | Recálculo offline, exportação e tabelas comparativas |
 | `docs/` | Definições formais e guia de replicação |
 
-## Resultados principais (métricas v2, E1)
+## Resultados principais (métricas v3, E1)
 
 | Métrica | Valor |
 |---------|------:|
-| EX estrita | 10,0% |
-| EX colmap (aliases tolerados) | 58,75% |
+| **EX resposta** (principal) | **62,5%** |
+| EX proj | 60,0% |
+| EX proj + τ (0,5%) | 61,25% |
+| EX colmap | 57,5% |
+| EX estrita (literatura) | 10,0% |
 | VSR | 97,5% |
-| Casos com falha estrita apenas por alias | 48,75% |
 
-Ver tabela completa em `experimentos/comparison_table_v2.md` e definições em `docs/METRICAS.md`.
+Ver `docs/RELATORIO_METRICAS_V3.md` e `experimentos/comparison_table_v3.md`.
 
 ## Replicação rápida
 
 ```bash
 pip install -r eval/requirements.txt
+python scripts/enrich_golden_colunas.py
 python scripts/recompute_metrics.py --experiment e1_baseline_compacto
 python scripts/compare_all_experiments.py
 ```

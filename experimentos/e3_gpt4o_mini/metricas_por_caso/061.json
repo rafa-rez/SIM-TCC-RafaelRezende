@@ -1,6 +1,7 @@
 {
   "id_teste": "61",
   "input_usuario": "Liste 10 servidores com maiores salários em 2024.",
+  "colunas_resposta": "nom_pessoa,salario",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": false,
     "ex_colmap": false,
+    "ex_proj": false,
+    "ex_proj_tol": false,
+    "ex_resposta": false,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 2,
     "divergencia_ex": "divergencia_valores",
     "alias_apenas": false,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "nom_pessoa,salario",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": false
   },
   "query_referencia": "WITH sal AS (SELECT p.nom_pessoa, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS salario FROM remuneracao_municipio r JOIN pessoa_municipio p ON r.seq_dim_pessoa = p.seq_dim_pessoa WHERE r.ano_referencia = 2024 GROUP BY p.nom_pessoa) SELECT nom_pessoa, salario FROM sal ORDER BY salario DESC LIMIT 10;",
   "query_gerada": "WITH salarios AS (SELECT r.seq_dim_pessoa, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS maior_salario FROM remuneracao_municipio r WHERE r.ano_referencia = 2024 GROUP BY r.seq_dim_pessoa) SELECT p.nom_pessoa, s.maior_salario FROM salarios s JOIN pessoa_municipio p ON s.seq_dim_pessoa = p.seq_dim_pessoa WHERE COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%' ORDER BY s.maior_salario DESC LIMIT 10;",

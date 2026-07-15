@@ -1,6 +1,7 @@
 {
   "id_teste": "24",
   "input_usuario": "Qual o ISF-M da prefeitura no ano de 2024?",
+  "colunas_resposta": "isf_m",
   "metrics": {
     "vsr": true,
     "ex_strict": true,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": true,
     "ex_colmap": true,
+    "ex_proj": true,
+    "ex_proj_tol": true,
+    "ex_resposta": true,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 1,
     "divergencia_ex": null,
     "alias_apenas": false,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "isf_m",
     "extra": {},
-    "ex": true
+    "ex": true,
+    "ex_principal": true
   },
   "query_referencia": "WITH receita_corrente AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS r FROM receita_receita WHERE ano_referencia = 2024 AND dsc_cateconomica ILIKE '%Corrente%'), despesa_corrente AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS d FROM despesa_despesa WHERE ano_referencia = 2024 AND dsc_naturezadespesa LIKE '3%') SELECT r / NULLIF(d, 0) AS isf_m FROM receita_corrente, despesa_corrente;",
   "query_gerada": "WITH receita AS (SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita FROM receita_receita WHERE ano_referencia = 2024 AND COALESCE(dsc_cateconomica, '') ILIKE '%Corrente%'), despesa AS (SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa FROM despesa_despesa WHERE ano_referencia = 2024 AND COALESCE(dsc_naturezadespesa, '') ILIKE '3%') SELECT (total_receita / NULLIF(total_despesa, 0)) AS isf_m FROM receita, despesa;",

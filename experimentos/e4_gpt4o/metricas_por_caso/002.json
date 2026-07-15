@@ -1,6 +1,7 @@
 {
   "id_teste": "2",
   "input_usuario": "Liste todos os servidores municipais ativos em 2024 que também constam como beneficiários do Novo Bolsa Família no mesmo ano. Traga o nome, o salário máximo recebido e o total do benefício federal.",
+  "colunas_resposta": "total_beneficio",
   "metrics": {
     "vsr": true,
     "ex_strict": true,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": true,
     "ex_colmap": true,
+    "ex_proj": true,
+    "ex_proj_tol": true,
+    "ex_resposta": true,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 3,
     "divergencia_ex": null,
     "alias_apenas": false,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "total_beneficio",
     "extra": {},
-    "ex": true
+    "ex": true,
+    "ex_principal": true
   },
   "query_referencia": "WITH servidores AS (SELECT TRIM(UPPER(p.nom_pessoa)) AS nome_servidor, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS salario_maximo FROM remuneracao_municipio r JOIN pessoa_municipio p ON r.seq_dim_pessoa = p.seq_dim_pessoa WHERE r.ano_referencia = 2024 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' GROUP BY nome_servidor), beneficios AS (SELECT TRIM(UPPER(cgu.\"NOME FAVORECIDO\")) AS nome_beneficiario, SUM(CAST(cgu.\"VALOR PARCELA\" AS DECIMAL)) AS total_beneficio FROM cgu_novo_bolsa_familia cgu WHERE cgu.ano_referencia = 2024 GROUP BY nome_beneficiario) SELECT s.nome_servidor, s.salario_maximo, b.total_beneficio FROM servidores s JOIN beneficios b ON s.nome_servidor = b.nome_beneficiario",
   "query_gerada": "WITH servidores AS (SELECT TRIM(UPPER(p.nom_pessoa)) AS nome_servidor, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS salario_maximo FROM remuneracao_municipio r JOIN pessoa_municipio p ON r.seq_dim_pessoa = p.seq_dim_pessoa WHERE r.ano_referencia = 2024 AND r.dsc_sit_serv_pens ILIKE '%Ativo%' AND COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY nome_servidor), beneficios AS (SELECT TRIM(UPPER(cgu.\"NOME FAVORECIDO\")) AS nome_beneficiario, SUM(CAST(cgu.\"VALOR PARCELA\" AS DECIMAL)) AS total_beneficio FROM cgu_novo_bolsa_familia cgu WHERE cgu.ano_referencia = 2024 GROUP BY nome_beneficiario) SELECT s.nome_servidor, s.salario_maximo, b.total_beneficio FROM servidores s JOIN beneficios b ON s.nome_servidor = b.nome_beneficiario;",

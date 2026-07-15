@@ -1,6 +1,7 @@
 {
   "id_teste": "66",
   "input_usuario": "Gasto com gasolina por tipo de veículo em 2024.",
+  "colunas_resposta": "total",
   "metrics": {
     "vsr": true,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": true,
     "ex_content": true,
     "ex_colmap": true,
+    "ex_proj": true,
+    "ex_proj_tol": true,
+    "ex_resposta": true,
     "nea_ok": true,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 2,
     "divergencia_ex": "alias_colunas",
     "alias_apenas": true,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "total",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": true
   },
   "query_referencia": "SELECT f.dsc_tipo_veiculo, SUM(CAST(g.vlr_gasto AS DECIMAL)) AS total FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2024 AND g.dsc_tipo_gasto ILIKE '%GASOLINA%' AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' GROUP BY f.dsc_tipo_veiculo;",
   "query_gerada": "SELECT f.dsc_tipo_veiculo, SUM(CAST(g.vlr_gasto AS DECIMAL)) AS total_gasto_gasolina FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2024 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') AND COALESCE(g.dsc_tipo_gasto, '') ILIKE '%GASOLINA%' GROUP BY f.dsc_tipo_veiculo ORDER BY total_gasto_gasolina DESC;",

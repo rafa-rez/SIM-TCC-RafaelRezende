@@ -1,6 +1,7 @@
 {
   "id_teste": "33",
   "input_usuario": "Quais os 10 maiores pagamentos em 2025 com nome do credor?",
+  "colunas_resposta": "total",
   "metrics": {
     "vsr": false,
     "ex_strict": false,
@@ -8,6 +9,9 @@
     "ex_cols": false,
     "ex_content": false,
     "ex_colmap": false,
+    "ex_proj": false,
+    "ex_proj_tol": false,
+    "ex_resposta": false,
     "nea_ok": false,
     "tsa": true,
     "chs": 1.0,
@@ -17,8 +21,12 @@
     "gen_cols": 0,
     "divergencia_ex": null,
     "alias_apenas": false,
+    "proj_sem_tol_apenas": false,
+    "tau": 0.005,
+    "colunas_resposta": "total",
     "extra": {},
-    "ex": false
+    "ex": false,
+    "ex_principal": false
   },
   "query_referencia": "SELECT nom_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total FROM despesa_pagamento WHERE ano_referencia = 2025 AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY nom_credor ORDER BY total DESC LIMIT 10;",
   "query_gerada": "WITH pagamentos_filtrados AS (\n  SELECT\n    ec.nom_credor,\n    SUM(CAST(dp.vlr_movimentacao AS DECIMAL)) AS total_pago\n  FROM despesa_pagamento dp\n  JOIN empenho_credorEmpenho ec\n    ON dp.seq_empenho = ec.seq_empenho\n    AND dp.ano_referencia = ec.ano_referencia\n  WHERE dp.ano_referencia = 2025\n    AND COALESCE(ec.nom_credor, '') NOT ILIKE '%NAO INFORMADO%'\n    AND COALESCE(ec.nom_credor, '') != ''\n    AND COALESCE(ec.num_doc_credor, '') NOT IN ('-1', '0', '')\n  GROUP BY ec.nom_credor\n)\nSELECT nom_credor, total_pago\nFROM pagamentos_filtrados\nORDER BY total_pago DESC\nLIMIT 10;",
