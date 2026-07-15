@@ -9,7 +9,18 @@
 | [PLANO_ETAPAS.md](PLANO_ETAPAS.md) | Planejamento geral do TCC |
 | [referencias/](referencias/) | Bibliografia, plano de leitura e notas |
 | [artigo/](artigo/) | Rascunho do artigo SBC v1 |
-| [monografia/](monografia/) | Monografia UFLA v1 (LaTeX versionado) |
+| [monografia/](monografia/) | Monografia UFLA v1 — PDF: `SIM_monografia_v1.pdf` |
+| [artigo/](artigo/) | Artigo SBC v1 — PDF: `sim_artigo_sbc_v1.pdf` |
+
+## Compilar PDFs
+
+```powershell
+cd docs
+.\compile.ps1          # monografia + artigo
+.\compile.ps1 -All     # idem
+```
+
+Requer TeX Live (ou MiKTeX) e `template-ufla/` na raiz do repositório para a monografia.
 
 ## Monografia LaTeX
 

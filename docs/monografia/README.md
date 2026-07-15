@@ -22,9 +22,13 @@ Após editar aqui ou em `template-ufla/`, manter ambos alinhados até migrarmos 
 ## Compilar (local)
 
 ```powershell
-cd template-ufla
+cd docs
 .\compile.ps1
 ```
+
+Saída versionada: **`SIM_monografia_v1.pdf`** (nesta pasta).
+
+Ou diretamente em `template-ufla/` com `.\compile.ps1` e copiar o PDF.
 
 Bibliografia: `docs/referencias/referencias_sim.bib` (copiar para `template-ufla/refbib.bib` ou unificar).
 
