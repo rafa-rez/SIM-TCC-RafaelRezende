@@ -1,6 +1,6 @@
 # Métricas de avaliação Text-to-SQL
 
-Documento de referência para o repositório de validação do TCC *Sistema de Informações Municipais* (agente CIC, Caeté/MG).
+Documento de referência para o repositório de validação do TCC *Sistema de Informações Municipais* (**SIM**, instância Caeté/MG).
 
 Versão das métricas: **3.0** (julho/2026). Relatório: `docs/RELATORIO_METRICAS_V3.md`.
 
@@ -12,7 +12,7 @@ A avaliação combina métricas **sintáticas** (a SQL executa?), **estruturais*
 
 Neste trabalho reportamos **várias variantes de EX**, alinhadas à literatura e estendidas para cenários de consulta municipal, com classificação explícita de divergências atribuíveis ao **gabarito** (nomes de coluna arbitrários na referência manual) versus **modelo** (valores ou cardinalidade incorretos).
 
-Implementação: `eval/lib/compare.py`. Recálculo offline: `scripts/recompute_metrics.py`.
+Implementação: `avaliacao/eval/lib/compare.py`. Recálculo offline: `avaliacao/scripts/recompute_metrics.py`.
 
 ---
 
@@ -183,7 +183,7 @@ Avaliação em amostra estratificada (*M* = 30) com LLM-as-Judge sobre resposta 
 JAR = (1/M) Σⱼ 𝟙[ vereditoⱼ ∈ {correto, parcialmente_correto} ]
 ```
 
-**Embasamento.** Complemento qualitativo quando EX estrita subestima utilidade percebida (Zheng et al., 2023, LLM-as-judge; rubrica em `eval/prompts/judge_rubric.txt`).
+**Embasamento.** Complemento qualitativo quando EX estrita subestima utilidade percebida (Zheng et al., 2023, LLM-as-judge; rubrica em `avaliacao/eval/prompts/judge_rubric.txt`).
 
 **Resultado publicado (E1, n=30):** JAR = 100%, EX estrita = 20% na mesma amostra.
 
@@ -215,7 +215,7 @@ JAR = (1/M) Σⱼ 𝟙[ vereditoⱼ ∈ {correto, parcialmente_correto} ]
 
 ## 4.9 EX resposta (métrica principal, `ex_resposta`)
 
-**Definição.** EX proj + τ restrito às colunas em `colunas_resposta` no golden (chaves + grandezas de resposta). Campo preenchido por `scripts/enrich_golden_colunas.py` (75/80 consultas).
+**Definição.** EX proj + τ restrito às colunas em `colunas_resposta` no golden (chaves + grandezas de resposta). Campo preenchido por `avaliacao/scripts/enrich_golden_colunas.py` (75/80 consultas).
 
 **Resultado E1:** **62,50%** (métrica principal proposta para o documento final).
 
@@ -230,7 +230,7 @@ JAR = (1/M) Σⱼ 𝟙[ vereditoⱼ ∈ {correto, parcialmente_correto} ]
 | E3 GPT-4o-mini | 46,25 | 46,25 | 46,25 | 46,25 | 12,50 | 90,00 |
 | E4 GPT-4o | 57,50 | 57,50 | 57,50 | 56,25 | 16,25 | 97,50 |
 
-Fonte: `experimentos/comparison_table_v3.md`.
+Fonte: `avaliacao/experimentos/comparison_table.md`.
 
 ---
 
@@ -248,9 +248,9 @@ Fonte: `experimentos/comparison_table_v3.md`.
 
 | Caminho | Conteúdo |
 |---------|----------|
-| `eval/lib/compare.py` | Implementação |
-| `scripts/recompute_metrics.py` | Recálculo por experimento |
-| `experimentos/*/metrics_summary_v3.json` | Agregados v3 |
-| `experimentos/*/metricas_por_caso/` | Detalhe por `id_teste` |
-| `dados/golden/reference_results/` | Resultado tabular de cada SQL de referência |
-| `experimentos/*/generated_results/` | Resultado tabular de cada SQL gerada |
+| `avaliacao/eval/lib/compare.py` | Implementação |
+| `avaliacao/scripts/recompute_metrics.py` | Recálculo por experimento |
+| `avaliacao/experimentos/*/metrics_summary_v3.json` | Agregados v3 |
+| `avaliacao/experimentos/*/metricas_por_caso/` | Detalhe por `id_teste` |
+| `avaliacao/dados/golden/reference_results/` | Resultado tabular de cada SQL de referência |
+| `avaliacao/experimentos/*/generated_results/` | Resultado tabular de cada SQL gerada |

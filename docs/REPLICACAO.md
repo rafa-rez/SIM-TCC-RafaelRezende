@@ -1,27 +1,32 @@
 # Replicação da avaliação
 
+Avaliação Text-to-SQL do **SIM** (*Sistema de Informações Municipais*), instância **Caeté (MG)**.
+
 ## 1. Ambiente
 
 - Python 3.11 ou superior
-- ~2 GB de espaço em disco (`dados/`)
-- Opcional: Docker para API idêntica à produção (`docker compose up -d duckdb_api`)
+- ~2 GB de espaço em disco (`avaliacao/dados/`)
+- Opcional: Docker para API idêntica à produção (fora deste repositório)
 
-```bash
-pip install -r eval/requirements.txt
+```powershell
+cd avaliacao
+pip install -r requirements.txt
 ```
 
 Variáveis (apenas para **novos** experimentos com API OpenAI):
 
-```bash
+```powershell
+# Na raiz do repositório
 cp .env.example .env
 # OPENAI_API_KEY=...
 ```
 
 ## 2. Recálculo de métricas (sem custo de API)
 
-Reexecuta as SQL de `checkpoint.jsonl` no DuckDB local e grava `metrics_summary_v2.json`:
+Reexecuta as SQL de `checkpoint.jsonl` no DuckDB local e grava `metrics_summary_v3.json`:
 
-```bash
+```powershell
+cd avaliacao
 python scripts/recompute_metrics.py --experiment e1_baseline_compacto
 python scripts/recompute_metrics.py --experiment e2_contexto_estendido
 python scripts/recompute_metrics.py --experiment e3_gpt4o_mini
@@ -29,59 +34,58 @@ python scripts/recompute_metrics.py --experiment e4_gpt4o
 python scripts/compare_all_experiments.py
 ```
 
+Atalho: `.\run_replicacao.ps1` (a partir de `avaliacao/`).
+
 Saídas por experimento:
 
-- `experimentos/<nome>/metrics_summary_v2.json`
-- `experimentos/<nome>/metricas_por_caso/NNN.json`
+- `avaliacao/experimentos/<nome>/metrics_summary_v3.json`
+- `avaliacao/experimentos/<nome>/metricas_por_caso/NNN.json`
+- `avaliacao/experimentos/comparison_table.md`
 
 ## 3. Exportação de resultados tabulares
 
 Referência (golden):
 
-```bash
-python scripts/export_result_sets.py \
-  --source golden \
+```powershell
+cd avaliacao
+python scripts/export_result_sets.py `
+  --source golden `
   --output-dir dados/golden/reference_results
 ```
 
 SQL geradas (por experimento):
 
-```bash
-python scripts/export_result_sets.py \
-  --source checkpoint \
-  --experiment e1_baseline_compacto \
+```powershell
+python scripts/export_result_sets.py `
+  --source checkpoint `
+  --experiment e1_baseline_compacto `
   --output-dir experimentos/e1_baseline_compacto/generated_results
 ```
 
 ## 4. Novo experimento (opcional, consome API)
 
-```bash
-python eval/run_experiment.py \
-  --experiment meu_teste \
-  --model gpt-4.1-mini \
-  --prompt-variant poscagada_16k
+```powershell
+cd avaliacao
+python eval/run_experiment.py `
+  --experiment meu_teste `
+  --model gpt-4.1-mini `
+  --prompt poscagada_16k
 ```
 
-## 5. Estrutura do golden dataset
+## 5. Golden dataset
 
-Arquivo: `dados/golden/golden_dataset_v1.0.csv` (delimitador `;`)
+Arquivo: `avaliacao/dados/golden/golden_dataset_v1.0.csv` (delimitador `;`)
 
-| Coluna | Descrição |
-|--------|-----------|
-| `id_teste` | Identificador 1–80 |
-| `input_usuario` | Pergunta em português |
-| `query_referencia` | SQL validada |
-| `tabelas_esperadas` | Para TSA |
-| `condicao_esperada` | Para CHS |
-| `espera_dados` | `sim` ou `indiferente` (NEA) |
-| `dificuldade` | facil / medio / dificil |
+Colunas principais: `id_teste`, `pergunta`, `query_referencia`, `colunas_resposta`.
 
-Resultado tabular de cada referência: `dados/golden/reference_results/NNN.json`.
+Resultado tabular de cada referência: `avaliacao/dados/golden/reference_results/NNN.json`.
 
-## 6. Docker (opcional)
+## 6. Motor DuckDB
 
-```bash
-docker compose up -d duckdb_api
-```
+Os scripts usam por padrão o motor DuckDB local (`avaliacao/eval/lib/duckdb_engine.py`), que carrega os CSV em `avaliacao/dados/database/`, `avaliacao/dados/SICOM/` e `avaliacao/dados/staging_cgu/`. Não é necessário Docker para recálculo offline.
 
-A API escuta em `http://localhost:8000/query`. Os scripts deste repositório usam por padrão o motor DuckDB local (`eval/lib/duckdb_engine.py`), compatível com os mesmos CSV em `dados/`.
+## 7. Documentação relacionada
+
+- [`SIM.md`](SIM.md) — o que é o SIM e a instância Caeté
+- [`METRICAS.md`](METRICAS.md) — definições formais (v3)
+- [`RELATORIO_METRICAS_V3.md`](RELATORIO_METRICAS_V3.md) — resultados dos quatro experimentos

@@ -25,14 +25,20 @@ node_modules/
 agent-tools/
 terminals/
 
-# Desenvolvimento local não necessário à validação
+# Desenvolvimento local (fora do escopo de avaliação)
 lixo/
-tcc-latex/overleaf-toolkit/
+tcc-latex/
+template-ufla/
+scripts_python/
+/dados/
+prompt-master/
+
+# LaTeX local
 template-ufla/*.aux
 template-ufla/*.log
 template-ufla/*.pdf
 
-# Segredos e volumes
+# Segredos e volumes de produção
 n8n_data/
 waha_sessions/
 waha_media/
@@ -44,8 +50,7 @@ scripts/_test_year.py
 .DS_Store
 Thumbs.db
 
-# Prompts legados na raiz (versões canônicas em eval/prompts/)
+# Prompts legados na raiz (versões canônicas em avaliacao/eval/prompts/)
 Póscagada.txt
 Précagada.txt
-prompt-master
 PROXIMOS_PASSOS.md

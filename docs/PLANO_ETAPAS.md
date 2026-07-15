@@ -1,5 +1,7 @@
 # Plano de etapas — TCC, métricas, repositório e artigo SBC
 
+> **Atualização (jul/2026):** o repositório foi reorganizado em `avaliacao/` + `docs/`. O sistema chama-se **SIM** (*Sistema de Informações Municipais*), com instância de referência em Caeté. Caminhos antigos (`eval/`, `dados/`, `scripts/` na raiz) foram movidos para `avaliacao/`. Ver [`SIM.md`](SIM.md) e [`REPLICACAO.md`](REPLICACAO.md).
+
 Documento de planejamento interno. Linguagem objetiva para orientação do trabalho e do repositório público de validação.
 
 Repositório alvo: https://github.com/rafa-rez/tcc-sistema-de-informa-es-municipais

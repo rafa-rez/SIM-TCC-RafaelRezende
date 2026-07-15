@@ -12,7 +12,7 @@ Tolerância numérica padrão: **τ = 0,5%** (`DEFAULT_TAU = 0.005`).
 | E3 GPT-4o-mini | **46,25** | 46,25 | 46,25 | 46,25 | 12,50 | 90,00 |
 | E4 GPT-4o | **57,50** | 57,50 | 57,50 | 56,25 | 16,25 | 97,50 |
 
-Fonte: `experimentos/comparison_table_v3.md`
+Fonte: `avaliacao/experimentos/comparison_table.md`
 
 ## Evolução em relação à v2 (E1)
 
@@ -63,15 +63,16 @@ Mantidas no repositório para auditoria: EX estrita, EX colmap, EX linhas.
 
 ## Arquivos atualizados
 
-- `eval/lib/compare.py` — implementação v3
-- `dados/golden/golden_dataset_v1.0.csv` — coluna `colunas_resposta`
-- `scripts/enrich_golden_colunas.py`
-- `experimentos/*/metrics_summary_v3.json`
-- `experimentos/*/metricas_por_caso/*.json`
+- `avaliacao/eval/lib/compare.py` — implementação v3
+- `avaliacao/dados/golden/golden_dataset_v1.0.csv` — coluna `colunas_resposta`
+- `avaliacao/scripts/enrich_golden_colunas.py`
+- `avaliacao/experimentos/*/metrics_summary_v3.json`
+- `avaliacao/experimentos/*/metricas_por_caso/*.json`
 
 ## Comandos de reprodução
 
 ```bash
+cd avaliacao
 python scripts/enrich_golden_colunas.py
 python scripts/recompute_metrics.py --experiment e1_baseline_compacto
 python scripts/compare_all_experiments.py

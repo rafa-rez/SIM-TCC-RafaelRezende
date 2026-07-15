@@ -1,21 +1,26 @@
-# Sistema de Informações Municipais — validação Text-to-SQL (TCC)
+# SIM — Sistema de Informações Municipais
 
-Repositório de artefatos, dados e scripts de avaliação do agente **CIC** (Centro de Informações Caetense) para consulta conversacional a dados públicos de Caeté (MG).
+Repositório de artefatos, dados e scripts de **avaliação Text-to-SQL** do **SIM** (*Sistema de Informações Municipais*), com **instância de referência em Caeté (MG)**.
 
 **Autor:** Rafael Alves Silva Rezende (UFLA)  
 **Orientador:** Prof. Dr. Denilson
 
-## Conteúdo
+## O que é o SIM
+
+O SIM é um assistente conversacional para consulta a dados públicos municipais (finanças, contratos, licitações, folha, etc.). Cada município pode ter sua própria instância; neste trabalho, a validação usa os dados abertos de **Caeté** (código IBGE 3110004), período 2020–2025.
+
+Visão geral: [`docs/SIM.md`](docs/SIM.md).
+
+## Estrutura do repositório
 
 | Pasta | Descrição |
 |-------|-----------|
-| `dados/` | Bases SICOM/CGU, Diário Oficial e conjunto golden |
-| `dados/golden/` | 80 consultas de referência + resultados tabulares exportados |
-| `experimentos/` | Quatro experimentos (E1–E4) com checkpoints e métricas v2 |
-| `metricas/` | Documentação por métrica (EX, VSR, NEA, TSA, CHS, JAR) |
-| `eval/` | Pipeline de avaliação e biblioteca de comparação |
-| `scripts/` | Recálculo offline, exportação e tabelas comparativas |
-| `docs/` | Definições formais e guia de replicação |
+| [`avaliacao/`](avaliacao/) | Dados, experimentos, pipeline de avaliação e scripts |
+| [`avaliacao/dados/`](avaliacao/dados/) | Bases SICOM/CGU e conjunto golden |
+| [`avaliacao/experimentos/`](avaliacao/experimentos/) | Quatro experimentos (E1–E4) com checkpoints e métricas v3 |
+| [`avaliacao/eval/`](avaliacao/eval/) | Pipeline Text-to-SQL e biblioteca de comparação |
+| [`avaliacao/scripts/`](avaliacao/scripts/) | Recálculo offline, exportação e tabelas comparativas |
+| [`docs/`](docs/) | Definições formais, métricas e guia de replicação |
 
 ## Resultados principais (métricas v3, E1)
 
@@ -28,28 +33,31 @@ Repositório de artefatos, dados e scripts de avaliação do agente **CIC** (Cen
 | EX estrita (literatura) | 10,0% |
 | VSR | 97,5% |
 
-Ver `docs/RELATORIO_METRICAS_V3.md` e `experimentos/comparison_table_v3.md`.
+Detalhes: [`docs/RELATORIO_METRICAS_V3.md`](docs/RELATORIO_METRICAS_V3.md) e [`avaliacao/experimentos/comparison_table.md`](avaliacao/experimentos/comparison_table.md).
 
 ## Replicação rápida
 
-```bash
-pip install -r eval/requirements.txt
+```powershell
+cd avaliacao
+pip install -r requirements.txt
 python scripts/enrich_golden_colunas.py
 python scripts/recompute_metrics.py --experiment e1_baseline_compacto
 python scripts/compare_all_experiments.py
 ```
 
-Requisitos: Python 3.11+, dependências em `eval/requirements.txt`. O recálculo usa DuckDB em memória sobre `dados/database/` (não exige Docker).
+Ou, em um comando: `avaliacao/run_replicacao.ps1`.
 
-Guia completo: `docs/REPLICACAO.md`.
+Requisitos: Python 3.11+. O recálculo usa DuckDB em memória sobre `avaliacao/dados/database/` (não exige Docker).
+
+Guia completo: [`docs/REPLICACAO.md`](docs/REPLICACAO.md).
 
 ## Citação
 
 ```
-Rezende, R. A. S. Sistema de Informações Municipais — validação Text-to-SQL.
-Repositório: https://github.com/rafa-rez/tcc-sistema-de-informa-es-municipais
+Rezende, R. A. S. SIM — Sistema de Informações Municipais: validação Text-to-SQL
+(instância Caeté/MG). Repositório: https://github.com/rafa-rez/tcc-sistema-de-informa-es-municipais
 ```
 
 ## Licença
 
-Dados públicos municipais e federais (SICOM/CGU). Código e documentação: consultar `LICENSE`.
+Dados públicos municipais e federais (SICOM/CGU). Código e documentação: consultar [`LICENSE`](LICENSE).
