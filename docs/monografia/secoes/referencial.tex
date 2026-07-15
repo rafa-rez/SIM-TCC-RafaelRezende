@@ -1,0 +1,29 @@
+\chapter{\MakeUppercase{Referencial Teórico}}
+
+\section{Modelos de linguagem e dados governamentais}
+
+Os Modelos de Linguagem de Grande Escala (\gls{llm}) generalizam padrões linguísticos e realizam raciocínio aproximado sobre instruções em linguagem natural \cite{OpenAI2024GPT4}. Em bases governamentais heterogêneas, o desafio central é condicionar o modelo com contexto suficiente --- esquema relacional, amostras de valores e regras de domínio --- sem exceder limites de tokens e custo operacional.
+
+\section{Recuperação aumentada por geração}
+
+A técnica \gls{rag}, formalizada por \citeonline{Lewis2020RAG}, complementa o \gls{llm} com recuperação de trechos documentais relevantes antes da geração da resposta. No SIM, o mecanismo é adequado a perguntas sobre leis, decretos e normas municipais indexadas a partir do Diário Oficial.
+
+\section{Text-to-SQL}
+
+Text-to-SQL converte perguntas em consultas estruturadas sobre bancos relacionais. O benchmark Spider \cite{Yu2018Spider} estabeleceu o \textit{Execution Accuracy} (EX) como comparação de resultados executados entre SQL gerada e SQL de referência. \citeonline{Zhong2020TestSuite} aprimoraram a metodologia de avaliação com \textit{test suites} para reduzir falsos positivos.
+
+O benchmark BIRD \cite{Li2024BIRD} aproxima o cenário de aplicações reais ao incorporar bases volumosas, valores ruidosos e conhecimento externo, evidenciando que modelos de ponta ainda distam da performance humana em EX. Métodos recentes com LLM empregam decomposição de consultas e \textit{schema linking} \cite{Pourreza2024DIN,Gao2024DAILSQL,Wang2020RATSQL}.
+
+\section{Orquestração cognitiva}
+
+Designa a camada que interpreta a intenção do usuário e seleciona dinamicamente o mecanismo mais adequado --- recuperação documental ou consulta tabular. Plataformas de automação permitem integrar APIs, modelos e canais conversacionais em arquitetura modular, como implementado na instância Caeté do SIM.
+
+\section{Dados públicos municipais no Brasil}
+
+O SICOM, mantido pelo TCE-MG, centraliza dados contábeis e de compras públicas dos municípios mineiros \cite{TCEMG_SICOM,Lei2024SICOM}. Complementarmente, a CGU e o Siconfi \cite{STN_SiconfiAPI,CGU_Transparencia} disponibilizam dados federais cruzáveis por documento de credores e programas sociais. Essas fontes apresentam heterogeneidade de esquema, lacunas de publicação e volumes que desafiam tanto o processamento quanto a avaliação de sistemas conversacionais.
+
+\section{Trabalhos relacionados}
+
+Benchmarks Text-to-SQL (Spider, BIRD) estabelecem protocolos com conjuntos de referência e comparação de resultados executados. Este trabalho adapta esses princípios ao contexto municipal brasileiro, propondo variantes de EX adequadas a perguntas abertas e a esquemas com aliases de coluna arbitrários no gabarito manual.
+
+A avaliação complementar com LLM-as-Judge \cite{Zheng2023LLMJudge} permite medir a adequação da resposta em linguagem natural ao cidadão, camada não capturada exclusivamente por métricas sobre SQL.

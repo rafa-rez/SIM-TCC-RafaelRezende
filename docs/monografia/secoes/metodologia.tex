@@ -1,0 +1,99 @@
+\chapter{\MakeUppercase{Metodologia}}
+
+\section{Tipo de pesquisa}
+
+Trata-se de pesquisa aplicada, de natureza experimental e desenvolvimento tecnológico, com validação funcional em ambiente real e avaliação quantitativa por \textit{benchmark} reprodutível em ambiente controlado, versionado no repositório \texttt{avaliacao/}.
+
+\section{O SIM e a instância Caeté}
+
+O \textbf{SIM} (\textit{Sistema de Informações Municipais}) é concebido como plataforma multi-instância: a arquitetura é replicável; variam os dados, o código IBGE e eventuais lacunas de transparência local. A instância avaliada neste trabalho é Caeté (MG), código IBGE/SICOM 3110004.
+
+As fontes incluem:
+
+\begin{itemize}
+    \item \textbf{SICOM}: receitas, despesas, empenhos, folha, frota, licitações e contratos (2020--2025);
+    \item \textbf{CGU}: transferências federais e programas sociais cruzáveis por documento do credor;
+    \item \textbf{Diário Oficial}: documentos normativos indexados em Qdrant para recuperação aumentada.
+\end{itemize}
+
+Um processo ETL em Python consolida os arquivos tabulares, gera metadados de esquema (\gls{ddl}) e expõe uma API analítica com DuckDB \textit{in-memory}. A prefeitura não publicou dados de folha de pagamento e cadastro de servidores para 2020--2022; o assistente deve informar essa lacuna quando solicitado.
+
+\section{Arquitetura do sistema}
+
+A Figura~\ref{fig:arquitetura} resume o fluxo conversacional da instância Caeté:
+
+\input{figuras/arquitetura_sim}
+
+\begin{enumerate}
+    \item O usuário envia a pergunta via WhatsApp;
+    \item A plataforma de automação recebe o evento e aciona o agente orquestrador (GPT-4o);
+    \item O agente seleciona recuperação documental (Qdrant) ou tradução Text-to-SQL;
+    \item O subsistema SQL utiliza GPT-4.1-mini com \textit{prompt} contendo esquema compactado e amostras de dados;
+    \item O resultado tabular é interpretado pelo orquestrador e devolvido em linguagem natural ao usuário.
+\end{enumerate}
+
+\section{Engenharia de contexto}
+
+\subsection{Minificação de esquema (\textit{DDL minification})}
+
+Consiste na remoção de redundâncias, padronização de descrições e simplificação do esquema relacional enviado ao modelo, reduzindo tokens sem eliminar restrições semânticas críticas.
+
+\subsection{Amostragem inteligente (\textit{smart sampling})}
+
+Inclusão de exemplos reais de valores por coluna relevante, visando melhorar inferência de filtros, \textit{joins} e convenções locais.
+
+\subsection{Variantes de \textit{prompt} avaliadas}
+
+\begin{itemize}
+    \item \textbf{Prompt compacto} ($\approx$16\,500 tokens): esquema minificado e amostras --- configuração adotada em produção;
+    \item \textbf{Prompt estendido} ($\approx$35\,000 tokens): esquema com descrições ampliadas.
+\end{itemize}
+
+\section{Conjunto de referência (\textit{golden dataset})}
+
+Foi construído um conjunto de 80 consultas em linguagem natural, estratificadas por dificuldade (fácil, médio, difícil) e por domínio temático. Cada item contém a pergunta, a consulta SQL de referência validada no DuckDB, metadados auxiliares e, na versão v3, a coluna \texttt{colunas\_resposta} indicando quais grandezas respondem à pergunta (75/80 preenchidas automaticamente).
+
+Dez consultas-base foram expandidas com variações paramétricas (anos, limites e agregações), totalizando 80 casos executáveis. Os artefatos estão em \texttt{avaliacao/dados/golden/}.
+
+\section{Protocolo de avaliação}
+
+A avaliação Text-to-SQL foi conduzida por pipeline automatizado (\texttt{avaliacao/eval/}), desacoplado do canal WhatsApp, garantindo reprodutibilidade e controle de orçamento de API.
+
+\subsection{Métricas de desempenho --- versão 3}
+
+As métricas seguem a literatura de Text-to-SQL \cite{Yu2018Spider,Li2024BIRD} e foram estendidas para cenários de consulta municipal com gabarito manual e perguntas abertas:
+
+\begin{description}
+    \item[EX estrita] Equivalência de multiconjunto de linhas \textbf{com nomes de coluna} (padrão Spider). Mantida para comparação com a literatura; não é a métrica principal deste trabalho.
+    \item[EX colmap] Mesmo número de colunas e equivalência vetorial por coluna.
+    \item[EX proj] Permite colunas extras no resultado gerado; cada coluna do gabarito deve ter vetor equivalente em alguma coluna da resposta.
+    \item[EX proj + $\tau$] EX proj com tolerância relativa $\tau = 0{,}5\%$ em valores numéricos.
+    \item[EX resposta] \textbf{Métrica principal.} EX proj + $\tau$ restrito às colunas em \texttt{colunas\_resposta}. Mede se o cidadão receberia as grandezas corretas, independentemente de aliases ou colunas auxiliares.
+    \item[VSR --- \textit{Valid SQL Rate}] Proporção de SQLs executadas sem erro no DuckDB.
+    \item[NEA, TSA, CHS] Indicadores auxiliares de resultado não vazio, seleção de tabelas e presença de filtros relevantes.
+    \item[JAR --- \textit{Judge Agreement Rate}] Proporção de respostas em linguagem natural classificadas como corretas ou parcialmente corretas por LLM-as-Judge \cite{Zheng2023LLMJudge}.
+\end{description}
+
+A implementação está em \texttt{avaliacao/eval/lib/compare.py}; o recálculo offline usa DuckDB local (\texttt{duckdb\_engine.py}) sem custo de API.
+
+\subsection{Métricas operacionais}
+
+Registraram-se latência de geração, latência de execução SQL, tokens e custo estimado em dólares (API OpenAI).
+
+\subsection{Experimentos conduzidos}
+
+\begin{enumerate}
+    \item \textbf{E1 --- Baseline}: GPT-4.1-mini com \textit{prompt} compacto;
+    \item \textbf{E2 --- Ablação de contexto}: GPT-4.1-mini com \textit{prompt} estendido;
+    \item \textbf{E3 --- Ablação de modelo (econômico)}: GPT-4o-mini com \textit{prompt} compacto;
+    \item \textbf{E4 --- Ablação de modelo (avançado)}: GPT-4o com \textit{prompt} compacto.
+\end{enumerate}
+
+\section{Ambiente experimental}
+
+\begin{itemize}
+    \item DuckDB local sobre CSVs em \texttt{avaliacao/dados/};
+    \item Modelos OpenAI via API oficial, temperatura 0,0;
+    \item Saída estruturada em JSON contendo a consulta SQL;
+    \item Persistência incremental em \texttt{checkpoint.jsonl} para retomada.
+\end{itemize}

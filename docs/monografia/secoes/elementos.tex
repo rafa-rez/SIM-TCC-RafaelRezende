@@ -1,0 +1,166 @@
+\chapter{\MakeUppercase{Utilizando a Classe no Formato da UFLA}}\label{sec:template}
+
+Agora que já temos o conhecimento básico sobre como a linguagem \LaTeX\ funciona, podemos nos aprofundar nos detalhes de como utilizar esse template (e, especialmente, a classe \texttt{templufla}) para gerar documentos padronizados de alta qualidade.
+
+\section{Sobre as Seções (seção secundária)}\label{sec2:secoes}
+\subsection{Sobre as Seções (seção terciária com texto extra comicamente grande para testar como será a quebra de linha do título)}\label{sec3:teste}
+\subsubsection{Sobre as Seções (seção quaternária)}\label{sec4:teste}
+\subsubsubsection{Sobre as Seções (seção quinária)}\label{sec5:teste}
+
+Um dos fatores fundamentais no desenvolvimento de um trabalho acadêmico é sua organização. Na normalização da UFLA e da ABNT, os trabalhos podem ter formato de livro, como esse template, mas devem ser divididos em seções, não em capítulos e todo o texto pode ser dividido até a seção quinária.
+
+No template, dispõem-se comandos para realizar tal divisão automaticamente, mas com uma importante observação: a seção primária utiliza o comando \verb|\chapter|. Isso foi feito para simplificar a migração de versões mais antigas e provavelmente será alterado no futuro. Abaixo estão listados os comandos de seccionamento disponíveis: 
+
+\begin{alineas}
+	\item \verb|\chapter|:  cria uma seção primária, que pode ser referenciada como \autoref{sec:template};
+	\item \verb|\section|:  cria uma seção secundária, que pode ser referenciada como \autoref{sec2:secoes};
+	\item \verb|\subsection|:  cria uma seção terciária, que pode ser referenciada como \autoref{sec3:teste};
+	\item \verb|\subsubsection|:  cria uma seção quaternária, que pode ser referenciada como \autoref{sec4:teste};
+	\item \verb|\subsubsubsection|:  cria uma seção quinária, que pode ser referenciada como \autoref{sec5:teste}.
+\end{alineas}
+
+
+\section{Alíneas e Subalíneas}
+Segundo a normalização \cite{UFLA:2025}, ``as alíneas são usadas quando se deseja enumerar diversos assuntos de uma seção sem título próprio. Quando necessário, a alínea pode ser dividida em subalíneas.''
+
+Nesse template, para listar elementos com alíneas, deve-se usar o ambiente \textbf{\texttt{alineas}}, que pode ser aninhado para criar subalíneas: 
+\begin{lstlisting}[language={[LaTeX]TeX}]
+	\begin{alineas}% [labelsep=0ex]
+		\item item um;
+		\item item dois:
+		\begin{alineas} % subalíneas
+			\item subitem 1;
+			\item subitem 2.
+		\end{alineas}
+	\end{alineas}
+\end{lstlisting}
+Caso tenham letras duplicadas e queira mais espaço entre o indicador e o texto, basta adicionar a opção \texttt{[labelsep=0ex]} ao ambiente.
+
+\vspace{18pt}
+Abaixo é mostrado exemplo em texto retirado, na maior parte, do manual:
+\begin{alineas}% adicione [labelsep=0ex] caso tenha letras duplicadas e queira mais espaço
+	\item as alíneas são formadas pelos diversos assuntos que não possuem título próprio, dentro de uma mesma seção;
+	\item o texto que antecede as alíneas termina em dois pontos;
+	\item as alíneas devem ser indicadas alfabeticamente, em letra minúscula, seguida de parêntese. Utilizam-se letras dobradas, quando esgotadas as letras do alfabeto;
+	\item as letras indicativas das alíneas devem apresentar recuo em relação à margem esquerda;
+	\item o texto da alínea deve começar por letra minúscula e terminar em ponto e vírgula, exceto a última alínea que termina em ponto final;
+	\item o texto da alínea deve terminar em dois pontos, se houver subalínea;
+	\item a segunda e as seguintes linhas do texto da alínea começam sob a primeira letra do texto da própria alínea;
+	\item sobre as subalíneas:
+	\begin{alineas}
+		\item as subalíneas devem começar por travessão seguido de espaço;
+		\item as subalíneas devem apresentar recuo em relação à alínea;
+		\item o texto da subalínea deve começar por letra minúscula e terminar em ponto e vírgula. A última subalínea deve terminar em ponto final, se não houver alínea subsequente;
+		\item a segunda e as seguintes linhas do texto da subalínea começam sob a primeira letra do texto da própria subalínea;
+		\item o recuo das margens também deve ser obedecido.
+	\end{alineas}
+\end{alineas}
+
+
+\section{Figuras, Ilustrações e etc}
+
+Utilizar figuras, ilustrações e elementos ``float'' no template é semelhante ao que foi explicado na \autoref{sec:latexFiguras}.
+\begin{figure}[h]
+	\centering
+	\caption{Leão do site CTAN estudando \TeX}
+	\label{fig:leaoCTAN}
+	\includegraphics[width=0.6\textwidth]{imgs/ctanlion}
+	\fonte{Duane Bibby, diponibilizado em \url{www.ctan.org/lion}}
+\end{figure}
+
+
+ Só é importante se atentar para dois detalhes: os títulos das figuras, que devem vir antes do \texttt{inludegraphics}, e a fonte, que deve ser posicionada após o \texttt{inludegraphics} e pode utilizar o comando pré definido \texttt{fonte}. Exemplo do código para a \autoref{fig:leaoCTAN}:
+\begin{lstlisting}[language={[LaTeX]Tex}]
+\begin{figure}
+	\centering
+	% \caption antes da figura
+	\caption{Leão do site CTAN estudando \TeX} 
+	\label{fig:leaoCTAN}
+	\includegraphics[width=0.6\textwidth]{imgs/ctanlion}
+	\fonte{Duane Bibby, diponibilizador por \url{www.ctan.org}}
+\end{figure}
+\end{lstlisting}
+
+
+
+\section{Quadros e Tabelas}\label{sec:tabelasUFLA}
+
+A normalização da UFLA reconhece dois principais tipos de elementos tabulares, tabelas e quadros, com conteúdos e formatos específicos. 
+
+\begin{table}[h]
+	\centering
+	\caption{Exemplo de Tabela} 
+	\label{tab:exemplo2}
+	\begin{tabular}{c c c c }
+		\hline
+		\linhadir{\bf Pessoa} & \linhadir{\bf Livros} & \linhadir{\bf Artigos} & \bf Palestras \\
+		\hline
+		$p_1$ & 1 & 3 & 4 \\
+		$p_2$ & 1 & 3 & 3 \\
+		$p_3$ & 1 & 3 & 4 \\
+		$p_4$ & 3 & 5 & 2 \\
+		\hline 
+	\end{tabular}
+	\vspace{0.3cm}
+	\fonte{original} %Fonte do tabela
+\end{table}
+
+Tabelas envolvem principalmente números, utiliza-se linhas horizontais somente no topo, final e cabeçalhos, além disso utiliza-se linhas verticais somente nos cabeçalhos\footnote{Por isso a \autoref{tab:exemplo} não segue o padrão correto.}. Para reduzir o tamanho do código dos cabeçalhos, a classe \texttt{templufla} define do comando \texttt{linhadir}, que adiciona uma linha vertical à direita da célula. Abaixo mostra-se um exemplo do código para a \autoref{tab:exemplo2}:
+\begin{lstlisting}[language={[LaTeX]Tex}]
+\begin{table}[h]
+	\centering
+	\caption{Exemplo de Tabela} 
+	\label{tab:exemplo2}
+	\begin{tabular}{c c c c }
+		\hline
+		\linhadir{Pessoa}& \linhadir{Livros}& \linhadir{Artigos}& Palestras\\
+		\hline
+		$p_1$& 1& 3& 4\\
+		$p_2$& 1& 3& 3\\
+		$p_3$& 1& 3& 4\\
+		$p_4$& 3& 5& 2\\
+		\hline 
+	\end{tabular}
+	\vspace{0.3cm}
+	\fonte{original} %Fonte do tabela
+\end{table}
+\end{lstlisting}
+
+
+Quadros se diferem das tabelas por conterem principalmente dados textuais e suas células serem completamente fechadas. O \autoref{quad:exemplo} é um exemplo de quadro.
+
+\begin{quadro}[h]
+\centering
+\caption{Opiniões sobre esse template}\label{quad:exemplo}
+  \begin{tabular}{|l|p{9cm}|}
+    \hline 
+    \rowcolor[gray]{.9}
+    \bf Nome& \bf Opinião\\
+    \hline
+    Jão& Desculpe, não posso comentar sobre isso.\\
+    \hline
+    Joana& Literalmente uma revolução do cinema nacional!\\
+    \hline
+    Jacquin& Esse autor é a vergonha da profisson!\\
+    \hline
+    Meu cachorro& Au! Au! Au! $\sim$Sons de papel sendo rasgado.\\
+    \hline
+    Overleaf& ASSINE, ASSINE O PREMIUM.\\
+    \hline
+    \end{tabular}
+    
+    \vspace{0.3cm}
+	\fonte{original}
+\end{quadro}
+
+
+\section{Padrão das Referências}
+
+Desde que o padrão descrito na \autoref{sec:Refs} seja seguido e partes importantes do template sejam mantidas, as referências não devem ser um problema. O template já vem configurado para o formato padrão da ABNT, desde que os arquivos \texttt{abntex.*}, o preâmbulo e a chamada dos comandos \texttt{bibliographystyle}, \texttt{citeoption}, \texttt{refencias} e \texttt{bibliography}, próximos ao final do arquivo principal, sejam mantidos.
+
+É comum referências serem um problema e, apesar do \LaTeX\ ajudar muito nisso, o processo ainda pode ser complicado. O pacote \texttt{abntex2} está desatualizado, as correções precisaram ser \emph{hard-coded} e o arquivo principal reflete isso.
+
+\textbf{Então, se você quer que as citações e referências sejam tão simples quanto adicionar um \texttt{bibtex} e usar o comando \texttt{cite}, EU TE SUPLICO, não altere o preâmbulo nem os comandos relacionados às referências no \texttt{templulfa\_main.tex}.}
+
+Referências sortidas para contribuir para a lista ao final (ignore): \cite{Eco1996,Booth2000,BIB2010,Hexsel2004,Franca2001,Gil2002,Porto2002,Silva2005,UFLA:2015,Moura1998,NBR6023:2002,LeGuin:1987}
+

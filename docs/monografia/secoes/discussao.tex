@@ -1,0 +1,43 @@
+\chapter{\MakeUppercase{Discussão}}
+
+\section{Validade sintática versus acurácia semântica}
+
+Os quatro experimentos convergem para VSR entre 90\% e 97,5\%. A EX estrita permanece entre 10\% e 16,25\%, enquanto a \textbf{EX resposta} varia de 46,25\% a 62,50\%. O modelo demonstra domínio da sintaxe SQL e do mapeamento esquema-coluna, mas formulações alternativas e aliases de coluna no gabarito manual penalizam métricas estritas \cite{Yu2018Spider,Zhong2020TestSuite}.
+
+\section{Escolha da métrica principal}
+
+A EX resposta combina três decisões metodológicas justificadas pelo domínio municipal:
+
+\begin{enumerate}
+    \item \textbf{Projeção} (EX proj): recupera consultas corretas com colunas auxiliares, comum em agregações municipais;
+    \item \textbf{Tolerância $\tau$}: absorve arredondamentos em percentuais e valores fiscais;
+    \item \textbf{Colunas de resposta}: restringe a comparação às grandezas que respondem à pergunta, evitando penalizar chaves surrogate ou metadados.
+\end{enumerate}
+
+A EX linhas (85\% no E1) foi mantida apenas como diagnóstico, por ser permissiva demais para perguntas abertas.
+
+\section{Impacto do tamanho do contexto}
+
+O \textit{prompt} estendido (E2) apresentou EX resposta \textit{inferior} ao compacto (58,75\% \textit{versus} 62,50\%), com custo e latência maiores. Para municípios com orçamento limitado, a variante compacta permanece preferível na instância Caeté.
+
+\section{Comparação entre modelos}
+
+O GPT-4o-mini (E3) reduz custo (US\$~0,21), mas degrada VSR e EX resposta. O GPT-4o (E4) melhora EX estrita, porém não supera o baseline em EX resposta e inviabiliza respostas síncronas rápidas (29,5~s de latência média).
+
+\section{Contraste entre EX e JAR}
+
+A avaliação com LLM-as-Judge \cite{Zheng2023LLMJudge} em amostra estratificada ($n=30$) revelou JAR de 100\% com EX estrita de 20\%. Essa evidência complementa, mas não substitui, métricas objetivas sobre resultados tabulares: o juiz automático pode ser complacente ou compartilhar vieses do modelo gerador.
+
+\section{Limitações}
+
+\begin{itemize}
+    \item Avaliação concentrada na instância Caeté; generalização para outros municípios requer novas instâncias SIM;
+    \item Lacuna de folha de pagamento 2020--2022 na base local;
+    \item Gabarito manual pode não cobrir todas as SQLs semanticamente corretas;
+    \item Subsistema RAG (Diário Oficial) não foi avaliado quantitativamente neste protocolo;
+    \item \texttt{colunas\_resposta} preenchida automaticamente em 75/80 casos --- revisão humana pendente.
+\end{itemize}
+
+\section{Implicações práticas}
+
+O SIM demonstra viabilidade técnica e custo operacional modesto para consulta conversacional a dados municipais abertos. Os resultados subsidiam decisões sobre modelo, tamanho de contexto e métricas de avaliação em futuras instâncias municipais.

@@ -1,0 +1,36 @@
+\chapter{\MakeUppercase{Introdução}}
+
+\section{Contextualização}
+
+Os dados públicos municipais constituem patrimônio informacional essencial à fiscalização social, à prestação de contas e à tomada de decisão democrática. A Lei de Acesso à Informação (Lei nº~12.527/2011) consolidou o direito de acesso, mas o uso efetivo permanece restrito a usuários com conhecimento técnico em portais de transparência, formatos tabulares e linguagens de consulta estruturada.
+
+Nesse contexto, os Modelos de Linguagem de Grande Escala (\gls{llm}) permitem interfaces conversacionais capazes de interpretar perguntas em linguagem natural e traduzi-las em operações sobre bases governamentais \cite{Yu2018Spider,Li2024BIRD}. A combinação de Recuperação Aumentada por Geração (\gls{rag}) para documentos normativos e Text-to-SQL para consultas analíticas configura uma arquitetura híbrida com potencial de ampliar o acesso a dados de transparência \cite{Lewis2020RAG}.
+
+Este trabalho apresenta o \textbf{SIM --- Sistema de Informações Municipais}, plataforma conversacional \textbf{multi-instância} voltada à consulta de dados públicos municipais. Cada município pode operar sua própria instância com bases e persona localizadas. A \textbf{instância de referência} documentada neste trabalho é a de \textbf{Caeté (MG)} (código IBGE/SICOM 3110004), integrada ao WhatsApp por meio de fluxos automatizados e consultando dados do SICOM, da CGU (2020--2025) e do Diário Oficial municipal via busca vetorial.
+
+\section{Problema de pesquisa}
+
+Apesar da abertura crescente de bases governamentais --- como o SICOM do TCE-MG \cite{TCEMG_SICOM,Lei2024SICOM} --- usuários leigos enfrentam barreiras técnicas para formular consultas sobre despesas, receitas, folha de pagamento, licitações, contratos e programas sociais. Simultaneamente, benchmarks acadêmicos de Text-to-SQL \cite{Yu2018Spider} empregam métricas de avaliação que podem subestimar a utilidade de respostas em esquemas reais com aliases arbitrários e múltiplas formulações SQL semanticamente equivalentes.
+
+\section{Objetivo geral}
+
+Desenvolver e avaliar empiricamente o SIM, arquitetura de orquestração cognitiva baseada em \gls{llm}s integrando \gls{rag} e Text-to-SQL, com instância piloto em Caeté (MG) e protocolo de avaliação reprodutível sobre dados abertos municipais.
+
+\section{Objetivos específicos}
+
+\begin{itemize}
+    \item Construir \textit{pipeline} de ingestão e normalização de dados SICOM/CGU para consulta analítica;
+    \item Implementar subsistema Text-to-SQL com minificação de esquema e amostragem inteligente;
+    \item Implementar subsistema de recuperação documental sobre o Diário Oficial;
+    \item Orquestrar os fluxos em ambiente de produção via mensageria instantânea;
+    \item Definir conjunto de referência (\textit{golden dataset}) e conduzir avaliação formal com métricas de execução v3, validade SQL, latência e custo;
+    \item Realizar estudos de ablação comparando variantes de \textit{prompt} e modelos de linguagem.
+\end{itemize}
+
+\section{Justificativa}
+
+A solução proposta alinha-se à governança digital e ao ODS~16, ao reduzir a barreira técnica de acesso à informação pública. A avaliação quantitativa em dados municipais reais --- com métricas adaptadas ao contexto de perguntas abertas --- contribui com evidências empíricas para decisões de arquitetura em soluções de tecnologia cívica (\textit{GovTech}).
+
+\section{Organização do trabalho}
+
+O Capítulo~2 apresenta o referencial teórico. O Capítulo~3 descreve metodologia e arquitetura. O Capítulo~4 analisa resultados. O Capítulo~5 discute limitações e implicações. O Capítulo~6 encerra com conclusões.

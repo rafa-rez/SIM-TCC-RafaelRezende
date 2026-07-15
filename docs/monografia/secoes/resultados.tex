@@ -1,0 +1,106 @@
+\chapter{\MakeUppercase{Análise de Resultados}}
+
+\section{Visão geral das métricas v3}
+
+A Tabela~\ref{tab:v3} consolida os quatro experimentos com as variantes de Execution Accuracy. A métrica \textbf{EX resposta} é adotada como indicador principal por alinhar a avaliação às grandezas que respondem à pergunta do cidadão, permitindo colunas auxiliares e tolerância numérica.
+
+\begin{table}[htbp]
+\centering
+\caption{Métricas v3 --- comparativo dos experimentos ($n=80$)}
+\label{tab:v3}
+\small
+\begin{tabular}{lrrrrrr}
+\toprule
+\textbf{Experimento} & \textbf{EX resp.} & \textbf{EX proj} & \textbf{+$\tau$} & \textbf{colmap} & \textbf{estrita} & \textbf{VSR} \\
+\midrule
+E1 --- Baseline (GPT-4.1-mini, compacto) & \textbf{62,50} & 60,00 & 61,25 & 57,50 & 10,00 & 97,50 \\
+E2 --- Contexto estendido (GPT-4.1-mini) & 58,75 & 56,25 & 57,50 & 56,25 & 13,75 & 96,25 \\
+E3 --- GPT-4o-mini & 46,25 & 46,25 & 46,25 & 46,25 & 12,50 & 90,00 \\
+E4 --- GPT-4o & 57,50 & 57,50 & 57,50 & 56,25 & 16,25 & 97,50 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Configuração baseline (E1)}
+
+O experimento E1 avaliou 80 consultas com GPT-4.1-mini e \textit{prompt} compacto. A Tabela~\ref{tab:baseline} resume métricas principais e indicadores operacionais.
+
+\begin{table}[htbp]
+\centering
+\caption{Resultados operacionais do experimento E1 --- baseline}
+\label{tab:baseline}
+\begin{tabular}{lr}
+\toprule
+\textbf{Indicador} & \textbf{Valor} \\
+\midrule
+EX resposta (principal) & 62,50\% (50/80) \\
+EX estrita (Spider) & 10,00\% (8/80) \\
+EX linhas (diagnóstico) & 85,00\% \\
+VSR & 97,50\% (78/80) \\
+Custo total estimado & US\$ 0,56 \\
+Latência média de geração & 6,2 s \\
+Latência média de execução SQL & 1,1 s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Evolução em relação à métrica estrita}
+
+A adoção de EX proj, tolerância $\tau$ e foco em \texttt{colunas\_resposta} elevou a estimativa de acurácia de 10\% (EX estrita) para 62,5\% (EX resposta) no E1, sem afrouxar para mera contagem de linhas (85\%). A decomposição das falhas com VSR positivo indica que 38 casos falham na EX estrita por alias de coluna, enquanto apenas cerca de 17 envolvem divergência real de valores.
+
+\section{Resultados por dificuldade (E1)}
+
+\begin{table}[htbp]
+\centering
+\caption{EX resposta e VSR por nível de dificuldade (E1)}
+\label{tab:diff}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Dificuldade} & \textbf{$n$} & \textbf{EX resp. (\%)} & \textbf{VSR (\%)} \\
+\midrule
+Fácil & 22 & 68,18 & 100,00 \\
+Médio & 44 & 61,36 & 97,73 \\
+Difícil & 14 & 57,14 & 92,86 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Comparativo de ablações}
+
+O \textit{prompt} estendido (E2) não superou o compacto em EX resposta (58,75\% \textit{versus} 62,50\%), com custo aproximadamente dobrado (US\$~1,16). O GPT-4o-mini (E3) apresentou queda acentuada (46,25\% EX resposta, VSR 90\%). O GPT-4o (E4) melhorou EX estrita (16,25\%), mas ficou abaixo do baseline em EX resposta (57,50\%), com custo de US\$~3,45 e latência média de 29,5~s.
+
+\section{Validação funcional}
+
+Além do \textit{benchmark} offline, o SIM foi validado em ambiente operacional via WhatsApp na instância Caeté, confirmando viabilidade da orquestração integrada entre automação, mensageria e subsistemas de recuperação documental e consulta analítica.
+
+\section{Avaliação da resposta em linguagem natural}
+
+\subsection{Protocolo}
+
+Para amostra estratificada do E1, registrou-se a cadeia completa: SQL gerada, resultado tabular, resposta em linguagem natural do orquestrador (GPT-4o) e julgamento automático (GPT-4.1-mini) conforme rubrica em quatro dimensões Likert \cite{Zheng2023LLMJudge}.
+
+\subsection{Resultados estratificados ($n=30$)}
+
+\begin{table}[htbp]
+\centering
+\caption{Avaliação LLM-as-Judge (E1, $n=30$)}
+\label{tab:jar}
+\begin{tabular}{lrr}
+\toprule
+\textbf{Métrica} & \textbf{Valor} & \textbf{Observação} \\
+\midrule
+JAR & 100,00\% (30/30) & Corretas ou parcialmente corretas \\
+EX estrita (mesma amostra) & 20,00\% (6/30) & Equivalência Spider \\
+EX resposta (mesma amostra) & --- & A calcular na amostra \\
+Adequação semântica (média) & 4,87 / 5 & Escala Likert \\
+Fidelidade aos dados (média) & 4,87 / 5 & \\
+Completude (média) & 4,73 / 5 & \\
+Clareza ao cidadão (média) & 4,77 / 5 & \\
+Custo total da amostra & US\$ 0,30 & Orquestrador + juiz \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Interpretação}
+
+O contraste entre EX estrita (20\%) e JAR (100\%) na mesma amostra reforça que a utilidade percebida pelo cidadão pode superar a concordância estrita entre consultas SQL. A métrica EX resposta (62,5\% no conjunto completo) oferece meio-termo quantitativo entre rigor literário e alinhamento à pergunta.

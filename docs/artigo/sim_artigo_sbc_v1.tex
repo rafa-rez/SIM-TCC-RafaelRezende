@@ -1,0 +1,132 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[brazilian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage[alf,abnt-etal-list=3]{abntex2cite}
+
+\title{SIM --- Sistema de Informações Municipais:\\
+Avaliação Text-to-SQL sobre Dados Abertos com Métricas de Equivalência por Projeção\\
+\textit{(versão 1 --- rascunho SBC)}}
+
+\author{Rafael Alves Silva Rezende\\
+Universidade Federal de Lavras (UFLA)\\
+\and
+Prof. Dr. Denilson (orientador)}
+
+\date{Julho/2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Municipal open data enables fiscal oversight, yet citizens rarely possess the technical skills to query relational transparency portals. We present the \textbf{SIM} (\textit{Sistema de Informações Municipais}), a conversational architecture combining document retrieval and Text-to-SQL, instantiated for Caeté (MG), Brazil. We contribute a reproducible evaluation protocol on 80 natural-language queries over SICOM/CGU datasets (2020--2025), comparing four LLM configurations. Following Spider-style execution accuracy, we adopt \textbf{EX resposta} as the primary metric: projected multiset equivalence on answer-relevant columns with numeric tolerance $\tau{=}0.5\%$. The baseline (GPT-4.1-mini, compact schema prompt) achieves 62.5\% EX resposta and 97.5\% valid SQL rate, versus 10\% strict execution accuracy. Results indicate that strict EX underestimates utility in real municipal schemas with arbitrary column aliases. Artifacts are publicly available for replication.
+\end{abstract}
+
+\noindent\textbf{Palavras-chave:} dados abertos; Text-to-SQL; LLM; transparência municipal; avaliação.
+
+\section{Introdução}
+
+A Lei de Acesso à Informação (Lei 12.527/2011) consolidou o direito de acesso a dados públicos no Brasil. Municípios disponibilizam bases contábeis --- como o SICOM em Minas Gerais --- e portais federais complementares (CGU, Siconfi). Apesar da abertura formal, a consulta efetiva exige domínio de esquemas relacionais extensos.
+
+Modelos de linguagem de grande escala (\textit{large language models}, LLM) viabilizam interfaces conversacionais que traduzem perguntas em SQL \cite{Yu2018Spider,Li2024BIRD}. O \textbf{SIM} generaliza essa abordagem como sistema \textbf{multi-instância}: cada município fornece seus dados; a arquitetura permanece replicável. Este artigo documenta a \textbf{instância Caeté} (IBGE 3110004) e sua avaliação Text-to-SQL.
+
+\textbf{Contribuições:} (i)~definição do SIM e arquitetura híbrida RAG + SQL; (ii)~conjunto \textit{golden} com 80 consultas validadas; (iii)~família de métricas EX v3, destacando \textbf{EX resposta}; (iv)~quatro experimentos reprodutíveis com análise de custo e latência.
+
+\section{Trabalhos relacionados}
+
+\textbf{Text-to-SQL.} O benchmark Spider \cite{Yu2018Spider} popularizou \textit{execution accuracy} (EX) como comparação de resultados executados. BIRD \cite{Li2024BIRD} amplia o desafio com bases volumosas e valores ruidosos. Métodos recentes com LLM empregam decomposição de consultas e \textit{schema linking} \cite{Pourreza2024DIN,Gao2024DAILSQL}.
+
+\textbf{RAG e orquestração.} Lewis et al. \cite{Lewis2020RAG} formalizaram recuperação aumentada para conhecimento externo. No SIM, RAG cobre o Diário Oficial; Text-to-SQL cobre finanças e compras públicas.
+
+\textbf{Dados municipais brasileiros.} Experiências com o SICOM evidenciam volume e heterogeneidade dos dados mineiros \cite{Lei2024SICOM,TCEMG_SICOM}.
+
+\section{O SIM e a instância Caeté}
+
+O SIM integra: (1)~canal conversacional; (2)~agente orquestrador; (3)~subsistema RAG (atos normativos); (4)~subsistema Text-to-SQL (DuckDB sobre CSVs SICOM/CGU). A instância Caeté cobre 2020--2025, com lacuna documentada de folha de pagamento em 2020--2022.
+
+A avaliação deste artigo concentra-se no subsistema Text-to-SQL, desacoplado do canal de produção, garantindo reprodutibilidade.
+
+\section{Metodologia}
+
+\subsection{Conjunto golden}
+
+80 perguntas em português, com SQL de referência validada, estratificadas por dificuldade e domínio (RH, licitações, cruzamentos CGU, etc.). Dez consultas-base foram expandidas parametricamente.
+
+\subsection{Métricas}
+
+Seja $R_i$ o resultado da SQL de referência e $G_i$ o da SQL gerada, ambos executáveis.
+
+\begin{itemize}
+  \item \textbf{EX estrita} (\textit{Spider}): igualdade de multiconjunto de linhas com nomes de coluna.
+  \item \textbf{EX colmap}: mesma cardinalidade de colunas + equivalência por coluna.
+  \item \textbf{EX proj}: permite colunas extras; cada coluna do gabarito deve existir em alguma coluna gerada.
+  \item \textbf{EX proj + $\tau$}: EX proj com tolerância relativa $\tau{=}0{,}5\%$ em numéricos.
+  \item \textbf{EX resposta} (principal): EX proj + $\tau$ restrito às colunas em \texttt{colunas\_resposta} do golden.
+  \item \textbf{VSR}: taxa de SQL válida (executável sem erro).
+\end{itemize}
+
+Métricas auxiliares: NEA, TSA, CHS. Complementarmente, JAR (\textit{Judge Agreement Rate}) avalia respostas em linguagem natural via LLM-as-Judge \cite{Zheng2023LLMJudge}.
+
+\subsection{Experimentos}
+
+\begin{table}[htbp]
+\centering
+\caption{Configuração dos experimentos ($n{=}80$)}
+\label{tab:exp}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{ID} & \textbf{Modelo} & \textbf{Prompt} \\
+\midrule
+E1 & GPT-4.1-mini & Compacto ($\sim$16k tokens) \\
+E2 & GPT-4.1-mini & Estendido ($\sim$30k tokens) \\
+E3 & GPT-4o-mini & Compacto \\
+E4 & GPT-4o & Compacto \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Resultados}
+
+\begin{table}[htbp]
+\centering
+\caption{Métricas v3 --- comparação entre experimentos}
+\label{tab:results}
+\begin{tabular}{lrrrrrr}
+\toprule
+\textbf{Exp.} & \textbf{EX resp.} & \textbf{EX proj} & \textbf{+$\tau$} & \textbf{colmap} & \textbf{estrita} & \textbf{VSR} \\
+\midrule
+E1 & \textbf{62,50} & 60,00 & 61,25 & 57,50 & 10,00 & 97,50 \\
+E2 & 58,75 & 56,25 & 57,50 & 56,25 & 13,75 & 96,25 \\
+E3 & 46,25 & 46,25 & 46,25 & 46,25 & 12,50 & 90,00 \\
+E4 & 57,50 & 57,50 & 57,50 & 56,25 & 16,25 & 97,50 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O baseline E1 combina alto VSR (97,5\%) com EX resposta de 62,5\%. A EX estrita permanece em 10\%, confirmando que aliases de coluna e formulações SQL alternativas penalizam a métrica clássica. O prompt estendido (E2) não supera o compacto em EX resposta, com custo quase dobrado. GPT-4o (E4) melhora EX estrita (16,25\%) mas não supera E1 em EX resposta, com latência média de 29,5\,s e custo US\$~3,45.
+
+Em amostra estratificada ($n{=}30$) com LLM-as-Judge, JAR alcançou 100\% com EX estrita de 20\% na mesma amostra --- reforçando a necessidade de métricas alinhadas à pergunta do cidadão.
+
+\section{Discussão}
+
+\textbf{Por que EX resposta?} Em esquemas municipais reais, o gabarito manual fixa nomes de coluna arbitrários. EX proj recupera casos semanticamente corretos com colunas extras; $\tau$ absorve arredondamentos fiscais; \texttt{colunas\_resposta} foca nas grandezas que respondem à pergunta.
+
+\textbf{Limitações.} (i)~golden de uma única instância; (ii)~lacunas de transparência local; (iii)~JAR depende de outro LLM; (iv)~RAG não avaliado neste protocolo.
+
+\section{Conclusão}
+
+O SIM demonstra viabilidade de consulta conversacional a dados municipais com avaliação reprodutível. A métrica EX resposta oferece estimativa mais honesta de utilidade que EX estrita em bases reais. Trabalhos futuros incluem revisão humana do golden, avaliação RAG e replicação em outros municípios.
+
+\section*{Repositório}
+
+Código, dados e scripts: \url{https://github.com/rafa-rez/tcc-sistema-de-informa-es-municipais}
+
+\bibliographystyle{abntex2-alf}
+\bibliography{../referencias/referencias_sim}
+
+\end{document}

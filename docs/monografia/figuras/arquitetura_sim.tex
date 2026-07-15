@@ -1,0 +1,46 @@
+% Diagrama da arquitetura do SIM — incluído via \input em metodologia.tex
+\begin{figure}[htbp]
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[
+        font=\small,
+        node distance=0.55cm and 0.9cm,
+        box/.style={draw, rounded corners=2pt, align=center, minimum width=2.6cm, minimum height=0.85cm, fill=black!4},
+        databox/.style={box, fill=black!8, minimum width=2.4cm},
+        arrow/.style={-{Stealth[length=2.2mm]}, thick},
+        lbl/.style={font=\footnotesize, fill=white, inner sep=1pt}
+    ]
+        \node[box, minimum width=3.2cm] (user) {Usuário\\\textit{WhatsApp}};
+
+        \node[box, right=of user] (waha) {Gateway\\WAHA};
+        \node[box, right=of waha] (n8n) {Automação\\n8n};
+        \node[box, right=of n8n, minimum width=3.0cm] (orch) {Agente orquestrador\\GPT-4o};
+
+        \draw[arrow] (user) -- (waha);
+        \draw[arrow] (waha) -- (n8n);
+        \draw[arrow] (n8n) -- (orch);
+
+        \node[box, below left=1.0cm and 0.2cm of orch, minimum width=3.1cm] (rag) {RAG documental\\Qdrant + Diário Oficial};
+        \node[box, below right=1.0cm and 0.2cm of orch, minimum width=3.1cm] (sql) {Text-to-SQL\\GPT-4.1-mini};
+
+        \draw[arrow] (orch.south) -- ++(0,-0.35) -| (rag.north) node[pos=0.22, lbl, above] {normativo};
+        \draw[arrow] (orch.south) -- ++(0,-0.35) -| (sql.north) node[pos=0.22, lbl, above] {tabular};
+
+        \node[databox, below=of rag] (qdrant) {Índice vetorial\\Qdrant};
+        \node[databox, below=of sql] (duck) {API analítica\\DuckDB};
+        \node[databox, below=1.1cm of duck, minimum width=6.8cm] (etl) {ETL --- bases SICOM, CGU e metadados de esquema};
+
+        \draw[arrow] (rag) -- (qdrant);
+        \draw[arrow] (sql) -- (duck);
+        \draw[arrow] (duck) -- (etl);
+
+        \draw[arrow] (orch.east) -- ++(0.55,0) |- (n8n.east) node[pos=0.78, lbl, right] {resposta em linguagem natural};
+        \draw[arrow] (n8n.west) -- (waha.east);
+        \draw[arrow] (waha.west) -- (user.east);
+
+        \node[font=\footnotesize\itshape, below=0.35cm of etl] (leg) {Avaliação Text-to-SQL conduzida em pipeline offline (\texttt{avaliacao/}), desacoplada do canal WhatsApp.};
+    \end{tikzpicture}%
+    }
+    \caption{Arquitetura do SIM (instância Caeté): fluxo conversacional em produção e subsistemas de recuperação documental e consulta tabular.}
+    \label{fig:arquitetura}
+\end{figure}

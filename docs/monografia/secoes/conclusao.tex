@@ -1,0 +1,9 @@
+\chapter{\MakeUppercase{Conclusão}}
+
+Este trabalho apresentou o \textbf{SIM --- Sistema de Informações Municipais}, arquitetura híbrida de orquestração cognitiva para consultas sobre dados de transparência pública, com \textbf{instância piloto em Caeté (MG)} integrando recuperação documental e Text-to-SQL via DuckDB.
+
+A avaliação com conjunto de referência de 80 consultas demonstrou que o subsistema Text-to-SQL com GPT-4.1-mini e esquema minificado alcança elevada taxa de SQL válida (VSR de 97,5\%) e \textbf{EX resposta de 62,5\%} sob a métrica principal proposta --- contraste com 10\% de EX estrita no padrão Spider.
+
+As contribuições incluem: (i)~conceito SIM multi-instância e arquitetura replicável para GovTech municipal; (ii)~\textit{pipeline} ETL e API analítica; (iii)~protocolo de avaliação reprodutível com métricas EX v3; (iv)~evidências empíricas para escolha de modelo e tamanho de contexto; e (v)~repositório público em \texttt{avaliacao/} para replicação.
+
+Como trabalhos futuros, propõe-se: revisão humana do conjunto \textit{golden} e de \texttt{colunas\_resposta}; avaliação quantitativa do subsistema RAG; testes com usuários reais; replicação do SIM em outros municípios; e autocorreção iterativa de consultas SQL.

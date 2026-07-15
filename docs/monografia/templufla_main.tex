@@ -1,0 +1,357 @@
+%==============================================================================
+% Importando a classe
+%==============================================================================
+\documentclass{templufla}          
+
+%==============================================================================
+% Pacote hyperref para referências cruzadas dentro do documento \ref e \autoref
+% O pacote hyperref precisa ser importado o mais cedo possível.
+
+% Setspace precisa estar antes do hyperref para usar a versão atual do abntex.
+\usepackage{setspace}
+
+% Definindo cores para os links cruzados
+\usepackage{xcolor}              % para mais cores
+\definecolor{rltred}{rgb}{0.2,0,0}
+\definecolor{rltgreen}{rgb}{0,0.2,0}
+\definecolor{rltblue}{rgb}{0,0,0.2}
+
+
+% Importa hyperref
+\usepackage[%
+hidelinks, % colorlinks=true, | Troque se quiser link com cor
+urlcolor=rltblue,       % \href{...}{...} external (URL)
+filecolor=rltgreen,     % \href{...} local file
+linkcolor=rltred,       % \ref{...} and \pageref{...}
+citecolor=rltgreen,%
+]{hyperref} % 
+
+
+%==============================================================================
+% Configurando a linguagem do template
+
+% Português
+\usepackage[brazilian]{babel}
+\input{linguas/tempPor}
+
+% Inglês
+%\usepackage[english]{babel}
+%\input{linguas/tempEng}
+
+%==============================================================================
+% Configuração dos pacotes necessários
+% Primeiros pacotes (alguns precisam ser importados depois)
+
+% TEXTOS
+\usepackage[T1]{fontenc}         % usa fontes postscript com acentos
+\usepackage[utf8]{inputenc}      % permite edição direta com acentos
+\usepackage{listings}            % para inserção de código
+\usepackage{fancyvrb}            % para inserção de saídas de comandos
+
+% MATEMÁTICA
+\usepackage{amsmath}             % pacote da AMS para Matemática Avançada
+\usepackage{amssymb}             % símbolos extras da AMS
+\usepackage{mathtools}			 % para mais comandos de matemática
+\usepackage{latexsym}            % símbolos extras do LaTeX
+
+% TABELAS
+\usepackage{longtable}           % para tabelas muito grandes
+\usepackage{array}               % para mais opções em tabelas
+\usepackage{colortbl}            % para cores em tabelas
+\usepackage{multirow}            % para células com várias linhas
+\usepackage{multicol}            % para células com várias colunas
+
+% FIGUAS E GRÁFICOS
+\usepackage{subfigure}           % para figuras dentro de figuras
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc}
+
+
+%==============================================================================
+% Citações/referências no formato ABNT, utilizando o pacote abntex2.
+% O pacote já vem na maioria das distribuições (texLive, MikTeX, Overleaf e etc...)
+% mas, caso você seja super roots e não use os listados, precisa instalar o abntex2:
+% http://abntex.codigolivre.org.br/
+
+% A versão disponível com esse template sofreu algumas alterações para se adaptar ao
+% padrão atual, já que a original está desatualizada.
+% Para mais informações, vizite o repositório oficial do template.
+
+
+% abnt-emphasize=bf coloca o título das bibliografias em negrito
+% abnt-etal-list=3 limita o número de autores antes de et al. para 3
+% abnt-url-package=xurl diz para usar o pacote url
+\usepackage[alf, abnt-etal-list=3, abnt-emphasize=bf]{abntex2cite}
+
+%==============================================================================
+% Ajustando os pacotes importados
+
+% Definindo cores para elementos tabulares
+\newcolumntype{Z}{|>{\columncolor[gray]{0.9}}l|} %cor cinza em células
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+% Definindo espaçamento vertical de elementos tabulares
+\renewcommand{\arraystretch}{1.5}
+
+% Configuração padrão do listings (ambiente de código)
+\lstset{
+	extendedchars=true,
+	breaklines=true,
+	tabsize=3,
+	basicstyle=\linespread{1}\ttfamily\normalsize,
+	stringstyle=\em,
+	showstringspaces=true,
+	inputencoding=utf8,
+	captionpos=t,
+	backgroundcolor=\color{black!5},
+	literate={{á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+	{Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+	{â}{{\^a}}1 {ê}{{\^e}}1 {ô}{{\^o}}1
+	{Â}{{\^A}}1 {Ê}{{\^E}}1 {Ô}{{\^O}}1
+	{ã}{{\~a}}1 {õ}{{\~o}}1 {ẽ}{{\~e}}1 
+	{ç}{{\c{c}}}1
+	{à}{{\`{a}}}1{À}{{\`{A}}}1}
+}
+
+% Carregamento do glossário, listas de siglas, símbolos e etc
+\loadglsentries{glossarios/abreviaturas}
+\loadglsentries{glossarios/glossario}
+\loadglsentries{glossarios/siglas}
+\loadglsentries{glossarios/simbolos}
+
+% Especificando hifenizações que por ventura LaTeX não saiba fazer
+% Por padrão 99,9% dos termos em português devem ser hifenizados corretamente.
+% Adicione aqui palavras precise especificar como hifenizar (ou não hifenizar)
+\hyphenation{software am-bien-te coor-de-na-ção FAE-PE TelEduc Williams UFLA Murray Bookchin}
+
+%==============================================================================
+% Dados da monografia, capa: autor, titulo, banca, etc... - SUBSTITUA DE ACORDO
+%==============================================================================
+% Dados para o arquivo PDF (metadados)
+
+\hypersetup{%
+% Titulo
+pdftitle={SIM --- Sistema de Informações Municipais},
+pdfauthor={Rafael Alves Silva Rezende},
+pdfsubject={Trabalho de Conclusão de Curso -- Ciência da Computação -- UFLA},
+pdfkeywords={SIM; inteligência artificial; LLM; RAG; Text-to-SQL; transparência pública; dados abertos municipais.}
+}
+	
+%==============================================================================
+% Informações básicas
+
+% Nome da(s)/do(s) autora(s)/autor(es)
+\author{Rafael Alves Silva Rezende}
+
+\title{SIM --- Sistema de Informações Municipais:\\
+Orquestração Cognitiva com RAG e Text-to-SQL Aplicada a Dados de Transparência Municipal}
+
+\subtitle{Instância piloto em Caeté (MG)}
+
+\engtitle{Municipal Information System (SIM): Cognitive Orchestration with RAG and Text-to-SQL}
+
+\engsubtitle{Pilot instance for Caete, Minas Gerais, Brazil}
+
+\date{2026}
+
+\tipo{Trabalho de Conclusão de Curso apresentado à Universidade Federal de Lavras, como parte das exigências do Curso de Bacharelado em Ciência da Computação, para obtenção do título de Bacharel.}
+
+\orientador{Prof. Dr. Denilson}
+%\orientadora{Profa. Dr. Maria Orientadora}
+
+% Coorientador/coorientadora
+% Altere o comando para os diferentes gêneros
+% Comente se não houver.
+%\coorientadora{Profa. Dra. Maria Orientadora }
+%\coorientador{Prof. Dr. José Orientador}
+
+% Local
+\local{Lavras -- MG}
+
+%==============================================================================
+% Informações da banca
+
+% Membros da banca. Até quatro membros. 
+% Deve ser {nome}{instituição}.
+% Comente os últimos se a banca tiver menos membros.
+\bancaum{Prof. Dr. [Nome do Membro da Banca 1]}{[Instituição de origem]}
+\bancadois{Prof. Dr. [Nome do Membro da Banca 2]}{[Instituição de origem]}
+\bancatres{Prof. Dr. [Nome do Membro da Banca 3]}{[Instituição de origem]}
+\bancaquatro{}{}
+
+% Data da defesa
+\defesa{[Data da defesa]}
+
+%==============================================================================
+% Ficha catalográfica, gerada pelo sistema da Biblioteca da UFLA
+% https://bibliotecauniversitaria.ufla.br/recursos-tecnologicos/ficha-catalografica
+% adicione o arquivo PDF da ficha ao projeto e ajuste o nome no comando
+
+% 
+%\fichaCatalograficaPDF{ficha-catalografica-SIG.pdf}
+
+%==============================================================================
+% Se vc já defendeu e tem o arquivo escaneado da folha de rosto, 
+% descomente e altere o nome do arquivo
+%\folhaAprovacaoAssinada{folharosto}
+
+
+%==============================================================================
+% O documento em si
+%==============================================================================
+\begin{document}
+
+%==============================================================================
+%Elementos pré-textuais
+
+% Cria capa, folha de rosto, folha de aprovação e ficha
+\maketitle
+
+% Dedicatórias\\
+\dedic{Espaço reservado à dedicatória.}
+
+% Agradecimentos
+\thanks{Espaço reservado aos agradecimentos.}         
+
+% Epígrafe
+\epigrafe{%
+Espaço reservado à epígrafe.\par
+(Autor Desconhecido)}
+
+% Resumo e palavras-chave
+% As palavras-chave PRECISAM vir primeiro
+\palchaves{SIM; inteligência artificial; modelos de linguagem; RAG; Text-to-SQL; transparência pública; dados abertos municipais.}
+\resumo{%
+Este trabalho apresenta o \textbf{SIM} (\textit{Sistema de Informações Municipais}), plataforma conversacional multi-instância para consulta a dados públicos municipais, com instância piloto em Caeté (MG) via WhatsApp. O sistema integra recuperação documental sobre o Diário Oficial e Text-to-SQL sobre bases SICOM/CGU (2020--2025). Descrevem-se a arquitetura de orquestração, técnicas de engenharia de contexto e avaliação formal com 80 consultas de referência. Quatro experimentos compararam modelos e variantes de \textit{prompt}. Adota-se a métrica \textbf{EX resposta} (62,5\% no baseline) como indicador principal de equivalência de resultados, em contraste com 10\% de EX estrita. Complementarmente, LLM-as-Judge em amostra estratificada ($n=30$) obteve JAR de 100\%. Artefatos reprodutíveis estão disponíveis em repositório público.
+}
+
+% Abstract e keywords
+% As keywords PRECISAM vir primeiro
+\keywords{Municipal Information System; artificial intelligence; large language models; RAG; Text-to-SQL; open government data.}
+\abstract{%
+This work presents SIM (\textit{Sistema de Informações Municipais}), a multi-instance conversational platform for municipal open data, with a pilot deployment in Caete (Brazil) via WhatsApp. The system integrates document retrieval over the official gazette and Text-to-SQL over SICOM/CGU datasets (2020--2025). We describe the orchestration architecture, context engineering, and formal evaluation on 80 reference queries. Four experiments compared LLMs and prompt variants. We adopt \textbf{answer-focused execution accuracy} (62.5\% on baseline) as the primary metric, versus 10\% strict Spider-style EX. A stratified LLM-as-Judge sample ($n=30$) yielded 100\% agreement rate. Reproducible artifacts are publicly available.
+}
+
+% Indicadores de impacto
+\indicadoresdeimpacto{%
+Os impactos descritos a seguir referem-se ao \textbf{SIM} (\textit{Sistema de Informações Municipais}), instância piloto de consulta conversacional a dados públicos de Caeté (MG) via WhatsApp. A maior parte dos efeitos é \textbf{potencial}, pois a validação quantitativa concentrou-se em ambiente controlado (\textit{benchmark} de 80 consultas e amostra estratificada de 30 respostas avaliadas por juiz automático), e não em estudo de adoção em larga escala junto à população.
+
+\textbf{Impactos sociais (potenciais e parcialmente observados).} O sistema reduz a barreira técnica para que cidadãos, jornalistas e organizações da sociedade civil consultem despesas, licitações, folha de pagamento, transferências federais e atos do Diário Oficial em linguagem natural, canal já amplamente utilizado no Brasil. Contribui para o exercício do direito de acesso à informação e para o controle social sobre a gestão pública municipal. O território diretamente contemplado é o município de Caeté (código IBGE 3110004); o público beneficiado inclui moradores, servidores municipais e atores do jornalismo cívico. Não foram realizadas medições formais de alcance (número de usuários ativos ou consultas em produção), de modo que a magnitude do benefício social permanece a ser quantificada.
+
+\textbf{Impactos tecnológicos (concretos).} Foram entregues: (i) arquitetura integrando orquestração por LLM, RAG sobre Qdrant e Text-to-SQL sobre DuckDB; (ii) processo ETL reprodutível para bases SICOM/CGU; (iii) conjunto de referência com 80 consultas validadas; (iv) protocolo de avaliação com métricas EX, VSR, NEA, TSA, CHS e JAR; e (v) quatro experimentos comparativos documentados. Esses artefatos podem ser replicados por outras prefeituras com dados abertos semelhantes.
+
+\textbf{Impactos econômicos (potenciais).} A avaliação automatizada consumiu aproximadamente US\$~5,38 em APIs de modelos de linguagem, indicando viabilidade de custo operacional reduzido para municípios de pequeno porte. Não há, neste trabalho, análise de retorno financeiro nem contrato de prestação de serviço; o impacto econômico está na possibilidade de democratizar ferramentas de transparência sem grandes investimentos em infraestrutura proprietária.
+
+\textbf{Caráter extensionista.} O trabalho possui viés extensionista em potencial ao aplicar pesquisa em Ciência da Computação a um problema real de transparência municipal, com dados públicos já disponibilizados pelo governo local. A participação da sociedade externa ocorre indiretamente, como público-alvo do protótipo e como beneficiária de dados abertos preexistentes; não houve projeto extensionista formal registrado na UFLA nem equipe multidisciplinar além do autor e do orientador.
+
+\textbf{Áreas temáticas da Política Nacional de Extensão.} Comunicação (divulgação de dados públicos em linguagem acessível); Direitos humanos e justiça (fomento à transparência e accountability); Tecnologia e produção (desenvolvimento de solução GovTech de código aberto).
+
+\textbf{Alinhamento com ODS da ONU.} ODS~16 (Paz, justiça e instituições eficazes --- transparência e acesso à informação); ODS~9 (Indústria, inovação e infraestrutura --- inovação em serviços públicos digitais); ODS~11 (Cidades e comunidades sustentáveis --- governança urbana informada).
+}
+
+% Impact indicators
+\impactindicators{%
+The impacts below refer to SIM (\textit{Sistema de Informações Municipais}), a pilot conversational instance for public data of Caete (Brazil) via WhatsApp. Most effects are \textbf{potential}, because quantitative validation focused on a controlled benchmark (80 queries and a stratified sample of 30 natural-language answers judged automatically), not on large-scale adoption studies.
+
+\textbf{Social impacts.} The system may lower technical barriers for citizens, journalists, and civil-society organizations to inspect municipal spending, procurement, payroll, federal transfers, and official-gazette acts through natural language on a widely used channel. The directly addressed territory is Caete (IBGE code 3110004). No formal usage metrics (active users or production query volume) were collected.
+
+\textbf{Technological impacts.} Concrete deliverables include an LLM-orchestrated architecture combining RAG (Qdrant) and Text-to-SQL (DuckDB), a reproducible ETL pipeline for SICOM/CGU datasets, an 80-query golden dataset, and a documented evaluation protocol (EX, VSR, NEA, TSA, CHS, JAR) with four comparative experiments.
+
+\textbf{Economic impacts.} Automated evaluation consumed about US\$5.38 in API costs, suggesting low operational cost for small municipalities. No formal cost--benefit analysis or service contract is reported.
+
+\textbf{Extension character.} The work applies computing research to municipal transparency using pre-existing open data; society participates mainly as the intended audience rather than through a formal UFLA extension project.
+
+\textbf{National Extension Policy areas.} Communication; Human rights and justice; Technology and production.
+
+\textbf{UN SDGs.} SDG~16 (transparent institutions), SDG~9 (innovation in public digital services), SDG~11 (informed urban governance).
+}
+
+% Listas gerais
+% Comente para remover.
+\listoffigures  	% Lista de Figuras
+%\listofilustracoes % Lista de Ilustrações
+%\listofgraficos	% Lista de Gráficos
+\listoftables       % Lista de Tabelas
+\listofquadros		% Lista de Quadros
+%\listofexemplos    % Lista de Exemplos
+%\listofteoremas    % Lista de Teoremas
+\listofabreviaturas % Lista de Abreviaturas
+\listofsiglas       % Lista de Siglas
+\listofsimbolos     % Lista de Símbolos
+
+% Sumário
+\tableofcontents
+\clearpage
+
+%==============================================================================
+% Elementos textuais
+
+% Começa a mostrar a numeração
+\pagestyle{ufla}
+
+
+% Incluindo as seções
+% É recomendado que as seções sejam organizadas em arquivos separados
+% e incluídas no documento com o comando \include
+\include{secoes/introducao}
+\include{secoes/referencial}
+\include{secoes/metodologia}
+\include{secoes/resultados}
+\include{secoes/discussao}
+\include{secoes/conclusao}
+
+%==============================================================================
+% Bibliografia
+
+% Carrega o estilo para referências ABNT
+\bibliographystyle{abntex2-alf}            
+
+% Alterando informações do estilo de citação.
+% Como estamos usando uma versão alterada, essas opções são necessárias.
+% Et al. em itálico
+\citeoption{abnt-etal-text=it}
+
+% Até 3 autores antes do et al.
+\citeoption{abnt-etal-cite=3}
+
+% Colocar s.d. na falta de um ano de publicação
+\citeoption{abnt-missing-year=sd}
+
+% Altera o estilo de citação para (Autor, ano)
+% A opção abnt-cite-style=AuthorYEAR está quebrada; essa é equivalente.
+\citeoption{abnt-nbr10520=1988}
+\citeoption{abnt-and-type=e}
+
+
+% Comando necessário para corrigir o título das referências.
+% Para o estilo ABNT, esse comando SEMPRE deve ser
+% chamado antes do \bibliography
+\referencias
+% Adiciona as referência em bibtex 
+\bibliography{refbib}
+
+%==============================================================================
+% Outros elementos pós-textuais
+
+% Glossário
+\glossario
+
+% Anexos e apêndices
+% Os anexos devem ser includios antes
+% e utilizar \input ao invés de \include, para não criar uma nova página
+% Anexos
+%\input{anexos/anexo1}
+%\input{anexos/anexo2}
+%\input{apendices/apendice1}
+
+% Índice
+\indice
+
+
+%==============================================================================
+% Fim do documento
+%==============================================================================
+\end{document}
