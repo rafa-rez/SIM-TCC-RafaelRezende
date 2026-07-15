@@ -16,3 +16,9 @@ SCRIPTS_ROOT = AVALIACAO_ROOT / "scripts"
 
 GOLDEN_DATASET = GOLDEN_DIR / "golden_dataset_v1.0.csv"
 REFERENCE_RESULTS_DIR = GOLDEN_DIR / "reference_results"
+
+GOLDEN_V2_DIR = GOLDEN_DIR / "v2.0"
+GOLDEN_DATASET_V2 = GOLDEN_V2_DIR / "golden_dataset_v2.0.csv"
+GOLDEN_V2_DRAFT_DIR = GOLDEN_V2_DIR / "draft"
+GOLDEN_V2_REFERENCE_DIR = GOLDEN_V2_DIR / "reference_results"
+GOLDEN_V2_REVISAO_DIR = GOLDEN_V2_DIR / "revisao"

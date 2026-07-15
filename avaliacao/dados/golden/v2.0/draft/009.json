@@ -1,0 +1,38 @@
+{
+  "id_teste": "009",
+  "input_usuario": "qual a empresa detem o contrato mais valioso da administração no ano de 2025",
+  "assisted_at": "2026-07-15T01:29:22.634810+00:00",
+  "model": "gpt-4.1-mini",
+  "generation": {
+    "ok": true,
+    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Utilizarei contrato_contratos (c) para obter os valores dos contratos e contrato_contContrato (cc) para o nome do credor (empresa). 2. JOINs: Farei LEFT JOIN entre contrato_contratos e contrato_contContrato usando seq_contrato e ano_referencia para evitar produto cartesiano. 3. Filtros: ano_referencia = 2025 e cod_orgao IN (2, 4, 5) para focar na administração municipal. 4. Limpeza de dados: Não há necessidade de filtro adicional para credor, pois o nome do credor será exibido diretamente. 5. Ordenação: Ordenarei pelo valor do contrato em ordem decrescente e limitarei a 1 para obter o contrato mais valioso.\",\n  \"query_sql\": \"SELECT cc.dsc_nome_credor, c.vlr_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) ORDER BY c.vlr_contrato DESC LIMIT 1;\",\n  \"query_formatada\": \"SELECT\\n  cc.dsc_nome_credor,\\n  c.vlr_contrato\\nFROM contrato_contratos c\\nLEFT JOIN contrato_contContrato cc\\n  ON c.seq_contrato = cc.seq_contrato\\n  AND c.ano_referencia = cc.ano_referencia\\nWHERE c.ano_referencia = 2025\\n  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)\\nORDER BY c.vlr_contrato DESC\\nLIMIT 1;\"\n}",
+    "parsed": {
+      "explicacao_tecnica": "1. Tabelas: Utilizarei contrato_contratos (c) para obter os valores dos contratos e contrato_contContrato (cc) para o nome do credor (empresa). 2. JOINs: Farei LEFT JOIN entre contrato_contratos e contrato_contContrato usando seq_contrato e ano_referencia para evitar produto cartesiano. 3. Filtros: ano_referencia = 2025 e cod_orgao IN (2, 4, 5) para focar na administração municipal. 4. Limpeza de dados: Não há necessidade de filtro adicional para credor, pois o nome do credor será exibido diretamente. 5. Ordenação: Ordenarei pelo valor do contrato em ordem decrescente e limitarei a 1 para obter o contrato mais valioso.",
+      "query_sql": "SELECT cc.dsc_nome_credor, c.vlr_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) ORDER BY c.vlr_contrato DESC LIMIT 1;",
+      "query_formatada": "SELECT\n  cc.dsc_nome_credor,\n  c.vlr_contrato\nFROM contrato_contratos c\nLEFT JOIN contrato_contContrato cc\n  ON c.seq_contrato = cc.seq_contrato\n  AND c.ano_referencia = cc.ano_referencia\nWHERE c.ano_referencia = 2025\n  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)\nORDER BY c.vlr_contrato DESC\nLIMIT 1;"
+    },
+    "query_sql": "SELECT cc.dsc_nome_credor, c.vlr_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) ORDER BY c.vlr_contrato DESC LIMIT 1;",
+    "explicacao": "1. Tabelas: Utilizarei contrato_contratos (c) para obter os valores dos contratos e contrato_contContrato (cc) para o nome do credor (empresa). 2. JOINs: Farei LEFT JOIN entre contrato_contratos e contrato_contContrato usando seq_contrato e ano_referencia para evitar produto cartesiano. 3. Filtros: ano_referencia = 2025 e cod_orgao IN (2, 4, 5) para focar na administração municipal. 4. Limpeza de dados: Não há necessidade de filtro adicional para credor, pois o nome do credor será exibido diretamente. 5. Ordenação: Ordenarei pelo valor do contrato em ordem decrescente e limitarei a 1 para obter o contrato mais valioso.",
+    "tokens_in": 15882,
+    "tokens_out": 383,
+    "gen_ms": 9568.52,
+    "attempt": 1
+  },
+  "query_sql": "SELECT cc.dsc_nome_credor, c.vlr_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) ORDER BY c.vlr_contrato DESC LIMIT 1;",
+  "execution": {
+    "ok": true,
+    "row_count": 1,
+    "columns": [
+      "dsc_nome_credor",
+      "vlr_contrato"
+    ],
+    "preview_rows": [
+      {
+        "dsc_nome_credor": "LOK PIRAMIDE LTDA",
+        "vlr_contrato": 5697980.66
+      }
+    ],
+    "error": null
+  },
+  "colunas_resposta_sugeridas": "dsc_nome_credor,vlr_contrato"
+}

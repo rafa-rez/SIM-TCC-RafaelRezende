@@ -43,3 +43,15 @@ python eval/run_experiment.py --experiment meu_teste --model gpt-4.1-mini --prom
 Resultados em `experimentos/<nome>/`.
 
 Documentação: [`../docs/REPLICACAO.md`](../docs/REPLICACAO.md) e [`../docs/METRICAS.md`](../docs/METRICAS.md).
+
+## Golden v2.0 (perguntas reais de testers)
+
+Em construção em `dados/golden/v2.0/`. Ver [`dados/golden/v2.0/README.md`](dados/golden/v2.0/README.md).
+
+```powershell
+# Propõe SQL para um item (requer OPENAI_API_KEY)
+python scripts/golden_assist.py --id 001 --apply
+
+# Pacote de revisão para o avaliador
+python scripts/golden_review_export.py
+```
