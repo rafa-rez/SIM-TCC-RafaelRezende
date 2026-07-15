@@ -1,36 +1,54 @@
 {
   "id_teste": "001",
   "input_usuario": "Diárias pagas na secretaria de assistência social de Caeté mg",
-  "assisted_at": "2026-07-15T01:31:53.799684+00:00",
-  "model": "gpt-4.1-mini",
+  "assisted_at": "2026-07-15T19:42:50.957208+00:00",
+  "model": "gpt-5",
   "generation": {
     "ok": true,
-    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Usarei despesa_pagamento (pagamentos) para obter os valores pagos e orgao_orgao (órgãos) para filtrar a secretaria de assistência social. 2. JOINs: Como despesa_pagamento tem cod_orgao e orgao_orgao também, farei JOIN por cod_orgao e ano_referencia para garantir o ano correto. 3. Filtros: ano_referencia = 2025 (ano padrão), nome do órgão contendo 'ASSISTÊNCIA SOCIAL' usando ILIKE para evitar problemas de acentuação e caixa. 4. HIGIENE: Filtrarei pagamentos com credor válido, removendo registros com nom_credor contendo 'NAO INFORMADO' e num_doc_credor em ('-1', '0'). 5. Agregação: Somarei o valor pago (vlr_pag_fonte) para obter o total de diárias pagas. 6. Consideração: Como a pergunta não especifica detalhamento, retornarei o total geral das diárias pagas na secretaria.\",\n  \"query_sql\": \"SELECT SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS total_diarias FROM despesa_pagamento p JOIN orgao_orgao o ON p.cod_orgao = o.cod_orgao AND p.ano_referencia = o.ano_referencia WHERE p.ano_referencia = 2025 AND TRIM(UPPER(o.nom_orgao)) ILIKE '%ASSISTENCIA SOCIAL%' AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND p.num_doc_credor NOT IN ('-1', '0') AND p.dsc_pagamento ILIKE '%DIARIA%';\",\n  \"query_formatada\": \"SELECT\\n  SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS total_diarias\\nFROM despesa_pagamento p\\nJOIN orgao_orgao o\\n  ON p.cod_orgao = o.cod_orgao\\n  AND p.ano_referencia = o.ano_referencia\\nWHERE p.ano_referencia = 2025\\n  AND TRIM(UPPER(o.nom_orgao)) ILIKE '%ASSISTENCIA SOCIAL%'\\n  AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%'\\n  AND p.num_doc_credor NOT IN ('-1', '0')\\n  AND p.dsc_pagamento ILIKE '%DIARIA%';\"\n}",
+    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Usarei despesa_pagamento (p) para os valores efetivamente pagos e empenho_empenho (e) para identificar a função (Assistência Social) e a natureza de despesa de diárias. 2. JOIN: Movimento com movimento seguindo a Regra de Ouro, vinculando por seq_empenho e, obrigatoriamente, também por ano_referencia: ON p.seq_empenho = e.seq_empenho AND p.ano_referencia = e.ano_referencia. 3. Filtros (WHERE): a) ano_referencia = 2025 (padrão na ausência de ano). b) Higiene de dados em pagamentos: COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' e COALESCE(p.num_doc_credor, '') NOT IN ('-1','0'), evitando lixo cadastrai. c) Foco no Executivo municipal (Prefeitura ampla): CAST(e.cod_orgao AS INTEGER) IN (2,4,5). d) Diárias: filtro pela natureza orçamentária contendo o código de diárias (3.3.90.14) ou a raiz do termo, usando ILIKE para robustez de acentuação: e.dsc_naturezadespesa ILIKE '3.3.90.14%' OR e.dsc_naturezadespesa ILIKE '%DIARI%'. e) Secretaria de Assistência Social: pelo campo funcional do empenho, e.dsc_funcao ILIKE '%ASSIST%'. 4. Agregação: Soma de valores pagos (SUM(CAST(p.vlr_pag_fonte AS DECIMAL))) agrupada por mês de referência do pagamento (p.num_mes_referencia). Não aplico LIMIT por se tratar de agregação total.\",\n  \"query_sql\": \"SELECT p.num_mes_referencia AS mes, SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS valor_diarias FROM despesa_pagamento p JOIN empenho_empenho e ON p.seq_empenho = e.seq_empenho AND p.ano_referencia = e.ano_referencia WHERE p.ano_referencia = 2025 AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(p.num_doc_credor, '') NOT IN ('-1', '0') AND CAST(e.cod_orgao AS INTEGER) IN (2, 4, 5) AND (e.dsc_naturezadespesa ILIKE '3.3.90.14%' OR e.dsc_naturezadespesa ILIKE '%DIARI%') AND e.dsc_funcao ILIKE '%ASSIST%' GROUP BY p.num_mes_referencia ORDER BY p.num_mes_referencia;\",\n  \"query_formatada\": \"SELECT\\n  p.num_mes_referencia AS mes,\\n  SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS valor_diarias\\nFROM despesa_pagamento p\\nJOIN empenho_empenho e\\n  ON p.seq_empenho = e.seq_empenho\\n  AND p.ano_referencia = e.ano_referencia\\nWHERE p.ano_referencia = 2025\\n  AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%'\\n  AND COALESCE(p.num_doc_credor, '') NOT IN ('-1', '0')\\n  AND CAST(e.cod_orgao AS INTEGER) IN (2, 4, 5)\\n  AND (\\n    e.dsc_naturezadespesa ILIKE '3.3.90.14%'\\n    OR e.dsc_naturezadespesa ILIKE '%DIARI%'\\n  )\\n  AND e.dsc_funcao ILIKE '%ASSIST%'\\nGROUP BY p.num_mes_referencia\\nORDER BY p.num_mes_referencia;\"\n}",
     "parsed": {
-      "explicacao_tecnica": "1. Tabelas: Usarei despesa_pagamento (pagamentos) para obter os valores pagos e orgao_orgao (órgãos) para filtrar a secretaria de assistência social. 2. JOINs: Como despesa_pagamento tem cod_orgao e orgao_orgao também, farei JOIN por cod_orgao e ano_referencia para garantir o ano correto. 3. Filtros: ano_referencia = 2025 (ano padrão), nome do órgão contendo 'ASSISTÊNCIA SOCIAL' usando ILIKE para evitar problemas de acentuação e caixa. 4. HIGIENE: Filtrarei pagamentos com credor válido, removendo registros com nom_credor contendo 'NAO INFORMADO' e num_doc_credor em ('-1', '0'). 5. Agregação: Somarei o valor pago (vlr_pag_fonte) para obter o total de diárias pagas. 6. Consideração: Como a pergunta não especifica detalhamento, retornarei o total geral das diárias pagas na secretaria.",
-      "query_sql": "SELECT SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS total_diarias FROM despesa_pagamento p JOIN orgao_orgao o ON p.cod_orgao = o.cod_orgao AND p.ano_referencia = o.ano_referencia WHERE p.ano_referencia = 2025 AND TRIM(UPPER(o.nom_orgao)) ILIKE '%ASSISTENCIA SOCIAL%' AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND p.num_doc_credor NOT IN ('-1', '0') AND p.dsc_pagamento ILIKE '%DIARIA%';",
-      "query_formatada": "SELECT\n  SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS total_diarias\nFROM despesa_pagamento p\nJOIN orgao_orgao o\n  ON p.cod_orgao = o.cod_orgao\n  AND p.ano_referencia = o.ano_referencia\nWHERE p.ano_referencia = 2025\n  AND TRIM(UPPER(o.nom_orgao)) ILIKE '%ASSISTENCIA SOCIAL%'\n  AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%'\n  AND p.num_doc_credor NOT IN ('-1', '0')\n  AND p.dsc_pagamento ILIKE '%DIARIA%';"
+      "explicacao_tecnica": "1. Tabelas: Usarei despesa_pagamento (p) para os valores efetivamente pagos e empenho_empenho (e) para identificar a função (Assistência Social) e a natureza de despesa de diárias. 2. JOIN: Movimento com movimento seguindo a Regra de Ouro, vinculando por seq_empenho e, obrigatoriamente, também por ano_referencia: ON p.seq_empenho = e.seq_empenho AND p.ano_referencia = e.ano_referencia. 3. Filtros (WHERE): a) ano_referencia = 2025 (padrão na ausência de ano). b) Higiene de dados em pagamentos: COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' e COALESCE(p.num_doc_credor, '') NOT IN ('-1','0'), evitando lixo cadastrai. c) Foco no Executivo municipal (Prefeitura ampla): CAST(e.cod_orgao AS INTEGER) IN (2,4,5). d) Diárias: filtro pela natureza orçamentária contendo o código de diárias (3.3.90.14) ou a raiz do termo, usando ILIKE para robustez de acentuação: e.dsc_naturezadespesa ILIKE '3.3.90.14%' OR e.dsc_naturezadespesa ILIKE '%DIARI%'. e) Secretaria de Assistência Social: pelo campo funcional do empenho, e.dsc_funcao ILIKE '%ASSIST%'. 4. Agregação: Soma de valores pagos (SUM(CAST(p.vlr_pag_fonte AS DECIMAL))) agrupada por mês de referência do pagamento (p.num_mes_referencia). Não aplico LIMIT por se tratar de agregação total.",
+      "query_sql": "SELECT p.num_mes_referencia AS mes, SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS valor_diarias FROM despesa_pagamento p JOIN empenho_empenho e ON p.seq_empenho = e.seq_empenho AND p.ano_referencia = e.ano_referencia WHERE p.ano_referencia = 2025 AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(p.num_doc_credor, '') NOT IN ('-1', '0') AND CAST(e.cod_orgao AS INTEGER) IN (2, 4, 5) AND (e.dsc_naturezadespesa ILIKE '3.3.90.14%' OR e.dsc_naturezadespesa ILIKE '%DIARI%') AND e.dsc_funcao ILIKE '%ASSIST%' GROUP BY p.num_mes_referencia ORDER BY p.num_mes_referencia;",
+      "query_formatada": "SELECT\n  p.num_mes_referencia AS mes,\n  SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS valor_diarias\nFROM despesa_pagamento p\nJOIN empenho_empenho e\n  ON p.seq_empenho = e.seq_empenho\n  AND p.ano_referencia = e.ano_referencia\nWHERE p.ano_referencia = 2025\n  AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%'\n  AND COALESCE(p.num_doc_credor, '') NOT IN ('-1', '0')\n  AND CAST(e.cod_orgao AS INTEGER) IN (2, 4, 5)\n  AND (\n    e.dsc_naturezadespesa ILIKE '3.3.90.14%'\n    OR e.dsc_naturezadespesa ILIKE '%DIARI%'\n  )\n  AND e.dsc_funcao ILIKE '%ASSIST%'\nGROUP BY p.num_mes_referencia\nORDER BY p.num_mes_referencia;"
     },
-    "query_sql": "SELECT SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS total_diarias FROM despesa_pagamento p JOIN orgao_orgao o ON p.cod_orgao = o.cod_orgao AND p.ano_referencia = o.ano_referencia WHERE p.ano_referencia = 2025 AND TRIM(UPPER(o.nom_orgao)) ILIKE '%ASSISTENCIA SOCIAL%' AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND p.num_doc_credor NOT IN ('-1', '0') AND p.dsc_pagamento ILIKE '%DIARIA%';",
-    "explicacao": "1. Tabelas: Usarei despesa_pagamento (pagamentos) para obter os valores pagos e orgao_orgao (órgãos) para filtrar a secretaria de assistência social. 2. JOINs: Como despesa_pagamento tem cod_orgao e orgao_orgao também, farei JOIN por cod_orgao e ano_referencia para garantir o ano correto. 3. Filtros: ano_referencia = 2025 (ano padrão), nome do órgão contendo 'ASSISTÊNCIA SOCIAL' usando ILIKE para evitar problemas de acentuação e caixa. 4. HIGIENE: Filtrarei pagamentos com credor válido, removendo registros com nom_credor contendo 'NAO INFORMADO' e num_doc_credor em ('-1', '0'). 5. Agregação: Somarei o valor pago (vlr_pag_fonte) para obter o total de diárias pagas. 6. Consideração: Como a pergunta não especifica detalhamento, retornarei o total geral das diárias pagas na secretaria.",
-    "tokens_in": 15877,
-    "tokens_out": 529,
-    "gen_ms": 12279.01,
+    "query_sql": "SELECT p.num_mes_referencia AS mes, SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS valor_diarias FROM despesa_pagamento p JOIN empenho_empenho e ON p.seq_empenho = e.seq_empenho AND p.ano_referencia = e.ano_referencia WHERE p.ano_referencia = 2025 AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(p.num_doc_credor, '') NOT IN ('-1', '0') AND CAST(e.cod_orgao AS INTEGER) IN (2, 4, 5) AND (e.dsc_naturezadespesa ILIKE '3.3.90.14%' OR e.dsc_naturezadespesa ILIKE '%DIARI%') AND e.dsc_funcao ILIKE '%ASSIST%' GROUP BY p.num_mes_referencia ORDER BY p.num_mes_referencia;",
+    "explicacao": "1. Tabelas: Usarei despesa_pagamento (p) para os valores efetivamente pagos e empenho_empenho (e) para identificar a função (Assistência Social) e a natureza de despesa de diárias. 2. JOIN: Movimento com movimento seguindo a Regra de Ouro, vinculando por seq_empenho e, obrigatoriamente, também por ano_referencia: ON p.seq_empenho = e.seq_empenho AND p.ano_referencia = e.ano_referencia. 3. Filtros (WHERE): a) ano_referencia = 2025 (padrão na ausência de ano). b) Higiene de dados em pagamentos: COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' e COALESCE(p.num_doc_credor, '') NOT IN ('-1','0'), evitando lixo cadastrai. c) Foco no Executivo municipal (Prefeitura ampla): CAST(e.cod_orgao AS INTEGER) IN (2,4,5). d) Diárias: filtro pela natureza orçamentária contendo o código de diárias (3.3.90.14) ou a raiz do termo, usando ILIKE para robustez de acentuação: e.dsc_naturezadespesa ILIKE '3.3.90.14%' OR e.dsc_naturezadespesa ILIKE '%DIARI%'. e) Secretaria de Assistência Social: pelo campo funcional do empenho, e.dsc_funcao ILIKE '%ASSIST%'. 4. Agregação: Soma de valores pagos (SUM(CAST(p.vlr_pag_fonte AS DECIMAL))) agrupada por mês de referência do pagamento (p.num_mes_referencia). Não aplico LIMIT por se tratar de agregação total.",
+    "tokens_in": 15876,
+    "tokens_out": 4553,
+    "gen_ms": 52942.39,
     "attempt": 1
   },
-  "query_sql": "SELECT SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS total_diarias FROM despesa_pagamento p JOIN orgao_orgao o ON p.cod_orgao = o.cod_orgao AND p.ano_referencia = o.ano_referencia WHERE p.ano_referencia = 2025 AND TRIM(UPPER(o.nom_orgao)) ILIKE '%ASSISTENCIA SOCIAL%' AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND p.num_doc_credor NOT IN ('-1', '0') AND p.dsc_pagamento ILIKE '%DIARIA%';",
+  "query_sql": "SELECT p.num_mes_referencia AS mes, SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS valor_diarias FROM despesa_pagamento p JOIN empenho_empenho e ON p.seq_empenho = e.seq_empenho AND p.ano_referencia = e.ano_referencia WHERE p.ano_referencia = 2025 AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(p.num_doc_credor, '') NOT IN ('-1', '0') AND CAST(e.cod_orgao AS INTEGER) IN (2, 4, 5) AND (e.dsc_naturezadespesa ILIKE '3.3.90.14%' OR e.dsc_naturezadespesa ILIKE '%DIARI%') AND e.dsc_funcao ILIKE '%ASSIST%' GROUP BY p.num_mes_referencia ORDER BY p.num_mes_referencia;",
   "execution": {
     "ok": true,
-    "row_count": 1,
+    "row_count": 5,
     "columns": [
-      "total_diarias"
+      "mes",
+      "valor_diarias"
     ],
     "preview_rows": [
       {
-        "total_diarias": null
+        "mes": 1,
+        "valor_diarias": 217.15
+      },
+      {
+        "mes": 2,
+        "valor_diarias": 521.16
+      },
+      {
+        "mes": 3,
+        "valor_diarias": 1780.63
+      },
+      {
+        "mes": 4,
+        "valor_diarias": 1085.75
+      },
+      {
+        "mes": 5,
+        "valor_diarias": 2692.66
       }
     ],
     "error": null
   },
-  "colunas_resposta_sugeridas": "total_diarias"
+  "colunas_resposta_sugeridas": "valor_diarias"
 }

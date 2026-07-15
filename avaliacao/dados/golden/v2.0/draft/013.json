@@ -1,36 +1,36 @@
 {
   "id_teste": "013",
   "input_usuario": "Qual é o valor dos restos a pagar de 2024 para 2025",
-  "assisted_at": "2026-07-15T01:34:51.807217+00:00",
-  "model": "gpt-4.1-mini",
+  "assisted_at": "2026-07-15T19:55:42.811952+00:00",
+  "model": "gpt-5",
   "generation": {
     "ok": true,
-    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Usarei empenho_movimentacaoRsp para obter os restos a pagar. 2. Filtros: Para restos a pagar, filtro dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' para identificar movimentações de cancelamento. 3. Ano: Como a pergunta menciona restos a pagar de 2024 para 2025, considerarei empenhos do ano 2024 e movimentações no ano 2025. Portanto, filtro empenho_movimentacaoRsp com ano_referencia = 2025 e o ano do empenho (num_ano_empenho) = 2024. 4. Órgãos: Para focar na prefeitura ampla, filtro CAST(cod_orgao AS INTEGER) IN (2, 4, 5). 5. Agregação: Somarei o vlr_movimentacao convertido para DECIMAL para obter o total de restos a pagar cancelados (que representam o saldo de restos a pagar).\",\n  \"query_sql\": \"SELECT SUM(CAST(vlr_movimentacao AS DECIMAL)) AS total_restos_a_pagar FROM empenho_movimentacaoRsp WHERE ano_referencia = 2025 AND num_ano_empenho = 2024 AND dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5);\",\n  \"query_formatada\": \"SELECT\\n  SUM(CAST(vlr_movimentacao AS DECIMAL)) AS total_restos_a_pagar\\nFROM empenho_movimentacaoRsp\\nWHERE ano_referencia = 2025\\n  AND num_ano_empenho = 2024\\n  AND dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%'\\n  AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5);\"\n}",
+    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabela: Usarei exclusivamente empenho_movimentacaoRsp, que registra as movimentações de Restos a Pagar (RSP). 2. Interpretação do pedido: \\\"de 2024 para 2025\\\" implica buscar as movimentações de 2025 que referenciam empenhos do exercício 2024, ou seja, RSP do ano anterior. 3. Filtro de RSP: Conforme regra de domínio, para RSP devo filtrar dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' para obter o valor de cancelamentos de RSP. 4. Órgão: Restringirei a Prefeitura ampla usando CAST(cod_orgao AS INTEGER) IN (2, 4, 5). 5. Anos: ano_referencia = 2025 (ano da movimentação) e num_ano_empenho = 2024 (ano de origem do empenho, que gerou o RSP). 6. Agregação: Somarei CAST(vlr_movimentacao AS DECIMAL) para atender à obrigatoriedade de CAST em colunas numéricas. 7. Joins: Não há JOIN (evitando produto cartesiano) pois a informação está na própria tabela de movimentação.\",\n  \"query_sql\": \"SELECT SUM(CAST(v.vlr_movimentacao AS DECIMAL)) AS total_rsp_cancelado_2024_para_2025 FROM empenho_movimentacaoRsp v WHERE v.ano_referencia = 2025 AND CAST(v.cod_orgao AS INTEGER) IN (2, 4, 5) AND v.dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' AND v.num_ano_empenho = 2024;\",\n  \"query_formatada\": \"SELECT\\n  SUM(CAST(v.vlr_movimentacao AS DECIMAL)) AS total_rsp_cancelado_2024_para_2025\\nFROM empenho_movimentacaoRsp v\\nWHERE v.ano_referencia = 2025\\n  AND CAST(v.cod_orgao AS INTEGER) IN (2, 4, 5)\\n  AND v.dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%'\\n  AND v.num_ano_empenho = 2024;\"\n}",
     "parsed": {
-      "explicacao_tecnica": "1. Tabelas: Usarei empenho_movimentacaoRsp para obter os restos a pagar. 2. Filtros: Para restos a pagar, filtro dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' para identificar movimentações de cancelamento. 3. Ano: Como a pergunta menciona restos a pagar de 2024 para 2025, considerarei empenhos do ano 2024 e movimentações no ano 2025. Portanto, filtro empenho_movimentacaoRsp com ano_referencia = 2025 e o ano do empenho (num_ano_empenho) = 2024. 4. Órgãos: Para focar na prefeitura ampla, filtro CAST(cod_orgao AS INTEGER) IN (2, 4, 5). 5. Agregação: Somarei o vlr_movimentacao convertido para DECIMAL para obter o total de restos a pagar cancelados (que representam o saldo de restos a pagar).",
-      "query_sql": "SELECT SUM(CAST(vlr_movimentacao AS DECIMAL)) AS total_restos_a_pagar FROM empenho_movimentacaoRsp WHERE ano_referencia = 2025 AND num_ano_empenho = 2024 AND dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5);",
-      "query_formatada": "SELECT\n  SUM(CAST(vlr_movimentacao AS DECIMAL)) AS total_restos_a_pagar\nFROM empenho_movimentacaoRsp\nWHERE ano_referencia = 2025\n  AND num_ano_empenho = 2024\n  AND dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%'\n  AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5);"
+      "explicacao_tecnica": "1. Tabela: Usarei exclusivamente empenho_movimentacaoRsp, que registra as movimentações de Restos a Pagar (RSP). 2. Interpretação do pedido: \"de 2024 para 2025\" implica buscar as movimentações de 2025 que referenciam empenhos do exercício 2024, ou seja, RSP do ano anterior. 3. Filtro de RSP: Conforme regra de domínio, para RSP devo filtrar dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' para obter o valor de cancelamentos de RSP. 4. Órgão: Restringirei a Prefeitura ampla usando CAST(cod_orgao AS INTEGER) IN (2, 4, 5). 5. Anos: ano_referencia = 2025 (ano da movimentação) e num_ano_empenho = 2024 (ano de origem do empenho, que gerou o RSP). 6. Agregação: Somarei CAST(vlr_movimentacao AS DECIMAL) para atender à obrigatoriedade de CAST em colunas numéricas. 7. Joins: Não há JOIN (evitando produto cartesiano) pois a informação está na própria tabela de movimentação.",
+      "query_sql": "SELECT SUM(CAST(v.vlr_movimentacao AS DECIMAL)) AS total_rsp_cancelado_2024_para_2025 FROM empenho_movimentacaoRsp v WHERE v.ano_referencia = 2025 AND CAST(v.cod_orgao AS INTEGER) IN (2, 4, 5) AND v.dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' AND v.num_ano_empenho = 2024;",
+      "query_formatada": "SELECT\n  SUM(CAST(v.vlr_movimentacao AS DECIMAL)) AS total_rsp_cancelado_2024_para_2025\nFROM empenho_movimentacaoRsp v\nWHERE v.ano_referencia = 2025\n  AND CAST(v.cod_orgao AS INTEGER) IN (2, 4, 5)\n  AND v.dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%'\n  AND v.num_ano_empenho = 2024;"
     },
-    "query_sql": "SELECT SUM(CAST(vlr_movimentacao AS DECIMAL)) AS total_restos_a_pagar FROM empenho_movimentacaoRsp WHERE ano_referencia = 2025 AND num_ano_empenho = 2024 AND dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5);",
-    "explicacao": "1. Tabelas: Usarei empenho_movimentacaoRsp para obter os restos a pagar. 2. Filtros: Para restos a pagar, filtro dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' para identificar movimentações de cancelamento. 3. Ano: Como a pergunta menciona restos a pagar de 2024 para 2025, considerarei empenhos do ano 2024 e movimentações no ano 2025. Portanto, filtro empenho_movimentacaoRsp com ano_referencia = 2025 e o ano do empenho (num_ano_empenho) = 2024. 4. Órgãos: Para focar na prefeitura ampla, filtro CAST(cod_orgao AS INTEGER) IN (2, 4, 5). 5. Agregação: Somarei o vlr_movimentacao convertido para DECIMAL para obter o total de restos a pagar cancelados (que representam o saldo de restos a pagar).",
-    "tokens_in": 15880,
-    "tokens_out": 399,
-    "gen_ms": 7322.09,
+    "query_sql": "SELECT SUM(CAST(v.vlr_movimentacao AS DECIMAL)) AS total_rsp_cancelado_2024_para_2025 FROM empenho_movimentacaoRsp v WHERE v.ano_referencia = 2025 AND CAST(v.cod_orgao AS INTEGER) IN (2, 4, 5) AND v.dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' AND v.num_ano_empenho = 2024;",
+    "explicacao": "1. Tabela: Usarei exclusivamente empenho_movimentacaoRsp, que registra as movimentações de Restos a Pagar (RSP). 2. Interpretação do pedido: \"de 2024 para 2025\" implica buscar as movimentações de 2025 que referenciam empenhos do exercício 2024, ou seja, RSP do ano anterior. 3. Filtro de RSP: Conforme regra de domínio, para RSP devo filtrar dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' para obter o valor de cancelamentos de RSP. 4. Órgão: Restringirei a Prefeitura ampla usando CAST(cod_orgao AS INTEGER) IN (2, 4, 5). 5. Anos: ano_referencia = 2025 (ano da movimentação) e num_ano_empenho = 2024 (ano de origem do empenho, que gerou o RSP). 6. Agregação: Somarei CAST(vlr_movimentacao AS DECIMAL) para atender à obrigatoriedade de CAST em colunas numéricas. 7. Joins: Não há JOIN (evitando produto cartesiano) pois a informação está na própria tabela de movimentação.",
+    "tokens_in": 15879,
+    "tokens_out": 2407,
+    "gen_ms": 28556.36,
     "attempt": 1
   },
-  "query_sql": "SELECT SUM(CAST(vlr_movimentacao AS DECIMAL)) AS total_restos_a_pagar FROM empenho_movimentacaoRsp WHERE ano_referencia = 2025 AND num_ano_empenho = 2024 AND dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5);",
+  "query_sql": "SELECT SUM(CAST(v.vlr_movimentacao AS DECIMAL)) AS total_rsp_cancelado_2024_para_2025 FROM empenho_movimentacaoRsp v WHERE v.ano_referencia = 2025 AND CAST(v.cod_orgao AS INTEGER) IN (2, 4, 5) AND v.dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' AND v.num_ano_empenho = 2024;",
   "execution": {
     "ok": true,
     "row_count": 1,
     "columns": [
-      "total_restos_a_pagar"
+      "total_rsp_cancelado_2024_para_2025"
     ],
     "preview_rows": [
       {
-        "total_restos_a_pagar": null
+        "total_rsp_cancelado_2024_para_2025": null
       }
     ],
     "error": null
   },
-  "colunas_resposta_sugeridas": "total_restos_a_pagar"
+  "colunas_resposta_sugeridas": "total_rsp_cancelado_2024_para_2025"
 }

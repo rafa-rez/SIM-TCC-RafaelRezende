@@ -65,16 +65,19 @@ def run_single(
     for attempt in range(1, max_retries + 1):
         try:
             t0 = time.perf_counter()
-            resp = client.chat.completions.create(
-                model=model,
-                temperature=temperature,
-                response_format={"type": "json_object"},
-                messages=[
+            create_kwargs: dict = {
+                "model": model,
+                "response_format": {"type": "json_object"},
+                "messages": [
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": question},
                 ],
-                timeout=timeout,
-            )
+                "timeout": timeout,
+            }
+            # GPT-5 e derivados não aceitam temperature customizada na Chat Completions API
+            if not str(model).startswith("gpt-5"):
+                create_kwargs["temperature"] = temperature
+            resp = client.chat.completions.create(**create_kwargs)
             gen_ms = (time.perf_counter() - t0) * 1000
             raw = resp.choices[0].message.content or ""
             usage = resp.usage

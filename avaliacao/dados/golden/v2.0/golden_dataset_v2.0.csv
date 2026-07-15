@@ -1,136 +1,37 @@
 id_teste;status;origem;dificuldade;categoria;input_usuario;query_referencia;tabelas_esperadas;condicao_esperada;espera_dados;colunas_resposta;notas;autor_ok;revisor_ok
-001;sql_valida;tester;medio;Despesas/Diarias;Diárias pagas na secretaria de assistência social de Caeté mg;"SELECT SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS total_diarias FROM despesa_pagamento p JOIN orgao_orgao o ON p.cod_orgao = o.cod_orgao AND p.ano_referencia = o.ano_referencia WHERE p.ano_referencia = 2025 AND TRIM(UPPER(o.nom_orgao)) ILIKE '%ASSISTENCIA SOCIAL%' AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND p.num_doc_credor NOT IN ('-1', '0') AND p.dsc_pagamento ILIKE '%DIARIA%';";;;;total_diarias;Pergunta real de tester — validar órgão/unidade de assistência social;;
-002;sql_valida;tester;medio;Despesas/Pagamentos;Maiores fornecedores e valores pagos pela prefeitura municipal de Caeté;"SELECT nom_credor, num_doc_credor, SUM(CAST(vlr_pag_fonte AS DECIMAL)) AS total_pago FROM despesa_pagamento WHERE ano_referencia = 2025 AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5) AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND num_doc_credor NOT IN ('-1', '0') GROUP BY nom_credor, num_doc_credor ORDER BY total_pago DESC LIMIT 50;";;;;total_pago;Ranking por credor, filtrar prefeitura (cod_orgao 2,4,5);;
+001;sql_valida;tester;medio;Despesas/Diarias;Diárias pagas na secretaria de assistência social de Caeté mg;"SELECT p.num_mes_referencia AS mes, SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS valor_diarias FROM despesa_pagamento p JOIN empenho_empenho e ON p.seq_empenho = e.seq_empenho AND p.ano_referencia = e.ano_referencia WHERE p.ano_referencia = 2025 AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(p.num_doc_credor, '') NOT IN ('-1', '0') AND CAST(e.cod_orgao AS INTEGER) IN (2, 4, 5) AND (e.dsc_naturezadespesa ILIKE '3.3.90.14%' OR e.dsc_naturezadespesa ILIKE '%DIARI%') AND e.dsc_funcao ILIKE '%ASSIST%' GROUP BY p.num_mes_referencia ORDER BY p.num_mes_referencia;";;;;total_diarias;Pergunta real de tester — validar órgão/unidade de assistência social;;
+002;sql_valida;tester;medio;Despesas/Pagamentos;Maiores fornecedores e valores pagos pela prefeitura municipal de Caeté;"SELECT p.num_doc_credor AS documento_credor, MAX(p.nom_credor) AS nome_credor, SUM(CAST(p.vlr_pag_fonte AS DECIMAL)) AS valor_pago FROM despesa_pagamento p WHERE p.ano_referencia = 2025 AND CAST(p.cod_orgao AS INTEGER) IN (2, 4, 5) AND COALESCE(p.nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(p.num_doc_credor, '') NOT IN ('-1', '0', '') GROUP BY p.num_doc_credor ORDER BY valor_pago DESC LIMIT 50;";;;;total_pago;Ranking por credor, filtrar prefeitura (cod_orgao 2,4,5);;
 003;sql_valida;tester;dificil;Contratos/Historico;Qual a empresa ou prestador de serviços está trabalhando com o município de Caeté a mais tempo;"SELECT cc.dsc_nome_credor, MIN(c.dat_assinatura) AS data_primeiro_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY cc.dsc_nome_credor ORDER BY data_primeiro_contrato ASC LIMIT 1;";;;;dsc_nome_credor;Pode exigir MIN(dat_assinatura) ou vigência mais antiga;;
-004;sql_valida;tester;medio;Contratos/Terceirizacao;Contratos de empresa terceirizada na prefeitura de Caeté;"SELECT cc.dsc_nome_credor, c.vlr_contrato, c.dsc_objetocontrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND c.dsc_objetocontrato ILIKE '%terceiriz%' ORDER BY c.vlr_contrato DESC LIMIT 50;";;;;;Definir critério de terceirizada (objeto, CNPJ, palavra-chave);;
-005;sql_valida;tester;medio;Contratos/Busca;Contrato da festa do trabalhador;"SELECT cc.dsc_nome_credor, c.vlr_contrato, c.dsc_objetocontrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND c.dsc_objetocontrato ILIKE '%trabalhador%' AND c.vlr_contrato > 0 LIMIT 50;";;;;dsc_nome_credor,vlr_contrato,dsc_objetocontrato;Busca textual no objeto do contrato;;
-006;sql_valida;tester;dificil;Contratos/Investigativo;Prime consultoria e assessoria empresarial qual é os sócios dessa empresa;"SELECT nom_pessoa AS nome_socio FROM licitacao_quadroSocLicitacao WHERE ano_referencia = 2025 AND TRIM(UPPER(nom_pessoa)) ILIKE '%PRIME%' AND TRIM(UPPER(nom_pessoa)) ILIKE '%CONSULTORIA%' AND TRIM(UPPER(nom_pessoa)) ILIKE '%ASSESSORIA%' AND TRIM(UPPER(nom_pessoa)) ILIKE '%EMPRESARIAL%' LIMIT 50;";;;;;Verificar se sócios existem no SICOM ou só razão social;;
-007;sql_valida;tester;medio;Contratos/Autarquia;Maiores contratos da autarquia SAAE em Caeté;"SELECT cc.dsc_nome_credor, c.vlr_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia JOIN orgao_orgao o ON c.cod_orgao = o.cod_orgao WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND COALESCE(o.nom_orgao, '') ILIKE '%SAAE%' AND c.vlr_contrato > 0 ORDER BY c.vlr_contrato DESC LIMIT 10;";;;;;Identificar cod_orgao/unidade do SAAE;;
-008;sql_valida;tester;medio;Contratos/Transporte;Qual a empresa de transporte presta serviço em Caeté mg;"SELECT DISTINCT f.nom_proprietario FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') AND COALESCE(f.nom_proprietario, '') NOT ILIKE '%NAO INFORMADO%' LIMIT 50;";;;;nom_proprietario;Busca por objeto/credor relacionado a transporte;;
-009;sql_valida;tester;facil;Contratos/Ranking;qual a empresa detem o contrato mais valioso da administração no ano de 2025;"SELECT cc.dsc_nome_credor, c.vlr_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) ORDER BY c.vlr_contrato DESC LIMIT 1;";;;;dsc_nome_credor,vlr_contrato;Administração = prefeitura (cod_orgao 2,4,5), ano 2025;;
-010;sql_valida;tester;dificil;RH/Folha;Liste os 20 maiores salários de servidores da Prefeitura. Quero nome, cargo, salário, benefícios, data de admissão, lotação. Faça a lista pedida para os anos de 2024 e 2025.;"WITH remuneracao_filtrada AS (
-  SELECT
-    r.ano_referencia,
-    r.seq_dim_pessoa,
-    MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS salario_maximo,
-    MAX(CAST(r.vlr_descontos AS DECIMAL)) AS beneficios,
-    MAX(r.dsc_cargo) AS cargo,
-    MAX(r.seq_dat_ingresso_cargo) AS data_admissao,
-    MAX(r.dsc_lotacao) AS lotacao
-  FROM remuneracao_municipio r
-  WHERE r.ano_referencia IN (2024, 2025)
-    AND r.dsc_sit_serv_pens ILIKE '%Ativo%'
-  GROUP BY r.ano_referencia, r.seq_dim_pessoa
-),
-servidores_nome AS (
-  SELECT
-    p.seq_dim_pessoa,
-    TRIM(p.nom_pessoa) AS nome
-  FROM pessoa_municipio p
-  WHERE COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%'
-),
-ranking_salarios AS (
-  SELECT
-    rf.ano_referencia,
-    sn.nome,
-    rf.cargo,
-    rf.salario_maximo AS salario,
-    rf.beneficios,
-    rf.data_admissao,
-    rf.lotacao,
-    ROW_NUMBER() OVER (PARTITION BY rf.ano_referencia ORDER BY rf.salario_maximo DESC) AS rn
-  FROM remuneracao_filtrada rf
-  JOIN servidores_nome sn ON rf.seq_dim_pessoa = sn.seq_dim_pessoa
-)
-SELECT
-  ano_referencia,
-  nome,
-  cargo,
-  salario,
-  beneficios,
-  data_admissao,
-  lotacao
-FROM ranking_salarios
-WHERE rn <= 20
-ORDER BY ano_referencia, salario DESC;";;;;nome,salario;Campos benefícios/admissão podem não existir no SICOM — documentar lacuna;;
-011;sql_valida;tester;dificil;Licitacoes/Cruzamento;Mostre as 10 maiores licitações/contratos por ano (23,24 e 25), monte uma tabela conciliando os dados enviados de licitação e contrato (caso forem os mesmos), onde mostra a data da licitação, a data do contrato, o nome do vencedor/contratante, o objeto, o valor , o número da licitação e o número do contrato.;"WITH licitacoes_agg AS (
-  SELECT
-    l.ano_referencia,
-    l.num_processo AS num_licitacao,
-    l.num_ano_processo AS ano_licitacao,
-    l.dat_abert_proc_adm AS data_licitacao,
-    SUM(CAST(h.vlr_global AS DECIMAL)) AS valor_licitacao,
-    MAX(TRIM(h.nom_vencedor)) AS nome_vencedor,
-    MAX(TRIM(l.dsc_objeto_licitacao)) AS objeto_licitacao
-  FROM licitacao_licitacao l
-  LEFT JOIN licitacao_homologLicitacao h
-    ON l.seq_licitacao = h.seq_licitacao
-    AND l.ano_referencia = h.ano_referencia
-  WHERE l.ano_referencia IN (2023, 2024, 2025)
-  GROUP BY l.ano_referencia, l.num_processo, l.num_ano_processo, l.dat_abert_proc_adm
-),
-contratos_agg AS (
-  SELECT
-    c.ano_referencia,
-    c.num_contrato,
-    c.num_ano_contrato,
-    c.dat_assinatura AS data_contrato,
-    c.vlr_contrato AS valor_contrato,
-    MAX(TRIM(cc.dsc_nome_credor)) AS nome_contratante,
-    MAX(TRIM(c.dsc_objetocontrato)) AS objeto_contrato,
-    c.num_anoexercicio AS ano_licitacao_contrato,
-    c.seq_licitacao,
-    c.num_contrato AS num_contrato_contrato
-  FROM contrato_contratos c
-  LEFT JOIN contrato_contContrato cc
-    ON c.seq_contrato = cc.seq_contrato
-    AND c.ano_referencia = cc.ano_referencia
-  WHERE c.ano_referencia IN (2023, 2024, 2025)
-  GROUP BY c.ano_referencia, c.num_contrato, c.num_ano_contrato, c.dat_assinatura, c.vlr_contrato, c.num_anoexercicio, c.seq_licitacao
-),
-conciliacao AS (
-  SELECT
-    COALESCE(l.ano_referencia, c.ano_referencia) AS ano_referencia,
-    l.num_licitacao,
-    l.ano_licitacao,
-    l.data_licitacao,
-    c.num_contrato,
-    c.num_ano_contrato,
-    c.data_contrato,
-    COALESCE(l.nome_vencedor, c.nome_contratante) AS nome,
-    COALESCE(l.objeto_licitacao, c.objeto_contrato) AS objeto,
-    COALESCE(l.valor_licitacao, 0) AS valor_licitacao,
-    COALESCE(c.valor_contrato, 0) AS valor_contrato,
-    GREATEST(COALESCE(l.valor_licitacao, 0), COALESCE(c.valor_contrato, 0)) AS valor
-  FROM licitacoes_agg l
-  FULL OUTER JOIN contratos_agg c
-    ON l.num_licitacao = c.seq_licitacao
-    AND l.ano_referencia = c.ano_referencia
-)
-SELECT
-  ano_referencia,
-  num_licitacao,
-  data_licitacao,
-  num_contrato,
-  data_contrato,
-  nome,
-  objeto,
-  valor
-FROM (
-  SELECT
-    ano_referencia,
-    num_licitacao,
-    data_licitacao,
-    num_contrato,
-    data_contrato,
-    nome,
-    objeto,
-    valor,
-    ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY valor DESC) AS rn
-  FROM conciliacao
-) t
-WHERE rn <= 10
-ORDER BY ano_referencia, valor DESC;";;;;nome,objeto,valor;Cruzamento licitacao + contrato, anti-duplicata de itens;;
-012;rascunho;tester;medio;Frota;Liste a frota atual. Quero modelo, quilometragem rodada, ano de aquisição, consumo de combustível, consumo médio km/L, lotação.;;;;;;km/L pode ser derivado, filtrar frota ativa;;
-013;sql_valida;tester;medio;Empenho/RSP;Qual é o valor dos restos a pagar de 2024 para 2025;"SELECT SUM(CAST(vlr_movimentacao AS DECIMAL)) AS total_restos_a_pagar FROM empenho_movimentacaoRsp WHERE ano_referencia = 2025 AND num_ano_empenho = 2024 AND dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' AND CAST(cod_orgao AS INTEGER) IN (2, 4, 5);";;;;total_restos_a_pagar;Esclarecer se é saldo RSP, inscrição ou pagamento;;
+004;sql_valida;tester;medio;Contratos/Terceirizacao;Contratos de empresa terceirizada na prefeitura de Caeté;"SELECT DISTINCT c.num_contrato, c.num_ano_contrato, cc.num_doc_credor AS cnpj_credor, cc.dsc_nome_credor AS nome_credor, c.dsc_naturezaobjeto, c.dsc_objetocontrato, c.vlr_contrato, c.vlr_empenhado, c.vlr_liquidado, c.vlr_pago FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND (COALESCE(c.dsc_objetocontrato, '') ILIKE '%TERCEIR%' OR COALESCE(c.dsc_naturezaobjeto, '') ILIKE '%TERCEIR%') AND COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(cc.num_doc_credor, '') NOT IN ('-1', '0') ORDER BY c.vlr_contrato DESC LIMIT 50;";;;;;Definir critério de terceirizada (objeto, CNPJ, palavra-chave);;
+005;sql_valida;tester;medio;Contratos/Busca;Contrato da festa do trabalhador;"SELECT
+  c.seq_contrato,
+  c.num_contrato,
+  c.num_ano_contrato,
+  c.dat_assinatura,
+  cc.dsc_nome_credor,
+  cc.num_doc_credor,
+  c.dsc_objetocontrato,
+  c.dsc_naturezaobjeto,
+  c.vlr_contrato
+FROM contrato_contratos c
+LEFT JOIN contrato_contContrato cc
+  ON c.seq_contrato = cc.seq_contrato
+  AND c.ano_referencia = cc.ano_referencia
+WHERE c.ano_referencia = 2025
+  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)
+  AND (
+    (COALESCE(c.dsc_objetocontrato, '') ILIKE '%FEST%' AND COALESCE(c.dsc_objetocontrato, '') ILIKE '%TRABALH%')
+    OR
+    (COALESCE(c.dsc_naturezaobjeto, '') ILIKE '%FEST%' AND COALESCE(c.dsc_naturezaobjeto, '') ILIKE '%TRABALH%')
+  )
+ORDER BY c.vlr_contrato DESC
+LIMIT 50;";;;;dsc_nome_credor,vlr_contrato,dsc_objetocontrato;Busca textual no objeto do contrato;;
+006;sql_valida;tester;dificil;Contratos/Investigativo;Prime consultoria e assessoria empresarial qual é os sócios dessa empresa;"WITH empresa AS (SELECT h.ano_referencia, h.seq_hab_licitacao, h.seq_licitacao, h.seq_orgao, h.cod_orgao, h.num_documento AS cnpj_empresa, h.nom_pessoa AS nome_empresa FROM licitacao_habLicitacao h WHERE h.ano_referencia = 2025 AND h.nom_pessoa ILIKE '%Prime%Consult%Assess%Empres%'), socios AS (SELECT q.ano_referencia, q.seq_hab_licitacao, q.seq_licitacao, q.seq_orgao, q.num_documento AS documento_socio, q.nom_pessoa AS nome_socio, q.dsc_tipo_participacao FROM licitacao_quadroSocLicitacao q WHERE q.ano_referencia = 2025 AND COALESCE(q.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%') SELECT e.nome_empresa, e.cnpj_empresa, s.nome_socio, s.documento_socio, s.dsc_tipo_participacao FROM empresa e JOIN socios s ON s.seq_hab_licitacao = e.seq_hab_licitacao AND s.seq_licitacao = e.seq_licitacao AND s.seq_orgao = e.seq_orgao AND s.ano_referencia = e.ano_referencia ORDER BY e.nome_empresa, s.nome_socio LIMIT 50;";;;;;Verificar se sócios existem no SICOM ou só razão social;;
+007;sql_valida;tester;medio;Contratos/Autarquia;Maiores contratos da autarquia SAAE em Caeté;"WITH base AS (SELECT c.seq_contrato, o.nom_orgao, c.num_contrato, c.dat_assinatura, cc.dsc_nome_credor, c.vlr_contrato FROM contrato_contratos c JOIN orgao_orgao o ON c.cod_orgao = o.cod_orgao AND c.ano_referencia = o.ano_referencia LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND o.tipo_orgao ILIKE '%AUTARQ%' AND o.nom_orgao ILIKE '%SAAE%' AND c.vlr_contrato > 0), dedup AS (SELECT b.*, ROW_NUMBER() OVER (PARTITION BY b.seq_contrato ORDER BY b.dsc_nome_credor) AS rn FROM base b) SELECT nom_orgao, num_contrato, dat_assinatura, dsc_nome_credor, vlr_contrato FROM dedup WHERE rn = 1 ORDER BY vlr_contrato DESC LIMIT 10;";;;;;Identificar cod_orgao/unidade do SAAE;;
+008;sql_valida;tester;medio;Contratos/Transporte;Qual a empresa de transporte presta serviço em Caeté mg;"SELECT DISTINCT cc.num_doc_credor AS cnpj_cpf_credor, cc.dsc_nome_credor, c.num_contrato, c.dat_assinatura, c.dsc_objetocontrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND c.dsc_objetocontrato ILIKE '%Transp%' AND COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(cc.num_doc_credor, '') NOT IN ('-1', '0') ORDER BY cc.dsc_nome_credor LIMIT 50;";;;;nom_proprietario;Busca por objeto/credor relacionado a transporte;;
+009;sql_valida;tester;facil;Contratos/Ranking;qual a empresa detem o contrato mais valioso da administração no ano de 2025;"SELECT COALESCE(cc.dsc_nome_credor, 'Sem credor') AS nome_credor, cc.num_doc_credor, c.num_contrato, c.vlr_contrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND c.vlr_contrato > 0 AND COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(cc.num_doc_credor, '') NOT IN ('-1', '0', '') ORDER BY c.vlr_contrato DESC LIMIT 1;";;;;dsc_nome_credor,vlr_contrato;Administração = prefeitura (cod_orgao 2,4,5), ano 2025;;
+010;sql_valida;tester;dificil;RH/Folha;Liste os 20 maiores salários de servidores da Prefeitura. Quero nome, cargo, salário, benefícios, data de admissão, lotação. Faça a lista pedida para os anos de 2024 e 2025.;"WITH r AS (SELECT r.ano_referencia, r.seq_dim_pessoa, r.dsc_cargo, r.dsc_lotacao, r.seq_dat_ingresso_cargo, r.seq_dat_pagamento, r.dsc_sit_serv_pens, r.cod_orgao, r.vlr_rmn_bruta, r.vlr_rmn_liquida, r.vlr_descontos FROM remuneracao_municipio r WHERE r.ano_referencia IN (2024, 2025) AND CAST(r.cod_orgao AS INTEGER) IN (2, 4, 5) AND r.dsc_sit_serv_pens ILIKE '%Ativo%'), p AS (SELECT p.seq_dim_pessoa, MAX(p.nom_pessoa) AS nom_pessoa FROM pessoa_municipio p WHERE COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY p.seq_dim_pessoa), agg AS (SELECT r.ano_referencia, r.seq_dim_pessoa, MAX(CAST(r.vlr_rmn_liquida AS DECIMAL)) AS salario, MAX(CAST(r.vlr_rmn_bruta AS DECIMAL)) AS salario_bruto, MIN(CAST(r.seq_dat_ingresso_cargo AS BIGINT)) AS dt_adm_raw, MAX(r.dsc_cargo) AS cargo, MAX(r.dsc_lotacao) AS lotacao FROM r GROUP BY r.ano_referencia, r.seq_dim_pessoa), joined AS (SELECT a.ano_referencia, p.nom_pessoa AS nome, a.cargo, a.lotacao, a.salario, CAST(NULL AS DECIMAL) AS beneficios, a.dt_adm_raw FROM agg a JOIN p ON a.seq_dim_pessoa = p.seq_dim_pessoa), ranked AS (SELECT ano_referencia, nome, cargo, lotacao, salario, beneficios, dt_adm_raw, ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY salario DESC) AS rn FROM joined) SELECT ano_referencia, nome, cargo, salario, beneficios, strftime(strptime(CAST(dt_adm_raw AS VARCHAR), '%Y%m%d'), '%d/%m/%Y') AS data_admissao, lotacao FROM ranked WHERE rn <= 20 ORDER BY ano_referencia, salario DESC;";;;;nome,salario;Campos benefícios/admissão podem não existir no SICOM — documentar lacuna;;
+011;sql_valida;tester;dificil;Licitacoes/Cruzamento;Mostre as 10 maiores licitações/contratos por ano (23,24 e 25), monte uma tabela conciliando os dados enviados de licitação e contrato (caso forem os mesmos), onde mostra a data da licitação, a data do contrato, o nome do vencedor/contratante, o objeto, o valor , o número da licitação e o número do contrato.;"WITH lic_base AS (SELECT l.ano_referencia, l.seq_licitacao, l.dat_pub_edital AS dat_licitacao, l.dsc_objeto_licitacao AS objeto_licitacao, l.num_processo, l.num_ano_processo FROM licitacao_licitacao l WHERE l.ano_referencia IN (2023, 2024, 2025) AND CAST(l.cod_orgao AS INTEGER) IN (2, 4, 5)), lic_valor AS (SELECT h.ano_referencia, h.seq_licitacao, SUM(CAST(h.vlr_global AS DECIMAL)) AS vlr_total_licitacao FROM licitacao_homologLicitacao h WHERE h.ano_referencia IN (2023, 2024, 2025) AND CAST(h.cod_orgao AS INTEGER) IN (2, 4, 5) GROUP BY h.ano_referencia, h.seq_licitacao), lic_winner AS (SELECT ano_referencia, seq_licitacao, num_doc_vencedor, nom_vencedor FROM (SELECT h.ano_referencia, h.seq_licitacao, h.num_doc_vencedor, h.nom_vencedor, ROW_NUMBER() OVER (PARTITION BY h.ano_referencia, h.seq_licitacao ORDER BY CAST(h.vlr_global AS DECIMAL) DESC) AS rn FROM licitacao_homologLicitacao h WHERE h.ano_referencia IN (2023, 2024, 2025) AND CAST(h.cod_orgao AS INTEGER) IN (2, 4, 5)) t WHERE rn = 1), licitacoes AS (SELECT lb.ano_referencia, lb.seq_licitacao, lb.dat_licitacao, lb.objeto_licitacao, (CAST(lb.num_processo AS VARCHAR) || '/' || CAST(lb.num_ano_processo AS VARCHAR)) AS num_licitacao, lv.vlr_total_licitacao, lw.num_doc_vencedor, lw.nom_vencedor FROM lic_base lb LEFT JOIN lic_valor lv ON lb.ano_referencia = lv.ano_referencia AND lb.seq_licitacao = lv.seq_licitacao LEFT JOIN lic_winner lw ON lb.ano_referencia = lw.ano_referencia AND lb.seq_licitacao = lw.seq_licitacao), contratos_base AS (SELECT c.ano_referencia, c.seq_contrato, c.seq_licitacao, c.dat_assinatura AS dat_contrato, c.dsc_objetocontrato AS objeto_contrato, (CAST(c.num_contrato AS VARCHAR) || '/' || CAST(c.num_ano_contrato AS VARCHAR)) AS num_contrato, CAST(c.vlr_contrato AS DECIMAL) AS vlr_contrato FROM contrato_contratos c WHERE c.ano_referencia IN (2023, 2024, 2025) AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND CAST(c.vlr_contrato AS DECIMAL) > 0), contratados AS (SELECT cb.ano_referencia, cb.seq_contrato, cb.seq_licitacao, cb.dat_contrato, cb.objeto_contrato, cb.num_contrato, cb.vlr_contrato, cc.num_doc_credor, cc.dsc_nome_credor FROM contratos_base cb LEFT JOIN contrato_contContrato cc ON cb.ano_referencia = cc.ano_referencia AND cb.seq_contrato = cc.seq_contrato WHERE (COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%') AND (COALESCE(cc.num_doc_credor, '') NOT IN ('-1','0'))), conciliado AS (SELECT COALESCE(l.ano_referencia, ct.ano_referencia) AS ano_referencia, l.seq_licitacao, ct.seq_contrato, l.dat_licitacao, ct.dat_contrato, COALESCE(ct.dsc_nome_credor, l.nom_vencedor) AS nom_vencedor_contratante, COALESCE(ct.num_doc_credor, l.num_doc_vencedor) AS doc_vencedor_contratante, COALESCE(ct.objeto_contrato, l.objeto_licitacao) AS objeto, COALESCE(ct.vlr_contrato, l.vlr_total_licitacao) AS valor, l.num_licitacao, ct.num_contrato FROM licitacoes l FULL OUTER JOIN contratados ct ON l.ano_referencia = ct.ano_referencia AND l.seq_licitacao = ct.seq_licitacao WHERE COALESCE(ct.vlr_contrato, l.vlr_total_licitacao) IS NOT NULL), ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY ano_referencia ORDER BY CAST(valor AS DECIMAL) DESC) AS rn FROM conciliado) SELECT ano_referencia, dat_licitacao, dat_contrato, nom_vencedor_contratante, objeto, valor, num_licitacao, num_contrato FROM ranked WHERE rn <= 10 ORDER BY ano_referencia, valor DESC;";;;;nome,objeto,valor;Cruzamento licitacao + contrato, anti-duplicata de itens;;
+012;sql_valida;tester;medio;Frota;Liste a frota atual. Quero modelo, quilometragem rodada, ano de aquisição, consumo de combustível, consumo médio km/L, lotação.;"WITH gastos_2025 AS (SELECT g.seq_veiculo, SUM(CAST(COALESCE(g.num_marc_final, 0) AS DECIMAL) - CAST(COALESCE(g.num_marc_inicial, 0) AS DECIMAL)) AS km_rodado, SUM(CASE WHEN COALESCE(g.dsc_tipo_gasto, '') ILIKE '%GASOL%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%DIESEL%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%ETAN%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%GNV%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%ALCO%' THEN CAST(COALESCE(g.num_quant_utilizada, 0) AS DECIMAL) ELSE CAST(0 AS DECIMAL) END) AS litros_consumidos FROM frota_gastoFrota g WHERE g.ano_referencia = 2025 AND CAST(g.cod_orgao AS INTEGER) IN (2, 4, 5) GROUP BY g.seq_veiculo), unidades_2025 AS (SELECT u.seq_unidade, u.seq_orgao, MAX(u.dsc_unidade) AS dsc_unidade, MAX(u.dsc_subunidade) AS dsc_subunidade FROM orgao_orgaoUnidade u WHERE u.ano_referencia = 2025 GROUP BY u.seq_unidade, u.seq_orgao) SELECT f.dsc_modelo AS modelo, CAST(f.num_anofabricacao AS INTEGER) AS ano_aquisicao, (COALESCE(u.dsc_unidade, '') || CASE WHEN COALESCE(u.dsc_subunidade, '') <> '' THEN ' - ' || u.dsc_subunidade ELSE '' END) AS lotacao, CAST(g.km_rodado AS DECIMAL) AS quilometragem_rodada, CAST(g.litros_consumidos AS DECIMAL) AS consumo_combustivel_litros, CAST(g.km_rodado AS DECIMAL) / NULLIF(CAST(g.litros_consumidos AS DECIMAL), 0) AS consumo_medio_km_por_litro FROM gastos_2025 g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo LEFT JOIN unidades_2025 u ON f.seq_unidade = u.seq_unidade AND f.seq_orgao = u.seq_orgao WHERE COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') ORDER BY f.dsc_modelo LIMIT 50;";;;;modelo,lotacao,quilometragem_rodada,consumo_combustivel_litros,consumo_medio_km_por_litro;km/L pode ser derivado, filtrar frota ativa;;
+013;sql_valida;tester;medio;Empenho/RSP;Qual é o valor dos restos a pagar de 2024 para 2025;"SELECT SUM(CAST(v.vlr_movimentacao AS DECIMAL)) AS total_rsp_cancelado_2024_para_2025 FROM empenho_movimentacaoRsp v WHERE v.ano_referencia = 2025 AND CAST(v.cod_orgao AS INTEGER) IN (2, 4, 5) AND v.dsc_tipo_movimentacao ILIKE '%CANCELAMENTO%' AND v.num_ano_empenho = 2024;";;;;total_restos_a_pagar;Esclarecer se é saldo RSP, inscrição ou pagamento;;
 014;sql_valida;tester;dificil;Calculo Fiscal;Quero saber como está a saúde financeira e orçamentária da prefeitura de Caeté?;"WITH receita_corrente AS ( SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita_corrente FROM receita_receita WHERE ano_referencia = 2025 AND dsc_cateconomica ILIKE '%Corrente%' ), despesa_corrente AS ( SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa_corrente FROM despesa_despesa WHERE ano_referencia = 2025 AND dsc_naturezadespesa ILIKE '3%' ), despesa_saude AS ( SELECT SUM(CAST(vlr_liquidado AS DECIMAL)) AS total_despesa_saude FROM saude_saude WHERE ano_referencia = 2025 ), receita_impostos_transf AS ( SELECT SUM(CAST(vlr_realizadoateperiodo AS DECIMAL)) AS total_receita_impostos_transf FROM receita_receita WHERE ano_referencia = 2025 AND (dsc_especie ILIKE '%Imposto%' OR dsc_origem ILIKE '%Transfer%') ) SELECT CAST(r.total_receita_corrente AS DOUBLE) / NULLIF(CAST(d.total_despesa_corrente AS DOUBLE), 0) AS isf_m, (CAST(ds.total_despesa_saude AS DOUBLE) / NULLIF(CAST(rit.total_receita_impostos_transf AS DOUBLE), 0)) * 100 AS ies_c FROM receita_corrente r CROSS JOIN despesa_corrente d CROSS JOIN despesa_saude ds CROSS JOIN receita_impostos_transf rit;";;;;isf_m,ies_c;ISF-M e indicadores SIF-Caeté, resposta pode ser multi-indicador;;

@@ -23,6 +23,12 @@ model_pricing:
   gpt-4o:
     input_per_1m: 2.50
     output_per_1m: 10.00
+  gpt-5:
+    input_per_1m: 1.25
+    output_per_1m: 10.00
+  gpt-5-mini:
+    input_per_1m: 0.25
+    output_per_1m: 2.00
 
 # Modelos para comparação (baseline primeiro)
 models:
@@ -32,6 +38,15 @@ models:
     label: "GPT-4o Mini"
   - id: gpt-4o
     label: "GPT-4o"
+  - id: gpt-5
+    label: "GPT-5 (raciocínio)"
+  - id: gpt-5-mini
+    label: "GPT-5 Mini"
+
+# Construção do golden v2 — modelo mais capaz que o E1 (gabarito humano-assistido)
+golden_assist:
+  model: gpt-5
+  prompt_variant: poscagada_16k
 
 # Variantes de prompt para ablation
 prompt_variants:

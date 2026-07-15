@@ -121,8 +121,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Assistente golden v2 (SIM)")
     parser.add_argument("--dataset", type=Path, default=GOLDEN_DATASET_V2)
     parser.add_argument("--id", dest="ids", action="append", help="id_teste (ex.: 001). Repetível.")
-    parser.add_argument("--status", default="rascunho", help="Processar todos com este status")
-    parser.add_argument("--model", default="gpt-4.1-mini")
+    parser.add_argument("--all", action="store_true", help="Processar todos os itens do dataset")
+    parser.add_argument("--status", default="rascunho", help="Processar todos com este status (se --all omitido)")
+    parser.add_argument("--model", default=None, help="Modelo OpenAI (padrão: config golden_assist.model)")
     parser.add_argument("--prompt", default="poscagada_16k", dest="prompt_variant")
     parser.add_argument(
         "--apply",
@@ -145,8 +146,9 @@ def main() -> None:
         sys.exit(1)
 
     fieldnames = list(rows[0].keys())
-    targets = rows
-    if args.ids:
+    if args.all:
+        targets = rows
+    elif args.ids:
         wanted = {i.zfill(3) if i.isdigit() else i for i in args.ids}
         targets = [r for r in rows if r["id_teste"] in wanted or r["id_teste"].zfill(3) in wanted]
     else:
@@ -162,11 +164,14 @@ def main() -> None:
         return
 
     cfg = load_config()
-    system_prompt, prompt_path = load_prompt(args.prompt_variant, cfg)
+    ga = cfg.get("golden_assist") or {}
+    model = args.model or ga.get("model") or "gpt-5"
+    prompt_variant = ga.get("prompt_variant", args.prompt_variant)
+    system_prompt, prompt_path = load_prompt(prompt_variant, cfg)
     client = OpenAI(api_key=get_openai_api_key())
 
     print(f"Prompt: {prompt_path}")
-    print(f"Itens: {len(targets)} | model={args.model} | apply={args.apply}\n")
+    print(f"Itens: {len(targets)} | model={model} | apply={args.apply}\n")
 
     by_id = {r["id_teste"]: r for r in rows}
     for row in targets:
@@ -177,7 +182,7 @@ def main() -> None:
                 by_id[tid],
                 client=client,
                 system_prompt=system_prompt,
-                model=args.model,
+                model=model,
                 cfg=cfg,
                 apply_sql=args.apply,
             )

@@ -1,40 +1,52 @@
 {
   "id_teste": "005",
   "input_usuario": "Contrato da festa do trabalhador",
-  "assisted_at": "2026-07-15T01:32:50.171414+00:00",
-  "model": "gpt-4.1-mini",
+  "assisted_at": "2026-07-15T19:45:44.779958+00:00",
+  "model": "gpt-5",
   "generation": {
     "ok": true,
-    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Usarei contrato_contratos (c) para os contratos e contrato_contContrato (cc) para o nome do credor. 2. JOINs: Farei LEFT JOIN entre contrato_contratos e contrato_contContrato por seq_contrato e ano_referencia para evitar duplicidade e garantir o nome do credor. 3. Filtros: ano_referencia = 2025 (ano padrão), filtro no nome do objeto do contrato (dsc_objetocontrato) usando ILIKE com a raiz 'trabalhador' para capturar variações e evitar problemas de acentuação. Também filtro contratos com valor maior que zero para evitar registros inválidos. 4. Limite: LIMIT 50 para evitar retorno excessivo. 5. Uso de COALESCE para evitar problemas com valores nulos e garantir filtro correto.\",\n  \"query_sql\": \"SELECT cc.dsc_nome_credor, c.vlr_contrato, c.dsc_objetocontrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND c.dsc_objetocontrato ILIKE '%trabalhador%' AND c.vlr_contrato > 0 LIMIT 50;\",\n  \"query_formatada\": \"SELECT\\n  cc.dsc_nome_credor,\\n  c.vlr_contrato,\\n  c.dsc_objetocontrato\\nFROM contrato_contratos c\\nLEFT JOIN contrato_contContrato cc\\n  ON c.seq_contrato = cc.seq_contrato\\n  AND c.ano_referencia = cc.ano_referencia\\nWHERE c.ano_referencia = 2025\\n  AND c.dsc_objetocontrato ILIKE '%trabalhador%'\\n  AND c.vlr_contrato > 0\\nLIMIT 50;\"\n}",
+    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Usarei contrato_contratos (c) para identificar o contrato e contrato_contContrato (cc) para obter o nome e documento do credor. 2. JOINs: Farei LEFT JOIN por seq_contrato e, para evitar produto cartesiano, também pela igualdade de ano (c.ano_referencia = cc.ano_referencia), conforme a regra de ouro. 3. Filtros (WHERE): Como o ano não foi informado, aplico ano_referencia = 2025. Restringo aos órgãos da prefeitura ampla com CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5). Para localizar o contrato da festa do trabalhador, aplico busca textual defensiva com ILIKE usando raízes (%FEST% e %TRABALH%) e COALESCE para contornar nulos, tanto em dsc_objetocontrato quanto em dsc_naturezaobjeto. 4. Ordenação e limites: Ordeno por valor do contrato (vlr_contrato) em ordem decrescente e limito a 50 linhas por se tratar de listagem exploratória.\",\n  \"query_sql\": \"SELECT\\n  c.seq_contrato,\\n  c.num_contrato,\\n  c.num_ano_contrato,\\n  c.dat_assinatura,\\n  cc.dsc_nome_credor,\\n  cc.num_doc_credor,\\n  c.dsc_objetocontrato,\\n  c.dsc_naturezaobjeto,\\n  c.vlr_contrato\\nFROM contrato_contratos c\\nLEFT JOIN contrato_contContrato cc\\n  ON c.seq_contrato = cc.seq_contrato\\n  AND c.ano_referencia = cc.ano_referencia\\nWHERE c.ano_referencia = 2025\\n  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)\\n  AND (\\n    (COALESCE(c.dsc_objetocontrato, '') ILIKE '%FEST%' AND COALESCE(c.dsc_objetocontrato, '') ILIKE '%TRABALH%')\\n    OR\\n    (COALESCE(c.dsc_naturezaobjeto, '') ILIKE '%FEST%' AND COALESCE(c.dsc_naturezaobjeto, '') ILIKE '%TRABALH%')\\n  )\\nORDER BY c.vlr_contrato DESC\\nLIMIT 50;\",\n  \"query_formatada\": \"SELECT\\n  c.seq_contrato,\\n  c.num_contrato,\\n  c.num_ano_contrato,\\n  c.dat_assinatura,\\n  cc.dsc_nome_credor,\\n  cc.num_doc_credor,\\n  c.dsc_objetocontrato,\\n  c.dsc_naturezaobjeto,\\n  c.vlr_contrato\\nFROM contrato_contratos c\\nLEFT JOIN contrato_contContrato cc\\n  ON c.seq_contrato = cc.seq_contrato\\n  AND c.ano_referencia = cc.ano_referencia\\nWHERE c.ano_referencia = 2025\\n  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)\\n  AND (\\n    (COALESCE(c.dsc_objetocontrato, '') ILIKE '%FEST%' AND COALESCE(c.dsc_objetocontrato, '') ILIKE '%TRABALH%')\\n    OR\\n    (COALESCE(c.dsc_naturezaobjeto, '') ILIKE '%FEST%' AND COALESCE(c.dsc_naturezaobjeto, '') ILIKE '%TRABALH%')\\n  )\\nORDER BY c.vlr_contrato DESC\\nLIMIT 50;\"\n}",
     "parsed": {
-      "explicacao_tecnica": "1. Tabelas: Usarei contrato_contratos (c) para os contratos e contrato_contContrato (cc) para o nome do credor. 2. JOINs: Farei LEFT JOIN entre contrato_contratos e contrato_contContrato por seq_contrato e ano_referencia para evitar duplicidade e garantir o nome do credor. 3. Filtros: ano_referencia = 2025 (ano padrão), filtro no nome do objeto do contrato (dsc_objetocontrato) usando ILIKE com a raiz 'trabalhador' para capturar variações e evitar problemas de acentuação. Também filtro contratos com valor maior que zero para evitar registros inválidos. 4. Limite: LIMIT 50 para evitar retorno excessivo. 5. Uso de COALESCE para evitar problemas com valores nulos e garantir filtro correto.",
-      "query_sql": "SELECT cc.dsc_nome_credor, c.vlr_contrato, c.dsc_objetocontrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND c.dsc_objetocontrato ILIKE '%trabalhador%' AND c.vlr_contrato > 0 LIMIT 50;",
-      "query_formatada": "SELECT\n  cc.dsc_nome_credor,\n  c.vlr_contrato,\n  c.dsc_objetocontrato\nFROM contrato_contratos c\nLEFT JOIN contrato_contContrato cc\n  ON c.seq_contrato = cc.seq_contrato\n  AND c.ano_referencia = cc.ano_referencia\nWHERE c.ano_referencia = 2025\n  AND c.dsc_objetocontrato ILIKE '%trabalhador%'\n  AND c.vlr_contrato > 0\nLIMIT 50;"
+      "explicacao_tecnica": "1. Tabelas: Usarei contrato_contratos (c) para identificar o contrato e contrato_contContrato (cc) para obter o nome e documento do credor. 2. JOINs: Farei LEFT JOIN por seq_contrato e, para evitar produto cartesiano, também pela igualdade de ano (c.ano_referencia = cc.ano_referencia), conforme a regra de ouro. 3. Filtros (WHERE): Como o ano não foi informado, aplico ano_referencia = 2025. Restringo aos órgãos da prefeitura ampla com CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5). Para localizar o contrato da festa do trabalhador, aplico busca textual defensiva com ILIKE usando raízes (%FEST% e %TRABALH%) e COALESCE para contornar nulos, tanto em dsc_objetocontrato quanto em dsc_naturezaobjeto. 4. Ordenação e limites: Ordeno por valor do contrato (vlr_contrato) em ordem decrescente e limito a 50 linhas por se tratar de listagem exploratória.",
+      "query_sql": "SELECT\n  c.seq_contrato,\n  c.num_contrato,\n  c.num_ano_contrato,\n  c.dat_assinatura,\n  cc.dsc_nome_credor,\n  cc.num_doc_credor,\n  c.dsc_objetocontrato,\n  c.dsc_naturezaobjeto,\n  c.vlr_contrato\nFROM contrato_contratos c\nLEFT JOIN contrato_contContrato cc\n  ON c.seq_contrato = cc.seq_contrato\n  AND c.ano_referencia = cc.ano_referencia\nWHERE c.ano_referencia = 2025\n  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)\n  AND (\n    (COALESCE(c.dsc_objetocontrato, '') ILIKE '%FEST%' AND COALESCE(c.dsc_objetocontrato, '') ILIKE '%TRABALH%')\n    OR\n    (COALESCE(c.dsc_naturezaobjeto, '') ILIKE '%FEST%' AND COALESCE(c.dsc_naturezaobjeto, '') ILIKE '%TRABALH%')\n  )\nORDER BY c.vlr_contrato DESC\nLIMIT 50;",
+      "query_formatada": "SELECT\n  c.seq_contrato,\n  c.num_contrato,\n  c.num_ano_contrato,\n  c.dat_assinatura,\n  cc.dsc_nome_credor,\n  cc.num_doc_credor,\n  c.dsc_objetocontrato,\n  c.dsc_naturezaobjeto,\n  c.vlr_contrato\nFROM contrato_contratos c\nLEFT JOIN contrato_contContrato cc\n  ON c.seq_contrato = cc.seq_contrato\n  AND c.ano_referencia = cc.ano_referencia\nWHERE c.ano_referencia = 2025\n  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)\n  AND (\n    (COALESCE(c.dsc_objetocontrato, '') ILIKE '%FEST%' AND COALESCE(c.dsc_objetocontrato, '') ILIKE '%TRABALH%')\n    OR\n    (COALESCE(c.dsc_naturezaobjeto, '') ILIKE '%FEST%' AND COALESCE(c.dsc_naturezaobjeto, '') ILIKE '%TRABALH%')\n  )\nORDER BY c.vlr_contrato DESC\nLIMIT 50;"
     },
-    "query_sql": "SELECT cc.dsc_nome_credor, c.vlr_contrato, c.dsc_objetocontrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND c.dsc_objetocontrato ILIKE '%trabalhador%' AND c.vlr_contrato > 0 LIMIT 50;",
-    "explicacao": "1. Tabelas: Usarei contrato_contratos (c) para os contratos e contrato_contContrato (cc) para o nome do credor. 2. JOINs: Farei LEFT JOIN entre contrato_contratos e contrato_contContrato por seq_contrato e ano_referencia para evitar duplicidade e garantir o nome do credor. 3. Filtros: ano_referencia = 2025 (ano padrão), filtro no nome do objeto do contrato (dsc_objetocontrato) usando ILIKE com a raiz 'trabalhador' para capturar variações e evitar problemas de acentuação. Também filtro contratos com valor maior que zero para evitar registros inválidos. 4. Limite: LIMIT 50 para evitar retorno excessivo. 5. Uso de COALESCE para evitar problemas com valores nulos e garantir filtro correto.",
-    "tokens_in": 15869,
-    "tokens_out": 411,
-    "gen_ms": 7801.11,
+    "query_sql": "SELECT\n  c.seq_contrato,\n  c.num_contrato,\n  c.num_ano_contrato,\n  c.dat_assinatura,\n  cc.dsc_nome_credor,\n  cc.num_doc_credor,\n  c.dsc_objetocontrato,\n  c.dsc_naturezaobjeto,\n  c.vlr_contrato\nFROM contrato_contratos c\nLEFT JOIN contrato_contContrato cc\n  ON c.seq_contrato = cc.seq_contrato\n  AND c.ano_referencia = cc.ano_referencia\nWHERE c.ano_referencia = 2025\n  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)\n  AND (\n    (COALESCE(c.dsc_objetocontrato, '') ILIKE '%FEST%' AND COALESCE(c.dsc_objetocontrato, '') ILIKE '%TRABALH%')\n    OR\n    (COALESCE(c.dsc_naturezaobjeto, '') ILIKE '%FEST%' AND COALESCE(c.dsc_naturezaobjeto, '') ILIKE '%TRABALH%')\n  )\nORDER BY c.vlr_contrato DESC\nLIMIT 50;",
+    "explicacao": "1. Tabelas: Usarei contrato_contratos (c) para identificar o contrato e contrato_contContrato (cc) para obter o nome e documento do credor. 2. JOINs: Farei LEFT JOIN por seq_contrato e, para evitar produto cartesiano, também pela igualdade de ano (c.ano_referencia = cc.ano_referencia), conforme a regra de ouro. 3. Filtros (WHERE): Como o ano não foi informado, aplico ano_referencia = 2025. Restringo aos órgãos da prefeitura ampla com CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5). Para localizar o contrato da festa do trabalhador, aplico busca textual defensiva com ILIKE usando raízes (%FEST% e %TRABALH%) e COALESCE para contornar nulos, tanto em dsc_objetocontrato quanto em dsc_naturezaobjeto. 4. Ordenação e limites: Ordeno por valor do contrato (vlr_contrato) em ordem decrescente e limito a 50 linhas por se tratar de listagem exploratória.",
+    "tokens_in": 15868,
+    "tokens_out": 2913,
+    "gen_ms": 35240.23,
     "attempt": 1
   },
-  "query_sql": "SELECT cc.dsc_nome_credor, c.vlr_contrato, c.dsc_objetocontrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND c.dsc_objetocontrato ILIKE '%trabalhador%' AND c.vlr_contrato > 0 LIMIT 50;",
+  "query_sql": "SELECT\n  c.seq_contrato,\n  c.num_contrato,\n  c.num_ano_contrato,\n  c.dat_assinatura,\n  cc.dsc_nome_credor,\n  cc.num_doc_credor,\n  c.dsc_objetocontrato,\n  c.dsc_naturezaobjeto,\n  c.vlr_contrato\nFROM contrato_contratos c\nLEFT JOIN contrato_contContrato cc\n  ON c.seq_contrato = cc.seq_contrato\n  AND c.ano_referencia = cc.ano_referencia\nWHERE c.ano_referencia = 2025\n  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)\n  AND (\n    (COALESCE(c.dsc_objetocontrato, '') ILIKE '%FEST%' AND COALESCE(c.dsc_objetocontrato, '') ILIKE '%TRABALH%')\n    OR\n    (COALESCE(c.dsc_naturezaobjeto, '') ILIKE '%FEST%' AND COALESCE(c.dsc_naturezaobjeto, '') ILIKE '%TRABALH%')\n  )\nORDER BY c.vlr_contrato DESC\nLIMIT 50;",
   "execution": {
     "ok": true,
     "row_count": 1,
     "columns": [
+      "seq_contrato",
+      "num_contrato",
+      "num_ano_contrato",
+      "dat_assinatura",
       "dsc_nome_credor",
-      "vlr_contrato",
-      "dsc_objetocontrato"
+      "num_doc_credor",
+      "dsc_objetocontrato",
+      "dsc_naturezaobjeto",
+      "vlr_contrato"
     ],
     "preview_rows": [
       {
+        "seq_contrato": 3679884,
+        "num_contrato": 31,
+        "num_ano_contrato": 2025,
+        "dat_assinatura": 20250429,
         "dsc_nome_credor": "LEONARDO FILOMENO",
-        "vlr_contrato": 131950.0,
-        "dsc_objetocontrato": "Contratacao de empresa para prestacao de servico de buffet para realizacao do evento Festa do Dia do Trabalhador 2025 destinada aos Servidores Publicos do Poder Executivo Municipal de CaeteMG compreendendo a Prefeitura o Servico Autonomo de Agua e Esgoto SAAE a Fundacao Educacional de Caete FEC e Fundacao Casa de Cultura de Caete FCCC conforme Lei N °34702023"
+        "num_doc_credor": "11963458000162",
+        "dsc_objetocontrato": "Contratacao de empresa para prestacao de servico de buffet para realizacao do evento Festa do Dia do Trabalhador 2025 destinada aos Servidores Publicos do Poder Executivo Municipal de CaeteMG compreendendo a Prefeitura o Servico Autonomo de Agua e Esgoto SAAE a Fundacao Educacional de Caete FEC e Fundacao Casa de Cultura de Caete FCCC conforme Lei N °34702023",
+        "dsc_naturezaobjeto": "2 - COMPRAS E SERVIÇOS",
+        "vlr_contrato": 131950.0
       }
     ],
     "error": null
   },
-  "colunas_resposta_sugeridas": "dsc_nome_credor,vlr_contrato,dsc_objetocontrato"
+  "colunas_resposta_sugeridas": "dsc_nome_credor,dsc_objetocontrato,dsc_naturezaobjeto,vlr_contrato"
 }

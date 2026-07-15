@@ -1,30 +1,198 @@
 {
   "id_teste": "012",
   "input_usuario": "Liste a frota atual. Quero modelo, quilometragem rodada, ano de aquisição, consumo de combustível, consumo médio km/L, lotação.",
-  "assisted_at": "2026-07-15T01:34:44.345910+00:00",
-  "model": "gpt-4.1-mini",
+  "assisted_at": "2026-07-15T19:55:14.196857+00:00",
+  "model": "gpt-5",
   "generation": {
     "ok": true,
-    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Usarei frota_frota (f) para os dados do veículo e frota_gastoFrota (g) para os gastos e consumo. 2. JOINs: Cruzarei frota_gastoFrota com frota_frota pelo seq_veiculo, sem exigir ano_referencia no ON, mas filtrando frota_gastoFrota para ano_referencia = 2025 no WHERE. 3. Filtros: Aplicarei higiene de dados para excluir registros com dsc_marca contendo 'DIVERSOS' e dsc_num_placa em ('-1', 'NÃO INFORMADO'). 4. Cálculos: Quilometragem rodada será a soma da diferença entre num_marc_final e num_marc_inicial. Consumo de combustível será a soma do vlr_gasto onde dsc_tipo_gasto indica combustível (assumindo que consumo de combustível está relacionado a gastos com combustível, mas como não há coluna direta de litros consumidos, usarei soma de num_quant_utilizada para litros consumidos). Consumo médio km/L será quilometragem rodada dividida pelo consumo de combustível, usando divisão segura com NULLIF. 5. Lotação: Usarei dsc_lotacao da frota_frota. 6. Agrupamento: Agruparei por modelo, ano de fabricação e lotação para consolidar dados por veículo.\",\n  \"query_sql\": \"SELECT f.dsc_modelo AS modelo, SUM(CAST(g.num_marc_final AS DECIMAL) - CAST(g.num_marc_inicial AS DECIMAL)) AS quilometragem_rodada, f.num_anofabricacao AS ano_aquisicao, SUM(CAST(g.num_quant_utilizada AS DECIMAL)) AS consumo_combustivel, CAST(SUM(CAST(g.num_marc_final AS DECIMAL) - CAST(g.num_marc_inicial AS DECIMAL)) AS DECIMAL) / NULLIF(SUM(CAST(g.num_quant_utilizada AS DECIMAL)), 0) AS consumo_medio_km_l, f.dsc_lotacao AS lotacao FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') GROUP BY f.dsc_modelo, f.num_anofabricacao, f.dsc_lotacao LIMIT 50;\",\n  \"query_formatada\": \"SELECT\\n  f.dsc_modelo AS modelo,\\n  SUM(CAST(g.num_marc_final AS DECIMAL) - CAST(g.num_marc_inicial AS DECIMAL)) AS quilometragem_rodada,\\n  f.num_anofabricacao AS ano_aquisicao,\\n  SUM(CAST(g.num_quant_utilizada AS DECIMAL)) AS consumo_combustivel,\\n  CAST(SUM(CAST(g.num_marc_final AS DECIMAL) - CAST(g.num_marc_inicial AS DECIMAL)) AS DECIMAL) / NULLIF(SUM(CAST(g.num_quant_utilizada AS DECIMAL)), 0) AS consumo_medio_km_l,\\n  f.dsc_lotacao AS lotacao\\nFROM frota_gastoFrota g\\nJOIN frota_frota f\\n  ON g.seq_veiculo = f.seq_veiculo\\nWHERE g.ano_referencia = 2025\\n  AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%'\\n  AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO')\\nGROUP BY f.dsc_modelo, f.num_anofabricacao, f.dsc_lotacao\\nLIMIT 50;\"\n}",
+    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Usarei frota_gastoFrota (g) para calcular a quilometragem rodada (odômetro) e o consumo de combustível, frota_frota (f) para trazer o modelo e dados cadastrais do veículo, e orgao_orgaoUnidade (u) para identificar a lotação (unidade/subunidade). 2. CTEs e agregações: a) gastos_2025 agrega por veículo (seq_veiculo) SOMANDO a quilometragem rodada como SUM(CAST(num_marc_final AS DECIMAL) - CAST(num_marc_inicial AS DECIMAL)) e os litros consumidos apenas quando o dsc_tipo_gasto indicar combustíveis (roots: GASOL, DIESEL, ETAN, GNV, ALCO), sempre com CAST(... AS DECIMAL). b) unidades_2025 consolida uma linha por unidade/órgão no ano corrente (2025), usando MAX(dsc_unidade) e MAX(dsc_subunidade) para evitar duplicidade de registros mensais. 3. JOINs: g (movimentação) é agregado na CTE e depois JOIN com f EXCLUSIVAMENTE por g.seq_veiculo = f.seq_veiculo, sem exigir igualdade de ano (grande exceção de cadastro). Para lotação, LEFT JOIN f -> unidades_2025 por f.seq_unidade e f.seq_orgao (ambas de cadastro), já com u.ano_referencia = 2025 filtrado na própria CTE para evitar multiplicação de linhas. 4. Filtros (WHERE): a) Contexto temporal: assumi ano atual como 2025 (regra de usar ano_referencia quando não especificado) e filtrei g.ano_referencia = 2025. b) Prefeitura ampla: apliquei CAST(g.cod_orgao AS INTEGER) IN (2, 4, 5). c) Higiene de dados na frota (crítico): COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' e COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO'). 5. Cálculos: a) Quilometragem rodada = soma das diferenças de hodômetro (final - inicial) com CAST para DECIMAL. b) Consumo de combustível (litros) = soma de num_quant_utilizada quando o tipo do gasto remete a combustível; colunas sempre com CAST. c) Consumo médio km/L = km_rodado / NULLIF(litros, 0) usando NULLIF(denominador, 0) para divisão segura. 6. Campos solicitados: modelo (f.dsc_modelo), quilometragem rodada, ano de aquisição, consumo de combustível (litros), consumo médio km/L e lotação. Observação: não existe coluna explícita de 'ano de aquisição' na base; utilizei num_anofabricacao de frota_frota como melhor proxy. 7. Ordenação e limite: ordeno por modelo e aplico LIMIT 50 por se tratar de listagem exploratória.\",\n  \"query_sql\": \"WITH gastos_2025 AS (SELECT g.seq_veiculo, SUM(CAST(COALESCE(g.num_marc_final, 0) AS DECIMAL) - CAST(COALESCE(g.num_marc_inicial, 0) AS DECIMAL)) AS km_rodado, SUM(CASE WHEN COALESCE(g.dsc_tipo_gasto, '') ILIKE '%GASOL%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%DIESEL%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%ETAN%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%GNV%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%ALCO%' THEN CAST(COALESCE(g.num_quant_utilizada, 0) AS DECIMAL) ELSE CAST(0 AS DECIMAL) END) AS litros_consumidos FROM frota_gastoFrota g WHERE g.ano_referencia = 2025 AND CAST(g.cod_orgao AS INTEGER) IN (2, 4, 5) GROUP BY g.seq_veiculo), unidades_2025 AS (SELECT u.seq_unidade, u.seq_orgao, MAX(u.dsc_unidade) AS dsc_unidade, MAX(u.dsc_subunidade) AS dsc_subunidade FROM orgao_orgaoUnidade u WHERE u.ano_referencia = 2025 GROUP BY u.seq_unidade, u.seq_orgao) SELECT f.dsc_modelo AS modelo, CAST(f.num_anofabricacao AS INTEGER) AS ano_aquisicao, (COALESCE(u.dsc_unidade, '') || CASE WHEN COALESCE(u.dsc_subunidade, '') <> '' THEN ' - ' || u.dsc_subunidade ELSE '' END) AS lotacao, CAST(g.km_rodado AS DECIMAL) AS quilometragem_rodada, CAST(g.litros_consumidos AS DECIMAL) AS consumo_combustivel_litros, CAST(g.km_rodado AS DECIMAL) / NULLIF(CAST(g.litros_consumidos AS DECIMAL), 0) AS consumo_medio_km_por_litro FROM gastos_2025 g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo LEFT JOIN unidades_2025 u ON f.seq_unidade = u.seq_unidade AND f.seq_orgao = u.seq_orgao WHERE COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') ORDER BY f.dsc_modelo LIMIT 50;\",\n  \"query_formatada\": \"WITH\\n  gastos_2025 AS (\\n    SELECT\\n      g.seq_veiculo,\\n      SUM(\\n        CAST(COALESCE(g.num_marc_final, 0) AS DECIMAL)\\n        - CAST(COALESCE(g.num_marc_inicial, 0) AS DECIMAL)\\n      ) AS km_rodado,\\n      SUM(\\n        CASE\\n          WHEN COALESCE(g.dsc_tipo_gasto, '') ILIKE '%GASOL%'\\n            OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%DIESEL%'\\n            OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%ETAN%'\\n            OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%GNV%'\\n            OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%ALCO%'\\n          THEN CAST(COALESCE(g.num_quant_utilizada, 0) AS DECIMAL)\\n          ELSE CAST(0 AS DECIMAL)\\n        END\\n      ) AS litros_consumidos\\n    FROM frota_gastoFrota g\\n    WHERE g.ano_referencia = 2025\\n      AND CAST(g.cod_orgao AS INTEGER) IN (2, 4, 5)\\n    GROUP BY g.seq_veiculo\\n  ),\\n  unidades_2025 AS (\\n    SELECT\\n      u.seq_unidade,\\n      u.seq_orgao,\\n      MAX(u.dsc_unidade) AS dsc_unidade,\\n      MAX(u.dsc_subunidade) AS dsc_subunidade\\n    FROM orgao_orgaoUnidade u\\n    WHERE u.ano_referencia = 2025\\n    GROUP BY u.seq_unidade, u.seq_orgao\\n  )\\nSELECT\\n  f.dsc_modelo AS modelo,\\n  CAST(f.num_anofabricacao AS INTEGER) AS ano_aquisicao,\\n  (COALESCE(u.dsc_unidade, '') || CASE WHEN COALESCE(u.dsc_subunidade, '') <> '' THEN ' - ' || u.dsc_subunidade ELSE '' END) AS lotacao,\\n  CAST(g.km_rodado AS DECIMAL) AS quilometragem_rodada,\\n  CAST(g.litros_consumidos AS DECIMAL) AS consumo_combustivel_litros,\\n  CAST(g.km_rodado AS DECIMAL) / NULLIF(CAST(g.litros_consumidos AS DECIMAL), 0) AS consumo_medio_km_por_litro\\nFROM gastos_2025 g\\nJOIN frota_frota f\\n  ON g.seq_veiculo = f.seq_veiculo\\nLEFT JOIN unidades_2025 u\\n  ON f.seq_unidade = u.seq_unidade\\n  AND f.seq_orgao = u.seq_orgao\\nWHERE COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%'\\n  AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO')\\nORDER BY f.dsc_modelo\\nLIMIT 50;\"\n}",
     "parsed": {
-      "explicacao_tecnica": "1. Tabelas: Usarei frota_frota (f) para os dados do veículo e frota_gastoFrota (g) para os gastos e consumo. 2. JOINs: Cruzarei frota_gastoFrota com frota_frota pelo seq_veiculo, sem exigir ano_referencia no ON, mas filtrando frota_gastoFrota para ano_referencia = 2025 no WHERE. 3. Filtros: Aplicarei higiene de dados para excluir registros com dsc_marca contendo 'DIVERSOS' e dsc_num_placa em ('-1', 'NÃO INFORMADO'). 4. Cálculos: Quilometragem rodada será a soma da diferença entre num_marc_final e num_marc_inicial. Consumo de combustível será a soma do vlr_gasto onde dsc_tipo_gasto indica combustível (assumindo que consumo de combustível está relacionado a gastos com combustível, mas como não há coluna direta de litros consumidos, usarei soma de num_quant_utilizada para litros consumidos). Consumo médio km/L será quilometragem rodada dividida pelo consumo de combustível, usando divisão segura com NULLIF. 5. Lotação: Usarei dsc_lotacao da frota_frota. 6. Agrupamento: Agruparei por modelo, ano de fabricação e lotação para consolidar dados por veículo.",
-      "query_sql": "SELECT f.dsc_modelo AS modelo, SUM(CAST(g.num_marc_final AS DECIMAL) - CAST(g.num_marc_inicial AS DECIMAL)) AS quilometragem_rodada, f.num_anofabricacao AS ano_aquisicao, SUM(CAST(g.num_quant_utilizada AS DECIMAL)) AS consumo_combustivel, CAST(SUM(CAST(g.num_marc_final AS DECIMAL) - CAST(g.num_marc_inicial AS DECIMAL)) AS DECIMAL) / NULLIF(SUM(CAST(g.num_quant_utilizada AS DECIMAL)), 0) AS consumo_medio_km_l, f.dsc_lotacao AS lotacao FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') GROUP BY f.dsc_modelo, f.num_anofabricacao, f.dsc_lotacao LIMIT 50;",
-      "query_formatada": "SELECT\n  f.dsc_modelo AS modelo,\n  SUM(CAST(g.num_marc_final AS DECIMAL) - CAST(g.num_marc_inicial AS DECIMAL)) AS quilometragem_rodada,\n  f.num_anofabricacao AS ano_aquisicao,\n  SUM(CAST(g.num_quant_utilizada AS DECIMAL)) AS consumo_combustivel,\n  CAST(SUM(CAST(g.num_marc_final AS DECIMAL) - CAST(g.num_marc_inicial AS DECIMAL)) AS DECIMAL) / NULLIF(SUM(CAST(g.num_quant_utilizada AS DECIMAL)), 0) AS consumo_medio_km_l,\n  f.dsc_lotacao AS lotacao\nFROM frota_gastoFrota g\nJOIN frota_frota f\n  ON g.seq_veiculo = f.seq_veiculo\nWHERE g.ano_referencia = 2025\n  AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%'\n  AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO')\nGROUP BY f.dsc_modelo, f.num_anofabricacao, f.dsc_lotacao\nLIMIT 50;"
+      "explicacao_tecnica": "1. Tabelas: Usarei frota_gastoFrota (g) para calcular a quilometragem rodada (odômetro) e o consumo de combustível, frota_frota (f) para trazer o modelo e dados cadastrais do veículo, e orgao_orgaoUnidade (u) para identificar a lotação (unidade/subunidade). 2. CTEs e agregações: a) gastos_2025 agrega por veículo (seq_veiculo) SOMANDO a quilometragem rodada como SUM(CAST(num_marc_final AS DECIMAL) - CAST(num_marc_inicial AS DECIMAL)) e os litros consumidos apenas quando o dsc_tipo_gasto indicar combustíveis (roots: GASOL, DIESEL, ETAN, GNV, ALCO), sempre com CAST(... AS DECIMAL). b) unidades_2025 consolida uma linha por unidade/órgão no ano corrente (2025), usando MAX(dsc_unidade) e MAX(dsc_subunidade) para evitar duplicidade de registros mensais. 3. JOINs: g (movimentação) é agregado na CTE e depois JOIN com f EXCLUSIVAMENTE por g.seq_veiculo = f.seq_veiculo, sem exigir igualdade de ano (grande exceção de cadastro). Para lotação, LEFT JOIN f -> unidades_2025 por f.seq_unidade e f.seq_orgao (ambas de cadastro), já com u.ano_referencia = 2025 filtrado na própria CTE para evitar multiplicação de linhas. 4. Filtros (WHERE): a) Contexto temporal: assumi ano atual como 2025 (regra de usar ano_referencia quando não especificado) e filtrei g.ano_referencia = 2025. b) Prefeitura ampla: apliquei CAST(g.cod_orgao AS INTEGER) IN (2, 4, 5). c) Higiene de dados na frota (crítico): COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' e COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO'). 5. Cálculos: a) Quilometragem rodada = soma das diferenças de hodômetro (final - inicial) com CAST para DECIMAL. b) Consumo de combustível (litros) = soma de num_quant_utilizada quando o tipo do gasto remete a combustível; colunas sempre com CAST. c) Consumo médio km/L = km_rodado / NULLIF(litros, 0) usando NULLIF(denominador, 0) para divisão segura. 6. Campos solicitados: modelo (f.dsc_modelo), quilometragem rodada, ano de aquisição, consumo de combustível (litros), consumo médio km/L e lotação. Observação: não existe coluna explícita de 'ano de aquisição' na base; utilizei num_anofabricacao de frota_frota como melhor proxy. 7. Ordenação e limite: ordeno por modelo e aplico LIMIT 50 por se tratar de listagem exploratória.",
+      "query_sql": "WITH gastos_2025 AS (SELECT g.seq_veiculo, SUM(CAST(COALESCE(g.num_marc_final, 0) AS DECIMAL) - CAST(COALESCE(g.num_marc_inicial, 0) AS DECIMAL)) AS km_rodado, SUM(CASE WHEN COALESCE(g.dsc_tipo_gasto, '') ILIKE '%GASOL%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%DIESEL%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%ETAN%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%GNV%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%ALCO%' THEN CAST(COALESCE(g.num_quant_utilizada, 0) AS DECIMAL) ELSE CAST(0 AS DECIMAL) END) AS litros_consumidos FROM frota_gastoFrota g WHERE g.ano_referencia = 2025 AND CAST(g.cod_orgao AS INTEGER) IN (2, 4, 5) GROUP BY g.seq_veiculo), unidades_2025 AS (SELECT u.seq_unidade, u.seq_orgao, MAX(u.dsc_unidade) AS dsc_unidade, MAX(u.dsc_subunidade) AS dsc_subunidade FROM orgao_orgaoUnidade u WHERE u.ano_referencia = 2025 GROUP BY u.seq_unidade, u.seq_orgao) SELECT f.dsc_modelo AS modelo, CAST(f.num_anofabricacao AS INTEGER) AS ano_aquisicao, (COALESCE(u.dsc_unidade, '') || CASE WHEN COALESCE(u.dsc_subunidade, '') <> '' THEN ' - ' || u.dsc_subunidade ELSE '' END) AS lotacao, CAST(g.km_rodado AS DECIMAL) AS quilometragem_rodada, CAST(g.litros_consumidos AS DECIMAL) AS consumo_combustivel_litros, CAST(g.km_rodado AS DECIMAL) / NULLIF(CAST(g.litros_consumidos AS DECIMAL), 0) AS consumo_medio_km_por_litro FROM gastos_2025 g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo LEFT JOIN unidades_2025 u ON f.seq_unidade = u.seq_unidade AND f.seq_orgao = u.seq_orgao WHERE COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') ORDER BY f.dsc_modelo LIMIT 50;",
+      "query_formatada": "WITH\n  gastos_2025 AS (\n    SELECT\n      g.seq_veiculo,\n      SUM(\n        CAST(COALESCE(g.num_marc_final, 0) AS DECIMAL)\n        - CAST(COALESCE(g.num_marc_inicial, 0) AS DECIMAL)\n      ) AS km_rodado,\n      SUM(\n        CASE\n          WHEN COALESCE(g.dsc_tipo_gasto, '') ILIKE '%GASOL%'\n            OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%DIESEL%'\n            OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%ETAN%'\n            OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%GNV%'\n            OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%ALCO%'\n          THEN CAST(COALESCE(g.num_quant_utilizada, 0) AS DECIMAL)\n          ELSE CAST(0 AS DECIMAL)\n        END\n      ) AS litros_consumidos\n    FROM frota_gastoFrota g\n    WHERE g.ano_referencia = 2025\n      AND CAST(g.cod_orgao AS INTEGER) IN (2, 4, 5)\n    GROUP BY g.seq_veiculo\n  ),\n  unidades_2025 AS (\n    SELECT\n      u.seq_unidade,\n      u.seq_orgao,\n      MAX(u.dsc_unidade) AS dsc_unidade,\n      MAX(u.dsc_subunidade) AS dsc_subunidade\n    FROM orgao_orgaoUnidade u\n    WHERE u.ano_referencia = 2025\n    GROUP BY u.seq_unidade, u.seq_orgao\n  )\nSELECT\n  f.dsc_modelo AS modelo,\n  CAST(f.num_anofabricacao AS INTEGER) AS ano_aquisicao,\n  (COALESCE(u.dsc_unidade, '') || CASE WHEN COALESCE(u.dsc_subunidade, '') <> '' THEN ' - ' || u.dsc_subunidade ELSE '' END) AS lotacao,\n  CAST(g.km_rodado AS DECIMAL) AS quilometragem_rodada,\n  CAST(g.litros_consumidos AS DECIMAL) AS consumo_combustivel_litros,\n  CAST(g.km_rodado AS DECIMAL) / NULLIF(CAST(g.litros_consumidos AS DECIMAL), 0) AS consumo_medio_km_por_litro\nFROM gastos_2025 g\nJOIN frota_frota f\n  ON g.seq_veiculo = f.seq_veiculo\nLEFT JOIN unidades_2025 u\n  ON f.seq_unidade = u.seq_unidade\n  AND f.seq_orgao = u.seq_orgao\nWHERE COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%'\n  AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO')\nORDER BY f.dsc_modelo\nLIMIT 50;"
     },
-    "query_sql": "SELECT f.dsc_modelo AS modelo, SUM(CAST(g.num_marc_final AS DECIMAL) - CAST(g.num_marc_inicial AS DECIMAL)) AS quilometragem_rodada, f.num_anofabricacao AS ano_aquisicao, SUM(CAST(g.num_quant_utilizada AS DECIMAL)) AS consumo_combustivel, CAST(SUM(CAST(g.num_marc_final AS DECIMAL) - CAST(g.num_marc_inicial AS DECIMAL)) AS DECIMAL) / NULLIF(SUM(CAST(g.num_quant_utilizada AS DECIMAL)), 0) AS consumo_medio_km_l, f.dsc_lotacao AS lotacao FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') GROUP BY f.dsc_modelo, f.num_anofabricacao, f.dsc_lotacao LIMIT 50;",
-    "explicacao": "1. Tabelas: Usarei frota_frota (f) para os dados do veículo e frota_gastoFrota (g) para os gastos e consumo. 2. JOINs: Cruzarei frota_gastoFrota com frota_frota pelo seq_veiculo, sem exigir ano_referencia no ON, mas filtrando frota_gastoFrota para ano_referencia = 2025 no WHERE. 3. Filtros: Aplicarei higiene de dados para excluir registros com dsc_marca contendo 'DIVERSOS' e dsc_num_placa em ('-1', 'NÃO INFORMADO'). 4. Cálculos: Quilometragem rodada será a soma da diferença entre num_marc_final e num_marc_inicial. Consumo de combustível será a soma do vlr_gasto onde dsc_tipo_gasto indica combustível (assumindo que consumo de combustível está relacionado a gastos com combustível, mas como não há coluna direta de litros consumidos, usarei soma de num_quant_utilizada para litros consumidos). Consumo médio km/L será quilometragem rodada dividida pelo consumo de combustível, usando divisão segura com NULLIF. 5. Lotação: Usarei dsc_lotacao da frota_frota. 6. Agrupamento: Agruparei por modelo, ano de fabricação e lotação para consolidar dados por veículo.",
-    "tokens_in": 15894,
-    "tokens_out": 822,
-    "gen_ms": 17454.14,
+    "query_sql": "WITH gastos_2025 AS (SELECT g.seq_veiculo, SUM(CAST(COALESCE(g.num_marc_final, 0) AS DECIMAL) - CAST(COALESCE(g.num_marc_inicial, 0) AS DECIMAL)) AS km_rodado, SUM(CASE WHEN COALESCE(g.dsc_tipo_gasto, '') ILIKE '%GASOL%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%DIESEL%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%ETAN%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%GNV%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%ALCO%' THEN CAST(COALESCE(g.num_quant_utilizada, 0) AS DECIMAL) ELSE CAST(0 AS DECIMAL) END) AS litros_consumidos FROM frota_gastoFrota g WHERE g.ano_referencia = 2025 AND CAST(g.cod_orgao AS INTEGER) IN (2, 4, 5) GROUP BY g.seq_veiculo), unidades_2025 AS (SELECT u.seq_unidade, u.seq_orgao, MAX(u.dsc_unidade) AS dsc_unidade, MAX(u.dsc_subunidade) AS dsc_subunidade FROM orgao_orgaoUnidade u WHERE u.ano_referencia = 2025 GROUP BY u.seq_unidade, u.seq_orgao) SELECT f.dsc_modelo AS modelo, CAST(f.num_anofabricacao AS INTEGER) AS ano_aquisicao, (COALESCE(u.dsc_unidade, '') || CASE WHEN COALESCE(u.dsc_subunidade, '') <> '' THEN ' - ' || u.dsc_subunidade ELSE '' END) AS lotacao, CAST(g.km_rodado AS DECIMAL) AS quilometragem_rodada, CAST(g.litros_consumidos AS DECIMAL) AS consumo_combustivel_litros, CAST(g.km_rodado AS DECIMAL) / NULLIF(CAST(g.litros_consumidos AS DECIMAL), 0) AS consumo_medio_km_por_litro FROM gastos_2025 g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo LEFT JOIN unidades_2025 u ON f.seq_unidade = u.seq_unidade AND f.seq_orgao = u.seq_orgao WHERE COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') ORDER BY f.dsc_modelo LIMIT 50;",
+    "explicacao": "1. Tabelas: Usarei frota_gastoFrota (g) para calcular a quilometragem rodada (odômetro) e o consumo de combustível, frota_frota (f) para trazer o modelo e dados cadastrais do veículo, e orgao_orgaoUnidade (u) para identificar a lotação (unidade/subunidade). 2. CTEs e agregações: a) gastos_2025 agrega por veículo (seq_veiculo) SOMANDO a quilometragem rodada como SUM(CAST(num_marc_final AS DECIMAL) - CAST(num_marc_inicial AS DECIMAL)) e os litros consumidos apenas quando o dsc_tipo_gasto indicar combustíveis (roots: GASOL, DIESEL, ETAN, GNV, ALCO), sempre com CAST(... AS DECIMAL). b) unidades_2025 consolida uma linha por unidade/órgão no ano corrente (2025), usando MAX(dsc_unidade) e MAX(dsc_subunidade) para evitar duplicidade de registros mensais. 3. JOINs: g (movimentação) é agregado na CTE e depois JOIN com f EXCLUSIVAMENTE por g.seq_veiculo = f.seq_veiculo, sem exigir igualdade de ano (grande exceção de cadastro). Para lotação, LEFT JOIN f -> unidades_2025 por f.seq_unidade e f.seq_orgao (ambas de cadastro), já com u.ano_referencia = 2025 filtrado na própria CTE para evitar multiplicação de linhas. 4. Filtros (WHERE): a) Contexto temporal: assumi ano atual como 2025 (regra de usar ano_referencia quando não especificado) e filtrei g.ano_referencia = 2025. b) Prefeitura ampla: apliquei CAST(g.cod_orgao AS INTEGER) IN (2, 4, 5). c) Higiene de dados na frota (crítico): COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' e COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO'). 5. Cálculos: a) Quilometragem rodada = soma das diferenças de hodômetro (final - inicial) com CAST para DECIMAL. b) Consumo de combustível (litros) = soma de num_quant_utilizada quando o tipo do gasto remete a combustível; colunas sempre com CAST. c) Consumo médio km/L = km_rodado / NULLIF(litros, 0) usando NULLIF(denominador, 0) para divisão segura. 6. Campos solicitados: modelo (f.dsc_modelo), quilometragem rodada, ano de aquisição, consumo de combustível (litros), consumo médio km/L e lotação. Observação: não existe coluna explícita de 'ano de aquisição' na base; utilizei num_anofabricacao de frota_frota como melhor proxy. 7. Ordenação e limite: ordeno por modelo e aplico LIMIT 50 por se tratar de listagem exploratória.",
+    "tokens_in": 15893,
+    "tokens_out": 6395,
+    "gen_ms": 77437.39,
     "attempt": 1
   },
-  "query_sql": "SELECT f.dsc_modelo AS modelo, SUM(CAST(g.num_marc_final AS DECIMAL) - CAST(g.num_marc_inicial AS DECIMAL)) AS quilometragem_rodada, f.num_anofabricacao AS ano_aquisicao, SUM(CAST(g.num_quant_utilizada AS DECIMAL)) AS consumo_combustivel, CAST(SUM(CAST(g.num_marc_final AS DECIMAL) - CAST(g.num_marc_inicial AS DECIMAL)) AS DECIMAL) / NULLIF(SUM(CAST(g.num_quant_utilizada AS DECIMAL)), 0) AS consumo_medio_km_l, f.dsc_lotacao AS lotacao FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') GROUP BY f.dsc_modelo, f.num_anofabricacao, f.dsc_lotacao LIMIT 50;",
+  "query_sql": "WITH gastos_2025 AS (SELECT g.seq_veiculo, SUM(CAST(COALESCE(g.num_marc_final, 0) AS DECIMAL) - CAST(COALESCE(g.num_marc_inicial, 0) AS DECIMAL)) AS km_rodado, SUM(CASE WHEN COALESCE(g.dsc_tipo_gasto, '') ILIKE '%GASOL%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%DIESEL%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%ETAN%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%GNV%' OR COALESCE(g.dsc_tipo_gasto, '') ILIKE '%ALCO%' THEN CAST(COALESCE(g.num_quant_utilizada, 0) AS DECIMAL) ELSE CAST(0 AS DECIMAL) END) AS litros_consumidos FROM frota_gastoFrota g WHERE g.ano_referencia = 2025 AND CAST(g.cod_orgao AS INTEGER) IN (2, 4, 5) GROUP BY g.seq_veiculo), unidades_2025 AS (SELECT u.seq_unidade, u.seq_orgao, MAX(u.dsc_unidade) AS dsc_unidade, MAX(u.dsc_subunidade) AS dsc_subunidade FROM orgao_orgaoUnidade u WHERE u.ano_referencia = 2025 GROUP BY u.seq_unidade, u.seq_orgao) SELECT f.dsc_modelo AS modelo, CAST(f.num_anofabricacao AS INTEGER) AS ano_aquisicao, (COALESCE(u.dsc_unidade, '') || CASE WHEN COALESCE(u.dsc_subunidade, '') <> '' THEN ' - ' || u.dsc_subunidade ELSE '' END) AS lotacao, CAST(g.km_rodado AS DECIMAL) AS quilometragem_rodada, CAST(g.litros_consumidos AS DECIMAL) AS consumo_combustivel_litros, CAST(g.km_rodado AS DECIMAL) / NULLIF(CAST(g.litros_consumidos AS DECIMAL), 0) AS consumo_medio_km_por_litro FROM gastos_2025 g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo LEFT JOIN unidades_2025 u ON f.seq_unidade = u.seq_unidade AND f.seq_orgao = u.seq_orgao WHERE COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') ORDER BY f.dsc_modelo LIMIT 50;",
   "execution": {
-    "ok": false,
-    "row_count": 0,
-    "columns": [],
-    "preview_rows": [],
-    "error": "Binder Error: Values list \"f\" does not have a column named \"dsc_lotacao\"\n\nLINE 1: ..., 'NÃO INFORMADO') GROUP BY f.dsc_modelo, f.num_anofabricacao, f.dsc_lotacao LIMIT 50;\n                                                                          ^"
+    "ok": true,
+    "row_count": 50,
+    "columns": [
+      "modelo",
+      "ano_aquisicao",
+      "lotacao",
+      "quilometragem_rodada",
+      "consumo_combustivel_litros",
+      "consumo_medio_km_por_litro"
+    ],
+    "preview_rows": [
+      {
+        "modelo": "000CA406AMC4W4140",
+        "ano_aquisicao": 2013,
+        "lotacao": "",
+        "quilometragem_rodada": 0.0,
+        "consumo_combustivel_litros": 1512.69,
+        "consumo_medio_km_por_litro": 0.0
+      },
+      {
+        "modelo": "1 TXE TXI 22",
+        "ano_aquisicao": 2014,
+        "lotacao": "",
+        "quilometragem_rodada": 0.0,
+        "consumo_combustivel_litros": 0.0,
+        "consumo_medio_km_por_litro": null
+      },
+      {
+        "modelo": "145 QV",
+        "ano_aquisicao": 2015,
+        "lotacao": "",
+        "quilometragem_rodada": 0.0,
+        "consumo_combustivel_litros": 168.13,
+        "consumo_medio_km_por_litro": 0.0
+      },
+      {
+        "modelo": "914 2P DIESEL",
+        "ano_aquisicao": 1994,
+        "lotacao": "",
+        "quilometragem_rodada": 773.0,
+        "consumo_combustivel_litros": 711.87,
+        "consumo_medio_km_por_litro": 1.0858724205
+      },
+      {
+        "modelo": "AIRCROSS GL 16 FLEX 16V 5P",
+        "ano_aquisicao": 2018,
+        "lotacao": "",
+        "quilometragem_rodada": 3214.0,
+        "consumo_combustivel_litros": 530.32,
+        "consumo_medio_km_por_litro": 6.0604917785
+      },
+      {
+        "modelo": "ARGO 10",
+        "ano_aquisicao": 2023,
+        "lotacao": "",
+        "quilometragem_rodada": 8677.0,
+        "consumo_combustivel_litros": 699.89,
+        "consumo_medio_km_por_litro": 12.3976624898
+      },
+      {
+        "modelo": "ARGO 10",
+        "ano_aquisicao": 2023,
+        "lotacao": "",
+        "quilometragem_rodada": 8344.0,
+        "consumo_combustivel_litros": 919.13,
+        "consumo_medio_km_por_litro": 9.0781499897
+      },
+      {
+        "modelo": "ARGO 10",
+        "ano_aquisicao": 2023,
+        "lotacao": "",
+        "quilometragem_rodada": 20365.0,
+        "consumo_combustivel_litros": 1253.53,
+        "consumo_medio_km_por_litro": 16.2461209544
+      },
+      {
+        "modelo": "BLAZER JIMMY 43 V6",
+        "ano_aquisicao": 2009,
+        "lotacao": "",
+        "quilometragem_rodada": 0.0,
+        "consumo_combustivel_litros": 0.0,
+        "consumo_medio_km_por_litro": null
+      },
+      {
+        "modelo": "CA152PD DYNAPAC",
+        "ano_aquisicao": 2010,
+        "lotacao": "",
+        "quilometragem_rodada": 0.0,
+        "consumo_combustivel_litros": 0.0,
+        "consumo_medio_km_por_litro": null
+      },
+      {
+        "modelo": "CHEROLET S10 LS DD4",
+        "ano_aquisicao": 2021,
+        "lotacao": "",
+        "quilometragem_rodada": 10857.0,
+        "consumo_combustivel_litros": 1451.67,
+        "consumo_medio_km_por_litro": 7.4789724937
+      },
+      {
+        "modelo": "CRM 6X4",
+        "ano_aquisicao": 2013,
+        "lotacao": "",
+        "quilometragem_rodada": 0.0,
+        "consumo_combustivel_litros": 0.0,
+        "consumo_medio_km_por_litro": null
+      },
+      {
+        "modelo": "DOBLO CARGO 14 MPI FIRE FLEX 8V 4P",
+        "ano_aquisicao": 2014,
+        "lotacao": "",
+        "quilometragem_rodada": 2886.0,
+        "consumo_combustivel_litros": 52.48,
+        "consumo_medio_km_por_litro": 54.9923780488
+      },
+      {
+        "modelo": "DOBLO CARGO 14 MPI FIRE FLEX 8V 4P",
+        "ano_aquisicao": 2014,
+        "lotacao": "",
+        "quilometragem_rodada": 38130.0,
+        "consumo_combustivel_litros": 1243.79,
+        "consumo_medio_km_por_litro": 30.6563005009
+      },
+      {
+        "modelo": "DOBLO CARGO 18 MPI FLEX",
+        "ano_aquisicao": 2016,
+        "lotacao": "",
+        "quilometragem_rodada": 29958.0,
+        "consumo_combustivel_litros": 1747.44,
+        "consumo_medio_km_por_litro": 17.1439362725
+      },
+      {
+        "modelo": "DOBLO HLX 18 MPI FLEX 5P",
+        "ano_aquisicao": 2016,
+        "lotacao": "",
+        "quilometragem_rodada": 8151.0,
+        "consumo_combustivel_litros": 976.79,
+        "consumo_medio_km_por_litro": 8.3446800233
+      },
+      {
+        "modelo": "DOBLO HLX 18 MPI FLEX 5P",
+        "ano_aquisicao": 2016,
+        "lotacao": "",
+        "quilometragem_rodada": 31829.0,
+        "consumo_combustivel_litros": 1607.23,
+        "consumo_medio_km_por_litro": 19.8036373139
+      },
+      {
+        "modelo": "EUROCARGO 170E21 2P DIESEL",
+        "ano_aquisicao": 2021,
+        "lotacao": "",
+        "quilometragem_rodada": 5777.0,
+        "consumo_combustivel_litros": 2924.56,
+        "consumo_medio_km_por_litro": 1.9753398802
+      },
+      {
+        "modelo": "FIAT TORO FREEDOM AT9 D",
+        "ano_aquisicao": 2022,
+        "lotacao": "",
+        "quilometragem_rodada": 42934.0,
+        "consumo_combustivel_litros": 1529.34,
+        "consumo_medio_km_por_litro": 28.0735480665
+      },
+      {
+        "modelo": "FIAT TORO FREEDOM AT9 D",
+        "ano_aquisicao": 2022,
+        "lotacao": "",
+        "quilometragem_rodada": 12610.0,
+        "consumo_combustivel_litros": 698.91,
+        "consumo_medio_km_por_litro": 18.0423802779
+      }
+    ],
+    "error": null
   },
-  "colunas_resposta_sugeridas": ""
+  "colunas_resposta_sugeridas": "modelo,lotacao,quilometragem_rodada,consumo_combustivel_litros,consumo_medio_km_por_litro"
 }

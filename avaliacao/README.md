@@ -50,7 +50,9 @@ Em construção em `dados/golden/v2.0/`. Ver [`dados/golden/v2.0/README.md`](dad
 
 ```powershell
 # Propõe SQL para um item (requer OPENAI_API_KEY)
+# Padrão: gpt-5 (config golden_assist.model) — mais capaz que o E1 para redigir gabarito
 python scripts/golden_assist.py --id 001 --apply
+python scripts/golden_assist.py --all --apply   # reprocessa os 14 com o modelo configurado
 
 # Pacote de revisão para o avaliador
 python scripts/golden_review_export.py

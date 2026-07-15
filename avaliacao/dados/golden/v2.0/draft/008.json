@@ -1,51 +1,44 @@
 {
   "id_teste": "008",
   "input_usuario": "Qual a empresa de transporte presta serviço em Caeté mg",
-  "assisted_at": "2026-07-15T01:33:29.477261+00:00",
-  "model": "gpt-4.1-mini",
+  "assisted_at": "2026-07-15T19:48:14.640473+00:00",
+  "model": "gpt-5",
   "generation": {
     "ok": true,
-    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Usarei frota_frota (f) para cadastro dos veículos e frota_gastoFrota (g) para os gastos relacionados à frota, que indicam os serviços prestados. 2. JOINs: Cruzarei frota_gastoFrota com frota_frota pelo seq_veiculo, sem exigir igualdade de ano no ON, pois frota_frota é tabela de cadastro. 3. Filtros: ano_referencia = 2025 na tabela frota_gastoFrota para garantir dados do ano solicitado. Também aplicarei filtros para remover registros sujos: em frota_frota, dsc_marca não pode conter 'DIVERSOS' e dsc_num_placa não pode ser '-1' ou 'NÃO INFORMADO'. 4. Seleção: Listarei os nomes dos proprietários (nom_proprietario) que prestam serviço, agrupando para evitar duplicatas. 5. Limite: Limitarei a 50 registros para listagem exploratória.\",\n  \"query_sql\": \"SELECT DISTINCT f.nom_proprietario FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') AND COALESCE(f.nom_proprietario, '') NOT ILIKE '%NAO INFORMADO%' LIMIT 50;\",\n  \"query_formatada\": \"SELECT\\n  DISTINCT f.nom_proprietario\\nFROM frota_gastoFrota g\\nJOIN frota_frota f\\n  ON g.seq_veiculo = f.seq_veiculo\\nWHERE g.ano_referencia = 2025\\n  AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%'\\n  AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO')\\n  AND COALESCE(f.nom_proprietario, '') NOT ILIKE '%NAO INFORMADO%'\\nLIMIT 50;\"\n}",
+    "raw": "{\n  \"explicacao_tecnica\": \"1. Tabelas: Usarei contrato_contratos (c) para identificar contratos e contrato_contContrato (cc) para obter o CNPJ/CPF e o nome do credor (empresa). 2. JOINs: Farei LEFT JOIN por seq_contrato e obrigatoriamente com igualdade de ano_referencia para evitar produto cartesiano. 3. Filtros: a) ano_referencia = 2025 (padrão quando o usuário não informa o ano); b) CAST(c.cod_orgao AS INTEGER) IN (2,4,5) para focar na Prefeitura; c) dsc_objetocontrato ILIKE '%Transp%' usando a raiz para capturar termos como Transporte/Transporte Escolar; d) Higiene de cadastro no credor: excluo nomes 'NAO INFORMADO' e documentos '-1' ou '0' para evitar lixo. 4. Seleção: Listarei as empresas (credor) distintas com seu documento, número do contrato, data e objeto para contexto. 5. Ordenação e limite: Ordeno por nome do credor e aplico LIMIT 50 por ser consulta exploratória.\",\n  \"query_sql\": \"SELECT DISTINCT cc.num_doc_credor AS cnpj_cpf_credor, cc.dsc_nome_credor, c.num_contrato, c.dat_assinatura, c.dsc_objetocontrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND c.dsc_objetocontrato ILIKE '%Transp%' AND COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(cc.num_doc_credor, '') NOT IN ('-1', '0') ORDER BY cc.dsc_nome_credor LIMIT 50;\",\n  \"query_formatada\": \"SELECT DISTINCT\\n  cc.num_doc_credor AS cnpj_cpf_credor,\\n  cc.dsc_nome_credor,\\n  c.num_contrato,\\n  c.dat_assinatura,\\n  c.dsc_objetocontrato\\nFROM contrato_contratos c\\nLEFT JOIN contrato_contContrato cc\\n  ON c.seq_contrato = cc.seq_contrato\\n  AND c.ano_referencia = cc.ano_referencia\\nWHERE c.ano_referencia = 2025\\n  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)\\n  AND c.dsc_objetocontrato ILIKE '%Transp%'\\n  AND COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%'\\n  AND COALESCE(cc.num_doc_credor, '') NOT IN ('-1', '0')\\nORDER BY cc.dsc_nome_credor\\nLIMIT 50;\"\n}",
     "parsed": {
-      "explicacao_tecnica": "1. Tabelas: Usarei frota_frota (f) para cadastro dos veículos e frota_gastoFrota (g) para os gastos relacionados à frota, que indicam os serviços prestados. 2. JOINs: Cruzarei frota_gastoFrota com frota_frota pelo seq_veiculo, sem exigir igualdade de ano no ON, pois frota_frota é tabela de cadastro. 3. Filtros: ano_referencia = 2025 na tabela frota_gastoFrota para garantir dados do ano solicitado. Também aplicarei filtros para remover registros sujos: em frota_frota, dsc_marca não pode conter 'DIVERSOS' e dsc_num_placa não pode ser '-1' ou 'NÃO INFORMADO'. 4. Seleção: Listarei os nomes dos proprietários (nom_proprietario) que prestam serviço, agrupando para evitar duplicatas. 5. Limite: Limitarei a 50 registros para listagem exploratória.",
-      "query_sql": "SELECT DISTINCT f.nom_proprietario FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') AND COALESCE(f.nom_proprietario, '') NOT ILIKE '%NAO INFORMADO%' LIMIT 50;",
-      "query_formatada": "SELECT\n  DISTINCT f.nom_proprietario\nFROM frota_gastoFrota g\nJOIN frota_frota f\n  ON g.seq_veiculo = f.seq_veiculo\nWHERE g.ano_referencia = 2025\n  AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%'\n  AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO')\n  AND COALESCE(f.nom_proprietario, '') NOT ILIKE '%NAO INFORMADO%'\nLIMIT 50;"
+      "explicacao_tecnica": "1. Tabelas: Usarei contrato_contratos (c) para identificar contratos e contrato_contContrato (cc) para obter o CNPJ/CPF e o nome do credor (empresa). 2. JOINs: Farei LEFT JOIN por seq_contrato e obrigatoriamente com igualdade de ano_referencia para evitar produto cartesiano. 3. Filtros: a) ano_referencia = 2025 (padrão quando o usuário não informa o ano); b) CAST(c.cod_orgao AS INTEGER) IN (2,4,5) para focar na Prefeitura; c) dsc_objetocontrato ILIKE '%Transp%' usando a raiz para capturar termos como Transporte/Transporte Escolar; d) Higiene de cadastro no credor: excluo nomes 'NAO INFORMADO' e documentos '-1' ou '0' para evitar lixo. 4. Seleção: Listarei as empresas (credor) distintas com seu documento, número do contrato, data e objeto para contexto. 5. Ordenação e limite: Ordeno por nome do credor e aplico LIMIT 50 por ser consulta exploratória.",
+      "query_sql": "SELECT DISTINCT cc.num_doc_credor AS cnpj_cpf_credor, cc.dsc_nome_credor, c.num_contrato, c.dat_assinatura, c.dsc_objetocontrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND c.dsc_objetocontrato ILIKE '%Transp%' AND COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(cc.num_doc_credor, '') NOT IN ('-1', '0') ORDER BY cc.dsc_nome_credor LIMIT 50;",
+      "query_formatada": "SELECT DISTINCT\n  cc.num_doc_credor AS cnpj_cpf_credor,\n  cc.dsc_nome_credor,\n  c.num_contrato,\n  c.dat_assinatura,\n  c.dsc_objetocontrato\nFROM contrato_contratos c\nLEFT JOIN contrato_contContrato cc\n  ON c.seq_contrato = cc.seq_contrato\n  AND c.ano_referencia = cc.ano_referencia\nWHERE c.ano_referencia = 2025\n  AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5)\n  AND c.dsc_objetocontrato ILIKE '%Transp%'\n  AND COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%'\n  AND COALESCE(cc.num_doc_credor, '') NOT IN ('-1', '0')\nORDER BY cc.dsc_nome_credor\nLIMIT 50;"
     },
-    "query_sql": "SELECT DISTINCT f.nom_proprietario FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') AND COALESCE(f.nom_proprietario, '') NOT ILIKE '%NAO INFORMADO%' LIMIT 50;",
-    "explicacao": "1. Tabelas: Usarei frota_frota (f) para cadastro dos veículos e frota_gastoFrota (g) para os gastos relacionados à frota, que indicam os serviços prestados. 2. JOINs: Cruzarei frota_gastoFrota com frota_frota pelo seq_veiculo, sem exigir igualdade de ano no ON, pois frota_frota é tabela de cadastro. 3. Filtros: ano_referencia = 2025 na tabela frota_gastoFrota para garantir dados do ano solicitado. Também aplicarei filtros para remover registros sujos: em frota_frota, dsc_marca não pode conter 'DIVERSOS' e dsc_num_placa não pode ser '-1' ou 'NÃO INFORMADO'. 4. Seleção: Listarei os nomes dos proprietários (nom_proprietario) que prestam serviço, agrupando para evitar duplicatas. 5. Limite: Limitarei a 50 registros para listagem exploratória.",
-    "tokens_in": 15875,
-    "tokens_out": 477,
-    "gen_ms": 15051.57,
+    "query_sql": "SELECT DISTINCT cc.num_doc_credor AS cnpj_cpf_credor, cc.dsc_nome_credor, c.num_contrato, c.dat_assinatura, c.dsc_objetocontrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND c.dsc_objetocontrato ILIKE '%Transp%' AND COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(cc.num_doc_credor, '') NOT IN ('-1', '0') ORDER BY cc.dsc_nome_credor LIMIT 50;",
+    "explicacao": "1. Tabelas: Usarei contrato_contratos (c) para identificar contratos e contrato_contContrato (cc) para obter o CNPJ/CPF e o nome do credor (empresa). 2. JOINs: Farei LEFT JOIN por seq_contrato e obrigatoriamente com igualdade de ano_referencia para evitar produto cartesiano. 3. Filtros: a) ano_referencia = 2025 (padrão quando o usuário não informa o ano); b) CAST(c.cod_orgao AS INTEGER) IN (2,4,5) para focar na Prefeitura; c) dsc_objetocontrato ILIKE '%Transp%' usando a raiz para capturar termos como Transporte/Transporte Escolar; d) Higiene de cadastro no credor: excluo nomes 'NAO INFORMADO' e documentos '-1' ou '0' para evitar lixo. 4. Seleção: Listarei as empresas (credor) distintas com seu documento, número do contrato, data e objeto para contexto. 5. Ordenação e limite: Ordeno por nome do credor e aplico LIMIT 50 por ser consulta exploratória.",
+    "tokens_in": 15874,
+    "tokens_out": 2638,
+    "gen_ms": 31245.05,
     "attempt": 1
   },
-  "query_sql": "SELECT DISTINCT f.nom_proprietario FROM frota_gastoFrota g JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo WHERE g.ano_referencia = 2025 AND COALESCE(f.dsc_marca, '') NOT ILIKE '%DIVERSOS%' AND COALESCE(f.dsc_num_placa, '') NOT IN ('-1', 'NÃO INFORMADO') AND COALESCE(f.nom_proprietario, '') NOT ILIKE '%NAO INFORMADO%' LIMIT 50;",
+  "query_sql": "SELECT DISTINCT cc.num_doc_credor AS cnpj_cpf_credor, cc.dsc_nome_credor, c.num_contrato, c.dat_assinatura, c.dsc_objetocontrato FROM contrato_contratos c LEFT JOIN contrato_contContrato cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia WHERE c.ano_referencia = 2025 AND CAST(c.cod_orgao AS INTEGER) IN (2, 4, 5) AND c.dsc_objetocontrato ILIKE '%Transp%' AND COALESCE(cc.dsc_nome_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(cc.num_doc_credor, '') NOT IN ('-1', '0') ORDER BY cc.dsc_nome_credor LIMIT 50;",
   "execution": {
     "ok": true,
-    "row_count": 6,
+    "row_count": 1,
     "columns": [
-      "nom_proprietario"
+      "cnpj_cpf_credor",
+      "dsc_nome_credor",
+      "num_contrato",
+      "dat_assinatura",
+      "dsc_objetocontrato"
     ],
     "preview_rows": [
       {
-        "nom_proprietario": "ESTRELA LOGISTICA LTDA"
-      },
-      {
-        "nom_proprietario": "VALOR LOCACOES EIRELI."
-      },
-      {
-        "nom_proprietario": "ESTRELA LOCACOES EIRELIEPP"
-      },
-      {
-        "nom_proprietario": "ESTRELA PRESTADORA DE SERVICOS LTDA-ME"
-      },
-      {
-        "nom_proprietario": "VALOR LOCACOES EIRELI - ME"
-      },
-      {
-        "nom_proprietario": "MATOS & SILVA, TRANSPORTES,COM. E SERVICOS LTDA"
+        "cnpj_cpf_credor": "50528528000106",
+        "dsc_nome_credor": "GCP LOCACOES E SERVICOS LTDA",
+        "num_contrato": 25,
+        "dat_assinatura": 20250422,
+        "dsc_objetocontrato": "Contratacao de empresa especializada em construcao civil para execucao de Recapeamento asfaltico em CBUQ nas Ruas 6 6A 7 e Rua Pedestre no Bairro Emboabas com fornecimento de material e maodeobra necessaria para executar a obra Plano de Trabalho devidamente aprovado pelo Estado de Minas Gerais por intermedio do Sistema Nacional de Pesquisa de Custos e Indices da Construcao Civil SINAPI Secretaria de Estado de Transportes e Obras Publicas SETOPI e Superintendencia de Desenvolvimento"
       }
     ],
     "error": null
   },
-  "colunas_resposta_sugeridas": "nom_proprietario"
+  "colunas_resposta_sugeridas": "dsc_nome_credor,dsc_objetocontrato"
 }
