@@ -64,6 +64,9 @@ services:
     container_name: duckdb_prefeitura
     restart: always
     working_dir: /app
+    environment:
+      DUCKDB_MATERIALIZE: "${DUCKDB_MATERIALIZE:-1}"
+      DUCKDB_TYPED: "${DUCKDB_TYPED:-0}"
     volumes:
       - ./scripts_python:/app
       - ./avaliacao/dados:/gov/dados

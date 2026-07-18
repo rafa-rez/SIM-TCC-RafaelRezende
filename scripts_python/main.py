@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
+import asyncio
 import duckdb
 import os
 import re
@@ -143,11 +144,49 @@ if MATERIALIZAR_TABELAS:
         except Exception as e:
             add_log("ERROR", f"Falha ao materializar {_v}: {e}")
     add_log("SUCCESS", f"{_ok}/{len(_views)} tabelas materializadas em {time.time() - _t0:.1f}s.")
+    # Modo tipado (opt-in via DUCKDB_TYPED=1): converte vlr_* VARCHAR em DECIMAL
+    # e dat_* numericas em DATE. Lixo vira NULL (TRY_CAST). Fica desligado por
+    # padrao porque as queries de referencia do golden v1 assumem os tipos crus.
+    if os.environ.get("DUCKDB_TYPED", "0") == "1":
+        add_log("INFO", "DUCKDB_TYPED=1: tipando colunas vlr_* e dat_*...")
+        _t0 = time.time()
+        _cols = con.execute(
+            "SELECT table_name, column_name, data_type FROM information_schema.columns "
+            "WHERE table_schema = 'main'"
+        ).fetchall()
+        _n_dec = _n_dat = 0
+        for _t, _c, _dt in _cols:
+            try:
+                if _c.startswith("vlr_") and "VARCHAR" in _dt.upper():
+                    con.execute(
+                        f'ALTER TABLE "{_t}" ALTER COLUMN "{_c}" TYPE DECIMAL(18,3) '
+                        f'USING TRY_CAST("{_c}" AS DECIMAL(18,3))'
+                    )
+                    _n_dec += 1
+                elif _c.startswith("dat_") and ("INT" in _dt.upper() or "BIGINT" in _dt.upper()):
+                    con.execute(
+                        f'ALTER TABLE "{_t}" ALTER COLUMN "{_c}" TYPE DATE '
+                        f'USING TRY_CAST(strptime(CAST("{_c}" AS VARCHAR), \'%Y%m%d\') AS DATE)'
+                    )
+                    _n_dat += 1
+            except Exception as e:
+                add_log("ERROR", f"Falha ao tipar {_t}.{_c}: {e}")
+        add_log("SUCCESS", f"Tipagem: {_n_dec} colunas DECIMAL, {_n_dat} DATE em {time.time() - _t0:.1f}s.")
+
     try:
         con.execute("SET enable_external_access = false")
         add_log("INFO", "Acesso a arquivos desabilitado no DuckDB (seguranca).")
     except Exception as e:
         add_log("ERROR", f"Nao foi possivel desabilitar acesso externo: {e}")
+
+
+def _run_sql_df(sql: str) -> pd.DataFrame:
+    """Executa em cursor próprio (thread-safe); usado via asyncio.to_thread."""
+    cur = con.cursor()
+    try:
+        return cur.execute(sql).df()
+    finally:
+        cur.close()
 
 # ==============================================================================
 # 3. Modelos e Memória
@@ -178,7 +217,7 @@ async def execute_query(request: QueryRequest):
     }
     
     try:
-        todas_views = con.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'main'").df()['table_name'].tolist()
+        todas_views = _run_sql_df("SELECT table_name FROM information_schema.tables WHERE table_schema = 'main'")['table_name'].tolist()
         views_identificadas = [v for v in todas_views if v.lower() in request.query.lower()]
         current_call["views_used"] = views_identificadas
         if views_identificadas:
@@ -199,7 +238,7 @@ async def execute_query(request: QueryRequest):
                 else:
                     q_files = f"SELECT DISTINCT string_split(filename, '/')[-1] as file FROM {view}"
                 
-                df_files = con.execute(q_files).df()
+                df_files = _run_sql_df(q_files)
                 if not df_files.empty:
                     arquivos_origem.extend(df_files['file'].tolist())
     except Exception as e:
@@ -207,7 +246,8 @@ async def execute_query(request: QueryRequest):
 
     try:
         add_log("WORK", "Executando carga em memoria no DuckDB...")
-        result_df = con.execute(request.query).df()
+        # Em thread separada: uma query pesada não congela a API (/health, /ping).
+        result_df = await asyncio.to_thread(_run_sql_df, request.query)
         
         arquivos_unicos = list(set(arquivos_origem))
         
