@@ -1,7 +1,8 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 import duckdb
+import os
 import re
 import pandas as pd
 from pathlib import Path
@@ -117,10 +118,44 @@ else:
     add_log("WORK", "Pasta da CGU não encontrada. Apenas dados municipais disponíveis.")
 
 # ==============================================================================
+# 2.C Materialização (tabelas em memória) e trava de segurança
+# ==============================================================================
+# Views sobre read_csv_auto relêem os CSVs a CADA query (~1,5s por COUNT).
+# Materializar uma vez no boot deixa as consultas em milissegundos e permite
+# desabilitar acesso a arquivos (bloqueia COPY TO etc. em SQL arbitrário).
+MATERIALIZAR_TABELAS = os.environ.get("DUCKDB_MATERIALIZE", "1") != "0"
+
+if MATERIALIZAR_TABELAS:
+    add_log("INFO", "Materializando views em tabelas em memoria...")
+    _t0 = time.time()
+    _views = con.execute(
+        "SELECT table_name FROM information_schema.views WHERE table_schema = 'main' "
+        "AND table_name NOT LIKE 'duckdb_%' AND table_name NOT LIKE 'sqlite_%' "
+        "AND table_name NOT LIKE 'pragma_%'"
+    ).df()["table_name"].tolist()
+    _ok = 0
+    for _v in _views:
+        try:
+            con.execute(f'CREATE TABLE "__tbl_{_v}" AS SELECT * FROM "{_v}"')
+            con.execute(f'DROP VIEW "{_v}"')
+            con.execute(f'ALTER TABLE "__tbl_{_v}" RENAME TO "{_v}"')
+            _ok += 1
+        except Exception as e:
+            add_log("ERROR", f"Falha ao materializar {_v}: {e}")
+    add_log("SUCCESS", f"{_ok}/{len(_views)} tabelas materializadas em {time.time() - _t0:.1f}s.")
+    try:
+        con.execute("SET enable_external_access = false")
+        add_log("INFO", "Acesso a arquivos desabilitado no DuckDB (seguranca).")
+    except Exception as e:
+        add_log("ERROR", f"Nao foi possivel desabilitar acesso externo: {e}")
+
+# ==============================================================================
 # 3. Modelos e Memória
 # ==============================================================================
 class QueryRequest(BaseModel):
     query: str
+    max_rows: int | None = None   # opcional: teto de linhas na resposta
+    format: str = "records"       # opcional: records (padrão) | split | csv
 
 MAX_AUDIT_LOGS = 50
 audit_log = [] 
@@ -143,7 +178,7 @@ async def execute_query(request: QueryRequest):
     }
     
     try:
-        todas_views = con.execute("SELECT table_name FROM information_schema.views WHERE table_schema = 'main'").df()['table_name'].tolist()
+        todas_views = con.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'main'").df()['table_name'].tolist()
         views_identificadas = [v for v in todas_views if v.lower() in request.query.lower()]
         current_call["views_used"] = views_identificadas
         if views_identificadas:
@@ -176,13 +211,25 @@ async def execute_query(request: QueryRequest):
         
         arquivos_unicos = list(set(arquivos_origem))
         
+        truncado = False
+        if request.max_rows and len(result_df) > request.max_rows:
+            result_df = result_df.head(request.max_rows)
+            truncado = True
+
         if result_df.empty:
             resposta = {"status": "success", "data": [], "fontes_csv": arquivos_unicos}
             add_log("SUCCESS", "Query executada. (0 linhas retornadas)")
         else:
-            json_str = result_df.to_json(orient="records", date_format="iso")
-            result_json = json.loads(json_str)
+            if request.format == "split":
+                split = json.loads(result_df.to_json(orient="split", date_format="iso"))
+                result_json = {"columns": split["columns"], "rows": split["data"]}
+            elif request.format == "csv":
+                result_json = result_df.to_csv(index=False, sep=";")
+            else:
+                result_json = json.loads(result_df.to_json(orient="records", date_format="iso"))
             resposta = {"status": "success", "data": result_json, "fontes_csv": arquivos_unicos}
+            if truncado:
+                resposta["truncated"] = True
             add_log("SUCCESS", f"Query executada. ({len(result_df)} linhas mapeadas)")
         
         out_str = json.dumps(resposta, indent=2)
@@ -213,6 +260,20 @@ async def execute_query(request: QueryRequest):
         audit_log.insert(0, current_call)
         audit_log[:] = audit_log[:MAX_AUDIT_LOGS]
         return resposta_erro
+
+@app.get("/health")
+def health():
+    """Healthcheck real: 503 se o catálogo estiver vazio (mount quebrado etc.)."""
+    try:
+        n = int(
+            con.execute(
+                "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'main'"
+            ).fetchone()[0]
+        )
+    except Exception:
+        n = 0
+    return JSONResponse({"ok": n > 0, "tabelas": n}, status_code=200 if n > 0 else 503)
+
 
 @app.get("/ping", response_class=HTMLResponse)
 async def health_check():
