@@ -74,3 +74,21 @@ Formato por entrada:
   1. **D1** — gerar o DDL do prompt automaticamente do `information_schema` real (script pronto; `ddl_real` com anotações YYYYMMDD/CAST). Zero risco de runtime. **Testado (e8)**: no golden v1 deu EF 70,0 (−2,5 vs v2.1 com DDL antigo) — Cálculo Fiscal +8, Despesas Pagamentos −20; o golden v1 foi construído sobre as convenções do DDL antigo, então parte do "ganho" do DDL real não aparece nele (smoke testers em separado). Manter DDL antigo no golden v1; reavaliar D1 quando o golden v2 fechar curadoria. No smoke dos testers, o DDL real não mudou o EF (0%) e derrubou 1 caso de VSR (85,7→78,6). Conclusão: corrigir tipos via prompt não paga; a correção certa é na CAMADA DE DADOS (D2/ETL — tipar na carga, aí DDL e realidade coincidem por construção).
   2. **D2** — materializar tabelas tipadas no boot da API (`CREATE TABLE AS` + `TRY_CAST` para `vlr_*`/`dat_*`), substituindo views re-lidas a cada query: tipos estáveis, queries mais rápidas, linhas rejeitadas logadas.
   3. **D3** — healthcheck do serviço no compose + canário no `run_experiment.py` + imagem Docker com dependências pré-instaladas.
+
+## 2026-07-18 — Lote A implementado: API DuckDB (D2a + D3) — branch exp/v2-melhorias
+
+- Mudança: `main.py` materializa as 72 views em tabelas em memória no boot (22 s, uma vez), endpoint `/health` (503 se catálogo vazio), `SET enable_external_access=false` pós-carga (bloqueia `COPY TO`/leitura de arquivo em SQL arbitrário), `max_rows`/`format` (split/csv) opt-in na resposta; `Dockerfile` com dependências pinadas (fim do `pip install` de ~3 min por restart) + healthcheck no compose; canário no `run_experiment.py` (aborta antes de gastar OpenAI se o catálogo estiver vazio).
+- Resultado: COUNT 100k linhas **1.500 ms → 47 ms**; SUM 2024 **1.200 ms → 20 ms** (30–60×). Equivalência verificada: 3 queries de referência do golden retornam resultados idênticos ao engine local. Formato default da resposta inalterado (n8n não quebra). Canário validado ponta a ponta.
+- Tipagem forte na carga (D2b: datas→DATE, vlr→DECIMAL, sentinelas→NULL) fica para a era golden v2 — muda resultados de referência do golden v1.
+
+## 2026-07-18 — P1.4 filtro tipo_ato no runner RAG
+
+- Mudança: `run_rag_eval.py --filtro-tipo-ato` — infere o tipo do ato citado na pergunta (decreto/lei/portaria/edital/resolução) e filtra `payload.tipo_ato` no Qdrant.
+- RAG v1.1: MRR 63,33 → 65,62 (filtro só) → **72,92 (filtro+dedup)**. Stack completo (híbrido+dedup+tipo): v1.1 **100%/87,5** · v1.2 **100%/100**. Baseline sem flags re-verificado: 63,33 (intacto).
+- Config recomendada para produção (n8n): híbrido + dedup + filtro tipo_ato.
+
+## 2026-07-18 — relatório de qualidade de dados (scripts/validate_database.py)
+
+- Novo script (não altera dados): conta linhas com colunas `vlr_*` não-numéricas (sintoma de colunas deslocadas que o `ignore_errors` engole).
+- Resultado: **4.723 linhas corrompidas, 100% no exercício 2023**, em 8 tabelas — incl. `receita_receita` (235) e `despesa_despesa` (787), que alimentam ISF-M/IEQ-C/IES-C. Qualquer indicador fiscal de 2023 calculado hoje está afetado.
+- Correção pertence ao ETL (quoting do delimitador `|` + validação de nº de colunas no export 2023) — **não aplicada** para não alterar dados v1; decisão do usuário.

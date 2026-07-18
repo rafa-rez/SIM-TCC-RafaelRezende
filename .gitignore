@@ -43,7 +43,7 @@ avaliacao/experimentos/e4_gpt4o_v2/
 avaliacao/experimentos/rag_baseline_v1/
 avaliacao/experimentos/rag_baseline_v1_1/
 avaliacao/experimentos/rag_dedup_qtime_v2/
-avaliacao/experimentos/rag_v11_hybrid_dedup/
+avaliacao/experimentos/rag_v11_*/
 avaliacao/experimentos/rag_v12_*/
 avaliacao/experimentos/e5_prompt_v2_insights/
 avaliacao/experimentos/e6_prompt_v2_1_insights/
@@ -76,3 +76,5 @@ Thumbs.db
 Póscagada.txt
 Précagada.txt
 PROXIMOS_PASSOS.md
+avaliacao/experimentos/e8_*/
+avaliacao/experimentos/data_quality_report.json
