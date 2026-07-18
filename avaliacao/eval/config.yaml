@@ -6,6 +6,8 @@ duckdb_url: "http://localhost:8000/query"
 prompts:
   poscagada_16k: "eval/prompts/prompt_sql_compacto.txt"
   precagada_30k: "eval/prompts/prompt_sql_estendido.txt"
+  v2_insights: "eval/prompts/prompt_sql_v2_insights.txt"
+  v2_2_ddlreal: "eval/prompts/prompt_sql_v2_2_ddlreal.txt"
 
 # Orçamento OpenAI (USD) — para ANTES de estourar
 budget_usd: 14.82
