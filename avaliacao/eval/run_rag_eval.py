@@ -289,6 +289,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Avaliação RAG — golden Caeté")
     parser.add_argument("--experiment", default="rag_baseline_v1")
     parser.add_argument("--dataset", default=None, help="CSV golden RAG")
+    parser.add_argument("--collection", default=None, help="Collection Qdrant (default: config)")
     parser.add_argument("--top-k", type=int, default=None)
     parser.add_argument(
         "--dedup",
@@ -330,7 +331,7 @@ def main() -> None:
     cfg = load_config()
     rag_cfg = cfg.get("rag") or {}
     qdrant_url = rag_cfg.get("qdrant_url", "http://localhost:6333")
-    collection = rag_cfg.get("collection", "jornais_caete")
+    collection = args.collection or rag_cfg.get("collection", "jornais_caete")
     embedding_model = rag_cfg.get("embedding_model")
 
     if args.probe_qdrant:
