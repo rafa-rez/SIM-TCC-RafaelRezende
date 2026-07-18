@@ -1,0 +1,37 @@
+---
+description: Convenções de redação do SIM (TCC, artigo, docs)
+globs: docs/**/*.{tex,md},README.md,avaliacao/**/*.md
+alwaysApply: false
+---
+
+# SIM — convenções documentais
+
+## Foco narrativo
+
+- Protagonista: acesso conversacional a dados públicos, transparência, GovTech, arquitetura SIM.
+- Métricas: evidência de comprovação funcional, nunca o objeto central do trabalho.
+
+## Nomenclatura de métricas (textos acadêmicos)
+
+| Código no repo | Nome no texto |
+|----------------|---------------|
+| `vsr` | Taxa de SQL válida (VSR) |
+| `ex_resposta` | Equivalência funcional (EF) |
+
+Não usar "EX resposta" nem "EX estrita" em artigo/monografia. EX estrita permanece apenas em `docs/METRICAS.md` (repositório técnico).
+
+## O que omitir nos textos acadêmicos
+
+- Custos em USD, gastos de API, orçamento de experimentos.
+- Golden v2 e experimentos `*_v2`.
+- Hierarquia extensa de variantes de EX (proj, colmap, etc.) — remeter a `docs/METRICAS.md`.
+
+## Fórmulas
+
+- Monografia: VSR e EF com definição formal e notação matemática na metodologia.
+- Artigo: definição operacional breve; fórmulas completas na monografia.
+
+## Idioma
+
+- Português acadêmico, sem emojis.
+- Tom objetivo; evitar enquadramento "métrica principal".

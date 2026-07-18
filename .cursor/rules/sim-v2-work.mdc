@@ -1,0 +1,27 @@
+---
+description: Trabalho v2 pós-v1.0 — melhorias RAG, prompts, pipeline (não alterar baseline TCC)
+globs: avaliacao/**/*
+alwaysApply: false
+---
+
+# SIM v2 — modo melhoria
+
+Antes de qualquer mudança, leia **`AGENTS.md`** (raiz) e **`docs/V2_ROADMAP.md`**.
+
+## Congelado (v1.0)
+
+- `dados/golden/golden_dataset_v1.0.csv`, experimentos `e1`–`e4`
+- `dados/golden_rag/golden_rag_v1.1.csv` como baseline **reportado no TCC**
+- PDFs e `.tex` do TCC — só editar se o usuário pedir
+
+## Ao experimentar
+
+1. Uma variável por branch (`exp/...`)
+2. Rodar `avaliacao/run_metrics_pipeline.ps1` (e `-WithRag` se RAG)
+3. Registrar em `docs/experimentos-v2/LOG.md`
+4. Não cherry-pickar golden RAG só com rank≤5
+
+## RAG técnico
+
+- Collection: `jornais_caete` · embedding: `text-embedding-3-small`
+- Matching: `page_content`, não nome do PDF

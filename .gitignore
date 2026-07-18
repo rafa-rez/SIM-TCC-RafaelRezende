@@ -21,7 +21,9 @@ __pycache__/
 
 # Ambiente e caches
 node_modules/
-.cursor/
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
 agent-tools/
 terminals/
 

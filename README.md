@@ -52,6 +52,8 @@ Guia: [`docs/REPLICACAO.md`](docs/REPLICACAO.md)
 
 ## Documentação
 
+- [`AGENTS.md`](AGENTS.md) — contexto para **sessões v2** (abra chat novo e cite este arquivo)
+- [`docs/V2_ROADMAP.md`](docs/V2_ROADMAP.md) — backlog de melhorias pós-v1.0
 - [`docs/SIM.md`](docs/SIM.md) — arquitetura e instância Caeté
 - [`avaliacao/README.md`](avaliacao/README.md) — pipeline e experimentos
 - [`docs/artigo/`](docs/artigo/) · [`docs/monografia/`](docs/monografia/) — textos do TCC
