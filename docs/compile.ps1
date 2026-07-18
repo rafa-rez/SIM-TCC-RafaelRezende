@@ -6,6 +6,21 @@ $Template = Join-Path $Repo "template-ufla"
 $DocsMono = Join-Path $PSScriptRoot "monografia"
 $DocsArtigo = Join-Path $PSScriptRoot "artigo"
 
+function Invoke-TeX {
+    param(
+        [Parameter(Mandatory)][string]$Exe,
+        [Parameter(ValueFromRemainingArguments = $true)][string[]]$Args
+    )
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    & $Exe @Args *> $null
+    $code = $LASTEXITCODE
+    $ErrorActionPreference = $prev
+    if ($code -ne 0) {
+        throw "Comando falhou (exit $code): $Exe $($Args -join ' ')"
+    }
+}
+
 function Sync-Monografia {
     if (-not (Test-Path $Template)) {
         Write-Error "template-ufla/ nao encontrado em $Repo"
@@ -18,23 +33,31 @@ function Sync-Monografia {
 }
 
 function Build-Artigo {
-    Set-Location $DocsArtigo
-    pdflatex -interaction=nonstopmode sim_artigo_sbc_v1.tex | Out-Null
-    bibtex sim_artigo_sbc_v1 | Out-Null
-    pdflatex -interaction=nonstopmode sim_artigo_sbc_v1.tex | Out-Null
-    pdflatex -interaction=nonstopmode sim_artigo_sbc_v1.tex | Out-Null
-    Write-Host "OK: docs/artigo/sim_artigo_sbc_v1.pdf"
+    Push-Location $DocsArtigo
+    try {
+        Invoke-TeX pdflatex -interaction=nonstopmode sim_artigo_sbc_v1.tex
+        Invoke-TeX bibtex sim_artigo_sbc_v1
+        Invoke-TeX pdflatex -interaction=nonstopmode sim_artigo_sbc_v1.tex
+        Invoke-TeX pdflatex -interaction=nonstopmode sim_artigo_sbc_v1.tex
+        Write-Host "OK: docs/artigo/sim_artigo_sbc_v1.pdf"
+    } finally {
+        Pop-Location
+    }
 }
 
 function Build-Monografia {
     Sync-Monografia
-    Set-Location $Template
-    pdflatex -interaction=nonstopmode templufla_main.tex | Out-Null
-    bibtex templufla_main | Out-Null
-    pdflatex -interaction=nonstopmode templufla_main.tex | Out-Null
-    pdflatex -interaction=nonstopmode templufla_main.tex | Out-Null
-    Copy-Item "$Template\templufla_main.pdf" "$DocsMono\SIM_monografia_v1.pdf" -Force
-    Write-Host "OK: docs/monografia/SIM_monografia_v1.pdf"
+    Push-Location $Template
+    try {
+        Invoke-TeX pdflatex -interaction=nonstopmode templufla_main.tex
+        Invoke-TeX bibtex templufla_main
+        Invoke-TeX pdflatex -interaction=nonstopmode templufla_main.tex
+        Invoke-TeX pdflatex -interaction=nonstopmode templufla_main.tex
+        Copy-Item "$Template\templufla_main.pdf" "$DocsMono\SIM_monografia_v1.pdf" -Force
+        Write-Host "OK: docs/monografia/SIM_monografia_v1.pdf"
+    } finally {
+        Pop-Location
+    }
 }
 
 if ($ArtigoOnly) {
