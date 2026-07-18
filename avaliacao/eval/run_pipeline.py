@@ -31,6 +31,13 @@ SQL_EXPERIMENTS = [
     "e4_gpt4o",
 ]
 
+# Gate de regressão (P0.1): mínimos do baseline E1 reportado no TCC.
+BASELINE_EXPERIMENT = "e1_baseline_compacto"
+BASELINE_THRESHOLDS = {
+    "valid_sql_rate_pct": 97.5,                 # VSR
+    "execution_accuracy_principal_pct": 62.5,   # EF (EX resposta)
+}
+
 
 def run(cmd: list[str], *, cwd: Path | None = None) -> None:
     print(f"\n>> {' '.join(cmd)}")
@@ -81,6 +88,22 @@ def run_sql_pipeline() -> Path:
     return EXPERIMENTOS_ROOT / "comparison_table_v3.md"
 
 
+def check_baseline() -> list[str]:
+    """Compara métricas recalculadas do E1 com os mínimos do TCC (VSR/EF)."""
+    summary_path = EXPERIMENTOS_ROOT / BASELINE_EXPERIMENT / "metrics_summary_v3.json"
+    if not summary_path.exists():
+        return [f"Resumo do baseline ausente: {summary_path}"]
+    metrics = json.loads(summary_path.read_text(encoding="utf-8"))
+    failures: list[str] = []
+    for key, minimum in BASELINE_THRESHOLDS.items():
+        value = metrics.get(key)
+        if value is None:
+            failures.append(f"{key} ausente em {summary_path.name}")
+        elif float(value) < minimum - 1e-9:
+            failures.append(f"{key} = {value} (mínimo: {minimum})")
+    return failures
+
+
 def run_rag_pipeline(experiment: str) -> Path:
     run(
         [
@@ -101,6 +124,7 @@ def write_report(
     sql_table: Path | None,
     rag_summary: Path | None,
     smoke_errors: list[str],
+    baseline_gate: dict | None = None,
 ) -> None:
     report = {
         "generated_at": datetime.now().isoformat(),
@@ -116,6 +140,8 @@ def write_report(
         },
         "smoke_errors": smoke_errors,
     }
+    if baseline_gate is not None:
+        report["baseline_gate"] = baseline_gate
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"\nRelatório: {out}")
@@ -142,6 +168,14 @@ def main() -> None:
         "--rag-experiment",
         default="rag_baseline_v1_1",
         help="Nome da pasta em experimentos/ para RAG",
+    )
+    parser.add_argument(
+        "--check-baseline",
+        action="store_true",
+        help=(
+            "Gate de regressão: falha (exit 1) se E1 tiver "
+            "VSR < 97,5%% ou EF < 62,5%%. Com --skip-sql, valida o resumo existente."
+        ),
     )
     args = parser.parse_args()
 
@@ -185,6 +219,23 @@ def main() -> None:
             rag_ok = True
             print(f"\nRAG OK -> {rag_summary}")
 
+    baseline_gate: dict | None = None
+    gate_failures: list[str] = []
+    if args.check_baseline:
+        gate_failures = check_baseline()
+        baseline_gate = {
+            "experiment": BASELINE_EXPERIMENT,
+            "thresholds": BASELINE_THRESHOLDS,
+            "status": "pass" if not gate_failures else "fail",
+            "failures": gate_failures,
+        }
+        if gate_failures:
+            print("\nGATE BASELINE — FALHOU:")
+            for f in gate_failures:
+                print(f"  - {f}")
+        else:
+            print("\nGATE BASELINE — OK (VSR >= 97,5% e EF >= 62,5%).")
+
     report_path = EXPERIMENTOS_ROOT / "pipeline_report.json"
     write_report(
         report_path,
@@ -193,7 +244,11 @@ def main() -> None:
         sql_table=sql_table,
         rag_summary=rag_summary,
         smoke_errors=smoke_errors,
+        baseline_gate=baseline_gate,
     )
+
+    if gate_failures:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
