@@ -1,0 +1,27 @@
+\section{Protocolo de validação do RAG}
+
+Complementarmente ao Text-to-SQL, conduziu-se avaliação \textbf{piloto} da recuperação documental sobre o Diário Oficial municipal indexado em Qdrant (\textit{collection} \texttt{jornais\_caete}, 9\,346 \textit{chunks}, embedding \texttt{text-embedding-3-small}).
+
+\subsection{Conjunto de referência RAG}
+
+O \textit{golden} RAG v1.1 contém $N_{\text{RAG}} = 8$ perguntas sobre decretos municipais, cada uma com \texttt{doc\_id\_esperado} validado no índice (presença de cabeçalho DECRETO/LEI com número e ano no \textit{payload} \texttt{page\_content}). Itens cuja referência não existia no índice foram substituídos na curadoria v1.1. Artefatos em \texttt{avaliacao/dados/golden\_rag/}.
+
+\subsection{Indicadores de recuperação}
+
+Para cada pergunta $i$, registra-se o ranking do documento esperado entre os $k$ primeiros \textit{chunks} retornados ($k = 5$):
+
+\begin{equation}
+\text{Recall@}k = \frac{1}{N_{\text{RAG}}} \sum_{i=1}^{N_{\text{RAG}}} \mathbb{1}\!\left[\text{doc esperado} \in \text{top-}k_i\right]
+\end{equation}
+
+A \textbf{taxa de recuperação média} (MRR --- \textit{Mean Reciprocal Rank}) mede a posição média do primeiro acerto:
+
+\begin{equation}
+\text{MRR} = \frac{1}{N_{\text{RAG}}} \sum_{i=1}^{N_{\text{RAG}}} \frac{1}{\text{rank}_i}
+\end{equation}
+
+onde $\text{rank}_i$ é a posição do \textit{chunk} que contém o ato esperado, ou zero se ausente do top-$k$. A correspondência entre documento recuperado e gabarito usa o texto de \texttt{page\_content} e a chave numérica do ato (número/ano). Implementação em \texttt{avaliacao/eval/run\_rag\_eval.py}.
+
+\subsection{Escopo e limitações do protocolo RAG}
+
+Trata-se de amostra reduzida e estratificada por viabilidade de índice --- evidência complementar à validação SQL, não \textit{benchmark} em larga escala. Não avalia geração da resposta final em linguagem natural nem o roteamento do orquestrador.

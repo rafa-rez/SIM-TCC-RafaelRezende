@@ -1,84 +1,60 @@
-# Plano de avaliação do subsistema RAG — SIM Caeté
+# Plano RAG — SIM Caeté
 
-Documento de **trabalho futuro** e infraestrutura no repositório. O TCC v1.0 reporta apenas a validação **Text-to-SQL** (80 consultas); o RAG opera em produção, mas **não entra nos PDFs** (artigo/monografia) nesta versão.
-
----
-
-## Status v1.0 do TCC
-
-| Item | Repositório | Texto acadêmico (PDF) |
-|------|-------------|------------------------|
-| Text-to-SQL E1–E4 | Sim | Sim |
-| Golden RAG + runner | Sim (infra) | Não (trabalho futuro) |
-| Métricas RAG | Pipeline opcional (`--with-rag`) | Não |
+Protocolo de validação da recuperação documental sobre o Diário Oficial. Complementa a avaliação Text-to-SQL documentada em [`METRICAS.md`](METRICAS.md).
 
 ---
 
-## Objetivo (pós-v1.0)
+## Resultados reportados (golden v1.1)
 
-Comprovar que o subsistema RAG recupera os documentos corretos sobre o Diário Oficial, como evidência funcional complementar — sem tornar métricas o foco central do trabalho.
+| Métrica | Valor | *n* |
+|---------|------:|----:|
+| Recall@5 | 100% | 8 |
+| MRR | 63,33% | 8 |
+
+Configuração: Qdrant `jornais_caete`, embedding `text-embedding-3-small`, *k*=5.
 
 ---
 
-## Infraestrutura no repositório
+## Artefatos
 
-| Artefato | Caminho |
-|----------|---------|
-| Golden RAG v1.1 (8 itens, validados no Qdrant) | `avaliacao/dados/golden_rag/golden_rag_v1.1.csv` |
+| Item | Caminho |
+|------|---------|
+| Golden v1.1 | `avaliacao/dados/golden_rag/golden_rag_v1.1.csv` |
 | Runner | `avaliacao/eval/run_rag_eval.py` |
 | Validação Qdrant | `avaliacao/eval/lib/qdrant_validate.py` |
 | Regenerar golden | `avaliacao/scripts/build_golden_rag_v1_1.py` |
-| Pipeline | `avaliacao/run_metrics_pipeline.ps1 -WithRag` |
-
-Pré-requisitos RAG: Qdrant (`localhost:6333`, collection `jornais_caete`), `OPENAI_API_KEY`, embedding `text-embedding-3-small`.
 
 ---
 
-## Fases planejadas
+## Métricas
 
-### Fase 1 — Golden RAG (concluída no repo)
+**Recall@*k*** — proporção de perguntas em que o documento esperado aparece no top-*k*.
 
-`golden_rag_v1.1.csv` — perguntas cujo `doc_id_esperado` possui chunk confirmado no índice. Ver `avaliacao/dados/golden_rag/README.md`.
-
-### Fase 2 — Runner (concluída no repo)
-
-Recall@$k$, MRR via `run_rag_eval.py`. Resultados em `experimentos/rag_baseline_v1_1/` (gerados pela pipeline; **não citados no TCC v1.0**).
-
-### Fase 3 — Avaliação de resposta (pendente)
-
-Julgamento de adequação das respostas em linguagem natural (amostra).
-
-### Fase 4 — Texto acadêmico (pendente)
-
-Seção na monografia após baseline estável e revisão com orientador.
+**MRR** (*Mean Reciprocal Rank*) — média do inverso da posição do primeiro acerto.
 
 ---
 
-## Métricas de recuperação
+## Limitações (v1.1)
 
-| Métrica | Interpretação |
-|---------|---------------|
-| Recall@$k$ | Documento esperado aparece no top-$k$? |
-| MRR | Quão cedo o documento correto aparece? |
-
----
-
-## Lições da curadoria v1.0 → v1.1
-
-- Gabarito derivado só de citações SICOM falha se o ato não estiver indexado no Diário.
-- Embedding deve coincidir com o da indexação (`text-embedding-3-small`, não `ada-002`).
-- Matching deve usar `page_content`, não apenas o nome do PDF.
+- Amostra pequena (*n*=8), apenas decretos municipais.
+- Critério de inclusão: ato com *chunk* confirmado no índice.
+- Não avalia resposta em linguagem natural nem roteamento SQL/RAG.
 
 ---
 
-## Ordem sugerida (pós-v1.0)
+## Execução
 
+```powershell
+cd avaliacao
+.\run_metrics_pipeline.ps1 -WithRag
 ```
-Pipeline SQL congelada (v1.0 TCC)
-    ↓
-Otimizar índice / chunking / prompts
-    ↓
-Expandir golden RAG (sem cherry-picking)
-    ↓
-Reportar no TCC v2 ou artigo estendido
-```
+
+Pré-requisitos: Docker (`docker compose up -d qdrant`), `OPENAI_API_KEY` no `.env`.
+
+---
+
+## Próximos passos
+
+1. Expandir golden sem cherry-picking.
+2. Julgamento de adequação das respostas (LLM-as-Judge ou humana).
+3. Deduplicação de *chunks* e melhoria do índice.

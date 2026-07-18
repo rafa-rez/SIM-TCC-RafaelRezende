@@ -38,9 +38,9 @@ python scripts/compare_all_experiments.py
 
 Definições de métricas: [`../../docs/METRICAS.md`](../../docs/METRICAS.md).
 
-## Avaliação RAG (fora do escopo TCC v1.0)
+## Avaliação RAG
 
-Infraestrutura em `dados/golden_rag/` e `eval/run_rag_eval.py`. Execução opcional:
+Golden: `dados/golden_rag/golden_rag_v1.1.csv` (8 perguntas). Resultados: Recall@5 100%, MRR 63,33%.
 
 ```powershell
 .\run_metrics_pipeline.ps1 -WithRag

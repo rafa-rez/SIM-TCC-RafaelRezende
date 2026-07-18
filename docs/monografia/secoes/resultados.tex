@@ -91,3 +91,23 @@ Clareza ao cidadão (média) & 4,77 / 5 \\
 \end{table}
 
 O julgamento automático indica que as respostas em linguagem natural são adequadas ao cidadão na amostra avaliada. Essa evidência complementa, mas não substitui, a equivalência funcional sobre resultados tabulares.
+
+\section{Validação do subsistema RAG}
+
+Complementarmente, avaliou-se a recuperação documental sobre o Diário Oficial com o \textit{golden} RAG v1.1 ($N_{\text{RAG}} = 8$ decretos municipais com \textit{chunk} confirmado no índice Qdrant). O \textit{pipeline} gera embeddings (\texttt{text-embedding-3-small}), consulta a \textit{collection} \texttt{jornais\_caete} e compara os top-5 \textit{chunks} ao documento de referência.
+
+\begin{table}[htbp]
+\centering
+\caption{Indicadores de recuperação documental --- RAG (baseline v1.1, $k=5$)}
+\label{tab:rag}
+\begin{tabular}{lr}
+\toprule
+\textbf{Indicador} & \textbf{Valor} \\
+\midrule
+Recall@5 & 100,00\% (8/8) \\
+MRR & 63,33\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O Recall@5 integral indica que, para a amostra curada, o ato esperado aparece entre os cinco primeiros \textit{chunks}. O MRR de 63,33\% reflete que o acerto nem sempre ocorre na primeira posição --- decretos tematicamente similares (por exemplo, emergências hídricas) competem no ranking. A amostra é reduzida e restrita a atos indexados; generalização e avaliação da resposta em linguagem natural permanecem como trabalhos futuros.

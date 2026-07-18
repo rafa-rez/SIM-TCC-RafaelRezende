@@ -15,7 +15,7 @@ O \textit{prompt} estendido (E2) não superou o compacto em equivalência funcio
 \section{Limitações}
 
 \begin{itemize}
-    \item Avaliação quantitativa concentrada no subsistema Text-to-SQL; o RAG (Diário Oficial) opera em produção, mas carece de protocolo quantitativo neste trabalho (plano em \texttt{docs/PLANO\_RAG.md});
+    \item Amostra RAG reduzida ($N_{\text{RAG}} = 8$), restrita a decretos com \textit{chunk} no índice; não avalia qualidade da resposta em linguagem natural nem roteamento do orquestrador;
     \item Conjunto golden de uma única instância; generalização para outros municípios requer novas instâncias SIM;
     \item Lacuna de folha de pagamento 2020--2022 na base local;
     \item Gabarito manual pode não cobrir todas as SQL semanticamente corretas;
@@ -25,4 +25,4 @@ O \textit{prompt} estendido (E2) não superou o compacto em equivalência funcio
 
 \section{Implicações práticas}
 
-O SIM demonstra viabilidade técnica de consulta conversacional a dados municipais abertos, com arquitetura replicável para outras prefeituras. Os resultados subsidiam decisões sobre modelo e tamanho de contexto em futuras instâncias. Trabalhos futuros incluem avaliação quantitativa do RAG, testes com usuários reais e replicação em outros municípios.
+O SIM demonstra viabilidade técnica de consulta conversacional a dados municipais abertos, com arquitetura replicável para outras prefeituras. Os resultados subsidiam decisões sobre modelo e tamanho de contexto em futuras instâncias. Trabalhos futuros incluem ampliação do \textit{golden} RAG, julgamento de adequação das respostas documentais, testes com usuários reais e replicação em outros municípios.

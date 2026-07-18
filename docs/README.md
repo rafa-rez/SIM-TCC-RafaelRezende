@@ -10,7 +10,7 @@
 |-----------|-----------|
 | [SIM.md](SIM.md) | Conceito, arquitetura, fontes de dados e instância Caeté |
 | [REPLICACAO.md](REPLICACAO.md) | Procedimento para reproduzir a avaliação offline |
-| [PLANO_RAG.md](PLANO_RAG.md) | Plano de avaliação do subsistema RAG |
+| [PLANO_RAG.md](PLANO_RAG.md) | Protocolo e resultados RAG (Recall@5, MRR) |
 
 ## Validação Text-to-SQL
 
@@ -48,4 +48,4 @@ docs/           → documentação conceitual, métricas e textos acadêmicos
 avaliacao/      → dados, experimentos, pipeline e scripts reprodutíveis
 ```
 
-O repositório público contém a avaliação Text-to-SQL (v1.0 do TCC) e a stack Docker (`docker-compose.yml`). Métricas RAG são executáveis pela pipeline, mas não compõem os PDFs nesta versão — ver [PLANO_RAG.md](PLANO_RAG.md).
+O repositório contém validação Text-to-SQL (E1–E4), validação piloto RAG e stack Docker (`docker-compose.yml`).

@@ -53,29 +53,30 @@ Usuário (WhatsApp)
 
 ## Escopo deste repositório
 
-Este repositório contém os artefatos de **validação Text-to-SQL** do SIM:
-
-- conjunto golden de 80 consultas com SQL de referência;
-- quatro experimentos reprodutíveis (E1–E4);
-- scripts de recálculo offline e documentação de métricas.
-
-Componentes de produção (n8n, WhatsApp, API Docker, índice Qdrant do Diário Oficial) são descritos nos textos do TCC, mas não estão versionados aqui.
-
-```
-docs/           → documentação conceitual e metodológica
-avaliacao/      → dados, eval, experimentos e scripts
-```
+| Componente | Versionado |
+|------------|------------|
+| Golden SQL (80 consultas) + experimentos E1–E4 | Sim |
+| Golden RAG v1.1 (8 perguntas) + runner | Sim |
+| Pipeline de métricas (`run_metrics_pipeline.ps1`) | Sim |
+| Stack Docker (n8n, Qdrant, DuckDB API) | Sim |
+| Dados brutos SICOM/CGU | Sim (`avaliacao/dados/`) |
 
 ## Validação
 
-A avaliação quantitativa comprova a viabilidade funcional do subsistema Text-to-SQL: geração de SQL executável e correspondência dos resultados ao gabarito curado. O protocolo, as definições de métricas e os resultados dos experimentos estão em:
+### Text-to-SQL
 
-- [`METRICAS.md`](METRICAS.md)
-- [`RELATORIO_METRICAS_V3.md`](RELATORIO_METRICAS_V3.md)
-- [`REPLICACAO.md`](REPLICACAO.md)
-- [`../avaliacao/dados/golden/`](../avaliacao/dados/golden/)
+80 consultas, quatro experimentos (E1–E4). Baseline E1: **VSR 97,5%**, **EF 62,5%**.
 
-A avaliação quantitativa reportada no TCC v1.0 concentra-se no Text-to-SQL. O subsistema RAG (Diário Oficial) opera em produção; protocolo e pipeline estão em [`PLANO_RAG.md`](PLANO_RAG.md) para trabalho futuro.
+### RAG (piloto)
+
+8 perguntas sobre decretos indexados no Diário Oficial. **Recall@5 100%**, **MRR 63,33%**.
+
+Documentação:
+
+- [`METRICAS.md`](METRICAS.md) — Text-to-SQL
+- [`PLANO_RAG.md`](PLANO_RAG.md) — RAG
+- [`REPLICACAO.md`](REPLICACAO.md) — replicação
+- [`../avaliacao/`](../avaliacao/) — dados e scripts
 
 ## Nomenclatura
 

@@ -1,185 +1,199 @@
-\documentclass[12pt,a4paper]{article}
-\usepackage[brazilian]{babel}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{hyperref}
-\usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage{amsmath}
-\usepackage[alf,abnt-etal-list=3]{abntex2cite}
-
-\title{SIM --- Sistema de Informações Municipais:\\
-Acesso Conversacional a Dados Abertos Municipais\\
-\textit{(versão 1 --- rascunho SBC)}}
-
-\author{Rafael Alves Silva Rezende\\
-Universidade Federal de Lavras (UFLA)\\
-\and
-Prof. Dr. Denilson (orientador)}
-
-\date{Julho/2026}
-
-\begin{document}
-\maketitle
-
-\begin{abstract}
-Dados públicos municipais são instrumento de fiscalização social, mas o acesso efetivo exige domínio técnico de portais de transparência e linguagens de consulta estruturada. Apresentamos o \textbf{SIM} (\textit{Sistema de Informações Municipais}), plataforma conversacional multi-instância que integra recuperação documental sobre o Diário Oficial e consulta analítica via Text-to-SQL sobre bases SICOM e CGU. Documentamos a instância piloto de Caeté (MG), com canal WhatsApp e orquestração por modelos de linguagem. Para comprovar a viabilidade funcional do subsistema Text-to-SQL, conduzimos avaliação reprodutível com 80 consultas em linguagem natural (2020--2025). O baseline (GPT-4.1-mini, esquema minificado) alcança 97,5\% de taxa de SQL válida e 62,5\% de equivalência funcional do resultado. Quatro configurações de modelo e \textit{prompt} foram comparadas. Artefatos públicos permitem replicação offline.
-\end{abstract}
-
-\noindent\textbf{Palavras-chave:} dados abertos; transparência municipal; GovTech; Text-to-SQL; LLM.
-
-\section{Introdução}
-
-A Lei de Acesso à Informação (Lei 12.527/2011) consolidou o direito de acesso a dados públicos no Brasil. Municípios disponibilizam bases contábeis --- como o SICOM em Minas Gerais --- e portais federais complementares (CGU, Siconfi). Apesar da abertura formal, a consulta efetiva permanece restrita a usuários com conhecimento de esquemas relacionais extensos e formatos tabulares.
-
-Modelos de linguagem de grande escala (\textit{large language models}, LLM) viabilizam interfaces conversacionais que traduzem perguntas em SQL \cite{Yu2018Spider,Li2024BIRD}. Soluções de tecnologia cívica (\textit{GovTech}) podem reduzir essa barreira, ampliando o alcance da transparência pública.
-
-Este artigo apresenta o \textbf{SIM} (\textit{Sistema de Informações Municipais}), arquitetura híbrida que combina recuperação aumentada (RAG) para atos normativos e Text-to-SQL para finanças e compras públicas. O SIM é \textbf{multi-instância}: cada município fornece seus dados; a arquitetura permanece replicável. Documentamos a \textbf{instância Caeté} (IBGE 3110004), em operação via WhatsApp.
-
-\textbf{Contribuições:} (i)~conceito e arquitetura do SIM para acesso conversacional a dados municipais; (ii)~\textit{pipeline} de ingestão e exposição analítica sobre SICOM/CGU; (iii)~conjunto de referência com 80 consultas validadas e protocolo de avaliação reprodutível; (iv)~evidências empíricas de viabilidade funcional em quatro configurações de modelo.
-
-\section{Trabalhos relacionados}
-
-\textbf{Dados públicos e GovTech.} Portais de transparência e bases como o SICOM centralizam informações contábeis e de compras públicas \cite{Lei2024SICOM,TCEMG_SICOM}, mas a heterogeneidade de esquemas e lacunas de publicação dificultam o uso por cidadãos leigos.
-
-\textbf{Text-to-SQL.} O benchmark Spider \cite{Yu2018Spider} popularizou comparação de resultados executados entre SQL gerada e gabarito. BIRD \cite{Li2024BIRD} amplia o desafio com bases volumosas e valores ruidosos. Métodos recentes com LLM empregam decomposição de consultas e \textit{schema linking} \cite{Pourreza2024DIN,Gao2024DAILSQL}.
-
-\textbf{RAG e orquestração.} Lewis et al. \cite{Lewis2020RAG} formalizaram recuperação aumentada para conhecimento externo. No SIM, RAG cobre o Diário Oficial; Text-to-SQL cobre dados tabulares. A orquestração seleciona o mecanismo adequado à intenção do usuário.
-
-\section{O SIM e a instância Caeté}
-
-\subsection{Arquitetura}
-
-O SIM integra: (1)~canal conversacional (WhatsApp, via automação n8n); (2)~agente orquestrador (GPT-4o); (3)~subsistema RAG (atos normativos indexados em base vetorial); (4)~subsistema Text-to-SQL (DuckDB sobre CSVs consolidados SICOM/CGU).
-
-O fluxo operacional segue: pergunta do usuário $\rightarrow$ orquestrador $\rightarrow$ RAG ou SQL $\rightarrow$ interpretação do resultado $\rightarrow$ resposta em linguagem natural.
-
-\subsection{Fontes de dados}
-
-A instância Caeté cobre 2020--2025 com dados do SICOM (receitas, despesas, empenhos, folha, frota, licitações, contratos), complementos da CGU (transferências federais, programas sociais) e Diário Oficial municipal. Um processo ETL em Python consolida os arquivos, gera metadados de esquema e expõe consulta analítica via DuckDB \textit{in-memory}.
-
-\subsection{Lacunas de transparência}
-
-A prefeitura não publicou folha de pagamento e cadastro de servidores para 2020--2022. O assistente deve informar essa lacuna quando solicitado, exemplificando como o SIM lida com limitações reais de abertura de dados.
-
-\section{Engenharia de contexto}
-
-O subsistema Text-to-SQL utiliza GPT-4.1-mini com \textit{prompt} contendo esquema minificado e amostras de valores reais por coluna (\textit{smart sampling}). Duas variantes foram avaliadas:
-
-\begin{itemize}
-  \item \textbf{Prompt compacto} ($\sim$16\,500 tokens): adotado em produção;
-  \item \textbf{Prompt estendido} ($\sim$35\,000 tokens): esquema com descrições ampliadas.
-\end{itemize}
-
-\section{Validação do subsistema Text-to-SQL}
-
-\subsection{Protocolo}
-
-A avaliação concentra-se no subsistema Text-to-SQL, desacoplado do canal de produção, garantindo reprodutibilidade. O \textit{pipeline} automatizado (\texttt{avaliacao/eval/}) lê o conjunto golden, gera SQL via API OpenAI, executa no DuckDB e compara resultados tabulares com o gabarito.
-
-O subsistema RAG não foi avaliado quantitativamente neste protocolo; constitui trabalho futuro (Seção~\ref{sec:discussao}).
-
-\subsection{Conjunto de referência}
-
-80 perguntas em português, com SQL de referência validada, estratificadas por dificuldade (fácil, médio, difícil) e domínio (RH, licitações, cruzamentos CGU, etc.). Dez consultas-base foram expandidas parametricamente. Artefatos em \texttt{avaliacao/dados/golden/}.
-
-\subsection{Indicadores de validação}
-
-Para comprovar funcionalidade, adotam-se dois indicadores agregados sobre $N{=}80$ consultas:
-
-\begin{itemize}
-  \item \textbf{Taxa de SQL válida (VSR)}: proporção de SQL geradas que executam sem erro no motor analítico;
-  \item \textbf{Equivalência funcional (EF)}: proporção de consultas em que o resultado tabular gerado coincide com o gabarito nas \textbf{grandezas que respondem à pergunta}, admitindo colunas auxiliares e tolerância numérica $\tau{=}0{,}5\%$ em valores fiscais.
-\end{itemize}
-
-A definição formal de EF, com normalização de células e projeção sobre as colunas de resposta, está na monografia; a implementação em \texttt{avaliacao/eval/lib/compare.py} usa o identificador interno \texttt{ex\_resposta}.
-
-\subsection{Experimentos}
-
-\begin{table}[htbp]
-\centering
-\caption{Configuração dos experimentos ($n{=}80$)}
-\label{tab:exp}
-\small
-\begin{tabular}{lll}
-\toprule
-\textbf{ID} & \textbf{Modelo} & \textbf{Prompt} \\
-\midrule
-E1 & GPT-4.1-mini & Compacto ($\sim$16k tokens) \\
-E2 & GPT-4.1-mini & Estendido ($\sim$30k tokens) \\
-E3 & GPT-4o-mini & Compacto \\
-E4 & GPT-4o & Compacto \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\section{Resultados}
-
-\subsection{Viabilidade funcional}
-
-\begin{table}[htbp]
-\centering
-\caption{Indicadores de validação --- comparativo entre experimentos (\%)}
-\label{tab:results}
-\begin{tabular}{lrr}
-\toprule
-\textbf{Exp.} & \textbf{VSR} & \textbf{EF} \\
-\midrule
-E1 & 97,50 & \textbf{62,50} \\
-E2 & 96,25 & 58,75 \\
-E3 & 90,00 & 46,25 \\
-E4 & 97,50 & 57,50 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-O baseline E1 demonstra que o subsistema gera SQL válida em 97,5\% dos casos e produz resultados funcionalmente equivalentes ao gabarito em 62,5\% das consultas.
-
-\subsection{Análise por dificuldade (E1)}
-
-\begin{table}[htbp]
-\centering
-\caption{E1 --- indicadores por nível de dificuldade}
-\label{tab:diff}
-\begin{tabular}{lrrr}
-\toprule
-\textbf{Dificuldade} & \textbf{$n$} & \textbf{EF (\%)} & \textbf{VSR (\%)} \\
-\midrule
-Fácil & 22 & 68,18 & 100,00 \\
-Médio & 44 & 61,36 & 97,73 \\
-Difícil & 14 & 57,14 & 92,86 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Comparativo de configurações}
-
-O \textit{prompt} estendido (E2) não superou o compacto em equivalência funcional (58,75\% \textit{versus} 62,50\%). O GPT-4o-mini (E3) degrada VSR (90\%) e EF (46,25\%). O GPT-4o (E4) não supera o baseline em EF (57,50\%) e apresenta latência média de 29,5\,s na geração de SQL --- inviável para respostas síncronas em canal conversacional.
-
-\subsection{Validação operacional}
-
-Além do \textit{benchmark} offline, o SIM foi validado em ambiente operacional via WhatsApp na instância Caeté, confirmando viabilidade da orquestração integrada entre automação, mensageria, RAG e consulta analítica.
-
-\section{Discussão}
-\label{sec:discussao}
-
-\textbf{Transparência e acesso.} O SIM materializa o princípio de que dados abertos só cumprem sua função democrática quando acessíveis. A arquitetura híbrida (RAG + SQL) cobre tanto consultas normativas quanto analíticas, cenário típico de prefeituras brasileiras.
-
-\textbf{Viabilidade técnica.} O baseline E1 combina VSR de 97,5\% e EF de 62,5\%, com latência média de 6,2\,s na geração de SQL --- parâmetros compatíveis com uso conversacional síncrono.
-
-\textbf{Limitações.} (i)~avaliação quantitativa concentrada no Text-to-SQL; (ii)~conjunto golden de uma única instância; (iii)~lacunas documentadas de transparência local; (iv)~gabarito manual pode não cobrir todas as SQL semanticamente corretas.
-
-\textbf{Avaliação do RAG.} O subsistema de recuperação documental sobre o Diário Oficial opera em produção, mas carece de protocolo quantitativo neste trabalho. Plano detalhado em \texttt{docs/PLANO\_RAG.md}: golden de perguntas com documento de referência, Recall@$k$, MRR e julgamento de adequação em amostra \cite{Zheng2023LLMJudge}.
-
-\section{Conclusão}
-
-O SIM demonstra viabilidade técnica de acesso conversacional a dados municipais abertos, com arquitetura replicável para outras prefeituras. A validação com 80 consultas comprova geração confiável de SQL e equivalência funcional do resultado na maioria dos casos. O repositório público permite replicação offline dos experimentos. Trabalhos futuros incluem avaliação quantitativa do RAG, testes com usuários reais e replicação do SIM em outros municípios.
-
-\section*{Repositório}
-
-Código, dados e scripts: \url{https://github.com/rafa-rez/tcc-sistema-de-informa-es-municipais}
-
-\bibliographystyle{abntex2-alf}
-\bibliography{../referencias/referencias_sim}
-
-\end{document}
+\documentclass[12pt,a4paper]{article}
+\usepackage[brazilian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage[alf,abnt-etal-list=3]{abntex2cite}
+
+\title{SIM --- Sistema de Informações Municipais:\\
+Acesso Conversacional a Dados Abertos Municipais\\
+\textit{(versão 1 --- rascunho SBC)}}
+
+\author{Rafael Alves Silva Rezende\\
+Universidade Federal de Lavras (UFLA)\\
+\and
+Prof. Dr. Denilson (orientador)}
+
+\date{Julho/2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Dados públicos municipais são instrumento de fiscalização social, mas o acesso efetivo exige domínio técnico de portais de transparência e linguagens de consulta estruturada. Apresentamos o \textbf{SIM} (\textit{Sistema de Informações Municipais}), plataforma conversacional multi-instância que integra recuperação documental sobre o Diário Oficial e consulta analítica via Text-to-SQL sobre bases SICOM e CGU. Documentamos a instância piloto de Caeté (MG), com canal WhatsApp e orquestração por modelos de linguagem. Para comprovar a viabilidade funcional do subsistema Text-to-SQL, conduzimos avaliação reprodutível com 80 consultas em linguagem natural (2020--2025). O baseline (GPT-4.1-mini, esquema minificado) alcança 97,5\% de taxa de SQL válida e 62,5\% de equivalência funcional do resultado. Complementarmente, validação piloto do RAG sobre oito decretos indexados no Diário Oficial atinge Recall@5 de 100\% e MRR de 63,33\%. Quatro configurações de modelo e \textit{prompt} foram comparadas no Text-to-SQL. Artefatos públicos permitem replicação offline.
+\end{abstract}
+
+\noindent\textbf{Palavras-chave:} dados abertos; transparência municipal; GovTech; Text-to-SQL; LLM.
+
+\section{Introdução}
+
+A Lei de Acesso à Informação (Lei 12.527/2011) consolidou o direito de acesso a dados públicos no Brasil. Municípios disponibilizam bases contábeis --- como o SICOM em Minas Gerais --- e portais federais complementares (CGU, Siconfi). Apesar da abertura formal, a consulta efetiva permanece restrita a usuários com conhecimento de esquemas relacionais extensos e formatos tabulares.
+
+Modelos de linguagem de grande escala (\textit{large language models}, LLM) viabilizam interfaces conversacionais que traduzem perguntas em SQL \cite{Yu2018Spider,Li2024BIRD}. Soluções de tecnologia cívica (\textit{GovTech}) podem reduzir essa barreira, ampliando o alcance da transparência pública.
+
+Este artigo apresenta o \textbf{SIM} (\textit{Sistema de Informações Municipais}), arquitetura híbrida que combina recuperação aumentada (RAG) para atos normativos e Text-to-SQL para finanças e compras públicas. O SIM é \textbf{multi-instância}: cada município fornece seus dados; a arquitetura permanece replicável. Documentamos a \textbf{instância Caeté} (IBGE 3110004), em operação via WhatsApp.
+
+\textbf{Contribuições:} (i)~conceito e arquitetura do SIM para acesso conversacional a dados municipais; (ii)~\textit{pipeline} de ingestão e exposição analítica sobre SICOM/CGU; (iii)~conjunto de referência com 80 consultas SQL validadas e protocolo de avaliação reprodutível; (iv)~validação piloto da recuperação documental (RAG) sobre o Diário Oficial; (v)~evidências empíricas de viabilidade funcional em quatro configurações de modelo Text-to-SQL.
+
+\section{Trabalhos relacionados}
+
+\textbf{Dados públicos e GovTech.} Portais de transparência e bases como o SICOM centralizam informações contábeis e de compras públicas \cite{Lei2024SICOM,TCEMG_SICOM}, mas a heterogeneidade de esquemas e lacunas de publicação dificultam o uso por cidadãos leigos.
+
+\textbf{Text-to-SQL.} O benchmark Spider \cite{Yu2018Spider} popularizou comparação de resultados executados entre SQL gerada e gabarito. BIRD \cite{Li2024BIRD} amplia o desafio com bases volumosas e valores ruidosos. Métodos recentes com LLM empregam decomposição de consultas e \textit{schema linking} \cite{Pourreza2024DIN,Gao2024DAILSQL}.
+
+\textbf{RAG e orquestração.} Lewis et al. \cite{Lewis2020RAG} formalizaram recuperação aumentada para conhecimento externo. No SIM, RAG cobre o Diário Oficial; Text-to-SQL cobre dados tabulares. A orquestração seleciona o mecanismo adequado à intenção do usuário.
+
+\section{O SIM e a instância Caeté}
+
+\subsection{Arquitetura}
+
+O SIM integra: (1)~canal conversacional (WhatsApp, via automação n8n); (2)~agente orquestrador (GPT-4o); (3)~subsistema RAG (atos normativos indexados em base vetorial); (4)~subsistema Text-to-SQL (DuckDB sobre CSVs consolidados SICOM/CGU).
+
+O fluxo operacional segue: pergunta do usuário $\rightarrow$ orquestrador $\rightarrow$ RAG ou SQL $\rightarrow$ interpretação do resultado $\rightarrow$ resposta em linguagem natural.
+
+\subsection{Fontes de dados}
+
+A instância Caeté cobre 2020--2025 com dados do SICOM (receitas, despesas, empenhos, folha, frota, licitações, contratos), complementos da CGU (transferências federais, programas sociais) e Diário Oficial municipal. Um processo ETL em Python consolida os arquivos, gera metadados de esquema e expõe consulta analítica via DuckDB \textit{in-memory}.
+
+\subsection{Lacunas de transparência}
+
+A prefeitura não publicou folha de pagamento e cadastro de servidores para 2020--2022. O assistente deve informar essa lacuna quando solicitado, exemplificando como o SIM lida com limitações reais de abertura de dados.
+
+\section{Engenharia de contexto}
+
+O subsistema Text-to-SQL utiliza GPT-4.1-mini com \textit{prompt} contendo esquema minificado e amostras de valores reais por coluna (\textit{smart sampling}). Duas variantes foram avaliadas:
+
+\begin{itemize}
+  \item \textbf{Prompt compacto} ($\sim$16\,500 tokens): adotado em produção;
+  \item \textbf{Prompt estendido} ($\sim$35\,000 tokens): esquema com descrições ampliadas.
+\end{itemize}
+
+\section{Validação}
+
+\subsection{Text-to-SQL}
+
+A avaliação do subsistema Text-to-SQL foi conduzida por \textit{pipeline} automatizado (\texttt{avaliacao/eval/}), desacoplado do canal de produção. O conjunto golden contém 80 perguntas em português com SQL de referência validada, estratificadas por dificuldade e domínio.
+
+Adotam-se dois indicadores agregados sobre $N{=}80$ consultas:
+
+\begin{itemize}
+  \item \textbf{Taxa de SQL válida (VSR)}: proporção de SQL geradas que executam sem erro no motor analítico;
+  \item \textbf{Equivalência funcional (EF)}: proporção de consultas em que o resultado tabular gerado coincide com o gabarito nas grandezas que respondem à pergunta, com tolerância numérica $\tau{=}0{,}5\%$.
+\end{itemize}
+
+\subsection{RAG}
+
+Complementarmente, avaliou-se a recuperação documental sobre o Diário Oficial indexado em Qdrant (\textit{collection} \texttt{jornais\_caete}, embedding \texttt{text-embedding-3-small}). O \textit{golden} RAG v1.1 contém $N_{\text{RAG}}{=}8$ perguntas sobre decretos municipais cujo documento de referência possui \textit{chunk} confirmado no índice.
+
+Indicadores: \textbf{Recall@}$k$ (documento esperado no top-$k$, $k{=}5$) e \textbf{MRR} (\textit{Mean Reciprocal Rank}). Trata-se de amostra piloto --- evidência complementar, não \textit{benchmark} em larga escala.
+
+\subsection{Experimentos}
+
+\begin{table}[htbp]
+\centering
+\caption{Configuração dos experimentos ($n{=}80$)}
+\label{tab:exp}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{ID} & \textbf{Modelo} & \textbf{Prompt} \\
+\midrule
+E1 & GPT-4.1-mini & Compacto ($\sim$16k tokens) \\
+E2 & GPT-4.1-mini & Estendido ($\sim$30k tokens) \\
+E3 & GPT-4o-mini & Compacto \\
+E4 & GPT-4o & Compacto \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Resultados}
+
+\subsection{Viabilidade funcional}
+
+\begin{table}[htbp]
+\centering
+\caption{Indicadores de validação --- comparativo entre experimentos (\%)}
+\label{tab:results}
+\begin{tabular}{lrr}
+\toprule
+\textbf{Exp.} & \textbf{VSR} & \textbf{EF} \\
+\midrule
+E1 & 97,50 & \textbf{62,50} \\
+E2 & 96,25 & 58,75 \\
+E3 & 90,00 & 46,25 \\
+E4 & 97,50 & 57,50 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O baseline E1 demonstra que o subsistema gera SQL válida em 97,5\% dos casos e produz resultados funcionalmente equivalentes ao gabarito em 62,5\% das consultas.
+
+\subsection{Análise por dificuldade (E1)}
+
+\begin{table}[htbp]
+\centering
+\caption{E1 --- indicadores por nível de dificuldade}
+\label{tab:diff}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Dificuldade} & \textbf{$n$} & \textbf{EF (\%)} & \textbf{VSR (\%)} \\
+\midrule
+Fácil & 22 & 68,18 & 100,00 \\
+Médio & 44 & 61,36 & 97,73 \\
+Difícil & 14 & 57,14 & 92,86 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Comparativo de configurações}
+
+O \textit{prompt} estendido (E2) não superou o compacto em equivalência funcional (58,75\% \textit{versus} 62,50\%). O GPT-4o-mini (E3) degrada VSR (90\%) e EF (46,25\%). O GPT-4o (E4) não supera o baseline em EF (57,50\%) e apresenta latência média de 29,5\,s na geração de SQL --- inviável para respostas síncronas em canal conversacional.
+
+\subsection{Recuperação documental (RAG)}
+
+\begin{table}[htbp]
+\centering
+\caption{Validação piloto do RAG ($N_{\text{RAG}}{=}8$, $k{=}5$)}
+\label{tab:rag}
+\begin{tabular}{lr}
+\toprule
+\textbf{Indicador} & \textbf{Valor (\%)} \\
+\midrule
+Recall@5 & 100,00 \\
+MRR & 63,33 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O Recall@5 integral indica que o ato esperado aparece entre os cinco primeiros \textit{chunks} para todos os itens da amostra curada. O MRR reflete que o acerto nem sempre ocorre em primeiro lugar --- decretos tematicamente próximos competem no ranking.
+
+\subsection{Validação operacional}
+
+Além do \textit{benchmark} offline, o SIM foi validado em ambiente operacional via WhatsApp na instância Caeté, confirmando viabilidade da orquestração integrada entre automação, mensageria, RAG e consulta analítica.
+
+\section{Discussão}
+\label{sec:discussao}
+
+\textbf{Transparência e acesso.} O SIM materializa o princípio de que dados abertos só cumprem sua função democrática quando acessíveis. A arquitetura híbrida (RAG + SQL) cobre tanto consultas normativas quanto analíticas, cenário típico de prefeituras brasileiras.
+
+\textbf{Viabilidade técnica.} O baseline E1 combina VSR de 97,5\% e EF de 62,5\%, com latência média de 6,2\,s na geração de SQL --- parâmetros compatíveis com uso conversacional síncrono.
+
+\textbf{Limitações.} (i)~conjunto golden SQL de uma única instância; (ii)~amostra RAG reduzida ($N_{\text{RAG}}{=}8$), restrita a atos indexados, sem avaliação da resposta em linguagem natural; (iii)~lacunas documentadas de transparência local; (iv)~gabarito manual pode não cobrir todas as SQL semanticamente corretas.
+
+\textbf{Trabalhos futuros.} Ampliação do \textit{golden} RAG, julgamento de adequação das respostas documentais, testes com usuários reais e replicação do SIM em outros municípios.
+
+\section{Conclusão}
+
+O SIM demonstra viabilidade técnica de acesso conversacional a dados municipais abertos, com arquitetura replicável para outras prefeituras. A validação com 80 consultas comprova geração confiável de SQL e equivalência funcional do resultado na maioria dos casos; a validação piloto do RAG indica recuperação correta dos decretos indexados na amostra avaliada. O repositório público permite replicação offline dos experimentos.
+
+\section*{Repositório}
+
+Código, dados e scripts: \url{https://github.com/rafa-rez/tcc-sistema-de-informa-es-municipais}
+
+\bibliographystyle{abntex2-alf}
+\bibliography{../referencias/referencias_sim}
+
+\end{document}
