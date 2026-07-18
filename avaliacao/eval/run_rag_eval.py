@@ -79,6 +79,7 @@ def search_qdrant(
     top_k: int,
     vector: list[float] | None = None,
     embedding_model: str | None = None,
+    qdrant_filter: dict | None = None,
 ) -> list[dict]:
     """Busca no Qdrant com vetor informado ou gerado via OpenAI."""
     if vector is None:
@@ -97,6 +98,8 @@ def search_qdrant(
         "limit": top_k,
         "with_payload": True,
     }
+    if qdrant_filter:
+        payload["filter"] = qdrant_filter
     resp = requests.post(endpoint, json=payload, timeout=60)
     resp.raise_for_status()
     data = resp.json()
@@ -163,6 +166,27 @@ def act_exact_hits(question: str, act_index: dict[tuple, list[dict]]) -> list[di
     for tipo in tipos:
         hits.extend(act_index.get((tipo, numero, ano), []))
     return hits
+
+
+# Mapeia palavra-chave da pergunta -> valor de tipo_ato no payload (P1.4,
+# espelha o filtro do workflow n8n).
+TIPO_ATO_KEYWORDS = [
+    ("decreto", "DECRETO"),
+    ("lei complementar", "LEI"),
+    ("lei ", "LEI"),
+    ("portaria", "PORTARIA"),
+    ("edital", "AVISO_LICITACAO"),
+    ("resolução", "RESOLUCAO"),
+    ("resolucao", "RESOLUCAO"),
+]
+
+
+def infer_tipo_ato(question: str) -> str | None:
+    q = question.lower()
+    for kw, tipo in TIPO_ATO_KEYWORDS:
+        if kw in q:
+            return tipo
+    return None
 
 
 def dedup_hits(hits: list[dict], top_k: int) -> list[dict]:
@@ -285,6 +309,11 @@ def main() -> None:
             "entram antes dos resultados densos"
         ),
     )
+    parser.add_argument(
+        "--filtro-tipo-ato",
+        action="store_true",
+        help="Filtra payload tipo_ato no Qdrant conforme o tipo citado na pergunta (P1.4)",
+    )
     parser.add_argument("--dry-run", action="store_true", help="Lista itens sem consultar Qdrant")
     parser.add_argument(
         "--probe-qdrant",
@@ -319,6 +348,7 @@ def main() -> None:
     dedup_enabled = args.dedup or bool(rag_cfg.get("dedup", False))
     fetch_k = (args.fetch_k or int(rag_cfg.get("fetch_k", top_k * 4))) if dedup_enabled else top_k
     hybrid_act = args.hybrid_act or bool(rag_cfg.get("hybrid_act", False))
+    filtro_tipo = args.filtro_tipo_ato or bool(rag_cfg.get("filtro_tipo_ato", False))
 
     if not dataset.exists():
         print(f"Dataset não encontrado: {dataset}", file=sys.stderr)
@@ -338,6 +368,7 @@ def main() -> None:
         "dedup": dedup_enabled,
         "fetch_k": fetch_k if dedup_enabled else None,
         "hybrid_act": hybrid_act,
+        "filtro_tipo_ato": filtro_tipo,
         "started_at": datetime.now().isoformat(),
         "n": len(rows),
     }
@@ -370,6 +401,11 @@ def main() -> None:
             if item_id in imported:
                 hits = imported[item_id]
             else:
+                qdrant_filter = None
+                if filtro_tipo:
+                    tipo = infer_tipo_ato(row["pergunta"])
+                    if tipo:
+                        qdrant_filter = {"must": [{"key": "tipo_ato", "match": {"value": tipo}}]}
                 try:
                     hits = search_qdrant(
                         row["pergunta"],
@@ -377,6 +413,7 @@ def main() -> None:
                         collection=collection,
                         top_k=fetch_k,
                         embedding_model=embedding_model,
+                        qdrant_filter=qdrant_filter,
                     )
                 except Exception as exc:
                     print(f"[{item_id}] Erro na busca: {exc}", file=sys.stderr)
