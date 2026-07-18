@@ -11,7 +11,7 @@ Cópia versionada do conteúdo LaTeX. A compilação com template UFLA usa `temp
 | `secoes/referencial.tex` | Spider, BIRD, RAG, SICOM |
 | `secoes/metodologia.tex` | Arquitetura + métricas v3 |
 | `secoes/resultados.tex` | Tabelas E1–E4 |
-| `secoes/discussao.tex` | EX resposta vs estrita |
+| `secoes/discussao.tex` | Transparência, viabilidade e limitações |
 | `secoes/conclusao.tex` | Contribuições e futuro |
 | `figuras/arquitetura_sim.tex` | Diagrama TikZ |
 

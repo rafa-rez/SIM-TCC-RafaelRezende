@@ -22,3 +22,7 @@ GOLDEN_DATASET_V2 = GOLDEN_V2_DIR / "golden_dataset_v2.0.csv"
 GOLDEN_V2_DRAFT_DIR = GOLDEN_V2_DIR / "draft"
 GOLDEN_V2_REFERENCE_DIR = GOLDEN_V2_DIR / "reference_results"
 GOLDEN_V2_REVISAO_DIR = GOLDEN_V2_DIR / "revisao"
+
+GOLDEN_RAG_DIR = DADOS_ROOT / "golden_rag"
+GOLDEN_RAG_DATASET = GOLDEN_RAG_DIR / "golden_rag_v1.0.csv"
+GOLDEN_RAG_CHUNKS_DIR = GOLDEN_RAG_DIR / "reference_chunks"

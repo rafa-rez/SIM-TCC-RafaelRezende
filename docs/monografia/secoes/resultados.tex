@@ -1,62 +1,54 @@
 \chapter{\MakeUppercase{Análise de Resultados}}
 
-\section{Visão geral das métricas v3}
+\section{Validação do subsistema Text-to-SQL}
 
-A Tabela~\ref{tab:v3} consolida os quatro experimentos com as variantes de Execution Accuracy. A métrica \textbf{EX resposta} é adotada como indicador principal por alinhar a avaliação às grandezas que respondem à pergunta do cidadão, permitindo colunas auxiliares e tolerância numérica.
+A Tabela~\ref{tab:v3} consolida os quatro experimentos. Os indicadores comprovam que o pipeline gera SQL executável em grande parte dos casos (VSR entre 90\% e 97,5\%) e produz resultados funcionalmente equivalentes ao gabarito na maioria das consultas do baseline.
 
 \begin{table}[htbp]
 \centering
-\caption{Métricas v3 --- comparativo dos experimentos ($n=80$)}
+\caption{Indicadores de validação --- comparativo dos experimentos ($n=80$)}
 \label{tab:v3}
-\small
-\begin{tabular}{lrrrrrr}
+\begin{tabular}{lrr}
 \toprule
-\textbf{Experimento} & \textbf{EX resp.} & \textbf{EX proj} & \textbf{+$\tau$} & \textbf{colmap} & \textbf{estrita} & \textbf{VSR} \\
+\textbf{Experimento} & \textbf{VSR (\%)} & \textbf{EF (\%)} \\
 \midrule
-E1 --- Baseline (GPT-4.1-mini, compacto) & \textbf{62,50} & 60,00 & 61,25 & 57,50 & 10,00 & 97,50 \\
-E2 --- Contexto estendido (GPT-4.1-mini) & 58,75 & 56,25 & 57,50 & 56,25 & 13,75 & 96,25 \\
-E3 --- GPT-4o-mini & 46,25 & 46,25 & 46,25 & 46,25 & 12,50 & 90,00 \\
-E4 --- GPT-4o & 57,50 & 57,50 & 57,50 & 56,25 & 16,25 & 97,50 \\
+E1 --- Baseline (GPT-4.1-mini, compacto) & 97,50 & \textbf{62,50} \\
+E2 --- Contexto estendido (GPT-4.1-mini) & 96,25 & 58,75 \\
+E3 --- GPT-4o-mini & 90,00 & 46,25 \\
+E4 --- GPT-4o & 97,50 & 57,50 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \section{Configuração baseline (E1)}
 
-O experimento E1 avaliou 80 consultas com GPT-4.1-mini e \textit{prompt} compacto. A Tabela~\ref{tab:baseline} resume métricas principais e indicadores operacionais.
+O experimento E1 avaliou 80 consultas com GPT-4.1-mini e \textit{prompt} compacto --- configuração adotada em produção na instância Caeté. A Tabela~\ref{tab:baseline} resume os indicadores e a latência observada.
 
 \begin{table}[htbp]
 \centering
-\caption{Resultados operacionais do experimento E1 --- baseline}
+\caption{Resultados do experimento E1 --- baseline}
 \label{tab:baseline}
 \begin{tabular}{lr}
 \toprule
 \textbf{Indicador} & \textbf{Valor} \\
 \midrule
-EX resposta (principal) & 62,50\% (50/80) \\
-EX estrita (Spider) & 10,00\% (8/80) \\
-EX linhas (diagnóstico) & 85,00\% \\
 VSR & 97,50\% (78/80) \\
-Custo total estimado & US\$ 0,56 \\
+Equivalência funcional (EF) & 62,50\% (50/80) \\
 Latência média de geração & 6,2 s \\
 Latência média de execução SQL & 1,1 s \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\section{Evolução em relação à métrica estrita}
-
-A adoção de EX proj, tolerância $\tau$ e foco em \texttt{colunas\_resposta} elevou a estimativa de acurácia de 10\% (EX estrita) para 62,5\% (EX resposta) no E1, sem afrouxar para mera contagem de linhas (85\%). A decomposição das falhas com VSR positivo indica que 38 casos falham na EX estrita por alias de coluna, enquanto apenas cerca de 17 envolvem divergência real de valores.
-
 \section{Resultados por dificuldade (E1)}
 
 \begin{table}[htbp]
 \centering
-\caption{EX resposta e VSR por nível de dificuldade (E1)}
+\caption{E1 --- indicadores por nível de dificuldade}
 \label{tab:diff}
 \begin{tabular}{lrrr}
 \toprule
-\textbf{Dificuldade} & \textbf{$n$} & \textbf{EX resp. (\%)} & \textbf{VSR (\%)} \\
+\textbf{Dificuldade} & \textbf{$n$} & \textbf{EF (\%)} & \textbf{VSR (\%)} \\
 \midrule
 Fácil & 22 & 68,18 & 100,00 \\
 Médio & 44 & 61,36 & 97,73 \\
@@ -65,42 +57,37 @@ Difícil & 14 & 57,14 & 92,86 \\
 \end{tabular}
 \end{table}
 
-\section{Comparativo de ablações}
+\section{Comparativo de configurações}
 
-O \textit{prompt} estendido (E2) não superou o compacto em EX resposta (58,75\% \textit{versus} 62,50\%), com custo aproximadamente dobrado (US\$~1,16). O GPT-4o-mini (E3) apresentou queda acentuada (46,25\% EX resposta, VSR 90\%). O GPT-4o (E4) melhorou EX estrita (16,25\%), mas ficou abaixo do baseline em EX resposta (57,50\%), com custo de US\$~3,45 e latência média de 29,5~s.
+O \textit{prompt} estendido (E2) não superou o compacto em equivalência funcional (58,75\% \textit{versus} 62,50\%). O GPT-4o-mini (E3) degrada VSR (90\%) e EF (46,25\%). O GPT-4o (E4) não supera o baseline em EF (57,50\%) e apresenta latência média de 29,5~s na geração de SQL --- inviável para respostas síncronas em canal conversacional.
 
-\section{Validação funcional}
+\section{Validação operacional}
 
-Além do \textit{benchmark} offline, o SIM foi validado em ambiente operacional via WhatsApp na instância Caeté, confirmando viabilidade da orquestração integrada entre automação, mensageria e subsistemas de recuperação documental e consulta analítica.
+Além do \textit{benchmark} offline, o SIM foi validado em ambiente operacional via WhatsApp na instância Caeté, confirmando viabilidade da orquestração integrada entre automação, mensageria, recuperação documental e consulta analítica.
 
 \section{Avaliação da resposta em linguagem natural}
 
 \subsection{Protocolo}
 
-Para amostra estratificada do E1, registrou-se a cadeia completa: SQL gerada, resultado tabular, resposta em linguagem natural do orquestrador (GPT-4o) e julgamento automático (GPT-4.1-mini) conforme rubrica em quatro dimensões Likert \cite{Zheng2023LLMJudge}.
+Para amostra estratificada do E1 ($n=30$), registrou-se a cadeia completa: SQL gerada, resultado tabular, resposta em linguagem natural do orquestrador (GPT-4o) e julgamento automático (GPT-4.1-mini) conforme rubrica em quatro dimensões Likert \cite{Zheng2023LLMJudge}.
 
-\subsection{Resultados estratificados ($n=30$)}
+\subsection{Resultados}
 
 \begin{table}[htbp]
 \centering
 \caption{Avaliação LLM-as-Judge (E1, $n=30$)}
 \label{tab:jar}
-\begin{tabular}{lrr}
+\begin{tabular}{lr}
 \toprule
-\textbf{Métrica} & \textbf{Valor} & \textbf{Observação} \\
+\textbf{Indicador} & \textbf{Valor} \\
 \midrule
-JAR & 100,00\% (30/30) & Corretas ou parcialmente corretas \\
-EX estrita (mesma amostra) & 20,00\% (6/30) & Equivalência Spider \\
-EX resposta (mesma amostra) & --- & A calcular na amostra \\
-Adequação semântica (média) & 4,87 / 5 & Escala Likert \\
-Fidelidade aos dados (média) & 4,87 / 5 & \\
-Completude (média) & 4,73 / 5 & \\
-Clareza ao cidadão (média) & 4,77 / 5 & \\
-Custo total da amostra & US\$ 0,30 & Orquestrador + juiz \\
+JAR & 100,00\% (30/30) \\
+Adequação semântica (média) & 4,87 / 5 \\
+Fidelidade aos dados (média) & 4,87 / 5 \\
+Completude (média) & 4,73 / 5 \\
+Clareza ao cidadão (média) & 4,77 / 5 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Interpretação}
-
-O contraste entre EX estrita (20\%) e JAR (100\%) na mesma amostra reforça que a utilidade percebida pelo cidadão pode superar a concordância estrita entre consultas SQL. A métrica EX resposta (62,5\% no conjunto completo) oferece meio-termo quantitativo entre rigor literário e alinhamento à pergunta.
+O julgamento automático indica que as respostas em linguagem natural são adequadas ao cidadão na amostra avaliada. Essa evidência complementa, mas não substitui, a equivalência funcional sobre resultados tabulares.

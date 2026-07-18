@@ -25,8 +25,12 @@ python eval/run_all_experiments.py
 # Retomar após interrupção
 python eval/run_experiment.py --experiment baseline_16k --resume
 
-# Recálculo offline (sem API)
+# Recálculo offline (sem API) — TCC v1.0
 python scripts/recompute_metrics.py --experiment e1_baseline_compacto
+
+# Pipeline unificada (SQL + opcional RAG)
+python eval/run_pipeline.py
+python eval/run_pipeline.py --with-rag
 ```
 
 ## Artefatos

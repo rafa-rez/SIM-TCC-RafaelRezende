@@ -3,7 +3,7 @@
   "total": 80,
   "metrics_version": "3.0",
   "tau_rel_tol": 0.005,
-  "execution_accuracy_principal_pct": 57.5,
+  "execution_accuracy_principal_pct": 58.75,
   "execution_accuracy_proj_pct": 57.5,
   "execution_accuracy_proj_tol_pct": 57.5,
   "execution_accuracy_strict_pct": 16.25,
@@ -18,15 +18,15 @@
   "alias_apenas_count": 32,
   "alias_apenas_pct": 40.0,
   "colunas_extras_aceitas_count": 1,
-  "tolerancia_numerica_count": 0,
+  "tolerancia_numerica_count": 1,
   "divergencia_ex": {
     "cardinalidade_linhas": 5,
     "cardinalidade_colunas": 8,
     "alias_colunas": 32,
     "colunas_extras_aceitas": 1,
-    "tolerancia_numerica": 0,
+    "tolerancia_numerica": 1,
     "permutacao_valores_linha": 0,
-    "divergencia_valores": 15
+    "divergencia_valores": 14
   },
   "by_dificuldade": {
     "dificil": {
@@ -47,7 +47,7 @@
     },
     "medio": {
       "n": 44,
-      "ex_resposta_pct": 61.36,
+      "ex_resposta_pct": 63.64,
       "ex_proj_pct": 61.36,
       "ex_colmap_pct": 59.09,
       "ex_strict_pct": 15.91,
@@ -82,7 +82,7 @@
     },
     "Licitacoes Contratos": {
       "n": 10,
-      "ex_resposta_pct": 60.0,
+      "ex_resposta_pct": 70.0,
       "ex_proj_pct": 60.0
     },
     "Manipulacao de Datas": {

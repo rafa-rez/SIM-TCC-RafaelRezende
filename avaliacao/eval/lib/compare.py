@@ -45,6 +45,10 @@ def _sort_key(v: Any) -> tuple:
     return (2, str(nv))
 
 
+def _sig_sort_key(sig: tuple) -> str:
+    return json.dumps(sig, default=str, ensure_ascii=False)
+
+
 def row_signature(row: dict[str, Any]) -> tuple:
     items = []
     for k in sorted(row.keys()):
@@ -53,25 +57,25 @@ def row_signature(row: dict[str, Any]) -> tuple:
 
 
 def row_value_signature(row: dict[str, Any]) -> tuple:
-    values = sorted((_sort_key(v) for v in row.values()))
+    values = sorted((_sort_key(v) for v in row.values()), key=_sig_sort_key)
     return tuple(values)
 
 
 def multiset(rows: list[dict[str, Any]]) -> list[tuple]:
     sigs = [row_signature(r) for r in rows]
-    return sorted(sigs)
+    return sorted(sigs, key=_sig_sort_key)
 
 
 def multiset_values(rows: list[dict[str, Any]]) -> list[tuple]:
     sigs = [row_value_signature(r) for r in rows]
-    return sorted(sigs)
+    return sorted(sigs, key=_sig_sort_key)
 
 
 def column_vectors(rows: list[dict[str, Any]]) -> list[tuple]:
     if not rows:
         return []
     cols = list(rows[0].keys())
-    sorted_rows = sorted(rows, key=row_value_signature)
+    sorted_rows = sorted(rows, key=lambda r: _sig_sort_key(row_value_signature(r)))
     vectors = []
     for col in cols:
         vec = tuple(_sort_key(r[col]) for r in sorted_rows)
@@ -85,7 +89,7 @@ def selected_column_vectors(
 ) -> list[tuple]:
     if not rows or not columns:
         return []
-    sorted_rows = sorted(rows, key=row_value_signature)
+    sorted_rows = sorted(rows, key=lambda r: _sig_sort_key(row_value_signature(r)))
     vectors = []
     for col in columns:
         if col not in rows[0]:

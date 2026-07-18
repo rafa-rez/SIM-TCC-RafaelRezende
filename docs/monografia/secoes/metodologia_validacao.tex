@@ -1,0 +1,76 @@
+\section{Protocolo de validação do Text-to-SQL}
+
+A avaliação do subsistema Text-to-SQL foi conduzida por pipeline automatizado (\texttt{avaliacao/eval/}), desacoplado do canal WhatsApp, garantindo reprodutibilidade. O subsistema RAG não foi avaliado quantitativamente neste protocolo; constitui trabalho futuro (ver \texttt{docs/PLANO\_RAG.md}).
+
+\subsection{Notação e pré-condições}
+
+Para cada consulta $i$ no conjunto de referência ($N = 80$):
+
+\begin{itemize}
+    \item $q_i$ --- pergunta em linguagem natural;
+    \item $\text{SQL}_i^{(r)}$ --- consulta de referência (gabarito);
+    \item $\text{SQL}_i^{(g)}$ --- consulta gerada pelo modelo;
+    \item $R_i$ --- resultado tabular de $\text{SQL}_i^{(r)}$;
+    \item $G_i$ --- resultado tabular de $\text{SQL}_i^{(g)}$;
+    \item $C_i$ --- conjunto de colunas em \texttt{colunas\_resposta} que respondem à pergunta (75/80 preenchidas automaticamente).
+\end{itemize}
+
+Define-se a função de normalização de célula $\nu(\cdot)$, aplicada antes de qualquer comparação: nulos unificados; números arredondados em quatro casas decimais; strings sem espaços laterais e em maiúsculas; strings numéricas convertidas com vírgula substituída por ponto.
+
+\subsection{Taxa de SQL válida (VSR)}
+
+A \textbf{taxa de SQL válida} (\textit{Valid SQL Rate}, VSR) mede se a consulta gerada é sintaticamente correta e executável sobre o esquema municipal:
+
+\begin{equation}
+\text{VSR} = \frac{1}{N} \sum_{i=1}^{N} \mathbb{1}\!\left[\text{SQL}_i^{(g)} \text{ executa sem erro}\right]
+\end{equation}
+
+onde $\mathbb{1}[\cdot]$ é a função indicadora. Quando a SQL gerada falha, os indicadores de equivalência de resultado para a consulta $i$ são nulos.
+
+\subsection{Equivalência funcional (EF)}
+
+A \textbf{equivalência funcional} (EF) verifica se o cidadão receberia as grandezas corretas, independentemente de aliases de coluna ou colunas auxiliares no resultado gerado. Trata-se da métrica adotada neste trabalho para comprovar a utilidade do resultado tabular; no repositório técnico corresponde ao campo \texttt{ex\_resposta}.
+
+Para cada consulta $i$ com VSR positivo, exige-se $|R_i| = |G_i|$ (mesma cardinalidade de linhas). Para cada coluna $k \in C_i$, deve existir alguma coluna $j$ em $G_i$ cujo vetor de valores normalizados ao longo das linhas seja equivalente ao vetor da coluna correspondente em $R_i$, com tolerância numérica $\tau = 0{,}5\%$ em valores fiscais:
+
+\begin{equation}
+\left|\nu(a) - \nu(b)\right| / \max\!\left(|\nu(b)|, \varepsilon\right) \leq \tau, \quad \tau = 0{,}005
+\end{equation}
+
+onde $\varepsilon$ evita divisão por zero. A equivalência funcional agregada é:
+
+\begin{equation}
+\text{EF} = \frac{1}{N} \sum_{i=1}^{N} \mathbb{1}\!\left[\text{EF}_i = 1\right]
+\end{equation}
+
+com $\text{EF}_i = 1$ quando todas as colunas em $C_i$ possuem correspondente equivalente em $G_i$ sob as regras acima.
+
+\subsection{Indicadores complementares}
+
+\begin{description}
+    \item[NEA, TSA, CHS] Indicadores auxiliares de resultado não vazio, seleção de tabelas e presença de filtros relevantes.
+    \item[JAR --- \textit{Judge Agreement Rate}] Proporção de respostas em linguagem natural classificadas como corretas ou parcialmente corretas por LLM-as-Judge \cite{Zheng2023LLMJudge}, em amostra estratificada ($M = 30$):
+    \begin{equation}
+    \text{JAR} = \frac{1}{M} \sum_{j=1}^{M} \mathbb{1}\!\left[\text{veredito}_j \in \{\text{correto}, \text{parcialmente\_correto}\}\right]
+    \end{equation}
+\end{description}
+
+A implementação completa, incluindo variantes diagnósticas documentadas em \texttt{docs/METRICAS.md}, está em \texttt{avaliacao/eval/lib/compare.py}. O recálculo offline usa DuckDB local.
+
+\subsection{Experimentos conduzidos}
+
+\begin{enumerate}
+    \item \textbf{E1 --- Baseline}: GPT-4.1-mini com \textit{prompt} compacto;
+    \item \textbf{E2 --- Ablação de contexto}: GPT-4.1-mini com \textit{prompt} estendido;
+    \item \textbf{E3 --- Ablação de modelo (econômico)}: GPT-4o-mini com \textit{prompt} compacto;
+    \item \textbf{E4 --- Ablação de modelo (avançado)}: GPT-4o com \textit{prompt} compacto.
+\end{enumerate}
+
+\section{Ambiente experimental}
+
+\begin{itemize}
+    \item DuckDB local sobre CSVs em \texttt{avaliacao/dados/};
+    \item Modelos OpenAI via API oficial, temperatura 0,0;
+    \item Saída estruturada em JSON contendo a consulta SQL;
+    \item Persistência incremental em \texttt{checkpoint.jsonl} para retomada.
+\end{itemize}

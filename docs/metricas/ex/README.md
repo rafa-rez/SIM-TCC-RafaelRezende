@@ -1,20 +1,20 @@
 # Métrica EX (Execution Accuracy)
 
-Família de métricas que compara o resultado tabular da SQL gerada com o gabarito.
+Família de métricas que compara o resultado tabular da SQL gerada com o gabarito de referência.
 
-## Métrica principal (documento final)
+## Indicador de equivalência funcional
 
-**EX resposta** (`ex_resposta`): equivalência nas colunas listadas em `colunas_resposta` do golden, com colunas extras permitidas no resultado gerado e tolerância numérica τ = 0,5%.
+**EX resposta** (`ex_resposta`): equivalência nas colunas listadas em `colunas_resposta` do golden, com colunas extras permitidas no resultado gerado e tolerância numérica τ = 0,5%. Este é o indicador utilizado nos textos do trabalho para reportar acurácia de resultado de forma alinhada à pergunta do cidadão.
 
 ## Variantes no repositório
 
 | Campo | Nome | Uso |
 |-------|------|-----|
-| `ex_resposta` | EX resposta | **Principal** para o TCC |
+| `ex_resposta` | EX resposta | Equivalência funcional (reportada nos textos) |
 | `ex_proj` | EX projeção | Colunas do gabarito encontradas no gerado (sem τ) |
 | `ex_proj_tol` | EX projeção + τ | Com tolerância numérica |
 | `ex_colmap` | EX colmap | Mesmo número de colunas + vetores |
-| `ex_strict` | EX estrita | Literatura (Spider); repo apenas |
+| `ex_strict` | EX estrita | Referência da literatura (Spider) |
 | `ex_rows` | EX linhas | Diagnóstico de cardinalidade |
 
 ## Implementação
@@ -26,7 +26,7 @@ Família de métricas que compara o resultado tabular da SQL gerada com o gabari
 ## Documentação
 
 - Formal: `docs/METRICAS.md`
-- Relatório v3: `docs/RELATORIO_METRICAS_V3.md`
+- Relatório: `docs/RELATORIO_METRICAS_V3.md`
 - Casos: `experimentos/*/metricas_por_caso/`
 
 ## Exemplos

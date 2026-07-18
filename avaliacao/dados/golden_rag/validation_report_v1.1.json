@@ -1,0 +1,110 @@
+{
+  "generated_at": "2026-07-18T13:16:57.416504",
+  "qdrant_url": "http://localhost:6333",
+  "collection": "jornais_caete",
+  "embedding_model": "text-embedding-3-small",
+  "excluded_v1": [
+    {
+      "id": "001",
+      "motivo": "duplicata do 010 (mesmo Decreto 247/2024)"
+    },
+    {
+      "id": "002",
+      "motivo": "Decreto 030/2024 não indexado (só Edital 030/2024)"
+    },
+    {
+      "id": "003",
+      "motivo": "Lei 3416/2022 não indexada"
+    },
+    {
+      "id": "005",
+      "motivo": "Lei 3287/2021 não indexada"
+    },
+    {
+      "id": "006",
+      "motivo": "Decreto 123/2021 não indexado"
+    },
+    {
+      "id": "007",
+      "motivo": "Decreto 11525/2023 não indexado"
+    },
+    {
+      "id": "008",
+      "motivo": "Decreto 013/2022 não localizado com cabeçalho válido"
+    },
+    {
+      "id": "009",
+      "motivo": "Decreto 185/2024 indexado mas rank > 5 com perguntas testadas"
+    },
+    {
+      "id": "010",
+      "motivo": "fundiu com item 002 v1.1 (mesmo ato, pergunta reformulada)"
+    }
+  ],
+  "items": [
+    {
+      "id": "001",
+      "v1_id": "004",
+      "doc_id_esperado": "Decreto Municipal nº 064/2023",
+      "chunk_count": 4,
+      "rank_at_20": 1,
+      "pergunta": "O que estabelece o Decreto Municipal nº 064/2023 sobre o Programa Bolsa Atleta?"
+    },
+    {
+      "id": "002",
+      "v1_id": "010",
+      "doc_id_esperado": "Decreto Municipal nº 247/2024",
+      "chunk_count": 2,
+      "rank_at_20": 3,
+      "pergunta": "Qual decreto de 2024 declarou situação de emergência por estiagem e falta de água potável em Caeté?"
+    },
+    {
+      "id": "003",
+      "v1_id": null,
+      "doc_id_esperado": "Decreto Municipal nº 015/2024",
+      "chunk_count": 50,
+      "rank_at_20": 1,
+      "pergunta": "O que dispõe o Decreto Municipal nº 015/2024?"
+    },
+    {
+      "id": "004",
+      "v1_id": null,
+      "doc_id_esperado": "Decreto Municipal nº 282/2023",
+      "chunk_count": 3,
+      "rank_at_20": 5,
+      "pergunta": "O que dispõe o Decreto Municipal nº 282/2023 sobre permissão de uso de bem público?"
+    },
+    {
+      "id": "005",
+      "v1_id": null,
+      "doc_id_esperado": "Decreto Municipal nº 295/2022",
+      "chunk_count": 2,
+      "rank_at_20": 1,
+      "pergunta": "Qual decreto de 2022 nomeia membros do Conselho Municipal de Saneamento Básico?"
+    },
+    {
+      "id": "006",
+      "v1_id": null,
+      "doc_id_esperado": "Decreto Municipal nº 218/2025",
+      "chunk_count": 3,
+      "rank_at_20": 1,
+      "pergunta": "Qual decreto de 2025 declarou emergência em saúde pública por febre maculosa em Caeté?"
+    },
+    {
+      "id": "007",
+      "v1_id": null,
+      "doc_id_esperado": "Decreto Municipal nº 112/2024",
+      "chunk_count": 2,
+      "rank_at_20": 3,
+      "pergunta": "O que dispõe o Decreto Municipal nº 112/2024?"
+    },
+    {
+      "id": "008",
+      "v1_id": null,
+      "doc_id_esperado": "Decreto Municipal nº 321/2024",
+      "chunk_count": 2,
+      "rank_at_20": 5,
+      "pergunta": "O que dispõe o Decreto Municipal nº 321/2024?"
+    }
+  ]
+}

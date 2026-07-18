@@ -1,43 +1,28 @@
 \chapter{\MakeUppercase{Discussão}}
 
-\section{Validade sintática versus acurácia semântica}
+\section{Acesso a dados e transparência pública}
 
-Os quatro experimentos convergem para VSR entre 90\% e 97,5\%. A EX estrita permanece entre 10\% e 16,25\%, enquanto a \textbf{EX resposta} varia de 46,25\% a 62,50\%. O modelo demonstra domínio da sintaxe SQL e do mapeamento esquema-coluna, mas formulações alternativas e aliases de coluna no gabarito manual penalizam métricas estritas \cite{Yu2018Spider,Zhong2020TestSuite}.
+O SIM materializa o princípio de que dados abertos só cumprem sua função democrática quando acessíveis. Ao integrar consulta analítica e recuperação documental em canal conversacional amplamente utilizado no Brasil, a plataforma reduz a distância entre a publicação formal de bases governamentais e o uso efetivo por cidadãos, jornalistas e organizações da sociedade civil.
 
-\section{Escolha da métrica principal}
+\section{Viabilidade técnica}
 
-A EX resposta combina três decisões metodológicas justificadas pelo domínio municipal:
+Os quatro experimentos convergem para VSR entre 90\% e 97,5\%, indicando domínio da sintaxe SQL e do mapeamento esquema-coluna. O baseline E1 combina equivalência funcional de 62,5\% com latência média de 6,2~s na geração de SQL --- parâmetros compatíveis com uso conversacional síncrono em canal de mensageria.
 
-\begin{enumerate}
-    \item \textbf{Projeção} (EX proj): recupera consultas corretas com colunas auxiliares, comum em agregações municipais;
-    \item \textbf{Tolerância $\tau$}: absorve arredondamentos em percentuais e valores fiscais;
-    \item \textbf{Colunas de resposta}: restringe a comparação às grandezas que respondem à pergunta, evitando penalizar chaves surrogate ou metadados.
-\end{enumerate}
+\section{Escolha de configuração em produção}
 
-A EX linhas (85\% no E1) foi mantida apenas como diagnóstico, por ser permissiva demais para perguntas abertas.
-
-\section{Impacto do tamanho do contexto}
-
-O \textit{prompt} estendido (E2) apresentou EX resposta \textit{inferior} ao compacto (58,75\% \textit{versus} 62,50\%), com custo e latência maiores. Para municípios com orçamento limitado, a variante compacta permanece preferível na instância Caeté.
-
-\section{Comparação entre modelos}
-
-O GPT-4o-mini (E3) reduz custo (US\$~0,21), mas degrada VSR e EX resposta. O GPT-4o (E4) melhora EX estrita, porém não supera o baseline em EX resposta e inviabiliza respostas síncronas rápidas (29,5~s de latência média).
-
-\section{Contraste entre EX e JAR}
-
-A avaliação com LLM-as-Judge \cite{Zheng2023LLMJudge} em amostra estratificada ($n=30$) revelou JAR de 100\% com EX estrita de 20\%. Essa evidência complementa, mas não substitui, métricas objetivas sobre resultados tabulares: o juiz automático pode ser complacente ou compartilhar vieses do modelo gerador.
+O \textit{prompt} estendido (E2) não superou o compacto em equivalência funcional, com latência maior. O GPT-4o-mini (E3) degrada desempenho de forma inaceitável para produção (VSR 90\%, EF 46,25\%). O GPT-4o (E4) não supera o baseline em EF e inviabiliza respostas síncronas rápidas (29,5~s de latência média). Para a instância Caeté, GPT-4.1-mini com \textit{prompt} compacto permanece a configuração adotada.
 
 \section{Limitações}
 
 \begin{itemize}
-    \item Avaliação concentrada na instância Caeté; generalização para outros municípios requer novas instâncias SIM;
+    \item Avaliação quantitativa concentrada no subsistema Text-to-SQL; o RAG (Diário Oficial) opera em produção, mas carece de protocolo quantitativo neste trabalho (plano em \texttt{docs/PLANO\_RAG.md});
+    \item Conjunto golden de uma única instância; generalização para outros municípios requer novas instâncias SIM;
     \item Lacuna de folha de pagamento 2020--2022 na base local;
-    \item Gabarito manual pode não cobrir todas as SQLs semanticamente corretas;
-    \item Subsistema RAG (Diário Oficial) não foi avaliado quantitativamente neste protocolo;
-    \item \texttt{colunas\_resposta} preenchida automaticamente em 75/80 casos --- revisão humana pendente.
+    \item Gabarito manual pode não cobrir todas as SQL semanticamente corretas;
+    \item \texttt{colunas\_resposta} preenchida automaticamente em 75/80 casos --- revisão humana pendente;
+    \item Julgamento automático (JAR) pode ser complacente ou compartilhar vieses do modelo gerador.
 \end{itemize}
 
 \section{Implicações práticas}
 
-O SIM demonstra viabilidade técnica e custo operacional modesto para consulta conversacional a dados municipais abertos. Os resultados subsidiam decisões sobre modelo, tamanho de contexto e métricas de avaliação em futuras instâncias municipais.
+O SIM demonstra viabilidade técnica de consulta conversacional a dados municipais abertos, com arquitetura replicável para outras prefeituras. Os resultados subsidiam decisões sobre modelo e tamanho de contexto em futuras instâncias. Trabalhos futuros incluem avaliação quantitativa do RAG, testes com usuários reais e replicação em outros municípios.

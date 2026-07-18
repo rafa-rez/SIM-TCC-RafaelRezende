@@ -23,4 +23,5 @@ foreach ($exp in $experiments) {
 Write-Host "Gerando tabela comparativa..."
 python scripts/compare_all_experiments.py
 
-Write-Host "Concluído. Ver experimentos/comparison_table.md"
+Write-Host "Concluído. Ver experimentos/comparison_table_v3.md"
+Write-Host "Pipeline completo: .\run_metrics_pipeline.ps1"

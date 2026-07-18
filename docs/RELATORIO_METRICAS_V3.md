@@ -39,10 +39,11 @@ Mesma regra de EX proj, com tolerância relativa em valores numéricos.
 **Ganho E1 adicional:** +1,25 p.p. (61,25%).  
 **Casos recuperados:** 2 (`tolerancia_numerica`), incluindo percentual da Câmara (~0,36% de diferença).
 
-### EX resposta (métrica principal proposta)
+### EX resposta (equivalência funcional)
+
 Aplica EX proj + τ apenas nas colunas listadas em `colunas_resposta` no golden (75/80 consultas preenchidas automaticamente).
 
-**E1:** **62,50%** — melhor resultado honesto sem afrouxar para contagem de linhas.
+**E1:** **62,50%** — indicador de equivalência funcional reportado nos textos do trabalho.
 
 ## Decomposição das falhas (E1, VSR = 1)
 
@@ -55,7 +56,7 @@ Aplica EX proj + τ apenas nas colunas listadas em `colunas_resposta` no golden 
 | Cardinalidade de linhas | 6 |
 | Cardinalidade de colunas (sem recuperação proj) | ~2 |
 
-## Métrica adotada para o documento final
+## Indicador adotado nos textos do trabalho
 
 **EX resposta** (`ex_resposta`): equivalência de conteúdo nas colunas que respondem à pergunta, com colunas extras permitidas e τ = 0,5%.
 

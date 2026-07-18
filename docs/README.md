@@ -1,37 +1,51 @@
 # Documentação — SIM
 
+Índice da documentação do **SIM** (*Sistema de Informações Municipais*) e da validação Text-to-SQL na instância Caeté (MG).
+
+---
+
+## Sistema e replicação
+
 | Documento | Descrição |
 |-----------|-----------|
-| [SIM.md](SIM.md) | Conceito do sistema e instância Caeté |
-| [METRICAS.md](METRICAS.md) | Definições formais das métricas v3 |
-| [RELATORIO_METRICAS_V3.md](RELATORIO_METRICAS_V3.md) | Resultados empíricos E1–E4 |
-| [REPLICACAO.md](REPLICACAO.md) | Como reproduzir a avaliação |
-| [PLANO_ETAPAS.md](PLANO_ETAPAS.md) | Planejamento geral do TCC |
-| [referencias/](referencias/) | Bibliografia, plano de leitura e notas |
-| [artigo/](artigo/) | Rascunho do artigo SBC v1 |
-| [monografia/](monografia/) | Monografia UFLA v1 — PDF: `SIM_monografia_v1.pdf` |
-| [artigo/](artigo/) | Artigo SBC v1 — PDF: `sim_artigo_sbc_v1.pdf` |
+| [SIM.md](SIM.md) | Conceito, arquitetura, fontes de dados e instância Caeté |
+| [REPLICACAO.md](REPLICACAO.md) | Procedimento para reproduzir a avaliação offline |
+| [PLANO_RAG.md](PLANO_RAG.md) | Plano de avaliação do subsistema RAG |
+
+## Validação Text-to-SQL
+
+| Documento | Descrição |
+|-----------|-----------|
+| [METRICAS.md](METRICAS.md) | Definições formais das métricas (v3) |
+| [RELATORIO_METRICAS_V3.md](RELATORIO_METRICAS_V3.md) | Resultados empíricos dos experimentos E1–E4 |
+| [metricas/](metricas/) | Notas por família de métrica (EX, VSR, NEA, TSA, CHS, JAR) |
+
+## Textos do trabalho
+
+| Pasta | Descrição |
+|-------|-----------|
+| [artigo/](artigo/) | Artigo SBC — `sim_artigo_sbc_v1.tex` |
+| [monografia/](monografia/) | Monografia UFLA — `templufla_main.tex` |
+| [referencias/](referencias/) | Bibliografia (`referencias_sim.bib`), plano de leitura e fichamentos |
+
+---
 
 ## Compilar PDFs
 
 ```powershell
 cd docs
-.\compile.ps1          # monografia + artigo
-.\compile.ps1 -All     # idem
+.\compile.ps1
 ```
 
 Requer TeX Live (ou MiKTeX) e `template-ufla/` na raiz do repositório para a monografia.
 
-## Monografia LaTeX
+---
 
-A versão formatada UFLA fica em `template-ufla/` (local). O conteúdo textual é mantido alinhado com esta pasta `docs/`.
-
-## Fluxo de trabalho documental
+## Relação entre pastas
 
 ```
-v1 sólida (SIM + métricas v3)
-    ↓
-baixar PDFs → fichamentos em referencias/notas/
-    ↓
-v2 com referências integradas na monografia e no artigo
+docs/           → documentação conceitual, métricas e textos acadêmicos
+avaliacao/      → dados, experimentos, pipeline e scripts reprodutíveis
 ```
+
+O repositório público contém a avaliação Text-to-SQL (v1.0 do TCC) e a stack Docker (`docker-compose.yml`). Métricas RAG são executáveis pela pipeline, mas não compõem os PDFs nesta versão — ver [PLANO_RAG.md](PLANO_RAG.md).

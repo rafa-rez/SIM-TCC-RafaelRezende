@@ -8,9 +8,9 @@ Versão das métricas: **3.0** (julho/2026). Relatório: `docs/RELATORIO_METRICA
 
 ## 1. Visão geral
 
-A avaliação combina métricas **sintáticas** (a SQL executa?), **estruturais** (tabelas e filtros esperados?) e **semânticas sobre o resultado** (o conjunto de linhas retornado corresponde ao gabarito?). Para perguntas abertas em linguagem natural, a literatura de Text-to-SQL adota comparação estrita de resultados (Execution Accuracy, EX), que penaliza aliases de coluna e formulações SQL alternativas semanticamente equivalentes.
+Este documento descreve as métricas utilizadas para **comprovar a funcionalidade** do subsistema Text-to-SQL do SIM na instância Caeté. As métricas não constituem o objeto central do trabalho — que é o acesso conversacional a dados públicos municipais —, mas fornecem evidência reprodutível de que o pipeline gera SQL válida e resultados alinhados ao gabarito em grande parte dos casos.
 
-Neste trabalho reportamos **várias variantes de EX**, alinhadas à literatura e estendidas para cenários de consulta municipal, com classificação explícita de divergências atribuíveis ao **gabarito** (nomes de coluna arbitrários na referência manual) versus **modelo** (valores ou cardinalidade incorretos).
+A avaliação combina indicadores **sintáticos** (a SQL executa?), **estruturais** (tabelas e filtros esperados?) e **semânticos sobre o resultado** (o conjunto de linhas retornado corresponde ao gabarito?). Para perguntas abertas em linguagem natural, a literatura de Text-to-SQL adota comparação estrita de resultados (Execution Accuracy, EX), que penaliza aliases de coluna e formulações SQL alternativas semanticamente equivalentes. Por isso, reportamos **várias variantes de EX**, alinhadas à literatura e estendidas para o contexto municipal.
 
 Implementação: `avaliacao/eval/lib/compare.py`. Recálculo offline: `avaliacao/scripts/recompute_metrics.py`.
 
@@ -213,11 +213,15 @@ JAR = (1/M) Σⱼ 𝟙[ vereditoⱼ ∈ {correto, parcialmente_correto} ]
 
 ---
 
-## 4.9 EX resposta (métrica principal, `ex_resposta`)
+## 4.9 Equivalência funcional (`ex_resposta` / EF)
+
+**Nome no texto acadêmico:** Equivalência funcional (EF).
 
 **Definição.** EX proj + τ restrito às colunas em `colunas_resposta` no golden (chaves + grandezas de resposta). Campo preenchido por `avaliacao/scripts/enrich_golden_colunas.py` (75/80 consultas).
 
-**Resultado E1:** **62,50%** (métrica principal proposta para o documento final).
+**Interpretação.** Mede se o cidadão receberia as grandezas corretas, independentemente de aliases ou colunas auxiliares. É o indicador de **equivalência funcional** adotado nos textos do trabalho para reportar acurácia de resultado.
+
+**Resultado E1:** **62,50%**.
 
 ---
 

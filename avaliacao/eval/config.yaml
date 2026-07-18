@@ -43,7 +43,7 @@ models:
   - id: gpt-5-mini
     label: "GPT-5 Mini"
 
-# Construção do golden v2 — modelo mais capaz que o E1 (gabarito humano-assistido)
+# Assistência na elaboração de SQL de referência (opcional)
 golden_assist:
   model: gpt-5
   prompt_variant: poscagada_16k
@@ -67,3 +67,11 @@ execution:
   duckdb_timeout_seconds: 60
   max_retries_openai: 2
   retry_delay_seconds: 3
+
+# Avaliação RAG (Diário Oficial — instância Caeté)
+rag:
+  dataset: "dados/golden_rag/golden_rag_v1.1.csv"
+  top_k: 5
+  qdrant_url: "http://localhost:6333"
+  collection: "jornais_caete"  # workflow n8n consultar_diario_oficial (docker-compose :6333)
+  embedding_model: "text-embedding-3-small"  # índice Qdrant (1536 dims, Cosine)

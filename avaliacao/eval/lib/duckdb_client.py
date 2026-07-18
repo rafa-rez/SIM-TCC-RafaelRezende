@@ -1,11 +1,17 @@
-"""Cliente HTTP para DuckDB API."""
+"""Cliente HTTP para DuckDB API com fallback local."""
 
 from __future__ import annotations
 
 import time
 from typing import Any
+from urllib.parse import urlparse
 
 import requests
+
+
+def _use_local_fallback(url: str) -> bool:
+    host = (urlparse(url).hostname or "").lower()
+    return host in {"", "localhost", "127.0.0.1"}
 
 
 def execute_query(
@@ -37,6 +43,19 @@ def execute_query(
             "error": body.get("erro_tecnico") or body.get("mensagem_llm"),
         }
     except requests.RequestException as exc:
+        if _use_local_fallback(url):
+            from eval.lib.duckdb_engine import execute_query_local
+
+            local = execute_query_local(sql, timeout=timeout)
+            return {
+                "http_status": 0,
+                "elapsed_ms": local.get("elapsed_ms", 0),
+                "body": {"status": "success" if local.get("ok") else "error"},
+                "ok": bool(local.get("ok")),
+                "data": local.get("data") or [],
+                "error": local.get("error"),
+                "local_fallback": True,
+            }
         return {
             "http_status": 0,
             "elapsed_ms": round((time.perf_counter() - t0) * 1000, 2),
