@@ -6,7 +6,7 @@ O SIM materializa o princípio de que dados abertos só cumprem sua função dem
 
 \section{Viabilidade técnica}
 
-Os quatro experimentos convergem para VSR entre 90\% e 97,5\%, indicando domínio da sintaxe SQL e do mapeamento esquema-coluna. O baseline E1 combina equivalência funcional de 62,5\% com latência média de 6,2~s na geração de SQL --- parâmetros compatíveis com uso conversacional síncrono em canal de mensageria.
+Os quatro experimentos convergem para VSR entre 90\% e 97,5\%, indicando domínio da sintaxe SQL e do mapeamento esquema-coluna. O baseline E1 combina equivalência funcional de 62,5\% com latência média de 6,2~s na geração de SQL --- parâmetros compatíveis com uso conversacional síncrono em canal de mensageria. O refinamento do \textit{prompt} (variante v2.1, mesmo modelo) elevou a EF para 72,5\% com VSR de 100\%, indicando que parte substancial das falhas residuais é atribuível à engenharia de contexto e não à troca de modelo.
 
 \section{Escolha de configuração em produção}
 
@@ -15,7 +15,7 @@ O \textit{prompt} estendido (E2) não superou o compacto em equivalência funcio
 \section{Limitações}
 
 \begin{itemize}
-    \item Amostra RAG reduzida ($N_{\text{RAG}} = 8$), restrita a decretos com \textit{chunk} no índice; não avalia qualidade da resposta em linguagem natural nem roteamento do orquestrador;
+    \item Amostra RAG v1.1 reduzida ($N_{\text{RAG}} = 8$), restrita a decretos com \textit{chunk} no índice; golden v1.2 ($n=20$) usa perguntas uniformes por número de ato --- evidência complementar;
     \item Conjunto golden de uma única instância; generalização para outros municípios requer novas instâncias SIM;
     \item Lacuna de folha de pagamento 2020--2022 na base local;
     \item Gabarito manual pode não cobrir todas as SQL semanticamente corretas;

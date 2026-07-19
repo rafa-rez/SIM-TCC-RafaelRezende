@@ -6,12 +6,14 @@ Documentação do sistema: [`../docs/SIM.md`](../docs/SIM.md)
 
 ---
 
-## Resultados reportados no TCC
+## Resultados reportados
 
 | Subsistema | Golden | Indicadores |
 |------------|--------|-------------|
-| Text-to-SQL | `dados/golden/golden_dataset_v1.0.csv` (80) | VSR, EF — experimentos E1–E4 |
+| Text-to-SQL | `dados/golden/golden_dataset_v1.0.csv` (80) | VSR, EF — E1–E4 + refinamento v2.1 |
 | RAG | `dados/golden_rag/golden_rag_v1.1.csv` (8) | Recall@5, MRR |
+
+### Text-to-SQL — comparativo E1–E4
 
 | Experimento | VSR | EF |
 |-------------|----:|---:|
@@ -20,12 +22,25 @@ Documentação do sistema: [`../docs/SIM.md`](../docs/SIM.md)
 | E3 GPT-4o-mini | 90,0% | 46,3% |
 | E4 GPT-4o | 97,5% | 57,5% |
 
-| RAG (v1.1, *k*=5) | Valor |
-|-------------------|------:|
-| Recall@5 | 100% |
-| MRR | 63,33% |
+### Text-to-SQL — refinamento de prompt (pós-validação, mesmo modelo)
 
-Tabelas: `experimentos/comparison_table_v3.md`
+| Experimento | Prompt | VSR | EF |
+|-------------|--------|----:|---:|
+| e5 | v2.0 (insights) | 95,0% | 71,25% |
+| **e6** | **v2.1 (vencedor)** | **100%** | **72,50%** |
+| e7 | v2.1.1 | 98,75% | 72,50% |
+| e8 | v2.1 + DDL real | 98,75% | 70,00% |
+
+### RAG — golden v1.1 (*k*=5)
+
+| Configuração | Recall@5 | MRR |
+|--------------|----------|----:|
+| Busca densa (baseline) | 100% | 63,33% |
+| Dedup query-time | 100% | 69,79% |
+| Filtro `tipo_ato` + dedup | 100% | 72,92% |
+| Híbrido + dedup + tipo | 100% | **87,5%** |
+
+Tabelas E1–E4: `experimentos/comparison_table_v3.md` · Log v2: [`../docs/experimentos-v2/LOG.md`](../docs/experimentos-v2/LOG.md)
 
 ---
 

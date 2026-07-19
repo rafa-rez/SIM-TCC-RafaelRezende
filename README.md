@@ -6,23 +6,28 @@ Plataforma conversacional para consulta a dados abertos municipais. **Instância
 
 ---
 
-## Resultados da validação (TCC v1.0)
+## Resultados da validação
 
-### Text-to-SQL — 80 consultas (baseline E1)
+### Text-to-SQL — 80 consultas (golden v1)
 
-| Indicador | Valor |
-|-----------|------:|
-| Taxa de SQL válida (VSR) | 97,5% |
-| Equivalência funcional (EF) | 62,5% |
+| Experimento | VSR | EF | Notas |
+|-------------|----:|---:|-------|
+| **E1 baseline** (GPT-4.1-mini, prompt compacto) | 97,5% | 62,5% | Configuração inicial reportada no TCC |
+| **E6 prompt v2.1** (mesmo modelo, refinamento pós-validação) | **100%** | **72,5%** | +8,75 pp EF vs E1; ver [`docs/METRICAS.md`](docs/METRICAS.md) |
 
-### RAG — 8 perguntas piloto (golden v1.1)
+Comparativo E1–E4: `avaliacao/experimentos/comparison_table_v3.md`
 
-| Indicador | Valor |
-|-----------|------:|
-| Recall@5 | 100% |
-| MRR | 63,33% |
+### RAG — golden v1.1 (8 perguntas, *k*=5)
 
-Definições e experimentos completos: [`docs/METRICAS.md`](docs/METRICAS.md) · [`docs/PLANO_RAG.md`](docs/PLANO_RAG.md)
+| Configuração de recuperação | Recall@5 | MRR |
+|-----------------------------|----------|----:|
+| Busca densa (baseline reportado) | 100% | 63,33% |
+| Deduplicação de *chunks* idênticos | 100% | 69,79% |
+| Híbrido + dedup + filtro por tipo de ato | 100% | **87,5%** |
+
+Golden v1.2 honesto (*n*=20, amostra sem cherry-pick): busca densa 0% Recall@5; stack híbrido+dedup 100%/100%. Detalhes: [`docs/PLANO_RAG.md`](docs/PLANO_RAG.md)
+
+Definições e protocolo: [`docs/METRICAS.md`](docs/METRICAS.md) · [`docs/experimentos-v2/LOG.md`](docs/experimentos-v2/LOG.md)
 
 ---
 

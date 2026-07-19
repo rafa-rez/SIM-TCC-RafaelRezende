@@ -12,8 +12,14 @@ Formato por entrada:
 ```
 
 ---
+## 2026-07-19 — docs: métricas v2 sincronizadas
 
-<!-- Adicione entradas abaixo -->
+- Hipótese: documentação e textos acadêmicos devem refletir resultados v2 sem incluir mudanças de infra/código.
+- Mudança: README, METRICAS, PLANO_RAG, SIM, monografia e artigo atualizados com ablation de prompt (e5–e8, vencedor e6 v2.1) e melhorias RAG (dedup, híbrido, golden v1.2).
+- SQL: E1 97,5/62,5 · e6 v2.1 **100/72,5**
+- RAG v1.1: denso 100/63,33 · híbrido+dedup+tipo **100/87,5** · v1.2 honesto híbrido 100/100
+- Conclusão: artefatos acadêmicos e docs alinhados ao LOG de 2026-07-18; sem reexecução de experimentos.
+
 
 ## 2026-07-18 — exp/pipeline-baseline-gate
 
