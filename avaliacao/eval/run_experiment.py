@@ -165,6 +165,24 @@ def main() -> None:
         print(f"Retomando: {len(completed)} consultas já concluídas.")
 
     duck_url = cfg["duckdb_url"]
+
+    # Canário: aborta antes de gastar OpenAI se o banco estiver sem catálogo
+    # (ex.: container com mount quebrado devolve Catalog Error em toda query).
+    if not args.dry_run:
+        canary = execute_query(
+            duck_url,
+            "SELECT COUNT(*) AS n FROM information_schema.tables WHERE table_schema = 'main'",
+            30,
+        )
+        n_tabelas = (canary.get("data") or [{}])[0].get("n", 0) if canary.get("ok") else 0
+        if not n_tabelas:
+            print(
+                "[ABORT] Banco DuckDB sem tabelas mapeadas "
+                f"({duck_url}). Verifique o container/mount antes de rodar. "
+                f"Detalhe: {canary.get('error')}"
+            )
+            sys.exit(3)
+
     client = None if args.dry_run else OpenAI(api_key=get_openai_api_key())
 
     print(f"Experimento: {args.experiment}")

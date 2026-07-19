@@ -61,6 +61,29 @@ Difícil & 14 & 57,14 & 92,86 \\
 
 O \textit{prompt} estendido (E2) não superou o compacto em equivalência funcional (58,75\% \textit{versus} 62,50\%). O GPT-4o-mini (E3) degrada VSR (90\%) e EF (46,25\%). O GPT-4o (E4) não supera o baseline em EF (57,50\%) e apresenta latência média de 29,5~s na geração de SQL --- inviável para respostas síncronas em canal conversacional.
 
+\section{Refinamento do \textit{prompt} Text-to-SQL}
+
+Após os experimentos comparativos, incorporaram-se ao \textit{prompt} regras derivadas de falhas reais do baseline e de perguntas de testers: escopo de filtros de higiene por formato de resposta, datas em formato YYYYMMDD, tabelas setoriais (SAAE, RSP), busca textual com \texttt{ILIKE} e cruzamentos por chave única. Manteve-se o modelo GPT-4.1-mini (temperatura 0) e o golden v1 ($n=80$).
+
+\begin{table}[htbp]
+\centering
+\caption{Ablation de \textit{prompt} --- pós-validação ($n=80$, GPT-4.1-mini)}
+\label{tab:prompt_v2}
+\begin{tabular}{lrr}
+\toprule
+\textbf{Variante} & \textbf{VSR (\%)} & \textbf{EF (\%)} \\
+\midrule
+E1 --- \textit{prompt} compacto v1 (baseline) & 97,50 & 62,50 \\
+e5 --- v2.0 (insights) & 95,00 & 71,25 \\
+e6 --- v2.1 (insights) & \textbf{100,00} & \textbf{72,50} \\
+e7 --- v2.1.1 (ajuste de escopo) & 98,75 & 72,50 \\
+e8 --- v2.1 + DDL do schema real & 98,75 & 70,00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A variante v2.1 (e6) elevou a equivalência funcional em 10 pontos percentuais em relação ao E1, com VSR integral. A iteração v2.1.1 manteve EF mas reduziu VSR; o DDL extraído do schema real não superou v2.1 no golden v1 --- o gabarito foi construído sobre as convenções do esquema minificado original.
+
 \section{Validação operacional}
 
 Além do \textit{benchmark} offline, o SIM foi validado em ambiente operacional via WhatsApp na instância Caeté, confirmando viabilidade da orquestração integrada entre automação, mensageria, recuperação documental e consulta analítica.
@@ -98,16 +121,20 @@ Complementarmente, avaliou-se a recuperação documental sobre o Diário Oficial
 
 \begin{table}[htbp]
 \centering
-\caption{Indicadores de recuperação documental --- RAG (baseline v1.1, $k=5$)}
+\caption{Recuperação documental --- comparativo no golden v1.1 ($k=5$)}
 \label{tab:rag}
-\begin{tabular}{lr}
+\begin{tabular}{lrr}
 \toprule
-\textbf{Indicador} & \textbf{Valor} \\
+\textbf{Configuração} & \textbf{Recall@5 (\%)} & \textbf{MRR (\%)} \\
 \midrule
-Recall@5 & 100,00\% (8/8) \\
-MRR & 63,33\% \\
+Busca densa (baseline) & 100,00 (8/8) & 63,33 \\
+Deduplicação de \textit{chunks} idênticos & 100,00 & 69,79 \\
+Filtro por tipo de ato + dedup & 100,00 & 72,92 \\
+Híbrido por nº de ato + dedup + filtro tipo & 100,00 & \textbf{87,50} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-O Recall@5 integral indica que, para a amostra curada, o ato esperado aparece entre os cinco primeiros \textit{chunks}. O MRR de 63,33\% reflete que o acerto nem sempre ocorre na primeira posição --- decretos tematicamente similares (por exemplo, emergências hídricas) competem no ranking. A amostra é reduzida e restrita a atos indexados; generalização e avaliação da resposta em linguagem natural permanecem como trabalhos futuros.
+O Recall@5 integral na busca densa indica que, para a amostra curada, o ato esperado aparece entre os cinco primeiros \textit{chunks}. O MRR de 63,33\% reflete que o acerto nem sempre ocorre na primeira posição --- decretos tematicamente similares competem no ranking. A deduplicação de \textit{page\_content} idêntico no top-5 elevou o MRR em 6,46 pontos percentuais sem perda de Recall. A busca híbrida antecede \textit{chunks} cujo cabeçalho cita o número e o ano do ato extraídos da pergunta, elevando o MRR a 87,50\%.
+
+Complementarmente, avaliou-se um \textit{golden} v1.2 com $N_{\text{RAG}} = 20$ atos sorteados sem critério de inclusão por rank (amostra honesta). Na busca densa isolada, Recall@5 foi 0\%; com stack híbrido+dedup, Recall@5 e MRR atingiram 100\% --- evidência de que perguntas com número explícito de ato exigem recuperação híbrida. A amostra v1.1 permanece a referência principal do TCC; generalização e avaliação da resposta em linguagem natural permanecem como trabalhos futuros.

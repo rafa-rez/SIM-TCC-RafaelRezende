@@ -65,16 +65,23 @@ Usuário (WhatsApp)
 
 ### Text-to-SQL
 
-80 consultas, quatro experimentos (E1–E4). Baseline E1: **VSR 97,5%**, **EF 62,5%**.
+80 consultas, quatro experimentos comparativos (E1–E4). Baseline E1: **VSR 97,5%**, **EF 62,5%**.
 
-### RAG (piloto)
+Refinamento pós-validação do *prompt* (mesmo modelo GPT-4.1-mini, golden v1): variante v2.1 atinge **VSR 100%** e **EF 72,5%** (+10 pp).
 
-8 perguntas sobre decretos indexados no Diário Oficial. **Recall@5 100%**, **MRR 63,33%**.
+### RAG
+
+Golden v1.1 (*n*=8): busca densa **Recall@5 100%**, **MRR 63,33%**.
+
+Melhorias de recuperação no mesmo golden: deduplicação de *chunks* (MRR 69,79%); stack híbrido+dedup+filtro por tipo de ato (**MRR 87,5%**).
+
+Golden v1.2 honesto (*n*=20): evidência complementar — busca densa 0% Recall@5; stack híbrido 100%/100%.
 
 Documentação:
 
-- [`METRICAS.md`](METRICAS.md) — Text-to-SQL
-- [`PLANO_RAG.md`](PLANO_RAG.md) — RAG
+- [`METRICAS.md`](METRICAS.md) — Text-to-SQL (inclui ablation de prompt v2)
+- [`PLANO_RAG.md`](PLANO_RAG.md) — RAG e melhorias de recuperação
+- [`experimentos-v2/LOG.md`](experimentos-v2/LOG.md) — log de experimentos pós-v1.0
 - [`REPLICACAO.md`](REPLICACAO.md) — replicação
 - [`../avaliacao/`](../avaliacao/) — dados e scripts
 

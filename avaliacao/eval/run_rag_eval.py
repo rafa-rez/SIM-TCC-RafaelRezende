@@ -12,7 +12,9 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -77,6 +79,7 @@ def search_qdrant(
     top_k: int,
     vector: list[float] | None = None,
     embedding_model: str | None = None,
+    qdrant_filter: dict | None = None,
 ) -> list[dict]:
     """Busca no Qdrant com vetor informado ou gerado via OpenAI."""
     if vector is None:
@@ -95,10 +98,111 @@ def search_qdrant(
         "limit": top_k,
         "with_payload": True,
     }
+    if qdrant_filter:
+        payload["filter"] = qdrant_filter
     resp = requests.post(endpoint, json=payload, timeout=60)
     resp.raise_for_status()
     data = resp.json()
     return data.get("result") or []
+
+
+# Busca híbrida por número de ato (ex.: "decreto 013/2024"): a busca densa não
+# codifica bem o número do ato; chunks cujo CABEÇALHO cita o ato pedido entram
+# na frente dos resultados densos.
+ACT_HEADER_RE = re.compile(
+    r"\b(DECRETO|LEI COMPLEMENTAR|LEI|PORTARIA|EDITAL)\s+(?:MUNICIPAL\s+)?"
+    r"N[ºO°\.]?\s*\.?\s*(\d{1,4})\s*/\s*(\d{4})",
+    re.IGNORECASE,
+)
+ACT_QUESTION_NUM_RE = re.compile(r"(\d{1,4})\s*/\s*(\d{4})")
+ACT_QUESTION_TIPO_RE = re.compile(
+    r"\b(decreto|lei complementar|lei|portaria|edital)\b", re.IGNORECASE
+)
+
+
+def build_act_header_index(url: str, collection: str) -> dict[tuple, list[dict]]:
+    """Varre a collection uma vez e agrupa pontos pelo ato citado no cabeçalho."""
+    if requests is None:
+        raise RuntimeError("Pacote requests não instalado.")
+    index: dict[tuple, list[dict]] = {}
+    offset = None
+    while True:
+        body = {"limit": 500, "with_payload": True, "with_vector": False}
+        if offset:
+            body["offset"] = offset
+        resp = requests.post(
+            f"{url.rstrip('/')}/collections/{collection}/points/scroll",
+            json=body,
+            timeout=60,
+        )
+        resp.raise_for_status()
+        result = resp.json()["result"]
+        for point in result["points"]:
+            content = (point.get("payload") or {}).get("page_content") or ""
+            m = ACT_HEADER_RE.search(content[:200].upper())
+            if not m:
+                continue
+            key = (m.group(1).upper(), int(m.group(2)), int(m.group(3)))
+            index.setdefault(key, []).append(
+                {"id": point.get("id"), "payload": point.get("payload"), "score": None}
+            )
+        offset = result.get("next_page_offset")
+        if not offset or not result["points"]:
+            break
+    return index
+
+
+def act_exact_hits(question: str, act_index: dict[tuple, list[dict]]) -> list[dict]:
+    """Chunks cujo cabeçalho corresponde ao ato citado na pergunta (se houver)."""
+    num_match = ACT_QUESTION_NUM_RE.search(question)
+    if not num_match:
+        return []
+    numero, ano = int(num_match.group(1)), int(num_match.group(2))
+    tipo_match = ACT_QUESTION_TIPO_RE.search(question)
+    tipos = [tipo_match.group(1).upper()] if tipo_match else [
+        "DECRETO", "LEI COMPLEMENTAR", "LEI", "PORTARIA", "EDITAL"
+    ]
+    hits: list[dict] = []
+    for tipo in tipos:
+        hits.extend(act_index.get((tipo, numero, ano), []))
+    return hits
+
+
+# Mapeia palavra-chave da pergunta -> valor de tipo_ato no payload (P1.4,
+# espelha o filtro do workflow n8n).
+TIPO_ATO_KEYWORDS = [
+    ("decreto", "DECRETO"),
+    ("lei complementar", "LEI"),
+    ("lei ", "LEI"),
+    ("portaria", "PORTARIA"),
+    ("edital", "AVISO_LICITACAO"),
+    ("resolução", "RESOLUCAO"),
+    ("resolucao", "RESOLUCAO"),
+]
+
+
+def infer_tipo_ato(question: str) -> str | None:
+    q = question.lower()
+    for kw, tipo in TIPO_ATO_KEYWORDS:
+        if kw in q:
+            return tipo
+    return None
+
+
+def dedup_hits(hits: list[dict], top_k: int) -> list[dict]:
+    """Remove hits com page_content idêntico, preservando a ordem por score."""
+    seen: set[str] = set()
+    out: list[dict] = []
+    for hit in hits:
+        text = ((hit.get("payload") or {}).get("page_content") or "").strip()
+        key = hashlib.md5(text.encode("utf-8")).hexdigest()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(hit)
+        if len(out) >= top_k:
+            break
+    return out
 
 
 def process_item(
@@ -185,7 +289,32 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Avaliação RAG — golden Caeté")
     parser.add_argument("--experiment", default="rag_baseline_v1")
     parser.add_argument("--dataset", default=None, help="CSV golden RAG")
+    parser.add_argument("--collection", default=None, help="Collection Qdrant (default: config)")
     parser.add_argument("--top-k", type=int, default=None)
+    parser.add_argument(
+        "--dedup",
+        action="store_true",
+        help="Deduplica page_content idêntico no retrieval (busca fetch-k e mantém top-k únicos)",
+    )
+    parser.add_argument(
+        "--fetch-k",
+        type=int,
+        default=None,
+        help="Candidatos buscados antes do dedup (padrão: 4x top-k; ignorado sem --dedup)",
+    )
+    parser.add_argument(
+        "--hybrid-act",
+        action="store_true",
+        help=(
+            "Busca híbrida: chunks cujo cabeçalho cita o ato pedido (nº/ano na pergunta) "
+            "entram antes dos resultados densos"
+        ),
+    )
+    parser.add_argument(
+        "--filtro-tipo-ato",
+        action="store_true",
+        help="Filtra payload tipo_ato no Qdrant conforme o tipo citado na pergunta (P1.4)",
+    )
     parser.add_argument("--dry-run", action="store_true", help="Lista itens sem consultar Qdrant")
     parser.add_argument(
         "--probe-qdrant",
@@ -202,7 +331,7 @@ def main() -> None:
     cfg = load_config()
     rag_cfg = cfg.get("rag") or {}
     qdrant_url = rag_cfg.get("qdrant_url", "http://localhost:6333")
-    collection = rag_cfg.get("collection", "jornais_caete")
+    collection = args.collection or rag_cfg.get("collection", "jornais_caete")
     embedding_model = rag_cfg.get("embedding_model")
 
     if args.probe_qdrant:
@@ -217,6 +346,10 @@ def main() -> None:
         rag_cfg.get("dataset", "dados/golden_rag/golden_rag_v1.0.csv")
     )
     top_k = args.top_k or int(rag_cfg.get("top_k", 5))
+    dedup_enabled = args.dedup or bool(rag_cfg.get("dedup", False))
+    fetch_k = (args.fetch_k or int(rag_cfg.get("fetch_k", top_k * 4))) if dedup_enabled else top_k
+    hybrid_act = args.hybrid_act or bool(rag_cfg.get("hybrid_act", False))
+    filtro_tipo = args.filtro_tipo_ato or bool(rag_cfg.get("filtro_tipo_ato", False))
 
     if not dataset.exists():
         print(f"Dataset não encontrado: {dataset}", file=sys.stderr)
@@ -233,6 +366,10 @@ def main() -> None:
         "qdrant_url": qdrant_url,
         "collection": collection,
         "embedding_model": embedding_model,
+        "dedup": dedup_enabled,
+        "fetch_k": fetch_k if dedup_enabled else None,
+        "hybrid_act": hybrid_act,
+        "filtro_tipo_ato": filtro_tipo,
         "started_at": datetime.now().isoformat(),
         "n": len(rows),
     }
@@ -251,6 +388,11 @@ def main() -> None:
     if args.import_checkpoint:
         imported = import_checkpoint(Path(args.import_checkpoint))
 
+    act_index: dict[tuple, list[dict]] = {}
+    if hybrid_act:
+        act_index = build_act_header_index(qdrant_url, collection)
+        print(f"Índice de cabeçalhos: {len(act_index)} atos distintos", file=sys.stderr)
+
     results: list[dict] = []
     checkpoint_path = out_dir / "checkpoint_rag.jsonl"
 
@@ -260,17 +402,27 @@ def main() -> None:
             if item_id in imported:
                 hits = imported[item_id]
             else:
+                qdrant_filter = None
+                if filtro_tipo:
+                    tipo = infer_tipo_ato(row["pergunta"])
+                    if tipo:
+                        qdrant_filter = {"must": [{"key": "tipo_ato", "match": {"value": tipo}}]}
                 try:
                     hits = search_qdrant(
                         row["pergunta"],
                         url=qdrant_url,
                         collection=collection,
-                        top_k=top_k,
+                        top_k=fetch_k,
                         embedding_model=embedding_model,
+                        qdrant_filter=qdrant_filter,
                     )
                 except Exception as exc:
                     print(f"[{item_id}] Erro na busca: {exc}", file=sys.stderr)
                     hits = []
+            if hybrid_act:
+                hits = act_exact_hits(row["pergunta"], act_index) + hits
+            if dedup_enabled or hybrid_act:
+                hits = dedup_hits(hits, top_k)
 
             record = process_item(row, hits, top_k)
             results.append(record)

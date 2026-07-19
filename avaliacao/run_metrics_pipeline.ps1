@@ -1,4 +1,4 @@
-# Pipeline de métricas — SIM v1.0 (instância Caeté)
+﻿# Pipeline de métricas — SIM v1.0 (instância Caeté)
 # Uso:
 #   .\run_metrics_pipeline.ps1              # Text-to-SQL offline (E1–E4)
 #   .\run_metrics_pipeline.ps1 -WithRag     # SQL + RAG (Qdrant + OpenAI)
@@ -7,7 +7,8 @@
 param(
     [switch]$WithRag,
     [switch]$SkipSql,
-    [switch]$SmokeOnly
+    [switch]$SmokeOnly,
+    [switch]$CheckBaseline
 )
 
 $ErrorActionPreference = "Stop"
@@ -22,6 +23,7 @@ $argsList = @("eval/run_pipeline.py")
 if ($WithRag) { $argsList += "--with-rag" }
 if ($SkipSql) { $argsList += "--skip-sql" }
 if ($SmokeOnly) { $argsList += "--smoke-only" }
+if ($CheckBaseline) { $argsList += "--check-baseline" }
 
 python @argsList
 
