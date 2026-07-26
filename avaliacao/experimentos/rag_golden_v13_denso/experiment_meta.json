@@ -1,0 +1,14 @@
+{
+  "experiment": "rag_golden_v13_denso",
+  "dataset": "dados\\golden_rag\\golden_rag_v1.3.csv",
+  "top_k": 5,
+  "qdrant_url": "http://localhost:6333",
+  "collection": "jornais_caete",
+  "embedding_model": "text-embedding-3-small",
+  "dedup": false,
+  "fetch_k": null,
+  "hybrid_act": false,
+  "filtro_tipo_ato": false,
+  "started_at": "2026-07-26T14:40:19.757012",
+  "n": 40
+}

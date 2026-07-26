@@ -65,7 +65,9 @@ citecolor=rltgreen,%
 \usepackage{subfigure}           % para figuras dentro de figuras
 \usepackage{booktabs}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, positioning, calc}
+\usetikzlibrary{arrows.meta, positioning, calc, fit, backgrounds}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 
 
 %==============================================================================
@@ -159,7 +161,7 @@ Orquestração Cognitiva com RAG e Text-to-SQL Aplicada a Dados de Transparênci
 
 \tipo{Trabalho de Conclusão de Curso apresentado à Universidade Federal de Lavras, como parte das exigências do Curso de Bacharelado em Ciência da Computação, para obtenção do título de Bacharel.}
 
-\orientador{Prof. Dr. Denilson}
+\orientador{Prof. Dr. Denilson Alves Pereira}
 %\orientadora{Profa. Dr. Maria Orientadora}
 
 % Coorientador/coorientadora
@@ -225,23 +227,23 @@ Espaço reservado à epígrafe.\par
 % As palavras-chave PRECISAM vir primeiro
 \palchaves{SIM; inteligência artificial; modelos de linguagem; RAG; Text-to-SQL; transparência pública; dados abertos municipais.}
 \resumo{%
-Este trabalho apresenta o \textbf{SIM} (\textit{Sistema de Informações Municipais}), plataforma conversacional multi-instância para consulta a dados públicos municipais no contexto da tecnologia cívica (\textit{GovTech}), com instância piloto em Caeté (MG) via WhatsApp. O sistema integra recuperação documental sobre o Diário Oficial e Text-to-SQL sobre bases SICOM/CGU (2020--2025). Descrevem-se a arquitetura de orquestração, o \textit{pipeline} de ingestão de dados e técnicas de engenharia de contexto. Para comprovar a viabilidade funcional, conduziu-se avaliação reprodutível em três lotes experimentais: Text-to-SQL com 80 consultas (baseline E1: VSR 97,5\% e EF 62,5\%; configuração final v2.1: VSR 100\% e EF 72,5\%) e recuperação documental com oito perguntas sobre decretos indexados (Recall@5 100\%; MRR 87,5\% com recuperação híbrida). Artefatos reprodutíveis estão disponíveis em repositório público.
+Este trabalho apresenta o \textbf{SIM} (\textit{Sistema de Informações Municipais}), plataforma conversacional multi-instância para consulta a dados públicos municipais no contexto da tecnologia cívica (\textit{GovTech}), com instância piloto em Caeté (MG) via WhatsApp. O sistema integra recuperação documental sobre o Diário Oficial e Text-to-SQL sobre bases SICOM/CGU (2020--2025). Descrevem-se a arquitetura de orquestração, o \textit{pipeline} de ingestão de dados e técnicas de engenharia de contexto. Para comprovar a viabilidade funcional, conduziu-se avaliação reprodutível em três lotes experimentais (o Lote I compreende quatro experimentos, E1--E4): Text-to-SQL com 80 casos executáveis derivados de dez intenções analíticas (baseline E1: VSR 97,5\% e EF 62,5\%; Prompt B com regras de domínio: VSR 100\% e EF 72,5\%) e recuperação documental com 40 perguntas estratificadas (Recall@5 de 100\% na configuração híbrida, ante 22,5\% na busca densa isolada, evidenciando a necessidade de recuperação híbrida para atos numerados; MRR 97,5\%; IC 95\% do Recall: 91,2--100\%). Artefatos reprodutíveis estão disponíveis em repositório público.
 }
 
 % Abstract e keywords
 % As keywords PRECISAM vir primeiro
 \keywords{Municipal Information System; artificial intelligence; large language models; RAG; Text-to-SQL; open government data.}
 \abstract{%
-This work presents SIM (\textit{Sistema de Informações Municipais}), a multi-instance conversational platform for municipal open government data, with a pilot deployment in Caete (Brazil) via WhatsApp. The system integrates document retrieval over the official gazette and Text-to-SQL over SICOM/CGU datasets (2020--2025). Functional viability is demonstrated through three experimental batches: Text-to-SQL on 80 reference queries (baseline E1: 97.5\% VSR and 62.5\% EF; final configuration v2.1: 100\% VSR and 72.5\% EF) and document retrieval on eight indexed decrees (100\% Recall@5; 87.5\% MRR with hybrid retrieval). Reproducible artifacts are publicly available.
+This work presents SIM (\textit{Sistema de Informações Municipais}), a multi-instance conversational platform for municipal open government data, with a pilot deployment in Caete (Brazil) via WhatsApp. The system integrates document retrieval over the official gazette and Text-to-SQL over SICOM/CGU datasets (2020--2025). Functional viability is demonstrated through three experimental batches (Batch I comprises four experiments, E1--E4): Text-to-SQL on 80 executable cases derived from ten analytical intents (baseline E1: 97.5\% VSR and 62.5\% EF; domain-rules Prompt B: 100\% VSR and 72.5\% EF) and document retrieval on 40 stratified queries (100\% Recall@5 with hybrid retrieval versus 22.5\% with dense retrieval alone, evidencing the need for hybrid search on numbered acts; 97.5\% MRR; 95\% CI for Recall: 91.2--100\%). Reproducible artifacts are publicly available.
 }
 
 % Indicadores de impacto
 \indicadoresdeimpacto{%
-Os impactos descritos a seguir referem-se ao \textbf{SIM} (\textit{Sistema de Informações Municipais}), instância piloto de consulta conversacional a dados públicos de Caeté (MG) via WhatsApp. A maior parte dos efeitos é \textbf{potencial}, pois a validação quantitativa concentrou-se em ambiente controlado (\textit{benchmark} de 80 consultas e amostra estratificada de 30 respostas avaliadas por juiz automático), e não em estudo de adoção em larga escala junto à população.
+Os impactos descritos a seguir referem-se ao \textbf{SIM} (\textit{Sistema de Informações Municipais}), instância piloto de consulta conversacional a dados públicos de Caeté (MG) via WhatsApp. A maior parte dos efeitos é \textbf{potencial}, pois a validação quantitativa concentrou-se em ambiente controlado (\textit{benchmark} de 80 casos SQL e 40 perguntas RAG, além de amostra de 30 respostas avaliadas por juiz automático), e não em estudo de adoção em larga escala junto à população.
 
 \textbf{Impactos sociais.} O sistema reduz a barreira técnica para que cidadãos, jornalistas e organizações da sociedade civil consultem despesas, licitações, folha de pagamento, transferências federais e atos do Diário Oficial em linguagem natural, canal já amplamente utilizado no Brasil. Contribui para o exercício do direito de acesso à informação e para o controle social sobre a gestão pública municipal. O território diretamente contemplado é o município de Caeté (código IBGE 3110004); o público beneficiado inclui moradores, servidores municipais e atores do jornalismo cívico. Os impactos sociais reportados baseiam-se no potencial de redução de barreira técnica demonstrado pela validação funcional; não foram coletadas métricas de adoção em larga escala.
 
-\textbf{Impactos tecnológicos (concretos).} Foram entregues: (i) arquitetura integrando orquestração por LLM, RAG sobre Qdrant e Text-to-SQL sobre DuckDB; (ii) processo ETL reprodutível para bases SICOM/CGU; (iii) conjuntos de referência com 80 consultas SQL e 8 perguntas RAG validadas; (iv) protocolo de avaliação com VSR, EF, Recall@$k$, MRR e JAR, organizado em três lotes experimentais; e (v) repositório público para replicação. Esses artefatos podem ser replicados por outras prefeituras com dados abertos semelhantes.
+\textbf{Impactos tecnológicos (concretos).} Foram entregues: (i) arquitetura integrando orquestração por LLM, RAG sobre Qdrant e Text-to-SQL sobre DuckDB; (ii) processo ETL reprodutível para bases SICOM/CGU; (iii) conjuntos de referência com 80 casos SQL e 40 perguntas RAG validadas; (iv) protocolo de avaliação com VSR, EF, Recall@$k$, MRR e JAR, organizado em três lotes experimentais (o Lote I compreende quatro experimentos, E1--E4); e (v) repositório público para replicação. Esses artefatos podem ser replicados por outras prefeituras com dados abertos semelhantes.
 
 \textbf{Impactos econômicos (potenciais).} A solução utiliza dados públicos já disponibilizados e componentes de código aberto, reduzindo a necessidade de infraestrutura proprietária para consulta conversacional à transparência municipal. Não há, neste trabalho, análise de retorno financeiro nem contrato de prestação de serviço.
 
@@ -254,11 +256,11 @@ Os impactos descritos a seguir referem-se ao \textbf{SIM} (\textit{Sistema de In
 
 % Impact indicators
 \impactindicators{%
-The impacts below refer to SIM (\textit{Sistema de Informações Municipais}), a pilot conversational instance for public data of Caete (Brazil) via WhatsApp. Most effects are \textbf{potential}, because quantitative validation focused on a controlled benchmark (80 queries and a stratified sample of 30 natural-language answers judged automatically), not on large-scale adoption studies.
+The impacts below refer to SIM (\textit{Sistema de Informações Municipais}), a pilot conversational instance for public data of Caete (Brazil) via WhatsApp. Most effects are \textbf{potential}, because quantitative validation focused on a controlled benchmark (80 SQL cases and 40 RAG queries, plus a stratified sample of 30 natural-language answers judged automatically), not on large-scale adoption studies.
 
 \textbf{Social impacts.} The system may lower technical barriers for citizens, journalists, and civil-society organizations to inspect municipal spending, procurement, payroll, federal transfers, and official-gazette acts through natural language on a widely used channel. The directly addressed territory is Caete (IBGE code 3110004). No formal usage metrics (active users or production query volume) were collected.
 
-\textbf{Technological impacts.} Concrete deliverables include an LLM-orchestrated architecture combining RAG (Qdrant) and Text-to-SQL (DuckDB), a reproducible ETL pipeline for SICOM/CGU datasets, an 80-query golden dataset, and a documented evaluation protocol (EX, VSR, NEA, TSA, CHS, JAR) with four comparative experiments.
+\textbf{Technological impacts.} Concrete deliverables include an LLM-orchestrated architecture combining RAG (Qdrant) and Text-to-SQL (DuckDB), a reproducible ETL pipeline for SICOM/CGU datasets, an 80-query golden dataset, and a documented evaluation protocol (VSR, EF, NEA, TSA, CHS, Recall@$k$, MRR, JAR), organized in three experimental batches (Batch~I comprises four comparative experiments, E1--E4).
 
 \textbf{Economic impacts.} The solution relies on pre-existing open data and open-source components, reducing the need for proprietary infrastructure for conversational transparency tools. No formal cost--benefit analysis or service contract is reported.
 
@@ -275,10 +277,11 @@ The impacts below refer to SIM (\textit{Sistema de Informações Municipais}), a
 %\listofilustracoes % Lista de Ilustrações
 %\listofgraficos	% Lista de Gráficos
 \listoftables       % Lista de Tabelas
-\listofquadros		% Lista de Quadros
+%\listofquadros		% Lista de Quadros (sem quadros no documento)
 %\listofexemplos    % Lista de Exemplos
 %\listofteoremas    % Lista de Teoremas
 \listofabreviaturas % Lista de Abreviaturas
+\glsaddall[types={\acronymtype}]
 \listofsiglas       % Lista de Siglas
 \listofsimbolos     % Lista de Símbolos
 
@@ -345,7 +348,7 @@ The impacts below refer to SIM (\textit{Sistema de Informações Municipais}), a
 % Anexos
 %\input{anexos/anexo1}
 %\input{anexos/anexo2}
-%\input{apendices/apendice1}
+\input{apendices/apendice_artefatos}
 
 % Índice
 \indice

@@ -1,6 +1,6 @@
 \section{Protocolo de validação do Text-to-SQL}
 
-A avaliação do subsistema Text-to-SQL foi conduzida por pipeline automatizado (\texttt{avaliacao/eval/}), desacoplado do canal WhatsApp, garantindo reprodutibilidade. A validação do subsistema RAG segue protocolo complementar descrito na Seção seguinte.
+A avaliação do subsistema Text-to-SQL foi conduzida por \textit{pipeline} automatizado desacoplado do canal WhatsApp, garantindo reprodutibilidade (detalhes em Apêndice~\ref{ap:artefatos}). A validação do subsistema RAG segue protocolo complementar descrito na Seção seguinte.
 
 \input{secoes/metodologia_validacao_rag}
 
@@ -14,7 +14,7 @@ Para cada consulta $i$ no conjunto de referência ($N = 80$):
     \item $\text{SQL}_i^{(g)}$ --- consulta gerada pelo modelo;
     \item $R_i$ --- resultado tabular de $\text{SQL}_i^{(r)}$;
     \item $G_i$ --- resultado tabular de $\text{SQL}_i^{(g)}$;
-    \item $C_i$ --- conjunto de colunas em \texttt{colunas\_resposta} que respondem à pergunta.
+    \item $C_i$ --- conjunto de colunas de resposta declaradas no gabarito.
 \end{itemize}
 
 Define-se a função de normalização de célula $\nu(\cdot)$, aplicada antes de qualquer comparação: nulos unificados; números arredondados em quatro casas decimais; strings sem espaços laterais e em maiúsculas; strings numéricas convertidas com vírgula substituída por ponto.
@@ -33,6 +33,8 @@ onde $\mathbb{1}[\cdot]$ é a função indicadora. Quando a SQL gerada falha, os
 
 A \textbf{equivalência funcional} (EF) verifica se o cidadão receberia as grandezas corretas, independentemente de aliases de coluna ou colunas auxiliares no resultado gerado. Trata-se da métrica adotada neste trabalho para comprovar a utilidade do resultado tabular.
 
+Diferentemente do \textit{Execution Accuracy} (EX) usado em Spider e BIRD --- que exige correspondência estrita de nomes de colunas e do multiconjunto de pares (coluna, valor) ---, a EF restringe a comparação às colunas de resposta declaradas no conjunto de referência, admite mapeamento entre aliases de coluna e aplica tolerância numérica $\tau$ em grandezas fiscais. Essa definição penaliza menos formulações SQL semanticamente equivalentes, alinhando-se ao objetivo de comprovar utilidade para o cidadão.
+
 Para cada consulta $i$ com VSR positivo, exige-se $|R_i| = |G_i|$ (mesma cardinalidade de linhas). Para cada coluna $k \in C_i$, deve existir alguma coluna $j$ em $G_i$ cujo vetor de valores normalizados ao longo das linhas seja equivalente ao vetor da coluna correspondente em $R_i$, com tolerância numérica $\tau = 0{,}5\%$ em valores fiscais:
 
 \begin{equation}
@@ -45,7 +47,7 @@ onde $\varepsilon$ evita divisão por zero. A equivalência funcional agregada �
 \text{EF} = \frac{1}{N} \sum_{i=1}^{N} \mathbb{1}\!\left[\text{EF}_i = 1\right]
 \end{equation}
 
-com $\text{EF}_i = 1$ quando todas as colunas em $C_i$ possuem correspondente equivalente em $G_i$ sob as regras acima.
+com $\text{EF}_i = 1$ quando todas as colunas em $C_i$ possuem correspondente equivalente em $G_i$ sob as regras acima. Proporções agregadas são reportadas com intervalos de confiança de Wilson (95\%) \cite{Agresti1998}; comparações pareadas E1 \textit{versus} Prompt B utilizam teste de McNemar quando aplicável.
 
 \subsection{Indicadores complementares}
 
@@ -57,15 +59,15 @@ com $\text{EF}_i = 1$ quando todas as colunas em $C_i$ possuem correspondente eq
     \end{equation}
 \end{description}
 
-A implementação completa, incluindo variantes diagnósticas, está documentada no repositório público de artefatos do trabalho. O recálculo offline usa DuckDB local.
+A implementação completa, incluindo variantes diagnósticas, está documentada no repositório público de artefatos do trabalho (Apêndice~\ref{ap:artefatos}).
 
 \subsection{Organização dos lotes experimentais}
 
-A validação empírica organizou-se em três lotes sobre dados fixos (golden v1, 80 consultas; golden RAG v1.1, 8 perguntas):
+A validação empírica organizou-se em três lotes sobre dados fixos (conjunto SQL de 80 casos; conjunto RAG ampliado de 40 perguntas):
 
 \begin{enumerate}
-    \item \textbf{Lote I} --- comparação de modelo e tamanho de contexto (E1--E4), fixando GPT-4.1-mini e \textit{prompt} compacto como referência;
-    \item \textbf{Lote II} --- ablation de engenharia de \textit{prompt} (v2.1), mantendo modelo e golden do Lote I;
+    \item \textbf{Lote I} --- comparação de modelo e tamanho de contexto (E1--E4), fixando GPT-4.1-mini e Prompt A como referência;
+    \item \textbf{Lote II} --- ablation de engenharia de \textit{prompt} (Prompt B), mantendo modelo e conjunto de referência do Lote I;
     \item \textbf{Lote III} --- comparação de estratégias de recuperação documental (busca densa, deduplicação, filtro por tipo de ato e busca híbrida), mantendo índice e embedding fixos.
 \end{enumerate}
 
@@ -74,17 +76,17 @@ Cada lote isolou uma variável experimental.
 \subsection{Experimentos do Lote I}
 
 \begin{enumerate}
-    \item \textbf{E1 --- Baseline}: GPT-4.1-mini com \textit{prompt} compacto;
+    \item \textbf{E1 --- Baseline}: GPT-4.1-mini com Prompt A (compacto);
     \item \textbf{E2 --- Ablação de contexto}: GPT-4.1-mini com \textit{prompt} estendido;
-    \item \textbf{E3 --- Ablação de modelo (econômico)}: GPT-4o-mini com \textit{prompt} compacto;
-    \item \textbf{E4 --- Ablação de modelo (avançado)}: GPT-4o com \textit{prompt} compacto.
+    \item \textbf{E3 --- Ablação de modelo (econômico)}: GPT-4o-mini com Prompt A;
+    \item \textbf{E4 --- Ablação de modelo (avançado)}: GPT-4o com Prompt A.
 \end{enumerate}
 
 \section{Ambiente experimental}
 
 \begin{itemize}
-    \item DuckDB local sobre CSVs em \texttt{avaliacao/dados/};
+    \item DuckDB local sobre bases tabulares SICOM/CGU consolidadas;
     \item Modelos OpenAI via API oficial, temperatura 0,0;
     \item Saída estruturada em JSON contendo a consulta SQL;
-    \item Persistência incremental em \texttt{checkpoint.jsonl} para retomada.
+    \item Persistência incremental em arquivo de \textit{checkpoint} para retomada de experimentos.
 \end{itemize}

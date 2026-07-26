@@ -72,7 +72,7 @@ execution:
 
 # Avaliação RAG (Diário Oficial — instância Caeté)
 rag:
-  dataset: "dados/golden_rag/golden_rag_v1.1.csv"
+  dataset: "dados/golden_rag/golden_rag_v1.3.csv"
   top_k: 5
   qdrant_url: "http://localhost:6333"
   collection: "jornais_caete"  # workflow n8n consultar_diario_oficial (docker-compose :6333)

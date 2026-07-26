@@ -1,46 +1,79 @@
 % Diagrama da arquitetura do SIM — incluído via \input em metodologia.tex
+% Requer no preâmbulo: \usetikzlibrary{arrows.meta, positioning, calc, fit, backgrounds}
 \begin{figure}[htbp]
     \centering
-    \resizebox{\textwidth}{!}{%
     \begin{tikzpicture}[
         font=\small,
-        node distance=0.55cm and 0.9cm,
-        box/.style={draw, rounded corners=2pt, align=center, minimum width=2.6cm, minimum height=0.85cm, fill=black!4},
-        databox/.style={box, fill=black!8, minimum width=2.4cm},
-        arrow/.style={-{Stealth[length=2.2mm]}, thick},
-        lbl/.style={font=\footnotesize, fill=white, inner sep=1pt}
+        >={Stealth[length=2mm]},
+        box/.style={draw, rounded corners=2pt, align=center, minimum width=2.5cm,
+                    minimum height=1.0cm, fill=white, line width=0.5pt},
+        store/.style={box, fill=black!7},
+        flow/.style={->, thick, line width=0.6pt},
+        elabel/.style={font=\footnotesize, fill=white, inner sep=1.5pt},
+        zone/.style={rounded corners=5pt, draw=black!30, dash pattern=on 2pt off 2pt,
+                     inner sep=0.3cm},
+        zonelbl/.style={font=\scriptsize\bfseries, color=black!55, inner sep=2pt},
+        node distance=1.05cm and 0.95cm
     ]
-        \node[box, minimum width=3.2cm] (user) {Usuário\\\textit{WhatsApp}};
-
+        % ===== Camada 1: canal conversacional (produção) =====
+        \node[box, minimum width=2.6cm] (user) {Usuário\\\textit{WhatsApp}};
         \node[box, right=of user] (waha) {Gateway\\WAHA};
-        \node[box, right=of waha] (n8n) {Automação\\n8n};
-        \node[box, right=of n8n, minimum width=3.0cm] (orch) {Agente orquestrador\\GPT-4o};
+        \node[box, right=of waha]  (n8n)  {Automação\\n8n};
+        \node[box, right=of n8n, minimum width=2.8cm] (orch)
+              {Agente orquestrador\\[1pt]{\scriptsize\itshape\color{black!60}GPT-4o}};
 
-        \draw[arrow] (user) -- (waha);
-        \draw[arrow] (waha) -- (n8n);
-        \draw[arrow] (n8n) -- (orch);
+        \draw[flow] (user) -- (waha);
+        \draw[flow] (waha) -- (n8n);
+        \draw[flow] (n8n)  -- (orch);
 
-        \node[box, below left=1.0cm and 0.2cm of orch, minimum width=3.1cm] (rag) {RAG documental\\Qdrant + Diário Oficial};
-        \node[box, below right=1.0cm and 0.2cm of orch, minimum width=3.1cm] (sql) {Text-to-SQL\\GPT-4.1-mini};
+        % retorno: resposta em linguagem natural (roteada acima da linha)
+        \coordinate (top) at ($(orch.north)+(0,0.9)$);
+        \draw[flow] (orch.north) -- (top) -| (user.north);
+        \node[elabel] at ($(user.north)!0.5!(orch.north)+(0,0.9)$)
+              {resposta em linguagem natural};
 
-        \draw[arrow] (orch.south) -- ++(0,-0.35) -| (rag.north) node[pos=0.22, lbl, above] {normativo};
-        \draw[arrow] (orch.south) -- ++(0,-0.35) -| (sql.north) node[pos=0.22, lbl, above] {tabular};
+        % ===== Camada 2: recuperação e consulta =====
+        \node[box, below=1.8cm of n8n,  minimum width=3.0cm] (rag)
+              {RAG documental\\{\scriptsize Diário Oficial}};
+        \node[box, below=1.8cm of orch, minimum width=3.0cm] (sql)
+              {Text-to-SQL\\[1pt]{\scriptsize\itshape\color{black!60}GPT-4.1-mini}};
 
-        \node[databox, below=of rag] (qdrant) {Índice vetorial\\Qdrant};
-        \node[databox, below=of sql] (duck) {API analítica\\DuckDB};
-        \node[databox, below=1.1cm of duck, minimum width=6.8cm] (etl) {ETL --- bases SICOM, CGU e metadados de esquema};
+        \coordinate (sp) at ($(orch.south)+(0,-0.75)$);
+        \draw[flow] (orch.south) -- (sp);
+        \draw[flow] (sp) -| (rag.north);
+        \draw[flow] (sp) -- (sql.north);
+        \node[elabel] at ([yshift=0.34cm]rag.north) {normativo};
+        \node[elabel] at ([yshift=0.34cm]sql.north) {tabular / analítico};
 
-        \draw[arrow] (rag) -- (qdrant);
-        \draw[arrow] (sql) -- (duck);
-        \draw[arrow] (duck) -- (etl);
+        % ===== Camada 3: dados =====
+        \node[store, below=0.9cm of rag] (qdrant)
+              {Índice vetorial\\Qdrant};
+        \node[store, below=0.9cm of sql] (duck)
+              {API analítica\\DuckDB \textit{in-memory}};
+        \node[store, minimum width=7.4cm] (etl)
+              at ($(qdrant.south)!0.5!(duck.south)+(0,-1.1)$)
+              {ETL --- bases SICOM, CGU e metadados de esquema (DDL)};
 
-        \draw[arrow] (orch.east) -- ++(0.55,0) |- (n8n.east) node[pos=0.78, lbl, right] {resposta em linguagem natural};
-        \draw[arrow] (n8n.west) -- (waha.east);
-        \draw[arrow] (waha.west) -- (user.east);
+        \draw[flow] (rag) -- (qdrant);
+        \draw[flow] (sql) -- (duck);
+        \draw[flow] (etl) -- (duck);
 
-        \node[font=\footnotesize\itshape, below=0.35cm of etl] (leg) {Avaliação Text-to-SQL conduzida em pipeline offline (\texttt{avaliacao/}), desacoplada do canal WhatsApp.};
-    \end{tikzpicture}%
-    }
+        % ===== Zonas de fundo =====
+        \begin{scope}[on background layer]
+            \node[zone, fit=(user)(waha)(n8n)(orch)] (zA) {};
+            \node[zone, fit=(rag)(sql)]               (zB) {};
+            \node[zone, fit=(qdrant)(duck)(etl)]      (zC) {};
+        \end{scope}
+        \node[zonelbl, anchor=south west] at (zA.north west) {Canal conversacional (produção)};
+        \node[zonelbl, anchor=south west] at (zB.north west) {Recuperação e consulta};
+        \node[zonelbl, anchor=south west] at (zC.north west) {Camada de dados};
+
+        % Nota de rodapé da figura
+        \node[font=\scriptsize\itshape, anchor=north, text width=0.86\linewidth,
+              align=center, below=0.3cm of etl]
+             {A validação Text-to-SQL é conduzida em \textit{pipeline} offline,
+              desacoplada do canal WhatsApp (Apêndice~\ref{ap:artefatos}).};
+    \end{tikzpicture}
     \caption{Arquitetura do SIM (instância Caeté): fluxo conversacional em produção e subsistemas de recuperação documental e consulta tabular.}
     \label{fig:arquitetura}
 \end{figure}

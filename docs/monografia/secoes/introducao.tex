@@ -12,6 +12,10 @@ Este trabalho apresenta o \textbf{SIM --- Sistema de Informações Municipais}, 
 
 Apesar da abertura crescente de bases governamentais --- como o SICOM do TCE-MG \cite{TCEMG_SICOM,Lei2024SICOM} --- usuários leigos enfrentam barreiras técnicas para formular consultas sobre despesas, receitas, folha de pagamento, licitações, contratos e programas sociais. Há, portanto, uma distância entre a disponibilização formal dos dados e o acesso efetivo por parte da sociedade.
 
+Diante desse cenário, este trabalho investiga a seguinte \textbf{pergunta de pesquisa}: \emph{é viável integrar recuperação documental e Text-to-SQL em canal conversacional para consulta a dados públicos municipais padronizados (SICOM/CGU), e qual o impacto da engenharia de contexto --- em comparação à troca de modelo --- sobre a fidelidade funcional das respostas tabulares?}
+
+Como \textbf{hipótese de trabalho}, postula-se que (i)~a orquestração híbrida é tecnicamente viável sobre o esquema SICOM; e (ii)~regras de domínio no \textit{prompt} recuperam mais equivalência funcional do que a substituição do modelo de linguagem, mantendo-se fixos o \textit{golden} e a instância avaliada.
+
 \section{Objetivo geral}
 
 Desenvolver e validar empiricamente o SIM, arquitetura de orquestração cognitiva baseada em \gls{llm}s integrando \gls{rag} e Text-to-SQL, com instância piloto em Caeté (MG) e protocolo reprodutível de comprovação funcional sobre dados abertos municipais.
@@ -33,4 +37,4 @@ A solução proposta alinha-se à governança digital e ao ODS~16, ao reduzir a 
 
 \section{Organização do trabalho}
 
-O Capítulo~2 apresenta o referencial teórico. O Capítulo~3 descreve metodologia e arquitetura. O Capítulo~4 analisa resultados. O Capítulo~5 discute limitações e implicações. O Capítulo~6 encerra com conclusões.
+O Capítulo~2 apresenta o referencial teórico sobre modelos de linguagem, RAG, Text-to-SQL e dados públicos municipais, situando o SIM em relação a \textit{benchmarks} e trabalhos correlatos. O Capítulo~3 descreve a arquitetura da instância Caeté, o \textit{pipeline} de dados, os conjuntos de referência (80 consultas SQL e 40 perguntas RAG) e o protocolo de validação com indicadores VSR, EF, Recall@$k$, MRR e JAR. O Capítulo~4 reporta os três lotes experimentais --- comparação de modelos (E1--E4), engenharia de \textit{prompt} e recuperação documental --- incluindo análise de erros qualitativa. O Capítulo~5 discute implicações, limitações, confiabilidade e riscos operacionais. O Capítulo~6 encerra com as contribuições e conclusões.

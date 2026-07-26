@@ -6,10 +6,12 @@ A arquitetura híbrida --- orquestração por LLM, RAG e DuckDB --- demonstra vi
 
 \begin{itemize}
     \item \textbf{Lote I} (E1--E4): geração confiável de SQL (VSR de 97,5\% no baseline) e equivalência funcional de 62,5\%, com GPT-4.1-mini como modelo de referência;
-    \item \textbf{Lote II}: configuração final de \textit{prompt} v2.1 com VSR de 100\% e EF de 72,5\%;
-    \item \textbf{Lote III}: Recall@5 de 100\% no \textit{golden} RAG v1.1, com MRR de 87,5\% na recuperação híbrida com deduplicação.
+    \item \textbf{Lote II}: Prompt B (regras de domínio) com VSR de 100\% e EF de 72,5\%;
+    \item \textbf{Lote III}: Recall@5 de 100\% e MRR de 97,5\% (IC 95\%: 91,2--100\%) no conjunto de referência RAG ampliado ($n=40$), com recuperação híbrida.
 \end{itemize}
+
+O \textbf{principal achado empírico} deste trabalho é que a engenharia de contexto com regras de domínio SICOM recuperou mais equivalência funcional (+10 pontos percentuais de EF) do que a troca para modelos maiores (GPT-4o) ou \textit{prompts} mais extensos --- mantendo GPT-4.1-mini e latência compatível com canal síncrono. Essas regras codificam convenções do ecossistema de dados municipais mineiro e são portáveis por desenho a outras instâncias SIM; o ganho numérico foi medido na instância Caeté.
 
 As contribuições incluem: (i)~conceito SIM multi-instância e arquitetura replicável para GovTech municipal; (ii)~\textit{pipeline} ETL e exposição analítica sobre dados SICOM/CGU; (iii)~protocolo de validação reprodutível com indicadores VSR, EF, Recall@$k$, MRR e JAR; (iv)~evidências empíricas para escolha de modelo, engenharia de contexto e estratégia de recuperação documental; e (v)~repositório público para replicação.
 
-A generalização dos resultados para outros municípios e a avaliação de adoção junto a usuários finais constituem perspectivas de pesquisa aplicada que extrapolam o escopo deste trabalho, centrado na comprovação funcional reprodutível sobre a instância Caeté.
+A generalização dos resultados numéricos para outros municípios e a avaliação de adoção junto a usuários finais constituem perspectivas de pesquisa aplicada que extrapolam o escopo deste trabalho, centrado na comprovação funcional reprodutível sobre a instância Caeté.

@@ -2,28 +2,78 @@
 
 \section{Modelos de linguagem e dados governamentais}
 
-Os Modelos de Linguagem de Grande Escala (\gls{llm}) generalizam padrões linguísticos e realizam raciocínio aproximado sobre instruções em linguagem natural \cite{OpenAI2024GPT4}. Em bases governamentais heterogêneas, o desafio central é condicionar o modelo com contexto suficiente --- esquema relacional, amostras de valores e regras de domínio --- sem exceder limites de tokens e custo operacional.
+Os Modelos de Linguagem de Grande Escala (\gls{llm}) generalizam padrões linguísticos e realizam raciocínio aproximado sobre instruções em linguagem natural \cite{OpenAI2024GPT4}. Em bases governamentais heterogêneas, o desafio central é condicionar o modelo com contexto suficiente --- esquema relacional, amostras de valores e regras de domínio --- sem exceder limites de tokens e custo operacional \cite{Liu2023LostMiddle}.
+
+Diferentemente de consultas ad hoc em portais de transparência, interfaces conversacionais exigem interpretação de intenção, desambiguação de termos fiscais e seleção dinâmica entre fontes tabulares e documentais. A literatura de interfaces em linguagem natural para bases de conhecimento \cite{KatsogiannisMeimaris2023GovChat} e de \textit{GovTech} \cite{Janssen2020GovTech} aponta que a barreira de acesso não é apenas técnica, mas também semântica: o cidadão formula perguntas em prosa, enquanto os dados públicos estão organizados em esquemas normalizados e vocabulários controlados.
 
 \section{Recuperação aumentada por geração}
 
-A técnica \gls{rag}, formalizada por \citeonline{Lewis2020RAG}, complementa o \gls{llm} com recuperação de trechos documentais relevantes antes da geração da resposta. No SIM, o mecanismo é adequado a perguntas sobre leis, decretos e normas municipais indexadas a partir do Diário Oficial.
+\subsection{Pipeline RAG}
+
+A técnica \gls{rag}, formalizada por \citeonline{Lewis2020RAG}, complementa o \gls{llm} com recuperação de trechos documentais relevantes antes da geração da resposta. O \textit{pipeline} clássico compreende: (i)~indexação de documentos em unidades recuperáveis (\textit{chunks}); (ii)~vetorização por modelo de \textit{embedding}; (iii)~busca por similaridade no índice; e (iv)~condicionamento do gerador com os trechos recuperados, conforme o survey de Gao, Y. et al. \cite{Gao2024RAGSurvey}.
+
+No SIM, o mecanismo é adequado a perguntas sobre leis, decretos e normas municipais indexadas a partir do Diário Oficial. A qualidade da recuperação depende criticamente do \textit{chunking} --- tamanho e fronteira dos trechos --- e da deduplicação de conteúdo repetido no índice, que pode inflar o top-$k$ com variantes do mesmo parágrafo \cite{Asai2024SelfRAG}.
+
+\subsection{Embeddings densos e busca esparsa}
+
+A recuperação densa projeta consulta e documentos em espaço vetorial contínuo, capturando similaridade semântica \cite{Karpukhin2020DPR}. Modelos como \texttt{text-embedding-3-small} oferecem bom custo-benefício para índices de médio porte. Entretanto, consultas com identificadores explícitos --- número e ano de ato normativo --- frequentemente exigem correspondência lexical exata que embeddings não preservam de forma confiável \cite{Robertson2009BM25}.
+
+A busca esparsa (\gls{bm25}) modela relevância lexical e permanece competitiva em cenários com termos raros ou identificadores numéricos \cite{Robertson2009BM25}. A \textbf{busca híbrida} combina escores densos e esparsos --- por exemplo, fusão por soma ponderada ou \textit{reciprocal rank fusion} --- para aproveitar complementaridade entre semântica e léxico \cite{Lin2021Hybrid,Lin2021Pyserini}.
+
+\subsection{Reranking, filtros e deduplicação}
+
+Após a recuperação inicial, um estágio de \textit{reranking} pode reordenar candidatos com modelo cruzado consulta-documento, elevando precisão no top-$k$ \cite{Nogueira2019MonoT5}. Em domínios normativos, metadados estruturados --- tipo de ato, número, ano --- permitem filtros determinísticos que reduzem falsos positivos antes da geração \cite{Gao2024RAGSurvey}.
+
+No contexto do SIM, a deduplicação de \textit{page\_content} idêntico e o filtro por \texttt{tipo\_ato} atuam como pós-processamento leve, sem reranker neural adicional, mantendo latência compatível com canal conversacional síncrono.
 
 \section{Text-to-SQL}
 
-Text-to-SQL converte perguntas em consultas estruturadas sobre bancos relacionais. O benchmark Spider \cite{Yu2018Spider} estabeleceu o \textit{Execution Accuracy} (EX) como comparação de resultados executados entre SQL gerada e SQL de referência. \citeonline{Zhong2020TestSuite} aprimoraram a metodologia de avaliação com \textit{test suites} para reduzir falsos positivos.
+\subsection{Formulação do problema}
 
-O benchmark BIRD \cite{Li2024BIRD} aproxima o cenário de aplicações reais ao incorporar bases volumosas, valores ruidosos e conhecimento externo, evidenciando que modelos de ponta ainda distam da performance humana em EX. Métodos recentes com LLM empregam decomposição de consultas e \textit{schema linking} \cite{Pourreza2024DIN,Gao2024DAILSQL,Wang2020RATSQL}.
+Text-to-SQL converte perguntas em consultas estruturadas sobre bancos relacionais. O desafio envolve \textit{schema linking} (mapear entidades da pergunta a tabelas e colunas), composição de \textit{joins}, agregações e filtros compatíveis com o dialeto SQL do \gls{sgbd} \cite{Yu2018Spider,Wang2020RATSQL}.
+
+\subsection{Métricas de avaliação: EX e variantes}
+
+O benchmark Spider \cite{Yu2018Spider} estabeleceu o \textit{Execution Accuracy} (EX) como comparação de resultados executados entre SQL gerada e SQL de referência. \citeonline{Zhong2020TestSuite} aprimoraram a metodologia com \textit{test suites} para reduzir falsos positivos causados por bancos com múltiplas soluções válidas.
+
+O benchmark BIRD \cite{Li2024BIRD} aproxima aplicações reais ao incorporar bases volumosas, valores ruidosos e conhecimento externo; modelos de ponta ainda distam da performance humana em EX estrita. Em Spider, sistemas estado da arte reportam EX acima de 80\% em configurações controladas; em BIRD, EX de modelos comerciais frequentemente permanece abaixo de 60\% \cite{Li2024BIRD,Pourreza2024DIN}.
+
+Este trabalho adota a \textbf{equivalência funcional} (EF) como métrica principal, relaxando EX estrita para colunas de resposta e tolerância numérica em grandezas fiscais --- decisão justificada porque EX estrita no baseline E1 foi de apenas 10\%, enquanto a EF foi de 62,5\% (Capítulo~4).
+
+\subsection{Métodos com LLM}
+
+Abordagens recentes empregam decomposição de consultas, \textit{self-correction} e seleção dinâmica de exemplos \cite{Pourreza2024DIN,Gao2024DAILSQL}. DIN-SQL decompõe a geração em etapas (esquema, colunas, SQL final) com correção iterativa; DAIL-SQL, de Gao, D. et al., enfatiza \textit{schema linking} e exemplos em contexto \cite{Gao2024DAILSQL}. RAT-SQL introduz codificação relacional do esquema para melhorar ligação entre pergunta e tabelas \cite{Wang2020RATSQL}.
+
+No SIM, a engenharia de contexto --- minificação de DDL, amostragem de valores e regras de domínio SICOM --- substitui parte da complexidade arquitetural desses métodos, adequando-se a um único município com esquema fixo e canal de baixa latência.
 
 \section{Orquestração cognitiva}
 
-Designa a camada que interpreta a intenção do usuário e seleciona dinamicamente o mecanismo mais adequado --- recuperação documental ou consulta tabular. Plataformas de automação permitem integrar APIs, modelos e canais conversacionais em arquitetura modular, como implementado na instância Caeté do SIM.
+Designa a camada que interpreta a intenção do usuário e seleciona dinamicamente o mecanismo mais adequado --- recuperação documental ou consulta tabular. Plataformas de automação (\textit{low-code}) permitem integrar APIs, modelos e canais conversacionais em arquitetura modular \cite{Russell2020AIMA}.
+
+No SIM, o orquestrador recebe a pergunta via WhatsApp, decide entre subsistema RAG (perguntas normativas) e Text-to-SQL (perguntas analíticas sobre SICOM/CGU), e formula a resposta em linguagem natural. Essa separação evita forçar SQL para perguntas sobre decretos e evita RAG para agregações fiscais.
 
 \section{Dados públicos municipais no Brasil}
 
-O SICOM, mantido pelo TCE-MG, centraliza dados contábeis e de compras públicas dos municípios mineiros \cite{TCEMG_SICOM,Lei2024SICOM}. Complementarmente, a CGU e o Siconfi \cite{STN_SiconfiAPI,CGU_Transparencia} disponibilizam dados federais cruzáveis por documento de credores e programas sociais. Essas fontes apresentam heterogeneidade de esquema, lacunas de publicação e volumes que desafiam tanto o processamento quanto a avaliação de sistemas conversacionais.
+O SICOM, mantido pelo TCE-MG, centraliza dados contábeis e de compras públicas dos municípios mineiros \cite{TCEMG_SICOM,Lei2024SICOM}. Complementarmente, a CGU e o Siconfi \cite{STN_SiconfiAPI,CGU_Transparencia} disponibilizam dados federais cruzáveis por documento de credores e programas sociais. A política de dados abertos no Brasil \cite{Brasil2016DadosAbertos} e a Lei de Acesso à Informação \cite{Lei2012LAI} fundamentam o direito de consulta, mas não garantem interfaces acessíveis ao cidadão leigo.
+
+Essas fontes apresentam heterogeneidade de esquema, lacunas de publicação, campos em formato YYYYMMDD e volumes que desafiam tanto o processamento quanto a avaliação de sistemas conversacionais --- características compartilhadas por centenas de municípios mineiros no mesmo padrão SICOM.
 
 \section{Trabalhos relacionados}
 
-Benchmarks Text-to-SQL (Spider, BIRD) estabelecem protocolos com conjuntos de referência e comparação de resultados executados. Este trabalho adapta esses princípios ao contexto municipal brasileiro, utilizando-os como evidência de comprovação funcional do subsistema Text-to-SQL do SIM, sem que a avaliação métrica constitua o objeto central da pesquisa.
+\subsection{Benchmarks Text-to-SQL}
 
-A avaliação complementar com LLM-as-Judge \cite{Zheng2023LLMJudge} permite medir a adequação da resposta em linguagem natural ao cidadão, camada não capturada exclusivamente por comparação sobre SQL.
+Spider \cite{Yu2018Spider} e BIRD \cite{Li2024BIRD} definem protocolos com conjuntos de referência, comparação de resultados executados e divisão treino/teste por domínio. Ambos assumem esquemas em inglês e bancos sintéticos ou generalistas; o SIM opera sobre esquema SICOM real, em português, com regras contábeis locais.
+
+DIN-SQL \cite{Pourreza2024DIN} e DAIL-SQL de Gao, D. et al. \cite{Gao2024DAILSQL} demonstram ganhos com decomposição e \textit{schema linking}, mas em \textit{benchmarks} acadêmicos com orçamento de tokens elevado. O SIM posiciona-se como sistema aplicado de GovTech municipal: prioriza latência, canal WhatsApp e regras de domínio portáveis ao ecossistema \gls{sicom}, em detrimento de arquiteturas multiagente pesadas.
+
+\subsection{RAG em documentos governamentais}
+
+Trabalhos de recuperação em corpora jurídicos e administrativos enfatizam metadados de citação e estrutura hierárquica de normas \cite{Gao2024RAGSurvey}. Poucos relatam avaliação sobre Diários Oficiais municipais brasileiros com índice vetorial de milhares de \textit{chunks}. O SIM contribui com protocolo estratificado (\texttt{com\_numero} \textit{versus} temático) e evidência de que busca híbrida é necessária para consultas com número explícito de ato.
+
+\subsection{GovTech e transparência}
+
+Experiências com dados do SICOM para análise fiscal e detecção de irregularidades \cite{Lei2024SICOM} demonstram o potencial de ciência de dados sobre bases abertas municipais. O SIM difere ao focar interface conversacional para o cidadão, não painel analítico para especialistas. A avaliação complementar com LLM-as-Judge \cite{Zheng2023LLMJudge} mede adequação da resposta em linguagem natural, camada não capturada exclusivamente por comparação sobre SQL.
+
+\subsection{Posicionamento do SIM}
+
+Em síntese, o SIM integra contribuições de três linhas --- Text-to-SQL com EF sobre SICOM, RAG híbrido sobre Diário Oficial e orquestração em canal conversacional --- em arquitetura multi-instância replicável. A avaliação métrica comprova viabilidade funcional na instância Caeté; não constitui, por si só, o objeto central da pesquisa, que permanece o acesso democrático a dados públicos municipais.

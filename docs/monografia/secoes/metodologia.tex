@@ -2,7 +2,7 @@
 
 \section{Tipo de pesquisa}
 
-Trata-se de pesquisa aplicada, de natureza experimental e desenvolvimento tecnológico, com validação funcional em ambiente real (WhatsApp) e comprovação quantitativa reprodutível do subsistema Text-to-SQL em ambiente controlado, versionado no repositório \texttt{avaliacao/}.
+Trata-se de pesquisa aplicada, de natureza experimental e desenvolvimento tecnológico, com validação funcional em ambiente real (WhatsApp) e comprovação quantitativa reprodutível do subsistema Text-to-SQL em ambiente controlado, com artefatos versionados em repositório público (Apêndice~\ref{ap:artefatos}).
 
 \section{O SIM e a instância Caeté}
 
@@ -45,15 +45,15 @@ Inclusão de exemplos reais de valores por coluna relevante, visando melhorar in
 \subsection{Variantes de \textit{prompt} avaliadas}
 
 \begin{itemize}
-    \item \textbf{Prompt compacto} ($\approx$16\,500 tokens): esquema minificado e amostras --- referência do Lote I;
-    \item \textbf{Prompt estendido} ($\approx$35\,000 tokens): esquema com descrições ampliadas;
-    \item \textbf{Prompt v2.1} ($\approx$16\,500 tokens): variante final com regras de domínio --- configuração adotada após o Lote II.
+    \item \textbf{Prompt A (compacto)} ($\approx$16\,500 tokens): esquema minificado e amostras --- referência do Lote I (E1);
+    \item \textbf{Prompt estendido} ($\approx$35\,000 tokens): esquema com descrições ampliadas (E2);
+    \item \textbf{Prompt B (regras de domínio)} ($\approx$16\,500 tokens): variante final com convenções SICOM --- configuração adotada após o Lote II.
 \end{itemize}
 
 \section{Conjunto de referência (\textit{golden dataset})}
 
-Foi construído um conjunto de 80 consultas em linguagem natural, estratificadas por dificuldade (fácil, médio, difícil) e por domínio temático. Cada item contém a pergunta, a consulta SQL de referência validada no DuckDB, metadados auxiliares e a coluna \texttt{colunas\_resposta} indicando quais grandezas respondem à pergunta (75 itens por procedimento automatizado, 5 por curadoria manual).
+Foi construído um conjunto de 80 consultas em linguagem natural, estratificadas por dificuldade (fácil, médio, difícil) e por domínio temático. Cada item contém a pergunta, a consulta SQL de referência validada no DuckDB e metadados auxiliares indicando quais grandezas respondem à pergunta (75 itens por procedimento automatizado, 5 por curadoria manual).
 
-Dez consultas-base foram expandidas com variações paramétricas (anos, limites e agregações), totalizando 80 casos executáveis. Os artefatos estão em \texttt{avaliacao/dados/golden/}.
+Dez \textbf{intenções analíticas} (consultas-base) foram expandidas com variações paramétricas (anos, limites e agregações), totalizando 80 casos executáveis. Essa estrutura avalia robustez a variações de formulação sobre o mesmo objetivo de consulta, e não deve ser interpretada como 80 perguntas independentes no sentido estatístico estrito.
 
 \input{secoes/metodologia_validacao}

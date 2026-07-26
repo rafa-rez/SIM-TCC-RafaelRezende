@@ -12,6 +12,15 @@ Formato por entrada:
 ```
 
 ---
+
+## 2026-07-26 — exp/rag-golden-v1.3 + fix/monografia-bloqueadores
+
+- Hipótese: amostra RAG ampliada (n=40, sem cherry-pick) com estratificação com_numero/temático aumenta robustez; bloqueadores LaTeX (orientador, bib, siglas, métricas EN) devem ser corrigidos antes da entrega.
+- Mudança: `golden_rag_v1.3.csv` (32 decretos sorteados seed 42 + 8 temáticos v1.1); Wilson IC no `run_rag_eval.py`; glossário de siglas; A1/A2/B1/B2/B3 na monografia.
+- SQL: (sem reexecução)
+- RAG v1.3: denso **22,5/13,17** · híbrido+dedup+tipo **100/97,5** (IC Recall 91,2–100%); com_numero denso 3,12% → híbrido 100%
+- Conclusão: golden v1.3 confirma gap da busca densa para lookup por número e valida stack híbrido em amostra 5× maior; temático mantém MRR 87,5%.
+
 ## 2026-07-19 — docs: métricas v2 sincronizadas
 
 - Hipótese: documentação e textos acadêmicos devem refletir resultados v2 sem incluir mudanças de infra/código.

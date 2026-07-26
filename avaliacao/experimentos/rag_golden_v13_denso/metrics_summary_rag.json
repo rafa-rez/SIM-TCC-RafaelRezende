@@ -1,0 +1,46 @@
+{
+  "n": 40,
+  "top_k": 5,
+  "recall_at_k": 22.5,
+  "mrr": 13.17,
+  "hits": 9,
+  "wilson_95_recall_lo": 12.32,
+  "wilson_95_recall_hi": 37.5,
+  "generated_at": "2026-07-26T14:41:02.433128",
+  "por_dificuldade": {
+    "fácil": {
+      "n": 35,
+      "recall_at_k": 11.43,
+      "mrr": 4.95,
+      "hits": 4,
+      "wilson_95_recall_lo": 4.54,
+      "wilson_95_recall_hi": 25.95
+    },
+    "médio": {
+      "n": 5,
+      "recall_at_k": 100.0,
+      "mrr": 70.67,
+      "hits": 5,
+      "wilson_95_recall_lo": 56.55,
+      "wilson_95_recall_hi": 100.0
+    }
+  },
+  "por_estrato": {
+    "com_numero": {
+      "n": 32,
+      "recall_at_k": 3.12,
+      "mrr": 0.62,
+      "hits": 1,
+      "wilson_95_recall_lo": 0.55,
+      "wilson_95_recall_hi": 15.74
+    },
+    "tematico": {
+      "n": 8,
+      "recall_at_k": 100.0,
+      "mrr": 63.33,
+      "hits": 8,
+      "wilson_95_recall_lo": 67.56,
+      "wilson_95_recall_hi": 100.0
+    }
+  }
+}

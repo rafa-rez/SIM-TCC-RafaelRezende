@@ -1,10 +1,17 @@
 \section{Protocolo de validação do RAG}
 
-Complementarmente ao Text-to-SQL, conduziu-se avaliação da recuperação documental sobre o Diário Oficial municipal indexado em Qdrant (\textit{collection} \texttt{jornais\_caete}, 9\,346 \textit{chunks}, embedding \texttt{text-embedding-3-small}).
+Complementarmente ao Text-to-SQL, conduziu-se avaliação da recuperação documental sobre o Diário Oficial municipal indexado em Qdrant (9\,346 \textit{chunks}, embedding \texttt{text-embedding-3-small}).
 
 \subsection{Conjunto de referência RAG}
 
-O \textit{golden} RAG v1.1 contém $N_{\text{RAG}} = 8$ perguntas sobre decretos municipais, cada uma com \texttt{doc\_id\_esperado} validado no índice (presença de cabeçalho DECRETO/LEI com número e ano no \textit{payload} \texttt{page\_content}). Itens cuja referência não existia no índice foram substituídos na curadoria v1.1. Artefatos em \texttt{avaliacao/dados/golden\_rag/}.
+O \textbf{conjunto de referência RAG ampliado} contém $N_{\text{RAG}} = 40$ perguntas estratificadas em dois estratos:
+
+\begin{itemize}
+    \item \textbf{com\_numero} ($n = 32$): decretos sorteados uniformemente do inventário do índice (seed 42), com pergunta-template contendo número e ano explícitos do ato;
+    \item \textbf{tematico} ($n = 8$): perguntas curadas sobre conteúdo normativo, reaproveitadas da amostra temática inicial, sem depender exclusivamente de número na formulação.
+\end{itemize}
+
+A inclusão dos itens \textit{com\_numero} é independente do \textit{rank} de recuperação --- critério de amostra honesta. Cada item possui documento de referência validado no índice (cabeçalho do ato presente em \textit{page\_content}).
 
 \subsection{Indicadores de recuperação}
 
@@ -20,8 +27,8 @@ A \textbf{taxa de recuperação média} (MRR --- \textit{Mean Reciprocal Rank}) 
 \text{MRR} = \frac{1}{N_{\text{RAG}}} \sum_{i=1}^{N_{\text{RAG}}} \frac{1}{\text{rank}_i}
 \end{equation}
 
-onde $\text{rank}_i$ é a posição do \textit{chunk} que contém o ato esperado, ou zero se ausente do top-$k$. A correspondência entre documento recuperado e gabarito usa o texto de \texttt{page\_content} e a chave numérica do ato (número/ano).
+onde $\text{rank}_i$ é a posição do \textit{chunk} que contém o ato esperado, ou zero se ausente do top-$k$. Reportam-se também intervalos de confiança de Wilson (95\%) \cite{Agresti1998} para as proporções de acerto.
 
 \subsection{Escopo e limitações do protocolo RAG}
 
-Trata-se de amostra reduzida ($N_{\text{RAG}} = 8$), restrita a decretos com \textit{chunk} confirmado no índice --- evidência complementar à validação SQL. Não avalia geração da resposta final em linguagem natural nem o roteamento do orquestrador.
+A avaliação compara estratégias de recuperação (busca densa, deduplicação, filtro por tipo de ato e busca híbrida por número/ano) sobre o mesmo \textit{golden}. Não avalia geração da resposta final em linguagem natural nem o roteamento do orquestrador.

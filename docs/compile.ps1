@@ -28,6 +28,13 @@ function Sync-Monografia {
     Copy-Item "$DocsMono\secoes\*" "$Template\secoes\" -Recurse -Force
     Copy-Item "$DocsMono\figuras\*" "$Template\figuras\" -Recurse -Force -ErrorAction SilentlyContinue
     Copy-Item "$DocsMono\templufla_main.tex" "$Template\templufla_main.tex" -Force
+    if (Test-Path "$DocsMono\glossarios") {
+        Copy-Item "$DocsMono\glossarios\*" "$Template\glossarios\" -Recurse -Force
+    }
+    if (Test-Path "$DocsMono\apendices") {
+        New-Item -ItemType Directory -Force -Path "$Template\apendices" | Out-Null
+        Copy-Item "$DocsMono\apendices\*" "$Template\apendices\" -Recurse -Force
+    }
     Copy-Item "$PSScriptRoot\referencias\referencias_sim.bib" "$Template\refbib.bib" -Force
     Write-Host "Sincronizado: docs/monografia -> template-ufla/"
 }

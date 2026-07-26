@@ -2,29 +2,55 @@
 
 \section{Acesso a dados e transparência pública}
 
-O SIM materializa o princípio de que dados abertos só cumprem sua função democrática quando acessíveis. Ao integrar consulta analítica e recuperação documental em canal conversacional amplamente utilizado no Brasil, a plataforma reduz a distância entre a publicação formal de bases governamentais e o uso efetivo por cidadãos, jornalistas e organizações da sociedade civil.
+O SIM materializa o princípio de que dados abertos só cumprem sua função democrática quando acessíveis \cite{Brasil2016DadosAbertos,Lei2012LAI}. Ao integrar consulta analítica e recuperação documental em canal conversacional amplamente utilizado no Brasil, a plataforma reduz a distância entre a publicação formal de bases governamentais e o uso efetivo por cidadãos, jornalistas e organizações da sociedade civil.
 
-\section{Viabilidade técnica}
+\section{Comparação com benchmarks acadêmicos}
 
-Os quatro experimentos do Lote I convergem para VSR entre 90\% e 97,5\%, indicando domínio da sintaxe SQL e do mapeamento esquema-coluna. O baseline E1 combina equivalência funcional de 62,5\% com latência média de 6,2~s na geração de SQL --- parâmetros compatíveis com uso conversacional síncrono em canal de mensageria.
+A equivalência funcional de 72,5\% (Prompt B) e 62,5\% (E1) \textbf{não é diretamente comparável} à EX de Spider ou BIRD, pelas razões seguintes:
 
-No Lote II, a configuração final de \textit{prompt} (v2.1) elevou a EF para 72,5\% com VSR de 100\%, sem troca de modelo --- evidência de que parte substancial das falhas residuais é atribuível à engenharia de contexto. No Lote III, a recuperação híbrida com deduplicação elevou o MRR de 63,33\% para 87,5\% no mesmo \textit{golden} RAG, mantendo Recall@5 integral.
+\begin{itemize}
+    \item \textbf{Métrica distinta}: Spider/BIRD reportam EX estrita (multiconjunto de pares coluna--valor); este trabalho adota EF com mapeamento de colunas de resposta e tolerância $\tau = 0{,}5\%$ em valores fiscais. No E1, EX estrita foi de apenas 10\%, enquanto EF foi de 62,5\% --- evidência de que EX estrita subestimaria respostas úteis ao cidadão;
+    \item \textbf{Domínio e escala}: Spider reúne 200 bases em inglês com esquemas sintéticos; BIRD incorpora bases reais volumosas com ruído. O SIM opera sobre esquema SICOM único, em português, com regras contábeis locais --- tarefa mais estreita em diversidade de esquema, porém mais fiel ao uso municipal;
+    \item \textbf{Ordem de grandeza}: em BIRD, GPT-4 reporta EX na faixa de 50--55\% \cite{Li2024BIRD}; métodos decomposicionais (DIN-SQL) elevam para $\approx$60\% \cite{Pourreza2024DIN}. A EF de 72,5\% do SIM situa-se na mesma ordem de magnitude, com ressalva de que EF é métrica mais permissiva que EX;
+    \item \textbf{Amostra}: o conjunto de referência SQL tem $n=80$ casos correlacionados (10 intenções $\times$ variações), não 80 perguntas independentes --- intervalos de confiança amplos (IC EF do Prompt B: 61,9--81,1\%) refletem incerteza amostral.
+\end{itemize}
+
+Em síntese, o SIM não compete em \textit{leaderboard} acadêmico, mas demonstra viabilidade funcional em dados municipais reais com latência compatível a WhatsApp --- objetivo distinto dos \textit{benchmarks} generalistas.
+
+\section{Achados empíricos principais}
+
+Três achados estruturam a discussão, sem repetir numericamente o Capítulo~4:
+
+\begin{enumerate}
+    \item \textbf{Engenharia de contexto supera troca de modelo}: Prompt B (+10 pp EF) superou GPT-4o (E4) em EF com fração da latência --- reforçando que regras de domínio SICOM são alavanca principal neste cenário;
+    \item \textbf{Recuperação híbrida é necessária para atos numerados}: no estrato \texttt{com\_numero}, busca densa isolada falhou (3,1\% Recall@5); lookup por número/ano no cabeçalho do \textit{chunk} resolve o caso de uso mais frequente em Diário Oficial;
+    \item \textbf{Falhas residuais concentram-se em cruzamentos}: EF em consultas ``difíceis'' (57,1\%) e cruzamentos investigativos (30\%) indica que \textit{joins} entre SICOM e CGU por nome ou documento permanecem desafio mesmo com Prompt B.
+\end{enumerate}
 
 \section{Configuração adotada na instância Caeté}
 
-Com base nos três lotes experimentais, a instância Caeté adota: (i)~GPT-4.1-mini com \textit{prompt} v2.1 para Text-to-SQL; (ii)~recuperação híbrida com deduplicação e filtro por tipo de ato para o subsistema RAG. Modelos alternativos (GPT-4o-mini, GPT-4o) e \textit{prompt} estendido foram descartados por desempenho inferior ou latência incompatível com canal conversacional síncrono.
+Com base nos três lotes experimentais, a instância Caeté adota: (i)~GPT-4.1-mini com Prompt B para Text-to-SQL; (ii)~recuperação híbrida com deduplicação e filtro por tipo de ato para o subsistema RAG. Modelos alternativos e \textit{prompt} estendido foram descartados por desempenho inferior ou latência incompatível com canal conversacional síncrono.
+
+\section{Confiabilidade, risco e segurança}
+
+Mesmo na configuração final (EF 72,5\%), aproximadamente um quarto das consultas do conjunto de referência não produz grandezas funcionalmente equivalentes ao gabarito. Em canal público voltado ao cidadão, isso implica risco de respostas fiscalmente incorretas --- especialmente em cruzamentos investigativos e índices derivados. Mitigações recomendadas incluem: (i)~exibir a consulta SQL gerada ou um resumo auditável quando a pergunta envolve valores monetários; (ii)~mensagens de incerteza quando a confiança do resultado é baixa; e (iii)~encaminhamento a fontes oficiais (portal de transparência, Diário Oficial).
+
+Quanto à segurança, um canal conversacional público está exposto a \textit{prompt injection} e, indiretamente, a SQL gerada sobre base local. O uso de API com permissões restritas, validação sintática antes da execução e ausência de comandos de escrita no DuckDB reduzem, mas não eliminam, o risco. A camada de resposta em linguagem natural pode ainda alucinar interpretações sobre resultados corretos --- reforçando a necessidade de transparência do dado tabular subjacente.
 
 \section{Limitações}
+\label{sec:limitacoes}
 
 \begin{itemize}
-    \item Amostra RAG v1.1 reduzida ($N_{\text{RAG}} = 8$), restrita a decretos com \textit{chunk} no índice; o golden v1.2 ($n=20$) usa perguntas uniformes por número de ato e constitui evidência complementar;
-    \item Conjunto golden SQL de uma única instância; generalização para outros municípios requer novas instâncias SIM;
+    \item O conjunto SQL contém 80 casos derivados de 10 intenções analíticas com variações paramétricas correlacionadas;
+    \item O ganho do Prompt B foi medido no mesmo conjunto usado para diagnosticar falhas; as regras são portáveis ao padrão SICOM, mas a magnitude do ganho pode variar em outras instâncias (McNemar: $p = 0{,}146$);
+    \item Conjunto de referência de uma única instância (Caeté);
     \item Lacuna de folha de pagamento 2020--2022 na base local;
     \item Gabarito manual pode não cobrir todas as SQL semanticamente corretas;
-    \item Em 75 dos 80 itens do golden, a coluna \texttt{colunas\_resposta} foi definida por procedimento automatizado; nos demais, por curadoria manual --- o que pode influenciar a sensibilidade da EF a variações legítimas de formato;
-    \item Julgamento automático (JAR) pode ser complacente ou compartilhar vieses do modelo gerador.
+    \item Definição automatizada de colunas de resposta em 75 dos 80 itens SQL;
+    \item Julgamento automático (JAR) não discriminante na amostra piloto ($n=30$);
+    \item Demonstração WhatsApp sem métricas quantitativas de adoção em produção.
 \end{itemize}
 
 \section{Implicações práticas}
 
-O SIM demonstra viabilidade técnica de consulta conversacional a dados municipais abertos, com arquitetura replicável para outras prefeituras. Os resultados empíricos subsidiam a escolha de modelo, tamanho de contexto e estratégia de recuperação documental em instâncias municipais com perfil de dados semelhante ao de Caeté.
+O SIM demonstra viabilidade técnica de consulta conversacional a dados municipais abertos, com arquitetura replicável para outras prefeituras que operem sobre o padrão SICOM. Os resultados empíricos subsidiam a escolha de modelo, engenharia de contexto e estratégia de recuperação documental em instâncias municipais com perfil de dados semelhante ao de Caeté.

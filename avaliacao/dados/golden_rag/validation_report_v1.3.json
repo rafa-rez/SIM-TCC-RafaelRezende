@@ -1,0 +1,250 @@
+{
+  "dataset": "D:\\tiokk-n8n\\avaliacao\\dados\\golden_rag\\golden_rag_v1.3.csv",
+  "n_total": 40,
+  "n_com_numero": 32,
+  "n_tematico": 8,
+  "seed": 42,
+  "validated_ok": 40,
+  "items": [
+    {
+      "id": "001",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 300/2023"
+    },
+    {
+      "id": "002",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 337/2024"
+    },
+    {
+      "id": "003",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 230/2025"
+    },
+    {
+      "id": "004",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 311/2024"
+    },
+    {
+      "id": "005",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 249/2023"
+    },
+    {
+      "id": "006",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 228/2023"
+    },
+    {
+      "id": "007",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 271/2023"
+    },
+    {
+      "id": "008",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 113/2023"
+    },
+    {
+      "id": "009",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 081/2023"
+    },
+    {
+      "id": "010",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 197/2024"
+    },
+    {
+      "id": "011",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 116/2023"
+    },
+    {
+      "id": "012",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 216/2025"
+    },
+    {
+      "id": "013",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 245/2024"
+    },
+    {
+      "id": "014",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 053/2024"
+    },
+    {
+      "id": "015",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 246/2024"
+    },
+    {
+      "id": "016",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 055/2024"
+    },
+    {
+      "id": "017",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 148/2024"
+    },
+    {
+      "id": "018",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 142/2024"
+    },
+    {
+      "id": "019",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 189/2023"
+    },
+    {
+      "id": "020",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 045/2024"
+    },
+    {
+      "id": "021",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 229/2023"
+    },
+    {
+      "id": "022",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 254/2024"
+    },
+    {
+      "id": "023",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 058/2023"
+    },
+    {
+      "id": "024",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 109/2023"
+    },
+    {
+      "id": "025",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 080/2024"
+    },
+    {
+      "id": "026",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 184/2023"
+    },
+    {
+      "id": "027",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 183/2024"
+    },
+    {
+      "id": "028",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 036/2023"
+    },
+    {
+      "id": "029",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 232/2024"
+    },
+    {
+      "id": "030",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 101/2024"
+    },
+    {
+      "id": "031",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 011/2024"
+    },
+    {
+      "id": "032",
+      "estrato": "com_numero",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 099/2023"
+    },
+    {
+      "id": "033",
+      "estrato": "tematico",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 064/2023"
+    },
+    {
+      "id": "034",
+      "estrato": "tematico",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 247/2024"
+    },
+    {
+      "id": "035",
+      "estrato": "tematico",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 015/2024"
+    },
+    {
+      "id": "036",
+      "estrato": "tematico",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 282/2023"
+    },
+    {
+      "id": "037",
+      "estrato": "tematico",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 295/2022"
+    },
+    {
+      "id": "038",
+      "estrato": "tematico",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 218/2025"
+    },
+    {
+      "id": "039",
+      "estrato": "tematico",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 112/2024"
+    },
+    {
+      "id": "040",
+      "estrato": "tematico",
+      "status": "congelado",
+      "doc_id_esperado": "Decreto Municipal nº 321/2024"
+    }
+  ]
+}

@@ -2,27 +2,30 @@
 
 \section{Lote I --- Comparação de modelo e contexto (E1--E4)}
 
-A Tabela~\ref{tab:v3} consolida o primeiro lote experimental, que comparou quatro configurações de modelo e tamanho de \textit{prompt} sobre o golden v1 ($n=80$). Os indicadores comprovam que o \textit{pipeline} gera SQL executável em grande parte dos casos (VSR entre 90\% e 97,5\%) e produz resultados funcionalmente equivalentes ao gabarito na maioria das consultas do baseline.
+A Tabela~\ref{tab:v3} consolida o primeiro lote experimental, que comparou quatro configurações de modelo e tamanho de \textit{prompt} sobre o conjunto de referência SQL ($n=80$). Os indicadores comprovam que o \textit{pipeline} gera SQL executável em grande parte dos casos (VSR entre 90\% e 97,5\%) e produz resultados funcionalmente equivalentes ao gabarito na maioria das consultas do baseline. A Figura~\ref{fig:grafico_sql} visualiza VSR e EF com intervalos de confiança de Wilson (95\%).
 
 \begin{table}[htbp]
 \centering
-\caption{Lote I --- comparativo de configuração ($n=80$)}
+\caption{Lote I --- comparativo de configuração ($n=80$) com IC 95\% (Wilson)}
 \label{tab:v3}
-\begin{tabular}{lrr}
+\small
+\begin{tabular}{lrrrr}
 \toprule
-\textbf{Experimento} & \textbf{VSR (\%)} & \textbf{EF (\%)} \\
+\textbf{Experimento} & \textbf{VSR (\%)} & \textbf{IC VSR} & \textbf{EF (\%)} & \textbf{IC EF} \\
 \midrule
-E1 --- Baseline (GPT-4.1-mini, compacto) & 97,50 & \textbf{62,50} \\
-E2 --- Contexto estendido (GPT-4.1-mini) & 96,25 & 58,75 \\
-E3 --- GPT-4o-mini & 90,00 & 46,25 \\
-E4 --- GPT-4o & 97,50 & 57,50 \\
+E1 --- Baseline (GPT-4.1-mini, Prompt A) & 97,50 & 91,3--99,3 & \textbf{62,50} & 51,5--72,3 \\
+E2 --- Contexto estendido (GPT-4.1-mini) & 96,25 & 89,5--98,7 & 58,75 & 47,8--68,9 \\
+E3 --- GPT-4o-mini & 90,00 & 81,5--94,8 & 46,25 & 35,7--57,1 \\
+E4 --- GPT-4o & 97,50 & 91,3--99,3 & 57,50 & 46,6--67,7 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
+\input{figuras/grafico_sql_lote1}
+
 \subsection{Configuração de referência (E1)}
 
-O experimento E1 avaliou 80 consultas com GPT-4.1-mini e \textit{prompt} compacto, estabelecendo a referência comparativa do Lote I. A Tabela~\ref{tab:baseline} resume os indicadores e a latência observada.
+O experimento E1 avaliou 80 consultas com GPT-4.1-mini e \textbf{Prompt A (compacto)}, estabelecendo a referência comparativa do Lote I. A Tabela~\ref{tab:baseline} resume os indicadores e a latência observada.
 
 \begin{table}[htbp]
 \centering
@@ -34,8 +37,40 @@ O experimento E1 avaliou 80 consultas com GPT-4.1-mini e \textit{prompt} compact
 \midrule
 VSR & 97,50\% (78/80) \\
 Equivalência funcional (EF) & 62,50\% (50/80) \\
+IC 95\% EF (Wilson) & 51,5--72,3\% \\
 Latência média de geração & 6,2 s \\
 Latência média de execução SQL & 1,1 s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Resultados por consulta-base (E1)}
+
+A Tabela~\ref{tab:base} desagrega a equivalência funcional nas dez intenções analíticas originais (sem variações paramétricas). O agregado sobre as 70 derivações paramétricas foi de 64,3\% (45/70).
+
+\begin{table}[htbp]
+\centering
+\caption{E1 --- equivalência funcional por consulta-base ($n=10$ intenções)}
+\label{tab:base}
+\small
+\begin{tabular}{clc}
+\toprule
+\textbf{ID} & \textbf{Domínio (resumo)} & \textbf{EF} \\
+\midrule
+1 & Índice de Saúde Financeira (ISF-M) & Sim \\
+2 & Cruzamento servidores $\times$ Bolsa Família & Não \\
+3 & Top empresas SICOM $\times$ CGU & Sim \\
+4 & Gastos de frota por marca & Sim \\
+5 & Índice de Educação (IEQ-C) & Sim \\
+6 & Restos a pagar cancelados & Sim \\
+7 & Maiores licitações homologadas & Não \\
+8 & Contratos com aditivo de acréscimo & Não \\
+9 & Gasto da Câmara / receita corrente & Sim \\
+10 & Evolução mensal da folha & Não \\
+\midrule
+\multicolumn{2}{l}{\textbf{Consultas-base (10)}} & \textbf{60,0\%} \\
+\multicolumn{2}{l}{Derivações paramétricas (70)} & 64,3\% \\
+\multicolumn{2}{l}{\textbf{Total (80 casos)}} & \textbf{62,5\%} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -59,20 +94,22 @@ Difícil & 14 & 57,14 & 92,86 \\
 
 \subsection{Síntese do Lote I}
 
-O \textit{prompt} estendido (E2) não superou o compacto em equivalência funcional (58,75\% \textit{versus} 62,50\%). O GPT-4o-mini (E3) degrada VSR (90\%) e EF (46,25\%). O GPT-4o (E4) não supera o baseline em EF (57,50\%) e apresenta latência média de 29,5~s na geração de SQL --- inviável para respostas síncronas em canal conversacional. O Lote I fixou GPT-4.1-mini como modelo de referência para os lotes subsequentes.
+O \textbf{Prompt estendido} (E2) não superou o compacto em equivalência funcional (58,75\% \textit{versus} 62,50\%). O GPT-4o-mini (E3) degrada VSR (90\%) e EF (46,25\%). O GPT-4o (E4) não supera o baseline em EF (57,50\%) e apresenta latência média de 29,5~s na geração de SQL --- inviável para respostas síncronas em canal conversacional. O Lote I fixou GPT-4.1-mini como modelo de referência para os lotes subsequentes.
 
 \section{Lote II --- Engenharia de \textit{prompt} (configuração final)}
 
-Mantendo-se o modelo GPT-4.1-mini, temperatura 0 e o golden v1 ($n=80$), conduziu-se ablation exclusivamente sobre o conteúdo instrucional do \textit{prompt}. A variante final (v2.1) incorpora regras de domínio identificadas na análise de falhas do Lote I: escopo condicional de filtros de higiene por formato de resposta, tratamento de datas YYYYMMDD, tabelas setoriais (SAAE, RSP), âncoras textuais com \texttt{ILIKE} e cruzamentos por chave única (Tabela~\ref{tab:prompt_diff}).
+Mantendo-se o modelo GPT-4.1-mini, temperatura 0 e o mesmo conjunto de referência SQL ($n=80$), conduziu-se ablation exclusivamente sobre o conteúdo instrucional do \textit{prompt}. O \textbf{Prompt B (regras de domínio)} codifica convenções do padrão SICOM/TCE-MG, derivadas de uma taxonomia de falhas observadas no Lote I: escopo condicional de filtros de higiene por formato de resposta, tratamento de datas YYYYMMDD, tabelas setoriais (SAAE, RSP), âncoras textuais com \texttt{ILIKE} e cruzamentos por chave única documentada (Tabela~\ref{tab:prompt_diff}).
+
+Essas regras não memorizam respostas específicas de Caeté, mas convencões de esquema e de negócio compartilhadas por municípios mineiros no SICOM. O ganho de equivalência funcional reportado abaixo reflete a aplicação dessas regras ao conjunto de referência da instância piloto.
 
 \begin{table}[htbp]
 \centering
-\caption{Diferenças principais entre \textit{prompt} v1 (E1) e v2.1 (configuração final)}
+\caption{Diferenças principais entre Prompt A (E1) e Prompt B (configuração final)}
 \label{tab:prompt_diff}
 \small
 \begin{tabular}{p{4cm}p{4.5cm}p{4.5cm}}
 \toprule
-\textbf{Aspecto} & \textbf{v1 (E1)} & \textbf{v2.1 (final)} \\
+\textbf{Aspecto} & \textbf{Prompt A (E1)} & \textbf{Prompt B (final)} \\
 \midrule
 Filtros de higiene & Regra global & Condicionado ao formato da resposta \\
 Datas SICOM & Declaradas como DATE & Tratamento YYYYMMDD com CAST \\
@@ -84,23 +121,24 @@ Cruzamentos CGU$\times$SICOM & JOIN genérico & Chave única documentada \\
 
 \begin{table}[htbp]
 \centering
-\caption{Lote II --- configuração final de \textit{prompt} ($n=80$, GPT-4.1-mini)}
+\caption{Lote II --- Prompt B \textit{versus} Prompt A ($n=80$, GPT-4.1-mini)}
 \label{tab:prompt_v2}
-\begin{tabular}{lrr}
+\small
+\begin{tabular}{lrrrr}
 \toprule
-\textbf{Variante} & \textbf{VSR (\%)} & \textbf{EF (\%)} \\
+\textbf{Variante} & \textbf{VSR (\%)} & \textbf{IC VSR} & \textbf{EF (\%)} & \textbf{IC EF} \\
 \midrule
-E1 --- \textit{prompt} compacto v1 (Lote I) & 97,50 & 62,50 \\
-\textbf{Prompt v2.1 (configuração final)} & \textbf{100,00} & \textbf{72,50} \\
+E1 --- Prompt A (Lote I) & 97,50 & 91,3--99,3 & 62,50 & 51,5--72,3 \\
+\textbf{Prompt B (configuração final)} & \textbf{100,00} & 95,4--100 & \textbf{72,50} & 61,9--81,1 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-A configuração v2.1 elevou a equivalência funcional em 10 pontos percentuais em relação ao E1, com VSR integral, sem troca de modelo --- evidência de que parte substancial das falhas residuais é atribuível à engenharia de contexto.
+O Prompt B elevou a equivalência funcional em 10 pontos percentuais em relação ao E1, com VSR integral, sem troca de modelo. O teste de McNemar para pares discordantes (E1 acerto / Prompt B falha: 5; E1 falha / Prompt B acerto: 12) não atingiu significância estatística ($p = 0{,}146$), o que sugere cautela ao interpretar o ganho pontual --- embora a direção do efeito seja consistente com a taxonomia de erros corrigida.
 
-\section{Validação operacional}
+\section{Demonstração operacional ponta-a-ponta}
 
-Além do \textit{benchmark} offline, o SIM foi validado em ambiente operacional via WhatsApp na instância Caeté, confirmando viabilidade da orquestração integrada entre automação, mensageria, recuperação documental e consulta analítica.
+Além do \textit{benchmark} offline, o SIM foi implantado na instância Caeté com fluxo WhatsApp $\rightarrow$ automação $\rightarrow$ orquestrador $\rightarrow$ subsistemas RAG e Text-to-SQL, demonstrando funcionamento integrado em ambiente real. Não foram coletadas, neste trabalho, métricas quantitativas de adoção (volume de interações, taxa de acerto em produção ou satisfação de usuários); trata-se de evidência qualitativa de viabilidade de orquestração, complementar à validação controlada dos Capítulos anteriores.
 
 \section{Avaliação da resposta em linguagem natural}
 
@@ -119,6 +157,7 @@ Para amostra estratificada do E1 ($n=30$), registrou-se a cadeia completa: SQL g
 \textbf{Indicador} & \textbf{Valor} \\
 \midrule
 JAR & 100,00\% (30/30) \\
+IC 95\% JAR (Wilson) & 88,6--100\% \\
 Adequação semântica (média) & 4,87 / 5 \\
 Fidelidade aos dados (média) & 4,87 / 5 \\
 Completude (média) & 4,73 / 5 \\
@@ -127,28 +166,67 @@ Clareza ao cidadão (média) & 4,77 / 5 \\
 \end{tabular}
 \end{table}
 
-O julgamento automático indica que as respostas em linguagem natural são adequadas ao cidadão na amostra avaliada. Essa evidência complementa, mas não substitui, a equivalência funcional sobre resultados tabulares.
+O julgamento automático, na amostra piloto avaliada ($n=30$), não rejeitou nenhuma resposta --- indicador que deve ser interpretado com cautela, pois o juiz pertence à mesma família de modelos do gerador e pode ser complacente (Seção~\ref{sec:limitacoes}). Essa evidência complementa, mas não substitui, a equivalência funcional sobre resultados tabulares.
 
 \section{Lote III --- Recuperação documental (RAG)}
 
-Conduziu-se avaliação complementar da recuperação documental sobre o Diário Oficial com o \textit{golden} RAG v1.1 ($N_{\text{RAG}} = 8$ decretos municipais com \textit{chunk} confirmado no índice). O protocolo gera embeddings (\texttt{text-embedding-3-small}), consulta a \textit{collection} \texttt{jornais\_caete} e compara os top-5 \textit{chunks} ao documento de referência.
+Conduziu-se avaliação da recuperação documental sobre o Diário Oficial com o \textbf{conjunto de referência RAG ampliado} ($N_{\text{RAG}} = 40$): 32 perguntas com número explícito de ato (\textit{estrato} \texttt{com\_numero}) e 8 perguntas temáticas curadas (\textit{estrato} \texttt{tematico}). A Tabela~\ref{tab:rag} compara estratégias de recuperação; a Figura~\ref{fig:grafico_rag} visualiza o Recall@5.
 
 \begin{table}[htbp]
 \centering
-\caption{Lote III --- estratégias de recuperação no golden v1.1 ($k=5$)}
+\caption{Lote III --- estratégias de recuperação ($k=5$, $n=40$)}
 \label{tab:rag}
-\begin{tabular}{lrr}
+\begin{tabular}{lrrl}
 \toprule
-\textbf{Configuração} & \textbf{Recall@5 (\%)} & \textbf{MRR (\%)} \\
+\textbf{Configuração} & \textbf{Recall@5} & \textbf{MRR} & \textbf{IC 95\% (Recall)} \\
 \midrule
-Busca densa & 100,00 (8/8) & 63,33 \\
-Deduplicação de \textit{chunks} idênticos & 100,00 & 69,79 \\
-Filtro por tipo de ato + dedup & 100,00 & 72,92 \\
-Híbrido por nº de ato + dedup + filtro tipo & 100,00 & \textbf{87,50} \\
+Busca densa & 22,5\% (9/40) & 13,17\% & 12,3--37,5\% \\
+Deduplicação de \textit{chunks} idênticos & 22,5\% & 14,79\% & 12,3--37,5\% \\
+Filtro por tipo de ato + dedup & 22,5\% & 15,42\% & 12,3--37,5\% \\
+Híbrido por nº de ato + dedup + filtro & \textbf{100\%} (40/40) & \textbf{97,5\%} & \textbf{91,2--100\%} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-O Recall@5 integral na busca densa indica que, para a amostra curada, o ato esperado aparece entre os cinco primeiros \textit{chunks}. O MRR de 63,33\% reflete que o acerto nem sempre ocorre na primeira posição --- decretos tematicamente similares competem no ranking. A deduplicação de \textit{page\_content} idêntico elevou o MRR em 6,46 pontos percentuais sem perda de Recall. A busca híbrida antecede \textit{chunks} cujo cabeçalho cita o número e o ano do ato extraídos da pergunta, elevando o MRR a 87,50\% --- configuração adotada no subsistema RAG.
+\input{figuras/grafico_rag_lote3}
 
-Complementarmente, avaliou-se um \textit{golden} v1.2 com $N_{\text{RAG}} = 20$ atos sorteados sem critério de inclusão por rank. Na busca densa isolada, Recall@5 foi 0\%; com stack híbrido+dedup, Recall@5 e MRR atingiram 100\% --- corroborando, em amostra ampliada, a necessidade de recuperação híbrida para consultas com número explícito de ato.
+\begin{table}[htbp]
+\centering
+\caption{Lote III --- configuração final por estrato ($k=5$)}
+\label{tab:rag_estrato}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Estrato} & \textbf{$n$} & \textbf{Recall@5 (denso)} & \textbf{Recall@5 (híbrido)} \\
+\midrule
+\texttt{com\_numero} & 32 & 3,1\% (1/32) & 100\% \\
+\texttt{tematico} & 8 & 100\% (8/8) & 100\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No estrato \texttt{com\_numero}, a busca densa isolada falha sistematicamente (Recall@5 de 3,1\%): embeddings não codificam de forma confiável o número do ato, retornando decretos tematicamente próximos com numeração incorreta. Nesse regime, a tarefa é essencialmente \textbf{correspondência exata} por número/ano --- não recuperação semântica pura. A busca híbrida antecede \textit{chunks} cujo cabeçalho cita o ato extraído da pergunta, elevando Recall@5 a 100\% e MRR a 97,5\% no conjunto completo (MRR 87,5\% no estrato temático, onde decretos similares competem no ranking).
+
+No estrato \texttt{tematico}, a busca densa já atinge Recall@5 integral na amostra curada inicial ($n=8$), mas o MRR permanece abaixo de 100\% --- o acerto nem sempre ocorre na primeira posição. A configuração híbrida com deduplicação e filtro por tipo de ato constitui o subsistema RAG adotado na instância Caeté.
+
+\section{Análise qualitativa de falhas (E1)}
+
+A Tabela~\ref{tab:erros} sintetiza quatro falhas representativas do baseline E1, ilustrando padrões recorrentes corrigidos em parte pelo Prompt B.
+
+\begin{table}[htbp]
+\centering
+\caption{E1 --- exemplos de falha e diagnóstico ($n=80$)}
+\label{tab:erros}
+\small
+\begin{tabular}{p{2.2cm}p{4.2cm}p{4.2cm}p{3.8cm}}
+\toprule
+\textbf{Caso} & \textbf{Pergunta (resumo)} & \textbf{Diagnóstico} & \textbf{Regra Prompt B} \\
+\midrule
+ID 8 & Contratos de 2023 com aditivo em 2024 & SQL inválida: comparação \texttt{BIGINT} com \texttt{DATE} em \texttt{dat\_assinatura} & Datas YYYYMMDD com \texttt{CAST} \\
+ID 2 & Servidores ativos $\times$ Bolsa Família & Cardinalidade divergente (67 \textit{vs.} 65 linhas): homônimos no \textit{join} por nome & Chave única documentada \\
+ID 7 & Top 10 licitações homologadas & Cardinalidade divergente (10 \textit{vs.} 1): agregação sem \texttt{JOIN} com tabela de licitação & Regras de \texttt{JOIN} setorial \\
+ID 10 & Folha mensal de 2024 & Valores divergentes: filtro extra \texttt{Ativo} restringe universo & Filtros condicionados ao formato \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Consultas de cruzamento investigativo (IDs 2--3) e índices fiscais compõem a maior parte das falhas em nível ``difícil'' (EF 57,1\% no E1). Erros de tipo em datas SICOM (ID 8) e filtros de higiene indevidos (ID 10) são categorias diretamente endereçadas pelas regras de domínio do Lote II.

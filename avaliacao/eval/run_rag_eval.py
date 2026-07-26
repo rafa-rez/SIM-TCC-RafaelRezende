@@ -239,31 +239,66 @@ def process_item(
         "rank_hit": rank,
         "dificuldade": row.get("dificuldade", ""),
         "tipo": row.get("tipo", ""),
+        "estrato": row.get("estrato", ""),
+    }
+
+
+def wilson_ci(successes: int, n: int, z: float = 1.96) -> tuple[float, float]:
+    """Intervalo de confiança de Wilson (95% por padrão) para proporções."""
+    if n <= 0:
+        return (0.0, 0.0)
+    p = successes / n
+    denom = 1 + z**2 / n
+    center = (p + z**2 / (2 * n)) / denom
+    margin = (z / denom) * ((p * (1 - p) / n + z**2 / (4 * n**2)) ** 0.5)
+    return (max(0.0, center - margin) * 100, min(1.0, center + margin) * 100)
+
+
+def _subset_metrics(results: list[dict], top_k: int) -> dict:
+    recalls = [bool(r["recall_at_k"]) for r in results]
+    rrs = [float(r["reciprocal_rank"]) for r in results]
+    hits = sum(recalls)
+    n = len(results)
+    lo, hi = wilson_ci(hits, n)
+    return {
+        "n": n,
+        "recall_at_k": round(aggregate_recall(recalls) * 100, 2),
+        "mrr": round(aggregate_mrr(rrs) * 100, 2),
+        "hits": hits,
+        "wilson_95_recall_lo": round(lo, 2),
+        "wilson_95_recall_hi": round(hi, 2),
     }
 
 
 def write_summary(out_dir: Path, results: list[dict], top_k: int) -> dict:
     recalls = [bool(r["recall_at_k"]) for r in results]
     rrs = [float(r["reciprocal_rank"]) for r in results]
+    hits = sum(recalls)
+    n = len(results)
+    lo, hi = wilson_ci(hits, n)
     summary = {
-        "n": len(results),
+        "n": n,
         "top_k": top_k,
         "recall_at_k": round(aggregate_recall(recalls) * 100, 2),
         "mrr": round(aggregate_mrr(rrs) * 100, 2),
-        "hits": sum(recalls),
+        "hits": hits,
+        "wilson_95_recall_lo": round(lo, 2),
+        "wilson_95_recall_hi": round(hi, 2),
         "generated_at": datetime.now().isoformat(),
         "por_dificuldade": {},
+        "por_estrato": {},
     }
     for diff in ("fácil", "médio", "difícil"):
         subset = [r for r in results if r.get("dificuldade") == diff]
         if not subset:
             continue
-        summary["por_dificuldade"][diff] = {
-            "n": len(subset),
-            "recall_at_k": round(
-                aggregate_recall([bool(r["recall_at_k"]) for r in subset]) * 100, 2
-            ),
-        }
+        summary["por_dificuldade"][diff] = _subset_metrics(subset, top_k)
+
+    estratos = sorted({r.get("estrato") or "sem_estrato" for r in results})
+    for estrato in estratos:
+        subset = [r for r in results if (r.get("estrato") or "sem_estrato") == estrato]
+        if subset:
+            summary["por_estrato"][estrato] = _subset_metrics(subset, top_k)
 
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "metrics_summary_rag.json").write_text(
