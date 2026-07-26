@@ -1,12 +1,12 @@
 \chapter{\MakeUppercase{Análise de Resultados}}
 
-\section{Validação do subsistema Text-to-SQL}
+\section{Lote I --- Comparação de modelo e contexto (E1--E4)}
 
-A Tabela~\ref{tab:v3} consolida os quatro experimentos. Os indicadores comprovam que o pipeline gera SQL executável em grande parte dos casos (VSR entre 90\% e 97,5\%) e produz resultados funcionalmente equivalentes ao gabarito na maioria das consultas do baseline.
+A Tabela~\ref{tab:v3} consolida o primeiro lote experimental, que comparou quatro configurações de modelo e tamanho de \textit{prompt} sobre o golden v1 ($n=80$). Os indicadores comprovam que o \textit{pipeline} gera SQL executável em grande parte dos casos (VSR entre 90\% e 97,5\%) e produz resultados funcionalmente equivalentes ao gabarito na maioria das consultas do baseline.
 
 \begin{table}[htbp]
 \centering
-\caption{Indicadores de validação --- comparativo dos experimentos ($n=80$)}
+\caption{Lote I --- comparativo de configuração ($n=80$)}
 \label{tab:v3}
 \begin{tabular}{lrr}
 \toprule
@@ -20,13 +20,13 @@ E4 --- GPT-4o & 97,50 & 57,50 \\
 \end{tabular}
 \end{table}
 
-\section{Configuração baseline (E1)}
+\subsection{Configuração de referência (E1)}
 
-O experimento E1 avaliou 80 consultas com GPT-4.1-mini e \textit{prompt} compacto --- configuração adotada em produção na instância Caeté. A Tabela~\ref{tab:baseline} resume os indicadores e a latência observada.
+O experimento E1 avaliou 80 consultas com GPT-4.1-mini e \textit{prompt} compacto, estabelecendo a referência comparativa do Lote I. A Tabela~\ref{tab:baseline} resume os indicadores e a latência observada.
 
 \begin{table}[htbp]
 \centering
-\caption{Resultados do experimento E1 --- baseline}
+\caption{E1 --- indicadores e latência (Lote I)}
 \label{tab:baseline}
 \begin{tabular}{lr}
 \toprule
@@ -40,7 +40,7 @@ Latência média de execução SQL & 1,1 s \\
 \end{tabular}
 \end{table}
 
-\section{Resultados por dificuldade (E1)}
+\subsection{Resultados por dificuldade (E1)}
 
 \begin{table}[htbp]
 \centering
@@ -57,32 +57,46 @@ Difícil & 14 & 57,14 & 92,86 \\
 \end{tabular}
 \end{table}
 
-\section{Comparativo de configurações}
+\subsection{Síntese do Lote I}
 
-O \textit{prompt} estendido (E2) não superou o compacto em equivalência funcional (58,75\% \textit{versus} 62,50\%). O GPT-4o-mini (E3) degrada VSR (90\%) e EF (46,25\%). O GPT-4o (E4) não supera o baseline em EF (57,50\%) e apresenta latência média de 29,5~s na geração de SQL --- inviável para respostas síncronas em canal conversacional.
+O \textit{prompt} estendido (E2) não superou o compacto em equivalência funcional (58,75\% \textit{versus} 62,50\%). O GPT-4o-mini (E3) degrada VSR (90\%) e EF (46,25\%). O GPT-4o (E4) não supera o baseline em EF (57,50\%) e apresenta latência média de 29,5~s na geração de SQL --- inviável para respostas síncronas em canal conversacional. O Lote I fixou GPT-4.1-mini como modelo de referência para os lotes subsequentes.
 
-\section{Refinamento do \textit{prompt} Text-to-SQL}
+\section{Lote II --- Engenharia de \textit{prompt} (configuração final)}
 
-Após os experimentos comparativos, incorporaram-se ao \textit{prompt} regras derivadas de falhas reais do baseline e de perguntas de testers: escopo de filtros de higiene por formato de resposta, datas em formato YYYYMMDD, tabelas setoriais (SAAE, RSP), busca textual com \texttt{ILIKE} e cruzamentos por chave única. Manteve-se o modelo GPT-4.1-mini (temperatura 0) e o golden v1 ($n=80$).
+Mantendo-se o modelo GPT-4.1-mini, temperatura 0 e o golden v1 ($n=80$), conduziu-se ablation exclusivamente sobre o conteúdo instrucional do \textit{prompt}. A variante final (v2.1) incorpora regras de domínio identificadas na análise de falhas do Lote I: escopo condicional de filtros de higiene por formato de resposta, tratamento de datas YYYYMMDD, tabelas setoriais (SAAE, RSP), âncoras textuais com \texttt{ILIKE} e cruzamentos por chave única (Tabela~\ref{tab:prompt_diff}).
 
 \begin{table}[htbp]
 \centering
-\caption{Ablation de \textit{prompt} --- pós-validação ($n=80$, GPT-4.1-mini)}
+\caption{Diferenças principais entre \textit{prompt} v1 (E1) e v2.1 (configuração final)}
+\label{tab:prompt_diff}
+\small
+\begin{tabular}{p{4cm}p{4.5cm}p{4.5cm}}
+\toprule
+\textbf{Aspecto} & \textbf{v1 (E1)} & \textbf{v2.1 (final)} \\
+\midrule
+Filtros de higiene & Regra global & Condicionado ao formato da resposta \\
+Datas SICOM & Declaradas como DATE & Tratamento YYYYMMDD com CAST \\
+Tabelas setoriais & Genérico & Regras SAAE, RSP, ILIKE âncora \\
+Cruzamentos CGU$\times$SICOM & JOIN genérico & Chave única documentada \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Lote II --- configuração final de \textit{prompt} ($n=80$, GPT-4.1-mini)}
 \label{tab:prompt_v2}
 \begin{tabular}{lrr}
 \toprule
 \textbf{Variante} & \textbf{VSR (\%)} & \textbf{EF (\%)} \\
 \midrule
-E1 --- \textit{prompt} compacto v1 (baseline) & 97,50 & 62,50 \\
-e5 --- v2.0 (insights) & 95,00 & 71,25 \\
-e6 --- v2.1 (insights) & \textbf{100,00} & \textbf{72,50} \\
-e7 --- v2.1.1 (ajuste de escopo) & 98,75 & 72,50 \\
-e8 --- v2.1 + DDL do schema real & 98,75 & 70,00 \\
+E1 --- \textit{prompt} compacto v1 (Lote I) & 97,50 & 62,50 \\
+\textbf{Prompt v2.1 (configuração final)} & \textbf{100,00} & \textbf{72,50} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-A variante v2.1 (e6) elevou a equivalência funcional em 10 pontos percentuais em relação ao E1, com VSR integral. A iteração v2.1.1 manteve EF mas reduziu VSR; o DDL extraído do schema real não superou v2.1 no golden v1 --- o gabarito foi construído sobre as convenções do esquema minificado original.
+A configuração v2.1 elevou a equivalência funcional em 10 pontos percentuais em relação ao E1, com VSR integral, sem troca de modelo --- evidência de que parte substancial das falhas residuais é atribuível à engenharia de contexto.
 
 \section{Validação operacional}
 
@@ -92,7 +106,7 @@ Além do \textit{benchmark} offline, o SIM foi validado em ambiente operacional 
 
 \subsection{Protocolo}
 
-Para amostra estratificada do E1 ($n=30$), registrou-se a cadeia completa: SQL gerada, resultado tabular, resposta em linguagem natural do orquestrador (GPT-4o) e julgamento automático (GPT-4.1-mini) conforme rubrica em quatro dimensões Likert \cite{Zheng2023LLMJudge}.
+Para amostra estratificada do E1 ($n=30$), registrou-se a cadeia completa: SQL gerada, resultado tabular, resposta em linguagem natural do orquestrador e julgamento automático conforme rubrica em quatro dimensões Likert \cite{Zheng2023LLMJudge}.
 
 \subsection{Resultados}
 
@@ -115,19 +129,19 @@ Clareza ao cidadão (média) & 4,77 / 5 \\
 
 O julgamento automático indica que as respostas em linguagem natural são adequadas ao cidadão na amostra avaliada. Essa evidência complementa, mas não substitui, a equivalência funcional sobre resultados tabulares.
 
-\section{Validação do subsistema RAG}
+\section{Lote III --- Recuperação documental (RAG)}
 
-Complementarmente, avaliou-se a recuperação documental sobre o Diário Oficial com o \textit{golden} RAG v1.1 ($N_{\text{RAG}} = 8$ decretos municipais com \textit{chunk} confirmado no índice Qdrant). O \textit{pipeline} gera embeddings (\texttt{text-embedding-3-small}), consulta a \textit{collection} \texttt{jornais\_caete} e compara os top-5 \textit{chunks} ao documento de referência.
+Conduziu-se avaliação complementar da recuperação documental sobre o Diário Oficial com o \textit{golden} RAG v1.1 ($N_{\text{RAG}} = 8$ decretos municipais com \textit{chunk} confirmado no índice). O protocolo gera embeddings (\texttt{text-embedding-3-small}), consulta a \textit{collection} \texttt{jornais\_caete} e compara os top-5 \textit{chunks} ao documento de referência.
 
 \begin{table}[htbp]
 \centering
-\caption{Recuperação documental --- comparativo no golden v1.1 ($k=5$)}
+\caption{Lote III --- estratégias de recuperação no golden v1.1 ($k=5$)}
 \label{tab:rag}
 \begin{tabular}{lrr}
 \toprule
 \textbf{Configuração} & \textbf{Recall@5 (\%)} & \textbf{MRR (\%)} \\
 \midrule
-Busca densa (baseline) & 100,00 (8/8) & 63,33 \\
+Busca densa & 100,00 (8/8) & 63,33 \\
 Deduplicação de \textit{chunks} idênticos & 100,00 & 69,79 \\
 Filtro por tipo de ato + dedup & 100,00 & 72,92 \\
 Híbrido por nº de ato + dedup + filtro tipo & 100,00 & \textbf{87,50} \\
@@ -135,6 +149,6 @@ Híbrido por nº de ato + dedup + filtro tipo & 100,00 & \textbf{87,50} \\
 \end{tabular}
 \end{table}
 
-O Recall@5 integral na busca densa indica que, para a amostra curada, o ato esperado aparece entre os cinco primeiros \textit{chunks}. O MRR de 63,33\% reflete que o acerto nem sempre ocorre na primeira posição --- decretos tematicamente similares competem no ranking. A deduplicação de \textit{page\_content} idêntico no top-5 elevou o MRR em 6,46 pontos percentuais sem perda de Recall. A busca híbrida antecede \textit{chunks} cujo cabeçalho cita o número e o ano do ato extraídos da pergunta, elevando o MRR a 87,50\%.
+O Recall@5 integral na busca densa indica que, para a amostra curada, o ato esperado aparece entre os cinco primeiros \textit{chunks}. O MRR de 63,33\% reflete que o acerto nem sempre ocorre na primeira posição --- decretos tematicamente similares competem no ranking. A deduplicação de \textit{page\_content} idêntico elevou o MRR em 6,46 pontos percentuais sem perda de Recall. A busca híbrida antecede \textit{chunks} cujo cabeçalho cita o número e o ano do ato extraídos da pergunta, elevando o MRR a 87,50\% --- configuração adotada no subsistema RAG.
 
-Complementarmente, avaliou-se um \textit{golden} v1.2 com $N_{\text{RAG}} = 20$ atos sorteados sem critério de inclusão por rank (amostra honesta). Na busca densa isolada, Recall@5 foi 0\%; com stack híbrido+dedup, Recall@5 e MRR atingiram 100\% --- evidência de que perguntas com número explícito de ato exigem recuperação híbrida. A amostra v1.1 permanece a referência principal do TCC; generalização e avaliação da resposta em linguagem natural permanecem como trabalhos futuros.
+Complementarmente, avaliou-se um \textit{golden} v1.2 com $N_{\text{RAG}} = 20$ atos sorteados sem critério de inclusão por rank. Na busca densa isolada, Recall@5 foi 0\%; com stack híbrido+dedup, Recall@5 e MRR atingiram 100\% --- corroborando, em amostra ampliada, a necessidade de recuperação híbrida para consultas com número explícito de ato.

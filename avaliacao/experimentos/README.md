@@ -1,15 +1,17 @@
-# Experimentos Text-to-SQL — SIM (instância Caeté)
+# Experimentos — SIM (instância Caeté)
 
-Quatro configurações de modelo e prompt executadas sobre o conjunto golden v1.0 (80 consultas). Os resultados comprovam a viabilidade funcional do subsistema Text-to-SQL do SIM.
+Artefatos dos experimentos de validação empírica, organizados por lote conforme a monografia e o artigo.
 
-## Configurações
+## Lote I — Comparação de modelo e contexto (E1–E4)
 
-| Pasta | ID legado | Modelo | Prompt |
-|-------|-----------|--------|--------|
-| `e1_baseline_compacto` | baseline_16k | gpt-4.1-mini | compacto (~16k tokens) |
-| `e2_contexto_estendido` | ablation_precagada_30k | gpt-4.1-mini | estendido (~30k tokens) |
-| `e3_gpt4o_mini` | ablation_gpt4o_mini | gpt-4o-mini | compacto |
-| `e4_gpt4o` | ablation_gpt4o | gpt-4o | compacto |
+Quatro configurações executadas sobre o golden v1.0 (80 consultas).
+
+| Pasta | Modelo | Prompt |
+|-------|--------|--------|
+| `e1_baseline_compacto` | gpt-4.1-mini | compacto (~16k tokens) |
+| `e2_contexto_estendido` | gpt-4.1-mini | estendido (~30k tokens) |
+| `e3_gpt4o_mini` | gpt-4o-mini | compacto |
+| `e4_gpt4o` | gpt-4o | compacto |
 
 ## Artefatos por experimento
 
@@ -19,31 +21,21 @@ Quatro configurações de modelo e prompt executadas sobre o conjunto golden v1.
 | `metrics_summary_v3.json` | Agregados recalculados |
 | `metricas_por_caso/` | Detalhe e classificação de divergência |
 | `generated_results/` | JSON tabular de cada SQL gerada |
-| `experiment_meta.json` | Metadados do experimento original |
 
-## Tabela comparativa
+## Tabela comparativa (Lote I)
 
-Gerada por `scripts/compare_all_experiments.py`:
+- `comparison_table_v3.md`
 
-- `comparison_table_v3.md` (formato principal)
-- `comparison_table.md` (legado)
+## Lote II — Configuração final de prompt
 
-## Recálculo offline
+Prompt v2.1 documentado em `eval/prompts/prompt_sql_v2_insights.txt`. Resultados: VSR 100%, EF 72,5% (mesmo golden v1, GPT-4.1-mini).
 
-```powershell
-cd avaliacao
-python scripts/recompute_metrics.py --experiment e1_baseline_compacto
-python scripts/compare_all_experiments.py
-```
+## Lote III — RAG
 
-Definições de métricas: [`../../docs/METRICAS.md`](../../docs/METRICAS.md).
-
-## Avaliação RAG
-
-Golden: `dados/golden_rag/golden_rag_v1.1.csv` (8 perguntas). Resultados: Recall@5 100%, MRR 63,33%.
+Golden: `dados/golden_rag/golden_rag_v1.1.csv` (8 perguntas). Configuração final: Recall@5 100%, MRR 87,5% (híbrido + dedup + filtro tipo).
 
 ```powershell
 .\run_metrics_pipeline.ps1 -WithRag
 ```
 
-Ver [`dados/golden_rag/README.md`](dados/golden_rag/README.md) e [`../../docs/PLANO_RAG.md`](../../docs/PLANO_RAG.md).
+Definições: [`../../docs/METRICAS.md`](../../docs/METRICAS.md) · [`../../docs/PLANO_RAG.md`](../../docs/PLANO_RAG.md)

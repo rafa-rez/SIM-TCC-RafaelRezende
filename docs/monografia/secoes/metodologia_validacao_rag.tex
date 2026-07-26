@@ -1,6 +1,6 @@
 \section{Protocolo de validação do RAG}
 
-Complementarmente ao Text-to-SQL, conduziu-se avaliação \textbf{piloto} da recuperação documental sobre o Diário Oficial municipal indexado em Qdrant (\textit{collection} \texttt{jornais\_caete}, 9\,346 \textit{chunks}, embedding \texttt{text-embedding-3-small}).
+Complementarmente ao Text-to-SQL, conduziu-se avaliação da recuperação documental sobre o Diário Oficial municipal indexado em Qdrant (\textit{collection} \texttt{jornais\_caete}, 9\,346 \textit{chunks}, embedding \texttt{text-embedding-3-small}).
 
 \subsection{Conjunto de referência RAG}
 
@@ -20,8 +20,8 @@ A \textbf{taxa de recuperação média} (MRR --- \textit{Mean Reciprocal Rank}) 
 \text{MRR} = \frac{1}{N_{\text{RAG}}} \sum_{i=1}^{N_{\text{RAG}}} \frac{1}{\text{rank}_i}
 \end{equation}
 
-onde $\text{rank}_i$ é a posição do \textit{chunk} que contém o ato esperado, ou zero se ausente do top-$k$. A correspondência entre documento recuperado e gabarito usa o texto de \texttt{page\_content} e a chave numérica do ato (número/ano). Implementação em \texttt{avaliacao/eval/run\_rag\_eval.py}.
+onde $\text{rank}_i$ é a posição do \textit{chunk} que contém o ato esperado, ou zero se ausente do top-$k$. A correspondência entre documento recuperado e gabarito usa o texto de \texttt{page\_content} e a chave numérica do ato (número/ano).
 
 \subsection{Escopo e limitações do protocolo RAG}
 
-Trata-se de amostra reduzida e estratificada por viabilidade de índice --- evidência complementar à validação SQL, não \textit{benchmark} em larga escala. Não avalia geração da resposta final em linguagem natural nem o roteamento do orquestrador.
+Trata-se de amostra reduzida ($N_{\text{RAG}} = 8$), restrita a decretos com \textit{chunk} confirmado no índice --- evidência complementar à validação SQL. Não avalia geração da resposta final em linguagem natural nem o roteamento do orquestrador.

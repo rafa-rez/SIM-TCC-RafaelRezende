@@ -1,6 +1,6 @@
 # Documentação — SIM
 
-Índice da documentação do **SIM** (*Sistema de Informações Municipais*) e da validação Text-to-SQL na instância Caeté (MG).
+Índice da documentação do **SIM** (*Sistema de Informações Municipais*) e da validação empírica na instância Caeté (MG).
 
 ---
 
@@ -10,23 +10,23 @@
 |-----------|-----------|
 | [SIM.md](SIM.md) | Conceito, arquitetura, fontes de dados e instância Caeté |
 | [REPLICACAO.md](REPLICACAO.md) | Procedimento para reproduzir a avaliação offline |
-| [PLANO_RAG.md](PLANO_RAG.md) | Protocolo e resultados RAG (Recall@5, MRR) |
+| [PLANO_RAG.md](PLANO_RAG.md) | Protocolo e resultados RAG (Lote III) |
 
-## Validação Text-to-SQL
+## Validação empírica
 
 | Documento | Descrição |
 |-----------|-----------|
-| [METRICAS.md](METRICAS.md) | Definições formais das métricas (v3) |
-| [RELATORIO_METRICAS_V3.md](RELATORIO_METRICAS_V3.md) | Resultados empíricos dos experimentos E1–E4 |
-| [metricas/](metricas/) | Notas por família de métrica (EX, VSR, NEA, TSA, CHS, JAR) |
+| [METRICAS.md](METRICAS.md) | Definições formais: VSR, EF, fórmulas e lotes I–II |
+| [RELATORIO_METRICAS_V3.md](RELATORIO_METRICAS_V3.md) | Resultados do Lote I (E1–E4) |
+| [metricas/](metricas/) | Notas por família de métrica |
 
 ## Textos do trabalho
 
 | Pasta | Descrição |
 |-------|-----------|
-| [artigo/](artigo/) | Artigo SBC — `sim_artigo_sbc_v1.tex` |
-| [monografia/](monografia/) | Monografia UFLA — `templufla_main.tex` |
-| [referencias/](referencias/) | Bibliografia (`referencias_sim.bib`), plano de leitura e fichamentos |
+| [artigo/](artigo/) | Artigo SBC — `sim_artigo_sbc_v1.tex` + PDF |
+| [monografia/](monografia/) | Monografia UFLA — `templufla_main.tex` + PDF |
+| [referencias/](referencias/) | Bibliografia (`referencias_sim.bib`) |
 
 ---
 
@@ -41,11 +41,11 @@ Requer TeX Live (ou MiKTeX) e `template-ufla/` na raiz do repositório para a mo
 
 ---
 
-## Relação entre pastas
+## Estrutura
 
 ```
-docs/           → documentação conceitual, métricas e textos acadêmicos
+docs/           → documentação, métricas e textos acadêmicos
 avaliacao/      → dados, experimentos, pipeline e scripts reprodutíveis
 ```
 
-O repositório contém validação Text-to-SQL (E1–E4), validação piloto RAG e stack Docker (`docker-compose.yml`).
+O repositório contém validação Text-to-SQL (Lotes I–II), validação RAG (Lote III), textos do TCC e stack Docker para replicação local.

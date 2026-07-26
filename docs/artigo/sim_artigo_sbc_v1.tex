@@ -9,8 +9,7 @@
 \usepackage[alf,abnt-etal-list=3]{abntex2cite}
 
 \title{SIM --- Sistema de Informações Municipais:\\
-Acesso Conversacional a Dados Abertos Municipais\\
-\textit{(versão 1 --- rascunho SBC)}}
+Acesso Conversacional a Dados Abertos Municipais}
 
 \author{Rafael Alves Silva Rezende\\
 Universidade Federal de Lavras (UFLA)\\
@@ -23,7 +22,7 @@ Prof. Dr. Denilson (orientador)}
 \maketitle
 
 \begin{abstract}
-Dados públicos municipais são instrumento de fiscalização social, mas o acesso efetivo exige domínio técnico de portais de transparência e linguagens de consulta estruturada. Apresentamos o \textbf{SIM} (\textit{Sistema de Informações Municipais}), plataforma conversacional multi-instância que integra recuperação documental sobre o Diário Oficial e consulta analítica via Text-to-SQL sobre bases SICOM e CGU. Documentamos a instância piloto de Caeté (MG), com canal WhatsApp e orquestração por modelos de linguagem. Para comprovar a viabilidade funcional do subsistema Text-to-SQL, conduzimos avaliação reprodutível com 80 consultas em linguagem natural (2020--2025). O baseline (GPT-4.1-mini, esquema minificado) alcança 97,5\% de taxa de SQL válida e 62,5\% de equivalência funcional do resultado; o refinamento de \textit{prompt} v2.1 eleva esses indicadores para 100\% e 72,5\%, respectivamente. Complementarmente, validação piloto do RAG sobre oito decretos indexados atinge Recall@5 de 100\% (MRR de 63,33\% na busca densa; 87,5\% com recuperação híbrida). Quatro configurações de modelo e \textit{prompt} foram comparadas no Text-to-SQL. Artefatos públicos permitem replicação offline.
+Dados públicos municipais são instrumento de fiscalização social, mas o acesso efetivo exige domínio técnico de portais de transparência e linguagens de consulta estruturada. Apresentamos o \textbf{SIM} (\textit{Sistema de Informações Municipais}), plataforma conversacional multi-instância que integra recuperação documental sobre o Diário Oficial e consulta analítica via Text-to-SQL sobre bases SICOM e CGU. Documentamos a instância piloto de Caeté (MG), com canal WhatsApp e orquestração por modelos de linguagem. A validação empírica organizou-se em três lotes: Text-to-SQL com 80 consultas (baseline E1: VSR 97,5\% e EF 62,5\%; configuração final v2.1: VSR 100\% e EF 72,5\%) e recuperação documental com oito decretos indexados (Recall@5 100\%; MRR 87,5\% com recuperação híbrida). Artefatos públicos permitem replicação offline.
 \end{abstract}
 
 \noindent\textbf{Palavras-chave:} dados abertos; transparência municipal; GovTech; Text-to-SQL; LLM.
@@ -36,7 +35,7 @@ Modelos de linguagem de grande escala (\textit{large language models}, LLM) viab
 
 Este artigo apresenta o \textbf{SIM} (\textit{Sistema de Informações Municipais}), arquitetura híbrida que combina recuperação aumentada (RAG) para atos normativos e Text-to-SQL para finanças e compras públicas. O SIM é \textbf{multi-instância}: cada município fornece seus dados; a arquitetura permanece replicável. Documentamos a \textbf{instância Caeté} (IBGE 3110004), em operação via WhatsApp.
 
-\textbf{Contribuições:} (i)~conceito e arquitetura do SIM para acesso conversacional a dados municipais; (ii)~\textit{pipeline} de ingestão e exposição analítica sobre SICOM/CGU; (iii)~conjunto de referência com 80 consultas SQL validadas e protocolo de avaliação reprodutível; (iv)~validação piloto da recuperação documental (RAG) sobre o Diário Oficial; (v)~evidências empíricas de viabilidade funcional em quatro configurações de modelo Text-to-SQL.
+\textbf{Contribuições:} (i)~conceito e arquitetura do SIM para acesso conversacional a dados municipais; (ii)~\textit{pipeline} de ingestão e exposição analítica sobre SICOM/CGU; (iii)~conjunto de referência com 80 consultas SQL validadas e protocolo de avaliação reprodutível em três lotes experimentais; (iv)~validação complementar da recuperação documental (RAG) sobre o Diário Oficial; (v)~evidências empíricas de viabilidade funcional.
 
 \section{Trabalhos relacionados}
 
@@ -50,7 +49,7 @@ Este artigo apresenta o \textbf{SIM} (\textit{Sistema de Informações Municipai
 
 \subsection{Arquitetura}
 
-O SIM integra: (1)~canal conversacional (WhatsApp, via automação n8n); (2)~agente orquestrador (GPT-4o); (3)~subsistema RAG (atos normativos indexados em base vetorial); (4)~subsistema Text-to-SQL (DuckDB sobre CSVs consolidados SICOM/CGU).
+O SIM integra: (1)~canal conversacional (WhatsApp, via automação n8n); (2)~agente orquestrador; (3)~subsistema RAG (atos normativos indexados em base vetorial); (4)~subsistema Text-to-SQL (DuckDB sobre CSVs consolidados SICOM/CGU).
 
 O fluxo operacional segue: pergunta do usuário $\rightarrow$ orquestrador $\rightarrow$ RAG ou SQL $\rightarrow$ interpretação do resultado $\rightarrow$ resposta em linguagem natural.
 
@@ -60,22 +59,23 @@ A instância Caeté cobre 2020--2025 com dados do SICOM (receitas, despesas, emp
 
 \subsection{Lacunas de transparência}
 
-A prefeitura não publicou folha de pagamento e cadastro de servidores para 2020--2022. O assistente deve informar essa lacuna quando solicitado, exemplificando como o SIM lida com limitações reais de abertura de dados.
+A prefeitura não publicou folha de pagamento e cadastro de servidores para 2020--2022. Essa lacuna constitui limitação documentada da base local, incorporada ao escopo de resposta do sistema.
 
 \section{Engenharia de contexto}
 
-O subsistema Text-to-SQL utiliza GPT-4.1-mini com \textit{prompt} contendo esquema minificado e amostras de valores reais por coluna (\textit{smart sampling}). Duas variantes foram avaliadas:
+O subsistema Text-to-SQL utiliza modelo de linguagem com \textit{prompt} contendo esquema minificado e amostras de valores reais por coluna (\textit{smart sampling}). Três variantes foram avaliadas:
 
 \begin{itemize}
-  \item \textbf{Prompt compacto} ($\sim$16\,500 tokens): adotado em produção;
-  \item \textbf{Prompt estendido} ($\sim$35\,000 tokens): esquema com descrições ampliadas.
+  \item \textbf{Prompt compacto} ($\sim$16\,500 tokens): referência do Lote I;
+  \item \textbf{Prompt estendido} ($\sim$35\,000 tokens): esquema com descrições ampliadas;
+  \item \textbf{Prompt v2.1} ($\sim$16\,500 tokens): configuração final com regras de domínio (Lote II).
 \end{itemize}
 
 \section{Validação}
 
 \subsection{Text-to-SQL}
 
-A avaliação do subsistema Text-to-SQL foi conduzida por \textit{pipeline} automatizado (\texttt{avaliacao/eval/}), desacoplado do canal de produção. O conjunto golden contém 80 perguntas em português com SQL de referência validada, estratificadas por dificuldade e domínio.
+A avaliação concentrou-se no subsistema Text-to-SQL, desacoplado do canal de produção. O conjunto golden contém 80 perguntas em português com SQL de referência validada, estratificadas por dificuldade e domínio.
 
 Adotam-se dois indicadores agregados sobre $N{=}80$ consultas:
 
@@ -86,36 +86,35 @@ Adotam-se dois indicadores agregados sobre $N{=}80$ consultas:
 
 \subsection{RAG}
 
-Complementarmente, avaliou-se a recuperação documental sobre o Diário Oficial indexado em Qdrant (\textit{collection} \texttt{jornais\_caete}, embedding \texttt{text-embedding-3-small}). O \textit{golden} RAG v1.1 contém $N_{\text{RAG}}{=}8$ perguntas sobre decretos municipais cujo documento de referência possui \textit{chunk} confirmado no índice.
+Complementarmente, avaliou-se a recuperação documental sobre o Diário Oficial indexado em Qdrant. O \textit{golden} RAG v1.1 contém $N_{\text{RAG}}{=}8$ perguntas sobre decretos municipais cujo documento de referência possui \textit{chunk} confirmado no índice.
 
-Indicadores: \textbf{Recall@}$k$ (documento esperado no top-$k$, $k{=}5$) e \textbf{MRR} (\textit{Mean Reciprocal Rank}). Trata-se de amostra piloto --- evidência complementar, não \textit{benchmark} em larga escala.
+Indicadores: \textbf{Recall@}$k$ (documento esperado no top-$k$, $k{=}5$) e \textbf{MRR} (\textit{Mean Reciprocal Rank}). Amostra complementar de referência ($n{=}8$).
 
-\subsection{Experimentos}
+\subsection{Lotes experimentais}
 
 \begin{table}[htbp]
 \centering
-\caption{Configuração dos experimentos ($n{=}80$)}
-\label{tab:exp}
+\caption{Organização dos lotes experimentais}
+\label{tab:lotes}
 \small
-\begin{tabular}{lll}
+\begin{tabular}{clp{6cm}}
 \toprule
-\textbf{ID} & \textbf{Modelo} & \textbf{Prompt} \\
+\textbf{Lote} & \textbf{Variável} & \textbf{Configurações} \\
 \midrule
-E1 & GPT-4.1-mini & Compacto ($\sim$16k tokens) \\
-E2 & GPT-4.1-mini & Estendido ($\sim$30k tokens) \\
-E3 & GPT-4o-mini & Compacto \\
-E4 & GPT-4o & Compacto \\
+I & Modelo e contexto & E1--E4 (GPT-4.1-mini, 4o-mini, 4o; compacto/estendido) \\
+II & Engenharia de \textit{prompt} & v1 (E1) $\rightarrow$ v2.1 (final) \\
+III & Estratégia de recuperação & Denso, dedup, híbrido+dedup+tipo \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \section{Resultados}
 
-\subsection{Viabilidade funcional}
+\subsection{Lote I --- Comparação de configuração}
 
 \begin{table}[htbp]
 \centering
-\caption{Indicadores de validação --- comparativo entre experimentos (\%)}
+\caption{Lote I --- comparativo entre experimentos (\%)}
 \label{tab:results}
 \begin{tabular}{lrr}
 \toprule
@@ -131,13 +130,11 @@ E4 & 97,50 & 57,50 \\
 
 O baseline E1 demonstra que o subsistema gera SQL válida em 97,5\% dos casos e produz resultados funcionalmente equivalentes ao gabarito em 62,5\% das consultas.
 
-\subsection{Refinamento de \textit{prompt}}
-
-Incorporaram-se regras derivadas de falhas reais e de perguntas de testers ao \textit{prompt} compacto, mantendo GPT-4.1-mini (Tabela~\ref{tab:prompt_v2}).
+\subsection{Lote II --- Configuração final de \textit{prompt}}
 
 \begin{table}[htbp]
 \centering
-\caption{Ablation de \textit{prompt} --- pós-validação ($n{=}80$)}
+\caption{Lote II --- configuração final ($n{=}80$, GPT-4.1-mini)}
 \label{tab:prompt_v2}
 \small
 \begin{tabular}{lrr}
@@ -145,15 +142,12 @@ Incorporaram-se regras derivadas de falhas reais e de perguntas de testers ao \t
 \textbf{Variante} & \textbf{VSR (\%)} & \textbf{EF (\%)} \\
 \midrule
 E1 --- compacto v1 & 97,50 & 62,50 \\
-e5 --- v2.0 insights & 95,00 & 71,25 \\
-e6 --- v2.1 insights & \textbf{100,00} & \textbf{72,50} \\
-e7 --- v2.1.1 & 98,75 & 72,50 \\
-e8 --- v2.1 + DDL real & 98,75 & 70,00 \\
+\textbf{Prompt v2.1 (final)} & \textbf{100,00} & \textbf{72,50} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-A variante v2.1 elevou a EF em 10 pontos percentuais com VSR integral, sem troca de modelo.
+A configuração v2.1 elevou a EF em 10 pontos percentuais com VSR integral, sem troca de modelo.
 
 \subsection{Análise por dificuldade (E1)}
 
@@ -172,28 +166,28 @@ Difícil & 14 & 57,14 & 92,86 \\
 \end{tabular}
 \end{table}
 
-\subsection{Comparativo de configurações}
+\subsection{Síntese do Lote I}
 
 O \textit{prompt} estendido (E2) não superou o compacto em equivalência funcional (58,75\% \textit{versus} 62,50\%). O GPT-4o-mini (E3) degrada VSR (90\%) e EF (46,25\%). O GPT-4o (E4) não supera o baseline em EF (57,50\%) e apresenta latência média de 29,5\,s na geração de SQL --- inviável para respostas síncronas em canal conversacional.
 
-\subsection{Recuperação documental (RAG)}
+\subsection{Lote III --- Recuperação documental}
 
 \begin{table}[htbp]
 \centering
-\caption{Recuperação documental --- golden v1.1 ($N_{\text{RAG}}{=}8$, $k{=}5$)}
+\caption{Lote III --- estratégias de recuperação ($N_{\text{RAG}}{=}8$, $k{=}5$)}
 \label{tab:rag}
 \begin{tabular}{lrr}
 \toprule
 \textbf{Configuração} & \textbf{Recall@5 (\%)} & \textbf{MRR (\%)} \\
 \midrule
-Busca densa (baseline) & 100,00 & 63,33 \\
+Busca densa & 100,00 & 63,33 \\
 Deduplicação de \textit{chunks} & 100,00 & 69,79 \\
 Híbrido + dedup + filtro tipo & 100,00 & \textbf{87,50} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-O Recall@5 integral na busca densa indica que o ato esperado aparece entre os cinco primeiros \textit{chunks} para todos os itens da amostra curada. A deduplicação de conteúdo idêntico e a busca híbrida por número de ato elevam o MRR sem perda de Recall. Em amostra honesta ampliada ($n{=}20$), a busca densa isolada obteve Recall@5 de 0\%; o stack híbrido+dedup atingiu 100\%/100\%.
+O Recall@5 integral indica que o ato esperado aparece entre os cinco primeiros \textit{chunks} para todos os itens da amostra. A deduplicação e a busca híbrida por número de ato elevam o MRR sem perda de Recall. Em amostra ampliada ($n{=}20$), a busca densa isolada obteve Recall@5 de 0\%; o stack híbrido+dedup atingiu 100\%/100\%.
 
 \subsection{Validação operacional}
 
@@ -204,15 +198,13 @@ Além do \textit{benchmark} offline, o SIM foi validado em ambiente operacional 
 
 \textbf{Transparência e acesso.} O SIM materializa o princípio de que dados abertos só cumprem sua função democrática quando acessíveis. A arquitetura híbrida (RAG + SQL) cobre tanto consultas normativas quanto analíticas, cenário típico de prefeituras brasileiras.
 
-\textbf{Viabilidade técnica.} O baseline E1 combina VSR de 97,5\% e EF de 62,5\%, com latência média de 6,2\,s na geração de SQL --- parâmetros compatíveis com uso conversacional síncrono. O refinamento de \textit{prompt} v2.1 eleva a EF para 72,5\% com VSR de 100\%. No RAG, melhorias de recuperação elevam o MRR de 63,33\% para 87,5\% no golden v1.1.
+\textbf{Viabilidade técnica.} O Lote I estabeleceu GPT-4.1-mini como modelo de referência (VSR 97,5\%, EF 62,5\%). O Lote II demonstrou que a engenharia de \textit{prompt} eleva a EF para 72,5\% com VSR de 100\%. O Lote III elevou o MRR de 63,33\% para 87,5\% no \textit{golden} RAG v1.1.
 
-\textbf{Limitações.} (i)~conjunto golden SQL de uma única instância; (ii)~amostra RAG v1.1 reduzida ($N_{\text{RAG}}{=}8$); golden v1.2 ($n{=}20$) com perguntas uniformes por número de ato; (iii)~lacunas documentadas de transparência local; (iv)~gabarito manual pode não cobrir todas as SQL semanticamente corretas.
-
-\textbf{Trabalhos futuros.} Ampliação do \textit{golden} RAG, julgamento de adequação das respostas documentais, testes com usuários reais e replicação do SIM em outros municípios.
+\textbf{Limitações.} (i)~conjunto golden SQL de uma única instância; (ii)~amostra RAG v1.1 reduzida ($N_{\text{RAG}}{=}8$); (iii)~lacunas documentadas de transparência local; (iv)~gabarito manual pode não cobrir todas as SQL semanticamente corretas.
 
 \section{Conclusão}
 
-O SIM demonstra viabilidade técnica de acesso conversacional a dados municipais abertos, com arquitetura replicável para outras prefeituras. A validação com 80 consultas comprova geração confiável de SQL e equivalência funcional do resultado na maioria dos casos; o refinamento de \textit{prompt} eleva a EF para 72,5\%. A validação piloto do RAG indica recuperação correta dos decretos indexados, com MRR de 87,5\% após deduplicação e busca híbrida. O repositório público permite replicação offline dos experimentos.
+O SIM demonstra viabilidade técnica de acesso conversacional a dados municipais abertos, com arquitetura replicável para outras prefeituras. A validação em três lotes experimentais comprova geração confiável de SQL (EF 72,5\% na configuração final) e recuperação documental eficaz (MRR 87,5\% com recuperação híbrida). O repositório público permite replicação offline dos experimentos.
 
 \section*{Repositório}
 

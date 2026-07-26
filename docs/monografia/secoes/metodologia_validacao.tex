@@ -14,7 +14,7 @@ Para cada consulta $i$ no conjunto de referência ($N = 80$):
     \item $\text{SQL}_i^{(g)}$ --- consulta gerada pelo modelo;
     \item $R_i$ --- resultado tabular de $\text{SQL}_i^{(r)}$;
     \item $G_i$ --- resultado tabular de $\text{SQL}_i^{(g)}$;
-    \item $C_i$ --- conjunto de colunas em \texttt{colunas\_resposta} que respondem à pergunta (75/80 preenchidas automaticamente).
+    \item $C_i$ --- conjunto de colunas em \texttt{colunas\_resposta} que respondem à pergunta.
 \end{itemize}
 
 Define-se a função de normalização de célula $\nu(\cdot)$, aplicada antes de qualquer comparação: nulos unificados; números arredondados em quatro casas decimais; strings sem espaços laterais e em maiúsculas; strings numéricas convertidas com vírgula substituída por ponto.
@@ -31,7 +31,7 @@ onde $\mathbb{1}[\cdot]$ é a função indicadora. Quando a SQL gerada falha, os
 
 \subsection{Equivalência funcional (EF)}
 
-A \textbf{equivalência funcional} (EF) verifica se o cidadão receberia as grandezas corretas, independentemente de aliases de coluna ou colunas auxiliares no resultado gerado. Trata-se da métrica adotada neste trabalho para comprovar a utilidade do resultado tabular; no repositório técnico corresponde ao campo \texttt{ex\_resposta}.
+A \textbf{equivalência funcional} (EF) verifica se o cidadão receberia as grandezas corretas, independentemente de aliases de coluna ou colunas auxiliares no resultado gerado. Trata-se da métrica adotada neste trabalho para comprovar a utilidade do resultado tabular.
 
 Para cada consulta $i$ com VSR positivo, exige-se $|R_i| = |G_i|$ (mesma cardinalidade de linhas). Para cada coluna $k \in C_i$, deve existir alguma coluna $j$ em $G_i$ cujo vetor de valores normalizados ao longo das linhas seja equivalente ao vetor da coluna correspondente em $R_i$, com tolerância numérica $\tau = 0{,}5\%$ em valores fiscais:
 
@@ -57,9 +57,21 @@ com $\text{EF}_i = 1$ quando todas as colunas em $C_i$ possuem correspondente eq
     \end{equation}
 \end{description}
 
-A implementação completa, incluindo variantes diagnósticas documentadas em \texttt{docs/METRICAS.md}, está em \texttt{avaliacao/eval/lib/compare.py}. O recálculo offline usa DuckDB local.
+A implementação completa, incluindo variantes diagnósticas, está documentada no repositório público de artefatos do trabalho. O recálculo offline usa DuckDB local.
 
-\subsection{Experimentos conduzidos}
+\subsection{Organização dos lotes experimentais}
+
+A validação empírica organizou-se em três lotes sobre dados fixos (golden v1, 80 consultas; golden RAG v1.1, 8 perguntas):
+
+\begin{enumerate}
+    \item \textbf{Lote I} --- comparação de modelo e tamanho de contexto (E1--E4), fixando GPT-4.1-mini e \textit{prompt} compacto como referência;
+    \item \textbf{Lote II} --- ablation de engenharia de \textit{prompt} (v2.1), mantendo modelo e golden do Lote I;
+    \item \textbf{Lote III} --- comparação de estratégias de recuperação documental (busca densa, deduplicação, filtro por tipo de ato e busca híbrida), mantendo índice e embedding fixos.
+\end{enumerate}
+
+Cada lote isolou uma variável experimental.
+
+\subsection{Experimentos do Lote I}
 
 \begin{enumerate}
     \item \textbf{E1 --- Baseline}: GPT-4.1-mini com \textit{prompt} compacto;

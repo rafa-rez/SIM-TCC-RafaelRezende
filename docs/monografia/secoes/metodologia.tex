@@ -16,7 +16,7 @@ As fontes incluem:
     \item \textbf{Diário Oficial}: documentos normativos indexados em Qdrant para recuperação aumentada.
 \end{itemize}
 
-Um processo ETL em Python consolida os arquivos tabulares, gera metadados de esquema (\gls{ddl}) e expõe uma API analítica com DuckDB \textit{in-memory}. A prefeitura não publicou dados de folha de pagamento e cadastro de servidores para 2020--2022; o assistente deve informar essa lacuna quando solicitado.
+Um processo ETL em Python consolida os arquivos tabulares, gera metadados de esquema (\gls{ddl}) e expõe uma API analítica com DuckDB \textit{in-memory}. A prefeitura não publicou dados de folha de pagamento e cadastro de servidores para 2020--2022; essa lacuna constitui limitação documentada da base local, incorporada ao escopo de resposta do sistema.
 
 \section{Arquitetura do sistema}
 
@@ -26,9 +26,9 @@ A Figura~\ref{fig:arquitetura} resume o fluxo conversacional da instância Caet�
 
 \begin{enumerate}
     \item O usuário envia a pergunta via WhatsApp;
-    \item A plataforma de automação recebe o evento e aciona o agente orquestrador (GPT-4o);
+    \item A plataforma de automação recebe o evento e aciona o agente orquestrador;
     \item O agente seleciona recuperação documental (Qdrant) ou tradução Text-to-SQL;
-    \item O subsistema SQL utiliza GPT-4.1-mini com \textit{prompt} contendo esquema compactado e amostras de dados;
+    \item O subsistema SQL utiliza modelo de linguagem com \textit{prompt} contendo esquema compactado e amostras de dados;
     \item O resultado tabular é interpretado pelo orquestrador e devolvido em linguagem natural ao usuário.
 \end{enumerate}
 
@@ -45,13 +45,14 @@ Inclusão de exemplos reais de valores por coluna relevante, visando melhorar in
 \subsection{Variantes de \textit{prompt} avaliadas}
 
 \begin{itemize}
-    \item \textbf{Prompt compacto} ($\approx$16\,500 tokens): esquema minificado e amostras --- configuração adotada em produção;
-    \item \textbf{Prompt estendido} ($\approx$35\,000 tokens): esquema com descrições ampliadas.
+    \item \textbf{Prompt compacto} ($\approx$16\,500 tokens): esquema minificado e amostras --- referência do Lote I;
+    \item \textbf{Prompt estendido} ($\approx$35\,000 tokens): esquema com descrições ampliadas;
+    \item \textbf{Prompt v2.1} ($\approx$16\,500 tokens): variante final com regras de domínio --- configuração adotada após o Lote II.
 \end{itemize}
 
 \section{Conjunto de referência (\textit{golden dataset})}
 
-Foi construído um conjunto de 80 consultas em linguagem natural, estratificadas por dificuldade (fácil, médio, difícil) e por domínio temático. Cada item contém a pergunta, a consulta SQL de referência validada no DuckDB, metadados auxiliares e a coluna \texttt{colunas\_resposta} indicando quais grandezas respondem à pergunta (75/80 preenchidas automaticamente).
+Foi construído um conjunto de 80 consultas em linguagem natural, estratificadas por dificuldade (fácil, médio, difícil) e por domínio temático. Cada item contém a pergunta, a consulta SQL de referência validada no DuckDB, metadados auxiliares e a coluna \texttt{colunas\_resposta} indicando quais grandezas respondem à pergunta (75 itens por procedimento automatizado, 5 por curadoria manual).
 
 Dez consultas-base foram expandidas com variações paramétricas (anos, limites e agregações), totalizando 80 casos executáveis. Os artefatos estão em \texttt{avaliacao/dados/golden/}.
 

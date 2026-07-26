@@ -22,9 +22,9 @@ Neste repositório, a validação documentada refere-se à **instância Caeté**
 | Fontes | SICOM (TCE-MG), staging CGU, Diário Oficial local |
 | Canal operacional | WhatsApp (via automação n8n) |
 
-### Lacunas conhecidas (Caeté)
+### Lacunas documentadas (Caeté)
 
-A prefeitura não publicou dados de folha de pagamento e cadastro de servidores para **2020, 2021 e 2022**. O assistente deve informar essa lacuna quando o usuário solicitar salários ou vínculos nesses anos.
+A prefeitura não publicou dados de folha de pagamento e cadastro de servidores para **2020, 2021 e 2022**. Essa lacuna constitui limitação documentada da base local, incorporada ao escopo de resposta do sistema.
 
 ## Arquitetura (visão geral)
 
@@ -45,12 +45,6 @@ Usuário (WhatsApp)
  Resposta em linguagem natural
 ```
 
-1. O usuário envia a pergunta via mensageria instantânea.
-2. A plataforma de automação aciona o agente orquestrador.
-3. O agente seleciona recuperação documental (atos normativos) ou tradução Text-to-SQL (dados tabulares).
-4. O subsistema SQL consulta um motor analítico (DuckDB) sobre bases consolidadas.
-5. O orquestrador interpreta o resultado e responde em linguagem natural.
-
 ## Escopo deste repositório
 
 | Componente | Versionado |
@@ -60,34 +54,32 @@ Usuário (WhatsApp)
 | Pipeline de métricas (`run_metrics_pipeline.ps1`) | Sim |
 | Stack Docker (n8n, Qdrant, DuckDB API) | Sim |
 | Dados brutos SICOM/CGU | Sim (`avaliacao/dados/`) |
+| Monografia e artigo (LaTeX + PDF) | Sim (`docs/`) |
 
-## Validação
+## Validação empírica (três lotes)
 
-### Text-to-SQL
+### Lote I — Text-to-SQL: modelo e contexto (E1–E4)
 
-80 consultas, quatro experimentos comparativos (E1–E4). Baseline E1: **VSR 97,5%**, **EF 62,5%**.
+Quatro configurações comparadas sobre golden v1 (80 consultas). Referência: **VSR 97,5%**, **EF 62,5%** (E1).
 
-Refinamento pós-validação do *prompt* (mesmo modelo GPT-4.1-mini, golden v1): variante v2.1 atinge **VSR 100%** e **EF 72,5%** (+10 pp).
+### Lote II — Text-to-SQL: engenharia de prompt
 
-### RAG
+Configuração final v2.1 sobre o mesmo golden: **VSR 100%**, **EF 72,5%**.
 
-Golden v1.1 (*n*=8): busca densa **Recall@5 100%**, **MRR 63,33%**.
+### Lote III — RAG: estratégias de recuperação
 
-Melhorias de recuperação no mesmo golden: deduplicação de *chunks* (MRR 69,79%); stack híbrido+dedup+filtro por tipo de ato (**MRR 87,5%**).
-
-Golden v1.2 honesto (*n*=20): evidência complementar — busca densa 0% Recall@5; stack híbrido 100%/100%.
+Golden v1.1 (8 perguntas, *k*=5). Configuração final (híbrido + dedup + filtro tipo): **Recall@5 100%**, **MRR 87,5%**.
 
 Documentação:
 
-- [`METRICAS.md`](METRICAS.md) — Text-to-SQL (inclui ablation de prompt v2)
-- [`PLANO_RAG.md`](PLANO_RAG.md) — RAG e melhorias de recuperação
-- [`experimentos-v2/LOG.md`](experimentos-v2/LOG.md) — log de experimentos pós-v1.0
-- [`REPLICACAO.md`](REPLICACAO.md) — replicação
-- [`../avaliacao/`](../avaliacao/) — dados e scripts
+- [`METRICAS.md`](METRICAS.md) — definições formais, fórmulas VSR/EF
+- [`PLANO_RAG.md`](PLANO_RAG.md) — protocolo e resultados RAG
+- [`REPLICACAO.md`](REPLICACAO.md) — replicação offline
+- [`../avaliacao/`](../avaliacao/) — dados, experimentos e scripts
 
 ## Nomenclatura
 
 | Termo anterior | Termo atual |
 |----------------|-------------|
 | CIC (Centro de Informações Caetense) | **SIM** — persona da instância Caeté |
-| Agente / protótipo | **SIM Caeté** (instância municipal) |
+| EX resposta (repositório) | **EF** — equivalência funcional (textos do TCC) |

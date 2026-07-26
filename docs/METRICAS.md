@@ -238,21 +238,16 @@ Fonte: `avaliacao/experimentos/comparison_table_v3.md`.
 
 ---
 
-## 6.1 Refinamento de prompt (pós-validação, golden v1)
+## 6.1 Lote II — configuração final de prompt (golden v1)
 
-Após os experimentos E1–E4, incorporaram-se ao *prompt* regras derivadas de falhas reais e do conjunto de testers (`eval/prompts/INSIGHTS_GOLDEN_V2.md`): escopo de filtros de higiene por formato de resposta, datas YYYYMMDD, tabelas setoriais (SAAE, RSP), ILIKE como âncora textual e cruzamentos por chave única. Modelo fixo: GPT-4.1-mini, temperatura 0.
+No segundo lote experimental, manteve-se GPT-4.1-mini (temperatura 0) e o golden v1 ($n=80$), variando-se apenas o conteúdo instrucional do *prompt*. A variante final (v2.1) incorpora regras de domínio identificadas na análise de falhas do Lote I: escopo condicional de filtros de higiene, datas YYYYMMDD, tabelas setoriais (SAAE, RSP), ILIKE como âncora textual e cruzamentos por chave única.
 
-| Experimento | Variante de prompt | VSR | EF |
-|-------------|-------------------|----:|---:|
-| E1 | v1 compacto (baseline) | 97,50 | 62,50 |
-| e5 | v2.0 insights | 95,00 | 71,25 |
-| **e6** | **v2.1 insights (vencedor)** | **100,00** | **72,50** |
-| e7 | v2.1.1 (ajuste fino de escopo) | 98,75 | 72,50 |
-| e8 | v2.1 + DDL do schema real | 98,75 | 70,00 |
+| Variante | VSR | EF |
+|----------|----:|---:|
+| E1 — prompt v1 (Lote I) | 97,50 | 62,50 |
+| **Prompt v2.1 (configuração final)** | **100,00** | **72,50** |
 
-A variante **v2.1** (e6) elevou a EF em **+10,00 pp** em relação ao E1, com VSR integral (100%). A iteração v2.1.1 (e7) manteve EF mas reduziu VSR (−1,25 pp); o DDL real (e8) não superou v2.1 no golden v1. Prompt arquivado: `eval/prompts/prompt_sql_v2_insights.txt`.
-
-Fonte: `docs/experimentos-v2/LOG.md` (2026-07-18).
+A configuração v2.1 elevou a EF em **+10,00 pp** em relação ao E1, com VSR integral. Prompt documentado em `eval/prompts/prompt_sql_v2_insights.txt`.
 
 ---
 

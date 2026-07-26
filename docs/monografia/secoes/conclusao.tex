@@ -2,8 +2,14 @@
 
 Este trabalho apresentou o \textbf{SIM --- Sistema de Informações Municipais}, plataforma conversacional multi-instância para acesso a dados de transparência pública, com \textbf{instância piloto em Caeté (MG)} integrando recuperação documental sobre o Diário Oficial e consulta analítica via Text-to-SQL sobre bases SICOM/CGU.
 
-A arquitetura híbrida --- orquestração por LLM, RAG e DuckDB --- demonstra viabilidade técnica de reduzir a barreira entre o cidadão e dados municipais abertos. A validação com 80 consultas de referência comprovou geração confiável de SQL (VSR de 97,5\%) e equivalência funcional (EF) em 62,5\% dos casos no baseline; o refinamento do \textit{prompt} (v2.1) elevou a EF para 72,5\% com VSR integral. A validação piloto do RAG ($N_{\text{RAG}} = 8$) obteve Recall@5 de 100\% e MRR de 63,33\% na busca densa; melhorias de recuperação (deduplicação, busca híbrida por número de ato e filtro por tipo) elevaram o MRR a 87,5\% no mesmo \textit{golden}.
+A arquitetura híbrida --- orquestração por LLM, RAG e DuckDB --- demonstra viabilidade técnica de reduzir a barreira entre o cidadão e dados municipais abertos. A validação empírica, organizada em três lotes experimentais sobre conjuntos de referência fixos, comprovou:
 
-As contribuições incluem: (i)~conceito SIM multi-instância e arquitetura replicável para GovTech municipal; (ii)~\textit{pipeline} ETL e exposição analítica sobre dados SICOM/CGU; (iii)~protocolo de validação reprodutível versionado em \texttt{avaliacao/}; (iv)~evidências empíricas para escolha de modelo e tamanho de contexto; (v)~validação complementar da recuperação documental; e (vi)~repositório público para replicação.
+\begin{itemize}
+    \item \textbf{Lote I} (E1--E4): geração confiável de SQL (VSR de 97,5\% no baseline) e equivalência funcional de 62,5\%, com GPT-4.1-mini como modelo de referência;
+    \item \textbf{Lote II}: configuração final de \textit{prompt} v2.1 com VSR de 100\% e EF de 72,5\%;
+    \item \textbf{Lote III}: Recall@5 de 100\% no \textit{golden} RAG v1.1, com MRR de 87,5\% na recuperação híbrida com deduplicação.
+\end{itemize}
 
-Como trabalhos futuros, propõe-se: ampliação do \textit{golden} RAG e julgamento de respostas em linguagem natural; revisão humana do conjunto \textit{golden} SQL; testes com usuários reais; replicação do SIM em outros municípios; e autocorreção iterativa de consultas SQL.
+As contribuições incluem: (i)~conceito SIM multi-instância e arquitetura replicável para GovTech municipal; (ii)~\textit{pipeline} ETL e exposição analítica sobre dados SICOM/CGU; (iii)~protocolo de validação reprodutível com indicadores VSR, EF, Recall@$k$, MRR e JAR; (iv)~evidências empíricas para escolha de modelo, engenharia de contexto e estratégia de recuperação documental; e (v)~repositório público para replicação.
+
+A generalização dos resultados para outros municípios e a avaliação de adoção junto a usuários finais constituem perspectivas de pesquisa aplicada que extrapolam o escopo deste trabalho, centrado na comprovação funcional reprodutível sobre a instância Caeté.

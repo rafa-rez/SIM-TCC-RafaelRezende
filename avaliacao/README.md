@@ -6,41 +6,38 @@ Documentação do sistema: [`../docs/SIM.md`](../docs/SIM.md)
 
 ---
 
-## Resultados reportados
+## Resultados reportados (três lotes)
 
-| Subsistema | Golden | Indicadores |
-|------------|--------|-------------|
-| Text-to-SQL | `dados/golden/golden_dataset_v1.0.csv` (80) | VSR, EF — E1–E4 + refinamento v2.1 |
-| RAG | `dados/golden_rag/golden_rag_v1.1.csv` (8) | Recall@5, MRR |
+| Lote | Golden | Indicadores | Configuração final |
+|------|--------|-------------|-------------------|
+| I — modelo/contexto | SQL v1 (80) | VSR, EF — E1–E4 | GPT-4.1-mini + prompt compacto |
+| II — engenharia de prompt | SQL v1 (80) | VSR, EF | **Prompt v2.1: VSR 100%, EF 72,5%** |
+| III — recuperação RAG | RAG v1.1 (8) | Recall@5, MRR | **Híbrido+dedup: MRR 87,5%** |
 
-### Text-to-SQL — comparativo E1–E4
+### Lote I — E1–E4
 
 | Experimento | VSR | EF |
 |-------------|----:|---:|
-| E1 baseline (GPT-4.1-mini) | 97,5% | **62,5%** |
+| E1 baseline | 97,5% | 62,5% |
 | E2 contexto estendido | 96,3% | 58,8% |
 | E3 GPT-4o-mini | 90,0% | 46,3% |
 | E4 GPT-4o | 97,5% | 57,5% |
 
-### Text-to-SQL — refinamento de prompt (pós-validação, mesmo modelo)
+### Lote II — configuração final
 
-| Experimento | Prompt | VSR | EF |
-|-------------|--------|----:|---:|
-| e5 | v2.0 (insights) | 95,0% | 71,25% |
-| **e6** | **v2.1 (vencedor)** | **100%** | **72,50%** |
-| e7 | v2.1.1 | 98,75% | 72,50% |
-| e8 | v2.1 + DDL real | 98,75% | 70,00% |
+| Variante | VSR | EF |
+|----------|----:|---:|
+| E1 (referência) | 97,5% | 62,5% |
+| **Prompt v2.1** | **100%** | **72,5%** |
 
-### RAG — golden v1.1 (*k*=5)
+### Lote III — RAG (*k*=5)
 
 | Configuração | Recall@5 | MRR |
 |--------------|----------|----:|
-| Busca densa (baseline) | 100% | 63,33% |
-| Dedup query-time | 100% | 69,79% |
-| Filtro `tipo_ato` + dedup | 100% | 72,92% |
-| Híbrido + dedup + tipo | 100% | **87,5%** |
+| Busca densa | 100% | 63,33% |
+| Híbrido + dedup + filtro tipo | 100% | **87,5%** |
 
-Tabelas E1–E4: `experimentos/comparison_table_v3.md` · Log v2: [`../docs/experimentos-v2/LOG.md`](../docs/experimentos-v2/LOG.md)
+Tabela E1–E4: `experimentos/comparison_table_v3.md`
 
 ---
 
@@ -55,8 +52,6 @@ pip install -r requirements.txt
 .\run_metrics_pipeline.ps1 -WithRag     # SQL + avaliação RAG
 ```
 
-Atalho legado (só SQL): `.\run_replicacao.ps1`
-
 ---
 
 ## Estrutura
@@ -70,26 +65,11 @@ avaliacao/
 │   ├── SICOM/
 │   └── staging_cgu/
 ├── experimentos/         # E1–E4 (checkpoints + métricas)
-├── eval/
-│   ├── run_experiment.py      # novos experimentos SQL (API)
-│   ├── run_rag_eval.py        # avaliação RAG
-│   └── run_pipeline.py        # orquestrador unificado
-├── scripts/              # recompute, compare, build golden RAG
+├── eval/                 # runners e biblioteca de comparação
+├── scripts/              # recompute, compare
 ├── run_metrics_pipeline.ps1
 └── requirements.txt
 ```
-
----
-
-## Pré-requisitos
-
-| Tarefa | Requisito |
-|--------|-----------|
-| Recálculo SQL | Python 3.11+, `pip install -r requirements.txt` |
-| Novo experimento SQL | `OPENAI_API_KEY` no `.env` da raiz |
-| Avaliação RAG | Qdrant em `localhost:6333` + `OPENAI_API_KEY` |
-
-Stack Docker: `docker compose up -d` na raiz do repositório.
 
 ---
 
@@ -97,8 +77,8 @@ Stack Docker: `docker compose up -d` na raiz do repositório.
 
 | Arquivo | Conteúdo |
 |---------|----------|
-| [`../docs/METRICAS.md`](../docs/METRICAS.md) | Definições Text-to-SQL |
-| [`../docs/PLANO_RAG.md`](../docs/PLANO_RAG.md) | Protocolo e golden RAG |
+| [`../docs/METRICAS.md`](../docs/METRICAS.md) | Definições formais (VSR, EF, fórmulas) |
+| [`../docs/PLANO_RAG.md`](../docs/PLANO_RAG.md) | Protocolo e resultados RAG |
 | [`dados/golden/README.md`](dados/golden/README.md) | Golden SQL |
 | [`dados/golden_rag/README.md`](dados/golden_rag/README.md) | Golden RAG |
 | [`experimentos/README.md`](experimentos/README.md) | Artefatos E1–E4 |
