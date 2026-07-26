@@ -71,3 +71,4 @@ cd avaliacao
 | [`docs/METRICAS.md`](docs/METRICAS.md) | Definições e fórmulas |
 | [`docs/PLANO_RAG.md`](docs/PLANO_RAG.md) | Protocolo RAG |
 | [`docs/SIM.md`](docs/SIM.md) | Arquitetura |
+| [`experimental/README.md`](experimental/README.md) | Backend experimental (não produção) |

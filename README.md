@@ -58,7 +58,8 @@ Guia: [`docs/REPLICACAO.md`](docs/REPLICACAO.md)
 | [`avaliacao/`](avaliacao/) | Golden, experimentos, pipeline de métricas |
 | [`docs/`](docs/) | SIM, métricas, monografia UFLA, artigo SBC |
 | [`docker-compose.yml`](docker-compose.yml) | Stack local: Qdrant, n8n, DuckDB API, Redis |
-| [`scripts_python/`](scripts_python/) | API DuckDB |
+| [`scripts_python/`](scripts_python/) | API DuckDB (produção) |
+| [`experimental/`](experimental/) | Melhorias de backend fora de produção |
 
 ---
 

@@ -53,6 +53,7 @@ Usuário (WhatsApp)
 | Golden RAG v1.1 (8 perguntas) + runner | Sim |
 | Pipeline de métricas (`run_metrics_pipeline.ps1`) | Sim |
 | Stack Docker (n8n, Qdrant, DuckDB API) | Sim |
+| Melhorias de backend (experimental) | Sim (`experimental/`, não produção) |
 | Dados brutos SICOM/CGU | Sim (`avaliacao/dados/`) |
 | Monografia e artigo (LaTeX + PDF) | Sim (`docs/`) |
 
