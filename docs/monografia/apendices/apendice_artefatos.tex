@@ -1,63 +1,56 @@
-\chapter{Artefatos reprodutíveis do repositório}
-\label{ap:artefatos}
-
-Este apêndice reúne identificadores técnicos do repositório público do trabalho, omitidos do corpo textual para preservar o registro acadêmico.
-
-\section{Correspondência nomenclatura e arquivos}
-
-\begin{table}[htbp]
-\centering
-\caption{Mapeamento entre nomes usados no corpo e arquivos versionados}
-\label{tab:map_artefatos}
-\small
-\begin{tabular}{p{6.5cm}p{6.5cm}}
-\toprule
-\textbf{Nome no corpo do texto} & \textbf{Arquivo versionado} \\
-\midrule
-Conjunto de referência SQL (80 casos) & \texttt{golden\_dataset\_v1.0.csv} \\
-Conjunto de referência RAG ampliado ($n=40$) & \texttt{golden\_rag\_v1.3.csv} \\
-Amostra temática curada ($n=8$) & \texttt{golden\_rag\_v1.1.csv} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\section{Estrutura principal}
-
-\begin{itemize}
-    \item \texttt{avaliacao/} --- módulo de avaliação reprodutível (SQL e RAG);
-    \item \texttt{avaliacao/eval/} --- \textit{runners} de experimento e biblioteca de métricas;
-    \item \texttt{avaliacao/dados/golden/} --- conjunto de referência SQL (80 casos);
-    \item \texttt{avaliacao/dados/golden\_rag/} --- conjunto de referência RAG ($n=40$);
-    \item \texttt{avaliacao/experimentos/} --- saídas versionadas por experimento (\texttt{checkpoint.jsonl}, \texttt{metrics\_summary\_v3.json});
-    \item \texttt{avaliacao/eval/prompts/} --- variantes de \textit{prompt} (compacto, estendido, regras de domínio);
-    \item \texttt{scripts\_python/} --- ETL e API analítica da instância piloto;
-    \item \texttt{docs/} --- documentação técnica, métricas e textos acadêmicos.
-\end{itemize}
-
-\section{Metadados do conjunto SQL}
-
-\begin{itemize}
-    \item Arquivo principal: \texttt{golden\_dataset\_v1.0.csv} (conjunto de referência SQL, 80 casos);
-    \item Campo \texttt{colunas\_resposta}: grandezas avaliadas na equivalência funcional;
-    \item Campo \texttt{origem}: \texttt{base\_10} (intenção analítica) ou \texttt{derivacao} (variação paramétrica);
-    \item Resultados de referência: \texttt{reference\_results/NNN.json}.
-\end{itemize}
-
-\section{Metadados do conjunto RAG}
-
-\begin{itemize}
-    \item Arquivo principal: \texttt{golden\_rag\_v1.3.csv} (conjunto de referência RAG ampliado, $n=40$);
-    \item Campo \texttt{doc\_id\_esperado}: rótulo canônico do ato no Diário Oficial;
-    \item Campo \texttt{estrato}: \texttt{com\_numero} ou \texttt{tematico};
-    \item Índice Qdrant: \textit{collection} \texttt{jornais\_caete}; correspondência por \texttt{page\_content}.
-\end{itemize}
-
-\section{Execução da avaliação}
-
-\begin{verbatim}
-cd avaliacao
-.\run_metrics_pipeline.ps1          # SQL (regressão E1)
-.\run_metrics_pipeline.ps1 -WithRag # SQL + RAG
-\end{verbatim}
-
-Configuração central em \texttt{avaliacao/eval/config.yaml}. Requisitos: DuckDB local, Qdrant (\texttt{:6333}) e chave OpenAI para embeddings na avaliação RAG.
+\apendice{Estrutura e Especificação dos Artefatos Reprodutíveis}\label{ap:artefatos}
+
+Este apêndice detalha a organização dos artefatos computacionais disponibilizados no repositório público do projeto. O módulo de avaliação (\texttt{avaliacao/}) é estruturado em \textit{runners} de experimento, conjuntos de referência versionados, variantes de \textit{prompt} e saídas por experimento --- elementos omitidos do corpo textual para preservar o registro acadêmico, mas necessários à replicação dos resultados reportados nos Capítulos~3 e~4.
+
+\section{Correspondência nomenclatura e arquivos}
+
+\begin{table}[htbp]
+\centering
+\caption{Mapeamento entre nomes usados no corpo e arquivos versionados}
+\label{tab:map_artefatos}
+\small
+\begin{tabular}{p{6.5cm}p{6.5cm}}
+\toprule
+\textbf{Nome no corpo do texto} & \textbf{Arquivo versionado} \\
+\midrule
+Conjunto de referência SQL (80 casos) & \texttt{golden\_dataset\_v1.0.csv} \\
+Conjunto de referência RAG ampliado ($n=40$) & \texttt{golden\_rag\_v1.3.csv} \\
+Amostra temática curada ($n=8$) & \texttt{golden\_rag\_v1.1.csv} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Estrutura principal}
+
+\begin{itemize}
+    \item \texttt{avaliacao/} --- módulo de avaliação reprodutível (SQL e RAG);
+    \item \texttt{avaliacao/eval/} --- \textit{runners} de experimento e biblioteca de métricas;
+    \item \texttt{avaliacao/dados/golden/} --- conjunto de referência SQL (80 casos);
+    \item \texttt{avaliacao/dados/golden\_rag/} --- conjunto de referência RAG ($n=40$);
+    \item \texttt{avaliacao/experimentos/} --- saídas versionadas por experimento (\texttt{checkpoint.jsonl}, \texttt{metrics\_summary\_v3.json});
+    \item \texttt{avaliacao/eval/prompts/} --- variantes de \textit{prompt} (compacto, estendido, regras de domínio);
+    \item \texttt{scripts\_python/} --- ETL e API analítica da instância piloto;
+    \item \texttt{docs/} --- documentação técnica, métricas e textos acadêmicos.
+\end{itemize}
+
+\section{Metadados do conjunto SQL}
+
+\begin{itemize}
+    \item Arquivo principal: \texttt{golden\_dataset\_v1.0.csv} (conjunto de referência SQL, 80 casos);
+    \item Campo \texttt{colunas\_resposta}: grandezas avaliadas na equivalência funcional;
+    \item Campo \texttt{origem}: \texttt{base\_10} (intenção analítica) ou \texttt{derivacao} (variação paramétrica);
+    \item Resultados de referência: \texttt{reference\_results/NNN.json}.
+\end{itemize}
+
+\section{Metadados do conjunto RAG}
+
+\begin{itemize}
+    \item Arquivo principal: \texttt{golden\_rag\_v1.3.csv} (conjunto de referência RAG ampliado, $n=40$);
+    \item Campo \texttt{doc\_id\_esperado}: rótulo canônico do ato no Diário Oficial;
+    \item Campo \texttt{estrato}: \texttt{com\_numero} ou \texttt{tematico};
+    \item Índice Qdrant: \textit{collection} \texttt{jornais\_caete}; correspondência por \texttt{page\_content}.
+\end{itemize}
+
+\section{Execução da avaliação}
+
+A reprodução dos experimentos é automatizada pelo script \texttt{run\_metrics\_pipeline.ps1}, no diretório \texttt{avaliacao/}. Na forma padrão, o \textit{pipeline} executa a regressão SQL (Lote~I, experimento E1); com o parâmetro \texttt{-WithRag}, inclui também a avaliação do subsistema de recuperação documental (Lote~III). A configuração central reside em \texttt{avaliacao/eval/config.yaml}. Os requisitos de ambiente são: instância DuckDB local sobre as bases consolidadas, serviço Qdrant acessível na porta \texttt{6333} e chave de API OpenAI para \textit{embeddings} na avaliação RAG. O script completo, dependências e instruções de instalação estão versionados no repositório público do projeto.

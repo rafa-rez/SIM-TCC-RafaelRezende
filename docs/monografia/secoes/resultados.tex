@@ -21,7 +21,9 @@ E4 --- GPT-4o & 97,50 & 91,3--99,3 & 57,50 & 46,6--67,7 \\
 \end{tabular}
 \end{table}
 
+\FloatBarrier
 \input{figuras/grafico_sql_lote1}
+\FloatBarrier
 
 \subsection{Configuração de referência (E1)}
 
@@ -46,9 +48,7 @@ Latência média de execução SQL & 1,1 s \\
 
 \subsection{Resultados por consulta-base (E1)}
 
-A Tabela~\ref{tab:base} desagrega a equivalência funcional nas dez intenções analíticas originais (sem variações paramétricas). O agregado sobre as 70 derivações paramétricas foi de 64,3\% (45/70).
-
-\begin{table}[htbp]
+\begin{table}[H]
 \centering
 \caption{E1 --- equivalência funcional por consulta-base ($n=10$ intenções)}
 \label{tab:base}
@@ -75,9 +75,13 @@ A Tabela~\ref{tab:base} desagrega a equivalência funcional nas dez intenções 
 \end{tabular}
 \end{table}
 
+A Tabela~\ref{tab:base} desagrega a equivalência funcional nas dez intenções analíticas originais (sem variações paramétricas). O agregado sobre as 70 derivações paramétricas foi de 64,3\% (45/70). As falhas concentram-se em cruzamentos investigativos (IDs 2, 3 e 7) e em consultas com agregação temporal (ID 10).
+
 \subsection{Resultados por dificuldade (E1)}
 
-\begin{table}[htbp]
+A Tabela~\ref{tab:diff} resume VSR e EF por nível de dificuldade declarado no conjunto de referência. A degradação é gradual --- não há colapso abrupto no estrato difícil ---, coerente com a predominância de erros de \textit{join} e de cardinalidade em vez de falhas sintáticas.
+
+\begin{table}[H]
 \centering
 \caption{E1 --- indicadores por nível de dificuldade}
 \label{tab:diff}
