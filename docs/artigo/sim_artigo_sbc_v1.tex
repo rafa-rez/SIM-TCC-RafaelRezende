@@ -1,214 +1,295 @@
-\documentclass[12pt,a4paper]{article}
-\usepackage[brazilian]{babel}
+\documentclass[12pt]{article}
+\usepackage{sbc-template}
+\usepackage[brazilian,english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{hyperref}
 \usepackage{graphicx}
+\usepackage{url}
 \usepackage{booktabs}
 \usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc, fit, backgrounds}
+\usepackage{microtype}
 \usepackage[alf,abnt-etal-list=3]{abntex2cite}
 
 \title{SIM --- Sistema de Informações Municipais:\\
-Acesso Conversacional a Dados Abertos Municipais}
+Acesso Conversacional a Dados Abertos Governamentais\thanks{Código-fonte, conjuntos de referência e rotinas de replicação: \protect\url{https://github.com/rafa-rez/tcc-sistema-de-informa-es-municipais}}}
 
-\author{Rafael Alves Silva Rezende\\
-Universidade Federal de Lavras (UFLA)\\
-\and
-Prof. Dr. Denilson (orientador)}
+\author{Rafael A. S. Rezende\inst{1}, Denilson A. Pereira\inst{1}}
 
-\date{Julho/2026}
+\address{Departamento de Ciência da Computação -- Universidade Federal de Lavras (UFLA)\\
+  Caixa Postal 3037 -- 37200-900 -- Lavras -- MG -- Brasil\\
+  \email{\{rafael.rezende, denilson.pereira\}@ufla.br}
+}
 
 \begin{document}
+
 \maketitle
 
 \begin{abstract}
-Dados públicos municipais são instrumento de fiscalização social, mas o acesso efetivo exige domínio técnico de portais de transparência e linguagens de consulta estruturada. Apresentamos o \textbf{SIM} (\textit{Sistema de Informações Municipais}), plataforma conversacional multi-instância que integra recuperação documental sobre o Diário Oficial e consulta analítica via Text-to-SQL sobre bases SICOM e CGU. Documentamos a instância piloto de Caeté (MG), com canal WhatsApp e orquestração por modelos de linguagem. A validação empírica organizou-se em três lotes: Text-to-SQL com 80 consultas (baseline E1: VSR 97,5\% e EF 62,5\%; configuração final v2.1: VSR 100\% e EF 72,5\%) e recuperação documental com oito decretos indexados (Recall@5 100\%; MRR 87,5\% com recuperação híbrida). Artefatos públicos permitem replicação offline.
+Municipal open data is essential for social accountability, yet effective public access remains constrained by complex transparency portals and relational database schemas. We present the \textbf{SIM} (\textit{Sistema de Informações Municipais}), a multi-instance conversational platform that integrates document retrieval over official municipal gazettes and analytical query generation via Text-to-SQL over accounting (SICOM/TCE-MG) and federal (CGU) databases. We evaluate the pilot instance of Caeté (MG), deployed over WhatsApp with LLM-based orchestration. Empirical validation was conducted across three experimental batches: Text-to-SQL on 80 executable cases derived from ten analytical intents (Baseline E1: 97.5\% VSR and 62.5\% EF; domain-rules Prompt B: 100\% VSR and 72.5\% EF; 95\% CI: 61.9--81.1\%) and document retrieval over 40 stratified queries (100\% Recall@5 and 97.5\% MRR under hybrid search versus 22.5\% under dense search alone, demonstrating the necessity of hybrid retrieval for numbered legal acts). All experimental artifacts are publicly available for offline replication.
 \end{abstract}
 
-\noindent\textbf{Palavras-chave:} dados abertos; transparência municipal; GovTech; Text-to-SQL; LLM.
+\begin{resumo}
+Dados abertos municipais são instrumentos essenciais de fiscalização social, mas o acesso efetivo permanece restrito a usuários com domínio técnico de portais de transparência e linguagens de consulta estruturada. Este artigo apresenta o \textbf{SIM} (\textit{Sistema de Informações Municipais}), plataforma conversacional multi-instância que integra recuperação documental sobre o Diário Oficial e consulta analítica via Text-to-SQL sobre bases contábeis (SICOM/TCE-MG) e federais (CGU). Avalia-se a instância piloto de Caeté (MG), integrada ao WhatsApp com orquestração por modelos de linguagem. A validação empírica organizou-se em três lotes experimentais: Text-to-SQL com 80 casos executáveis derivados de dez intenções analíticas (Baseline E1: VSR 97,5\% e EF 62,5\%; Prompt B com regras de domínio: VSR 100\% e EF 72,5\%; IC 95\%: 61,9--81,1\%) e recuperação documental com 40 perguntas estratificadas (Recall@5 de 100\% e MRR de 97,5\% na configuração híbrida, ante 22,5\% na busca densa isolada, comprovando a necessidade de recuperação híbrida para atos numerados). Os artefatos experimentais estão disponíveis para replicação offline.
+\end{resumo}
 
 \section{Introdução}
 
-A Lei de Acesso à Informação (Lei 12.527/2011) consolidou o direito de acesso a dados públicos no Brasil. Municípios disponibilizam bases contábeis --- como o SICOM em Minas Gerais --- e portais federais complementares (CGU, Siconfi). Apesar da abertura formal, a consulta efetiva permanece restrita a usuários com conhecimento de esquemas relacionais extensos e formatos tabulares.
+A Lei de Acesso à Informação (Lei 12.527/2011) consolidou o direito de consulta a dados governamentais no Brasil. Em nível municipal, sistemas como o SICOM (TCE-MG) \cite{TCEMG_SICOM} e portais federais complementares (CGU, Siconfi) reúnem bases contábeis, despesas, contratos e folhas de pagamento. Contudo, a consulta efetiva permanece restrita a especialistas capazes de navegar em esquemas relacionais complexos, interfaces heterogêneas e vocabulários fiscais controlados.
 
-Modelos de linguagem de grande escala (\textit{large language models}, LLM) viabilizam interfaces conversacionais que traduzem perguntas em SQL \cite{Yu2018Spider,Li2024BIRD}. Soluções de tecnologia cívica (\textit{GovTech}) podem reduzir essa barreira, ampliando o alcance da transparência pública.
+Modelos de Linguagem de Grande Escala (\textit{Large Language Models}, LLM) viabilizam interfaces em linguagem natural para bancos de dados (\textit{Natural Language Interfaces to Databases}, NLIDB), convertendo perguntas livres em consultas SQL executáveis \cite{Yu2018Spider,Li2024BIRD}. No âmbito da tecnologia cívica (\textit{GovTech}), tais modelos possuem potencial para reduzir a barreira técnica de acesso, aproximando o cidadão dos dados de transparência pública \cite{Janssen2020GovTech,Lei2024SICOM}.
 
-Este artigo apresenta o \textbf{SIM} (\textit{Sistema de Informações Municipais}), arquitetura híbrida que combina recuperação aumentada (RAG) para atos normativos e Text-to-SQL para finanças e compras públicas. O SIM é \textbf{multi-instância}: cada município fornece seus dados; a arquitetura permanece replicável. Documentamos a \textbf{instância Caeté} (IBGE 3110004), em operação via WhatsApp.
+Entretanto, a aplicação de LLMs a dados públicos municipais impõe desafios específicos: (i)~esquemas relacionais extensos e valores ruidosos; (ii)~coexistência de dados tabulares (gastos, contratos) e acervos normativos não estruturados (leis e decretos no Diário Oficial); e (iii)~necessidade de respostas com baixa latência e custo operacional viável em canais de mensageria populares como o WhatsApp.
 
-\textbf{Contribuições:} (i)~conceito e arquitetura do SIM para acesso conversacional a dados municipais; (ii)~\textit{pipeline} de ingestão e exposição analítica sobre SICOM/CGU; (iii)~conjunto de referência com 80 consultas SQL validadas e protocolo de avaliação reprodutível em três lotes experimentais; (iv)~validação complementar da recuperação documental (RAG) sobre o Diário Oficial; (v)~evidências empíricas de viabilidade funcional.
+Diante desse cenário, este trabalho investiga a seguinte \textbf{pergunta de pesquisa}: \emph{É viável integrar recuperação documental e Text-to-SQL em canal conversacional para consulta a dados públicos municipais padronizados (SICOM/CGU), e qual o impacto da engenharia de contexto --- em comparação à troca de modelo --- sobre a fidelidade funcional das respostas tabulares?}
 
-\section{Trabalhos relacionados}
+Como \textbf{hipótese}, postula-se que: (i)~a orquestração híbrida (RAG + Text-to-SQL) é viável sobre esquemas municipais reais; e (ii)~a inserção de regras de domínio no contexto instrucional (\textit{prompt}) eleva a equivalência funcional mais eficazmente do que a simples substituição por modelos proprietários maiores, preservando a latência exigida pelo canal síncrono.
 
-\textbf{Dados públicos e GovTech.} Portais de transparência e bases como o SICOM centralizam informações contábeis e de compras públicas \cite{Lei2024SICOM,TCEMG_SICOM}, mas a heterogeneidade de esquemas e lacunas de publicação dificultam o uso por cidadãos leigos.
+Para responder a essas questões, apresenta-se o \textbf{SIM --- Sistema de Informações Municipais}, uma plataforma conversacional multi-instância. Documenta-se a \textbf{instância piloto de Caeté (MG)} (IBGE 3110004), integrada ao WhatsApp, operando sobre dados do SICOM/CGU (2020--2025) e do Diário Oficial.
 
-\textbf{Text-to-SQL.} O benchmark Spider \cite{Yu2018Spider} popularizou comparação de resultados executados entre SQL gerada e gabarito. BIRD \cite{Li2024BIRD} amplia o desafio com bases volumosas e valores ruidosos. Métodos recentes com LLM empregam decomposição de consultas e \textit{schema linking} \cite{Pourreza2024DIN,Gao2024DAILSQL}.
+\textbf{Contribuições principais:}
+\begin{enumerate}
+    \item Concepção e arquitetura do SIM, integrando orquestração por LLM, subsistema RAG (Qdrant) e Text-to-SQL (DuckDB \textit{in-memory}) em canal WhatsApp;
+    \item \textit{Pipeline} reprodutível de ingestão, normalização e exposição analítica de dados municipais (SICOM/CGU);
+    \item Conjunto de referência (\textit{golden dataset}) com 80 casos SQL executáveis (derivados de 10 intenções analíticas) e 40 perguntas RAG estratificadas;
+    \item Protocolo de avaliação quantitativo baseado em Taxa de SQL Válida (VSR), Equivalência Funcional (EF) com tolerância fiscal $\tau$, Recall@$k$ e MRR, com intervalos de confiança de Wilson e testes pareados;
+    \item Evidências empíricas demonstrando que a engenharia de contexto supera a substituição de modelo (+10\,pp de EF) e que a busca híbrida é estritamente necessária para recuperação de atos numerados no Diário Oficial.
+\end{enumerate}
 
-\textbf{RAG e orquestração.} Lewis et al. \cite{Lewis2020RAG} formalizaram recuperação aumentada para conhecimento externo. No SIM, RAG cobre o Diário Oficial; Text-to-SQL cobre dados tabulares. A orquestração seleciona o mecanismo adequado à intenção do usuário.
+\section{Trabalhos Relacionados}
 
-\section{O SIM e a instância Caeté}
+\subsection{Interfaces em Linguagem Natural e Benchmarks Text-to-SQL}
 
-\subsection{Arquitetura}
+O avanço de NLIDBs foi impulsionado por \textit{benchmarks} públicos. O Spider \cite{Yu2018Spider} estabeleceu a acurácia de execução (\textit{Execution Accuracy}, EX) como métrica padrão em esquemas sintéticos em inglês. O BIRD \cite{Li2024BIRD} ampliou o desafio para bancos volumosos com valores sujos e conhecimento externo, demonstrando que mesmo modelos de ponta (GPT-4) frequentemente obtêm EX inferior a 60\% em condições realistas.
 
-O SIM integra: (1)~canal conversacional (WhatsApp, via automação n8n); (2)~agente orquestrador; (3)~subsistema RAG (atos normativos indexados em base vetorial); (4)~subsistema Text-to-SQL (DuckDB sobre CSVs consolidados SICOM/CGU).
+Métodos recentes exploram decomposição de consultas e \textit{schema linking}. O DIN-SQL \cite{Pourreza2024DIN} decompõe a geração em etapas sequenciais com autocorreção; o DAIL-SQL \cite{Gao2024DAILSQL} otimiza a seleção de exemplos em contexto; e o RAT-SQL \cite{Wang2020RATSQL} codifica relações estruturais do esquema. Diferentemente desses métodos que operam com múltiplos turnos de LLM e alto consumo de tokens, o SIM prioriza baixa latência em requisição única, adaptando o contexto com regras de domínio compiladas.
 
-O fluxo operacional segue: pergunta do usuário $\rightarrow$ orquestrador $\rightarrow$ RAG ou SQL $\rightarrow$ interpretação do resultado $\rightarrow$ resposta em linguagem natural.
+\subsection{Recuperação Documental em Textos Governamentais}
 
-\subsection{Fontes de dados}
+A técnica RAG (\textit{Retrieval-Augmented Generation}) \cite{Lewis2020RAG,Gao2024RAGSurvey} combina recuperação vetorial e geração textual. Modelos densos como DPR \cite{Karpukhin2020DPR} capturam similaridade semântica, mas exibem falhas sistemáticas em consultas contendo identificadores exatos (números e anos de leis). Métodos híbridos que combinam representações densas e esparsas (como BM25 \cite{Robertson2009BM25,Lin2021Hybrid,Lin2021Pyserini}) atenuam essa fragilidade. O SIM contribui ao avaliar empiricamente essa dinâmica sobre acervos reais de Diários Oficiais municipais.
 
-A instância Caeté cobre 2020--2025 com dados do SICOM (receitas, despesas, empenhos, folha, frota, licitações, contratos), complementos da CGU (transferências federais, programas sociais) e Diário Oficial municipal. Um processo ETL em Python consolida os arquivos, gera metadados de esquema e expõe consulta analítica via DuckDB \textit{in-memory}.
+\subsection{GovTech e Posicionamento do SIM}
 
-\subsection{Lacunas de transparência}
+Iniciativas recentes de ciência de dados aplicada ao SICOM \cite{Lei2024SICOM} exploram auditoria e detecção de anomalias por especialistas. Sistemas como GovChat \cite{KatsogiannisMeimaris2023GovChat} abordam grafos de conhecimento governamentais. O SIM diferencia-se ao oferecer uma plataforma conversacional ponta-a-ponta voltada ao cidadão leigo, combinando dados estruturados contábeis e atos normativos não estruturados em uma arquitetura de orquestração leve.
 
-A prefeitura não publicou folha de pagamento e cadastro de servidores para 2020--2022. Essa lacuna constitui limitação documentada da base local, incorporada ao escopo de resposta do sistema.
+\section{O SIM e a Instância Piloto de Caeté}
 
-\section{Engenharia de contexto}
+\subsection{Arquitetura e Fluxo Operacional}
 
-O subsistema Text-to-SQL utiliza modelo de linguagem com \textit{prompt} contendo esquema minificado e amostras de valores reais por coluna (\textit{smart sampling}). Três variantes foram avaliadas:
+A arquitetura do SIM é organizada em três camadas funcionais, conforme ilustrado na Figura~\ref{fig:arquitetura}:
 
+\input{figuras/arquitetura_sim}
+
+\begin{enumerate}
+    \item \textbf{Canal Conversacional (Produção):} O cidadão envia mensagens via WhatsApp. Um \textit{gateway} (WAHA) repassa os eventos à plataforma de automação (n8n), que aciona o agente orquestrador cognitivo;
+    \item \textbf{Recuperação e Consulta:} O orquestrador classifica a intenção do usuário. Perguntas normativas são roteadas ao subsistema RAG; consultas quantitativas/fiscais são encaminhadas ao subsistema Text-to-SQL;
+    \item \textbf{Camada de Dados:} O RAG opera sobre índice vetorial Qdrant ($9\,346$ \textit{chunks} do Diário Oficial com \texttt{text-embedding-3-small}). O subsistema Text-to-SQL executa consultas sobre o DuckDB \textit{in-memory}, alimentado por bases consolidadas.
+\end{enumerate}
+
+\subsection{Fontes de Dados e Pipeline ETL}
+
+A instância Caeté cobre a série temporal de 2020 a 2025, integrando: (i)~dados contábeis do SICOM (receitas, despesas, empenhos, folha de pagamento, frota, licitações e contratos); (ii)~dados federais da CGU (transferências voluntárias e benefícios sociais); e (iii)~atos normativos do Diário Oficial.
+
+Um \textit{pipeline} ETL desenvolvido em Python consolida os arquivos tabulares, padroniza chaves de relacionamento, normaliza tipos de dados e gera o esquema analítico (\textit{Data Definition Language}, DDL). As lacunas de publicação de folha de pagamento e cadastro de servidores dos anos de 2020 a 2022 constituem limitações documentadas da base de dados municipal local.
+
+\subsection{Engenharia de Contexto}
+
+Para garantir geração precisa de SQL sem exceder a janela de contexto ou elevar a latência síncrona, aplicaram-se três técnicas de engenharia de contexto:
 \begin{itemize}
-  \item \textbf{Prompt compacto} ($\sim$16\,500 tokens): referência do Lote I;
-  \item \textbf{Prompt estendido} ($\sim$35\,000 tokens): esquema com descrições ampliadas;
-  \item \textbf{Prompt v2.1} ($\sim$16\,500 tokens): configuração final com regras de domínio (Lote II).
+    \item \textbf{Minificação de DDL:} Remoção de atributos redundantes e condensação de metadados relacionais;
+    \item \textbf{Amostragem Inteligente (\textit{Smart Sampling}):} Inclusão de valores reais e categorias observadas em colunas-chave no próprio cabeçalho do esquema;
+    \item \textbf{Regras de Domínio (Prompt B):} Codificação explícita de convenções do padrão SICOM/TCE-MG, tais como tratamento de datas em formato numérico \texttt{YYYYMMDD} com \texttt{CAST}, filtros de higiene condicionados ao formato de agregação da resposta, escopo de tabelas setoriais (SAAE e Restos a Pagar) e regras de \textit{join} determinísticas entre bases SICOM e CGU por chaves únicas documentadas.
 \end{itemize}
 
-\section{Validação}
+\section{Metodologia de Validação Experimental}
 
-\subsection{Text-to-SQL}
+A validação foi conduzida em ambiente controlado desacoplado do canal WhatsApp, assegurando reprodutibilidade integral.
 
-A avaliação concentrou-se no subsistema Text-to-SQL, desacoplado do canal de produção. O conjunto golden contém 80 perguntas em português com SQL de referência validada, estratificadas por dificuldade e domínio.
+\subsection{Conjunto de Referência (\textit{Golden Dataset})}
 
-Adotam-se dois indicadores agregados sobre $N{=}80$ consultas:
+O conjunto de referência Text-to-SQL reúne $N = 80$ casos executáveis, estruturados a partir de 10 intenções analíticas centrais (consultas-base de relevância fiscal e administrativa) expandidas parametricamente por variações de anos, filtros e agregações. Os itens foram estratificados em três níveis de dificuldade: Fácil ($n=22$), Médio ($n=44$) e Difícil ($n=14$). Cada registro contém a pergunta em linguagem natural, a consulta SQL de gabarito validada no DuckDB e as colunas de resposta esperadas.
 
+Para o subsistema RAG, construiu-se um conjunto de referência ampliado com $N_{\text{RAG}} = 40$ consultas sobre o Diário Oficial, divididas em dois estratos:
 \begin{itemize}
-  \item \textbf{Taxa de SQL válida (VSR)}: proporção de SQL geradas que executam sem erro no motor analítico;
-  \item \textbf{Equivalência funcional (EF)}: proporção de consultas em que o resultado tabular gerado coincide com o gabarito nas grandezas que respondem à pergunta, com tolerância numérica $\tau{=}0{,}5\%$.
+    \item \textbf{com\_numero} ($n = 32$): perguntas contendo número e ano explícitos de decretos sorteados uniformemente do índice vetorial (amostra honesta, independente de ranking prévio);
+    \item \textbf{tematico} ($n = 8$): perguntas temáticas curadas sobre normas e tópicos administrativos sem menção a número de ato.
 \end{itemize}
 
-\subsection{RAG}
+\subsection{Métricas de Avaliação}
 
-Complementarmente, avaliou-se a recuperação documental sobre o Diário Oficial indexado em Qdrant. O \textit{golden} RAG v1.1 contém $N_{\text{RAG}}{=}8$ perguntas sobre decretos municipais cujo documento de referência possui \textit{chunk} confirmado no índice.
+Seja $\text{SQL}_i^{(g)}$ a consulta gerada pelo modelo e $\text{SQL}_i^{(r)}$ a consulta de referência para a pergunta $i \in \{1,\dots,N\}$. Definem-se:
 
-Indicadores: \textbf{Recall@}$k$ (documento esperado no top-$k$, $k{=}5$) e \textbf{MRR} (\textit{Mean Reciprocal Rank}). Amostra complementar de referência ($n{=}8$).
+\textbf{Taxa de SQL Válida (VSR):} Proporção de consultas geradas que executam sem erro sintático no motor analítico:
+\begin{equation}
+\text{VSR} = \frac{1}{N} \sum_{i=1}^{N} \mathbb{1}\!\left[\text{SQL}_i^{(g)} \text{ executa com sucesso}\right]
+\end{equation}
 
-\subsection{Lotes experimentais}
+\textbf{Equivalência Funcional (EF):} Verifica se o resultado tabular gerado $G_i$ entrega as mesmas grandezas informacionais do resultado de gabarito $R_i$, independentemente de nomes de aliases ou colunas auxiliares. Diferentemente do EX estrito de Spider/BIRD --- que exige correspondência de nomes e multiconjuntos idênticos ---, a EF admite correspondência posicional nas colunas declaradas no gabarito $C_i$, cardinalidade compatível ($|R_i| = |G_i|$) e tolerância numérica $\tau = 0{,}5\%$ em valores monetários após normalização celular $\nu(\cdot)$:
+\begin{equation}
+\frac{|\nu(a) - \nu(b)|}{\max(|\nu(b)|, \varepsilon)} \leq 0{,}005, \quad \text{EF} = \frac{1}{N} \sum_{i=1}^{N} \mathbb{1}\!\left[\text{EF}_i = 1\right]
+\end{equation}
+
+\textbf{Métricas RAG:} Para o subsistema de recuperação documental, avaliam-se o \textbf{Recall@}$k$ (presença do \textit{chunk} esperado entre os $k$ primeiros resultados, com $k=5$) e o \textbf{MRR} (\textit{Mean Reciprocal Rank}, inverso da posição do primeiro acerto).
+
+Todas as proporções são reportadas com intervalos de confiança de Wilson a 95\% \cite{Agresti1998}. A comparação pareada entre variantes de \textit{prompt} utiliza o teste de McNemar.
+
+\subsection{Organização dos Lotes Experimentais}
+
+A avaliação estruturou-se em três lotes (Tabela~\ref{tab:lotes}), isolando variáveis experimentais.
 
 \begin{table}[htbp]
 \centering
 \caption{Organização dos lotes experimentais}
 \label{tab:lotes}
 \small
-\begin{tabular}{clp{6cm}}
+\begin{tabular}{cllp{5cm}}
 \toprule
-\textbf{Lote} & \textbf{Variável} & \textbf{Configurações} \\
+\textbf{Lote} & \textbf{Variável Isolada} & \textbf{Domínio} & \textbf{Configurações Avaliadas} \\
 \midrule
-I & Modelo e contexto & E1--E4 (GPT-4.1-mini, 4o-mini, 4o; compacto/estendido) \\
-II & Engenharia de \textit{prompt} & v1 (E1) $\rightarrow$ v2.1 (final) \\
-III & Estratégia de recuperação & Denso, dedup, híbrido+dedup+tipo \\
+I & Modelo e contexto & Text-to-SQL & E1 (GPT-4.1-mini, compacto); E2 (estendido); E3 (4o-mini); E4 (4o) \\
+II & Engenharia de \textit{prompt} & Text-to-SQL & Prompt A (Baseline E1) \textit{vs.} Prompt B (regras de domínio) \\
+III & Estratégia de recuperação & RAG & Densa; deduplicação; filtro por tipo; busca híbrida \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\section{Resultados}
+\section{Resultados Experimentais e Análise}
 
-\subsection{Lote I --- Comparação de configuração}
+\subsection{Lote I --- Comparação de Modelo e Contexto (E1--E4)}
+
+A Tabela~\ref{tab:lote1} apresenta os resultados do Lote I sobre os 80 casos do conjunto Text-to-SQL.
 
 \begin{table}[htbp]
 \centering
-\caption{Lote I --- comparativo entre experimentos (\%)}
-\label{tab:results}
-\begin{tabular}{lrr}
+\caption{Lote I --- Comparativo de modelos e contextos ($N=80$)}
+\label{tab:lote1}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrrr}
 \toprule
-\textbf{Exp.} & \textbf{VSR} & \textbf{EF} \\
+\textbf{Experimento / Configuração} & \textbf{VSR (\%)} & \textbf{IC 95\% VSR} & \textbf{EF (\%)} & \textbf{IC 95\% EF} & \textbf{Latência (s)} \\
 \midrule
-E1 & 97,50 & \textbf{62,50} \\
-E2 & 96,25 & 58,75 \\
-E3 & 90,00 & 46,25 \\
-E4 & 97,50 & 57,50 \\
+\textbf{E1 --- Baseline (GPT-4.1-mini, Prompt A)} & \textbf{97,50} & 91,3--99,3 & \textbf{62,50} & 51,5--72,3 & 6,2 \\
+E2 --- Contexto estendido (GPT-4.1-mini) & 96,25 & 89,5--98,7 & 58,75 & 47,8--68,9 & 11,4 \\
+E3 --- Modelo leve (GPT-4o-mini) & 90,00 & 81,5--94,8 & 46,25 & 35,7--57,1 & 3,8 \\
+E4 --- Modelo avançado (GPT-4o) & 97,50 & 91,3--99,3 & 57,50 & 46,6--67,7 & 29,5 \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
-O baseline E1 demonstra que o subsistema gera SQL válida em 97,5\% dos casos e produz resultados funcionalmente equivalentes ao gabarito em 62,5\% das consultas.
+O baseline E1 estabeleceu desempenho sólido com VSR de 97,5\% e EF de 62,5\%. O contexto estendido (E2, $\approx$35k tokens) degradou a EF para 58,75\%, evidenciando o fenômeno de dispersão de atenção em contextos longos (\textit{lost in the middle}) \cite{Liu2023LostMiddle}. O GPT-4o-mini (E3) mostrou-se insuficiente para a complexidade do esquema SICOM (EF 46,25\%). O GPT-4o (E4) não superou o modelo compacto em EF (57,50\%) e apresentou latência média de geração de 29,5 segundos --- inviável para canal síncrono no WhatsApp. Esses resultados fixaram o GPT-4.1-mini como modelo de referência.
 
-\subsection{Lote II --- Configuração final de \textit{prompt}}
-
-\begin{table}[htbp]
-\centering
-\caption{Lote II --- configuração final ($n{=}80$, GPT-4.1-mini)}
-\label{tab:prompt_v2}
-\small
-\begin{tabular}{lrr}
-\toprule
-\textbf{Variante} & \textbf{VSR (\%)} & \textbf{EF (\%)} \\
-\midrule
-E1 --- compacto v1 & 97,50 & 62,50 \\
-\textbf{Prompt v2.1 (final)} & \textbf{100,00} & \textbf{72,50} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-A configuração v2.1 elevou a EF em 10 pontos percentuais com VSR integral, sem troca de modelo.
-
-\subsection{Análise por dificuldade (E1)}
+A Tabela~\ref{tab:diff} detalha o baseline E1 por nível de dificuldade. Observa-se que a perda de desempenho é gradual, concentrando-se em consultas de cruzamento entre tabelas e agregações temporais complexas.
 
 \begin{table}[htbp]
 \centering
-\caption{E1 --- indicadores por nível de dificuldade}
+\caption{E1 --- Desempenho por nível de dificuldade ($N=80$)}
 \label{tab:diff}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Dificuldade} & \textbf{Casos ($n$)} & \textbf{VSR (\%)} & \textbf{EF (\%)} & \textbf{IC 95\% EF} \\
+\midrule
+Fácil & 22 & 100,00 & 68,18 & 47,3--83,6 \\
+Médio & 44 & 97,73 & 61,36 & 46,6--74,3 \\
+Difícil & 14 & 92,86 & 57,14 & 32,6--78,6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Lote II --- Engenharia de Contexto e Regras de Domínio}
+
+Mantendo fixos o modelo GPT-4.1-mini e o conjunto de teste ($N=80$), o Lote II avaliou o impacto das regras de domínio (Prompt B), elaboradas a partir da taxonomia de falhas observadas no Lote I (Tabela~\ref{tab:lote2}).
+
+\begin{table}[htbp]
+\centering
+\caption{Lote II --- Comparativo de engenharia de \textit{prompt} ($N=80$)}
+\label{tab:lote2}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Configuração de Prompt} & \textbf{VSR (\%)} & \textbf{IC 95\% VSR} & \textbf{EF (\%)} & \textbf{IC 95\% EF} \\
+\midrule
+Prompt A --- Baseline compacto (E1) & 97,50 & 91,3--99,3 & 62,50 & 51,5--72,3 \\
+\textbf{Prompt B --- Regras de domínio (Final)} & \textbf{100,00} & 95,4--100,0 & \textbf{72,50} & 61,9--81,1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O Prompt B alcançou 100\% de SQLs válidas e elevou a equivalência funcional em 10 pontos percentuais (72,50\%), sem aumento de latência. Na análise pareada de pares discordantes, registraram-se 12 consultas corrigidas pelo Prompt B contra 5 regressões (teste de McNemar: $p = 0{,}146$). Embora o tamanho amostral imponha cautela quanto à significância estatística estrita, a direção do efeito reflete a eliminação sistemática de classes de erros de domínio SICOM (Tabela~\ref{tab:erros}).
+
+\begin{table}[htbp]
+\centering
+\caption{Taxonomia de falhas do baseline E1 sanadas pelo Prompt B}
+\label{tab:erros}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{p{1.6cm}p{4.0cm}p{4.2cm}p{4.2cm}}
+\toprule
+\textbf{Caso / ID} & \textbf{Consulta (Resumo)} & \textbf{Falha no Baseline E1} & \textbf{Regra de Domínio (Prompt B)} \\
+\midrule
+ID 8 & Contratos com aditivo de acréscimo & Comparação de \texttt{BIGINT} com \texttt{DATE} em datas YYYYMMDD & Conversão explícita com \texttt{CAST} de datas SICOM \\
+ID 2 & Servidores ativos $\times$ Bolsa Família & Cardinalidade divergente por homônimos em \textit{join} por nome & Junção por chave única documentada (\texttt{cpf\_formatado}) \\
+ID 7 & Maiores licitações homologadas & Agregação incorreta sem \textit{join} com itens de licitação & Âncoras de \textit{join} em tabelas setoriais \\
+ID 10 & Evolução mensal da folha & Filtro de higiene indevido restringindo universo & Escopo condicional de filtros ao formato de agregação \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Lote III --- Recuperação Documental sobre o Diário Oficial}
+
+O Lote III comparou quatro estratégias de recuperação sobre o conjunto de referência RAG ampliado ($N_{\text{RAG}} = 40$), mantendo o índice vetorial e o modelo de \textit{embedding} constantes (Tabela~\ref{tab:lote3}).
+
+\begin{table}[htbp]
+\centering
+\caption{Lote III --- Comparativo de estratégias de recuperação RAG ($N_{\text{RAG}}=40$, $k=5$)}
+\label{tab:lote3}
+\small
 \begin{tabular}{lrrr}
 \toprule
-\textbf{Dificuldade} & \textbf{$n$} & \textbf{EF (\%)} & \textbf{VSR (\%)} \\
+\textbf{Estratégia de Recuperação} & \textbf{Recall@5 (\%)} & \textbf{IC 95\% Recall} & \textbf{MRR (\%)} \\
 \midrule
-Fácil & 22 & 68,18 & 100,00 \\
-Médio & 44 & 61,36 & 97,73 \\
-Difícil & 14 & 57,14 & 92,86 \\
+Busca densa isolada & 22,50 & 12,3--37,5 & 13,17 \\
+Deduplicação de \textit{chunks} idênticos & 22,50 & 12,3--37,5 & 14,79 \\
+Filtro determinístico por tipo de ato + dedup & 22,50 & 12,3--37,5 & 15,42 \\
+\textbf{Busca híbrida por nº de ato + dedup + filtro} & \textbf{100,00} & \textbf{91,2--100,0} & \textbf{97,50} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Síntese do Lote I}
+A desagregação por estrato explicita o fenômeno: no estrato \texttt{com\_numero} ($n=32$), a busca densa pura obteve apenas 3,1\% de Recall@5 (1/32). Modelos de \textit{embedding} falham em preservar a correspondência exata de identificadores numéricos, retornando decretos com teor similar, porém numeração incorreta. A busca híbrida (extração do identificador e priorização do cabeçalho do ato) elevou o Recall@5 a 100\% e o MRR a 97,5\%. No estrato \texttt{tematico} ($n=8$), a busca densa já alcançava 100\% de Recall@5, sendo refinada pela deduplicação.
 
-O \textit{prompt} estendido (E2) não superou o compacto em equivalência funcional (58,75\% \textit{versus} 62,50\%). O GPT-4o-mini (E3) degrada VSR (90\%) e EF (46,25\%). O GPT-4o (E4) não supera o baseline em EF (57,50\%) e apresenta latência média de 29,5\,s na geração de SQL --- inviável para respostas síncronas em canal conversacional.
+\subsection{Validação Qualitativa da Orquestração e Resposta Natural}
 
-\subsection{Lote III --- Recuperação documental}
-
-\begin{table}[htbp]
-\centering
-\caption{Lote III --- estratégias de recuperação ($N_{\text{RAG}}{=}8$, $k{=}5$)}
-\label{tab:rag}
-\begin{tabular}{lrr}
-\toprule
-\textbf{Configuração} & \textbf{Recall@5 (\%)} & \textbf{MRR (\%)} \\
-\midrule
-Busca densa & 100,00 & 63,33 \\
-Deduplicação de \textit{chunks} & 100,00 & 69,79 \\
-Híbrido + dedup + filtro tipo & 100,00 & \textbf{87,50} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-O Recall@5 integral indica que o ato esperado aparece entre os cinco primeiros \textit{chunks} para todos os itens da amostra. A deduplicação e a busca híbrida por número de ato elevam o MRR sem perda de Recall. Em amostra ampliada ($n{=}20$), a busca densa isolada obteve Recall@5 de 0\%; o stack híbrido+dedup atingiu 100\%/100\%.
-
-\subsection{Validação operacional}
-
-Além do \textit{benchmark} offline, o SIM foi validado em ambiente operacional via WhatsApp na instância Caeté, confirmando viabilidade da orquestração integrada entre automação, mensageria, RAG e consulta analítica.
+Para verificar a fidelidade da cadeia completa, realizou-se avaliação com juiz automático (\textit{LLM-as-Judge}, GPT-4o) sobre amostra estratificada do E1 ($n=30$), registrando a tripla: pergunta $\rightarrow$ resultado DuckDB $\rightarrow$ resposta textual gerada. Obteve-se taxa de concordância (\textit{Judge Agreement Rate}, JAR) de 100\% (30/30; IC 95\%: 88,6--100\%), com notas médias de 4,87/5 em adequação semântica e 4,87/5 em fidelidade aos dados. O sistema foi implantado com sucesso no canal WhatsApp de Caeté, confirmando a estabilidade da orquestração em ambiente real.
 
 \section{Discussão}
-\label{sec:discussao}
 
-\textbf{Transparência e acesso.} O SIM materializa o princípio de que dados abertos só cumprem sua função democrática quando acessíveis. A arquitetura híbrida (RAG + SQL) cobre tanto consultas normativas quanto analíticas, cenário típico de prefeituras brasileiras.
+\subsection{Contextualização em Relação a Benchmarks Acadêmicos}
 
-\textbf{Viabilidade técnica.} O Lote I estabeleceu GPT-4.1-mini como modelo de referência (VSR 97,5\%, EF 62,5\%). O Lote II demonstrou que a engenharia de \textit{prompt} eleva a EF para 72,5\% com VSR de 100\%. O Lote III elevou o MRR de 63,33\% para 87,5\% no \textit{golden} RAG v1.1.
+A equivalência funcional de 72,5\% alcançada pelo SIM situa-se na mesma ordem de grandeza dos resultados reportados em \textit{benchmarks} internacionais complexos como o BIRD (onde modelos comerciais atingem EX entre 50\% e 55\% \cite{Li2024BIRD}). Ressalta-se que a EF não é diretamente comparável ao EX estrito: no baseline E1, a EX estrita foi de apenas 10\%, pois o modelo frequentemente nomeia colunas de forma descritiva diferente do gabarito, embora os valores retornados fossem idênticos aos demandados pelo cidadão. A EF mostrou-se a métrica apropriada para mensurar a utilidade prática em tecnologia cívica.
 
-\textbf{Limitações.} (i)~conjunto golden SQL de uma única instância; (ii)~amostra RAG v1.1 reduzida ($N_{\text{RAG}}{=}8$); (iii)~lacunas documentadas de transparência local; (iv)~gabarito manual pode não cobrir todas as SQL semanticamente corretas.
+\subsection{Achados Empíricos Centrais}
+
+Os experimentos consolidam dois achados principais:
+\begin{enumerate}
+    \item \textbf{Engenharia de contexto supera troca de modelo:} Inserir convenções de negócio e regras do SICOM no \textit{prompt} recuperou +10\,pp de EF sobre o GPT-4.1-mini, superando o GPT-4o e reduzindo o tempo de resposta em 78\%;
+    \item \textbf{Necessidade estrita de busca híbrida em Diários Oficiais:} O colapso da busca densa pura em atos numerados (22,5\% Recall@5 agregado e 3,1\% no estrato com número) evidencia que sistemas GovTech para documentos oficiais exigem indexação híbrida estruturada.
+\end{enumerate}
+
+\subsection{Confiabilidade, Riscos e Segurança}
+
+Em canais públicos como o WhatsApp, a taxa de 27,5\% de falha funcional residual (em consultas difíceis e cruzamentos complexos) impõe riscos de desinformação fiscal. Como mitigação de engenharia, recomenda-se: (i)~exibição opcional da consulta SQL gerada para auditoria cidadã; (ii)~declaração de incerteza em cruzamentos com cardinalidade ambígua; e (iii)~mecanismos de proteção contra \textit{prompt injection} na camada do orquestrador.
+
+\subsection{Ameaças à Validade e Limitações}
+
+Reconhecem-se como limitações: (i)~conjunto de referência derivado de 10 intenções analíticas em uma única instância municipal (Caeté); (ii)~o ganho do Prompt B foi aferido no mesmo conjunto de referência usado na taxonomia de falhas ($p = 0{,}146$); e (iii)~a validação em produção no WhatsApp possui caráter qualitativo de engenharia, não tendo sido coletadas métricas de adoção populacional em larga escala.
 
 \section{Conclusão}
 
-O SIM demonstra viabilidade técnica de acesso conversacional a dados municipais abertos, com arquitetura replicável para outras prefeituras. A validação em três lotes experimentais comprova geração confiável de SQL (EF 72,5\% na configuração final) e recuperação documental eficaz (MRR 87,5\% com recuperação híbrida). O repositório público permite replicação offline dos experimentos.
-
-\section*{Repositório}
-
-Código, dados e scripts: \url{https://github.com/rafa-rez/tcc-sistema-de-informa-es-municipais}
+O SIM comprova a viabilidade técnica de interfaces conversacionais integradas (RAG e Text-to-SQL) para acesso a dados abertos municipais brasileiros. A validação experimental demonstrou que a engenharia de contexto especializada no ecossistema SICOM eleva a equivalência funcional para 72,5\% com 100\% de SQLs válidas, mantendo baixa latência, enquanto a recuperação híbrida é indispensável para acervos normativos (Recall@5 de 100\% e MRR de 97,5\%). Como trabalhos futuros, apontam-se o estudo de adoção com usuários finais e a replicação da plataforma em outros municípios mineiros.
 
 \bibliographystyle{abntex2-alf}
 \bibliography{../referencias/referencias_sim}
