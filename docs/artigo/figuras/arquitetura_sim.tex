@@ -9,6 +9,7 @@
                     minimum height=1.0cm, fill=white, line width=0.5pt},
         store/.style={box, fill=black!7},
         flow/.style={->, thick, line width=0.6pt},
+        biflow/.style={<->, thick, line width=0.6pt},
         elabel/.style={font=\footnotesize, fill=white, inner sep=1.5pt},
         zone/.style={rounded corners=5pt, draw=black!30, dash pattern=on 2pt off 2pt,
                      inner sep=0.3cm},
@@ -20,7 +21,7 @@
         \node[box, right=of user] (waha) {Gateway\\WAHA};
         \node[box, right=of waha]  (n8n)  {Automação\\n8n};
         \node[box, right=of n8n, minimum width=2.8cm] (orch)
-              {Agente orquestrador\\[1pt]{\scriptsize\itshape\color{black!60}GPT-4o}};
+              {Agente orquestrador\\[1pt]{\scriptsize\texttt{GPT-4o}}};
 
         \draw[flow] (user) -- (waha);
         \draw[flow] (waha) -- (n8n);
@@ -36,12 +37,12 @@
         \node[box, below=1.8cm of n8n,  minimum width=3.0cm] (rag)
               {RAG documental\\{\scriptsize Diário Oficial}};
         \node[box, below=1.8cm of orch, minimum width=3.0cm] (sql)
-              {Text-to-SQL\\[1pt]{\scriptsize\itshape\color{black!60}GPT-4.1-mini}};
+              {Text-to-SQL\\[1pt]{\scriptsize\texttt{GPT-4.1-mini}}};
 
         \coordinate (sp) at ($(orch.south)+(0,-0.75)$);
         \draw[flow] (orch.south) -- (sp);
-        \draw[flow] (sp) -| (rag.north);
-        \draw[flow] (sp) -- (sql.north);
+        \draw[biflow] (sp) -| (rag.north);
+        \draw[biflow] (sp) -- (sql.north);
         \node[elabel] at ([yshift=0.34cm]rag.north) {normativo};
         \node[elabel] at ([yshift=0.34cm]sql.north) {tabular / analítico};
 
@@ -50,23 +51,26 @@
               {Índice vetorial\\Qdrant};
         \node[store, below=0.9cm of sql] (duck)
               {API analítica\\DuckDB \textit{in-memory}};
-        \node[store, minimum width=7.4cm]
-              at ($(qdrant.south)!0.5!(duck.south)+(0,-1.1)$) (etl)
-              {ETL --- bases SICOM, CGU e metadados de esquema (DDL)};
+        
+        \node[store, minimum width=3.8cm, below=0.9cm of qdrant] (ingest)
+              {Indexação Documental\\{\scriptsize Diário Oficial (PDFs / OCR)}};
+        \node[store, minimum width=3.8cm, below=0.9cm of duck] (etl)
+              {ETL SICOM e CGU\\{\scriptsize DDL e Tabelas Consolidadas}};
 
-        \draw[flow] (rag) -- (qdrant);
-        \draw[flow] (sql) -- (duck);
+        \draw[biflow] (rag) -- (qdrant);
+        \draw[biflow] (sql) -- (duck);
+        \draw[flow] (ingest) -- (qdrant);
         \draw[flow] (etl) -- (duck);
 
         % ===== Zonas de fundo =====
         \begin{scope}[on background layer]
             \node[zone, fit=(user)(waha)(n8n)(orch)] (zA) {};
             \node[zone, fit=(rag)(sql)]               (zB) {};
-            \node[zone, fit=(qdrant)(duck)(etl)]      (zC) {};
+            \node[zone, fit=(qdrant)(duck)(ingest)(etl)] (zC) {};
         \end{scope}
         \node[zonelbl, anchor=south west] at (zA.north west) {Canal conversacional (produção)};
         \node[zonelbl, anchor=south west] at (zB.north west) {Recuperação e consulta};
-        \node[zonelbl, anchor=south west] at (zC.north west) {Camada de dados};
+        \node[zonelbl, anchor=south west] at (zC.north west) {Camada de dados e ingestão};
     \end{tikzpicture}%
     }
     \caption{Arquitetura e fluxo operacional do SIM na instância piloto de Caeté.}
