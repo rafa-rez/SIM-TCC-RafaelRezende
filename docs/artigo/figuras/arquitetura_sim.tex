@@ -1,7 +1,7 @@
 % Diagrama da arquitetura do SIM — incluído via \input
 \begin{figure}[htbp]
     \centering
-    \resizebox{0.92\linewidth}{!}{%
+    \resizebox{0.95\linewidth}{!}{%
     \begin{tikzpicture}[
         font=\small,
         >={Stealth[length=2mm]},
@@ -9,6 +9,7 @@
                     minimum height=1.0cm, fill=white, line width=0.5pt},
         store/.style={box, fill=black!7},
         flow/.style={->, thick, line width=0.6pt},
+        biflow/.style={<->, thick, line width=0.6pt},
         elabel/.style={font=\footnotesize, fill=white, inner sep=1.5pt},
         zone/.style={rounded corners=5pt, draw=black!30, dash pattern=on 2pt off 2pt,
                      inner sep=0.3cm},
@@ -17,10 +18,10 @@
     ]
         % ===== Camada 1: canal conversacional (produção) =====
         \node[box, minimum width=2.6cm] (user) {Usuário\\\textit{WhatsApp}};
-        \node[box, right=of user] (waha) {Gateway\\WAHA};
-        \node[box, right=of waha]  (n8n)  {Automação\\n8n};
+        \node[box, right=of user] (waha) {Gateway\\\texttt{WAHA}};
+        \node[box, right=of waha]  (n8n)  {Automação\\\texttt{n8n}};
         \node[box, right=of n8n, minimum width=2.8cm] (orch)
-              {Agente orquestrador\\[1pt]{\scriptsize\itshape\color{black!60}GPT-4o}};
+              {Agente orquestrador\\[1pt]{\scriptsize\itshape\color{black!60}\texttt{GPT-4o}}};
 
         \draw[flow] (user) -- (waha);
         \draw[flow] (waha) -- (n8n);
@@ -36,27 +37,34 @@
         \node[box, below=1.8cm of n8n,  minimum width=3.0cm] (rag)
               {RAG documental\\{\scriptsize Diário Oficial}};
         \node[box, below=1.8cm of orch, minimum width=3.0cm] (sql)
-              {Text-to-SQL\\[1pt]{\scriptsize\itshape\color{black!60}GPT-4.1-mini}};
+              {Text-to-SQL\\[1pt]{\scriptsize\itshape\color{black!60}\texttt{GPT-4.1-mini}}};
 
+        % Setas de mão dupla entre Orquestrador e Subsistemas (Nota #39)
         \coordinate (sp) at ($(orch.south)+(0,-0.75)$);
-        \draw[flow] (orch.south) -- (sp);
-        \draw[flow] (sp) -| (rag.north);
-        \draw[flow] (sp) -- (sql.north);
+        \draw[biflow] (orch.south) -- (sp);
+        \draw[biflow] (sp) -| (rag.north);
+        \draw[biflow] (sp) -- (sql.north);
         \node[elabel] at ([yshift=0.34cm]rag.north) {normativo};
         \node[elabel] at ([yshift=0.34cm]sql.north) {tabular / analítico};
 
         % ===== Camada 3: dados =====
         \node[store, below=0.9cm of rag] (qdrant)
-              {Índice vetorial\\Qdrant};
+              {Índice vetorial\\\texttt{Qdrant}};
         \node[store, below=0.9cm of sql] (duck)
-              {API analítica\\DuckDB \textit{in-memory}};
-        \node[store, minimum width=7.4cm]
-              at ($(qdrant.south)!0.5!(duck.south)+(0,-1.1)$) (etl)
-              {ETL --- bases SICOM, CGU e metadados de esquema (DDL)};
+              {API analítica\\\texttt{DuckDB} \textit{in-memory}};
+        
+        % Nó de ETL e Indexação conectando a AMBOS os bancos (Nota #38)
+        \node[store, minimum width=8.2cm]
+              at ($(qdrant.south)!0.5!(duck.south)+(0,-1.2)$) (etl)
+              {ETL e Ingestão --- bases SICOM, CGU e Indexação de Diários (OCR/Chunking)};
 
-        \draw[flow] (rag) -- (qdrant);
-        \draw[flow] (sql) -- (duck);
-        \draw[flow] (etl) -- (duck);
+        % Comunicação bidirecional com os repositórios
+        \draw[biflow] (rag) -- (qdrant);
+        \draw[biflow] (sql) -- (duck);
+
+        % Setas de alimentação do Pipeline de Ingestão/ETL para Qdrant (RAG) e DuckDB (SQL)
+        \draw[flow] ($(etl.north)+(-2.2, 0)$) -- (qdrant.south);
+        \draw[flow] ($(etl.north)+( 2.2, 0)$) -- (duck.south);
 
         % ===== Zonas de fundo =====
         \begin{scope}[on background layer]

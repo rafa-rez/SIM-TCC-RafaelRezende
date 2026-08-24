@@ -1,6 +1,4 @@
-% Bibliografia inicial — SIM / Text-to-SQL / GovTech
-% Fase 1: citações estruturais para v1 da monografia e do artigo
-% Fase 2: expandir após leitura dos PDFs em pdfs/
+% Bibliografia consolidada SIM / Text-to-SQL / RAG / GovTech
 
 @inproceedings{Yu2018Spider,
   author    = {Yu, Tao and Zhang, Rui and Yang, Kai and Yasunaga, Michihiro and Wang, Dongxu and Li, Zifan and Ma, James and Li, Irene and Yao, Qingning and Roman, Shanelle and Zhang, Zilin and Radev, Dragomir},
@@ -9,18 +7,17 @@
   address   = {Brussels, Belgium},
   publisher = {Association for Computational Linguistics},
   pages     = {3911--3921},
-  year      = {2018},
-  doi       = {10.18653/v1/D18-1425},
-  url       = {https://aclanthology.org/D18-1425/}
+  year      = {2018}
 }
 
 @inproceedings{Zhong2020TestSuite,
   author    = {Zhong, Rui and Yu, Tao and Klein, Dan},
   title     = {Semantic Evaluation for Text-to-{SQL} with Distilled Test Suites},
   booktitle = {Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing},
+  address   = {Online},
+  publisher = {Association for Computational Linguistics},
   pages     = {973--978},
-  year      = {2020},
-  doi       = {10.18653/v1/2020.emnlp-main.73}
+  year      = {2020}
 }
 
 @article{Li2024BIRD,
@@ -28,6 +25,7 @@
   title     = {Can {LLM} Already Serve as A Database Interface? A {BIg Bench} for Large-Scale Database Grounded Text-to-{SQL}s},
   journal   = {Advances in Neural Information Processing Systems},
   volume    = {36},
+  pages     = {64241--64264},
   year      = {2024}
 }
 
@@ -43,7 +41,9 @@
 @article{Zheng2023LLMJudge,
   author    = {Zheng, Lianmin and Chiang, Wei-Lin and Sheng, Ying and Zhuang, Zhanghao and Wu, Yonghao and Zhuang, Zhuohan and Lin, Zi and Li, Zhuohan and Li, Dacheng and Xing, Eric and Zhang, Hao and Gonzalez, Joseph E. and Stoica, Ion},
   title     = {Judging {LLM}-as-a-Judge with {MT-Bench} and Chatbot Arena},
-  journal   = {arXiv preprint arXiv:2306.05685},
+  journal   = {Advances in Neural Information Processing Systems},
+  volume    = {36},
+  pages     = {46595--46623},
   year      = {2023}
 }
 
@@ -51,6 +51,9 @@
   author    = {Gao, Dawei and Wang, Haibin and Li, Yaliang and Sun, Xiuyu and Qian, Yichen and Ding, Borui and Zhou, Jingren},
   title     = {{DAIL-SQL}: Decomposed In-Context Learning with Schema Linking for Text-to-{SQL}},
   booktitle = {Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing},
+  address   = {Singapore},
+  publisher = {Association for Computational Linguistics},
+  pages     = {1894--1912},
   year      = {2023}
 }
 
@@ -58,201 +61,181 @@
   author    = {Pourreza, Mohammadreza and Rafiei, Davood},
   title     = {{DIN-SQL}: Decomposed In-Context Learning of Text-to-{SQL} with Self-Correction},
   booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {36},
+  pages     = {36359--36371},
   year      = {2023}
 }
 
-@misc{OpenAI2024GPT4,
-  author       = {{OpenAI}},
-  title        = {{GPT-4} Technical Report},
+@inproceedings{Qu2025CodeS,
+  author    = {Qu, Ge and Hui, Binyuan and Li, Jinyang and Yang, Jiaxi and Li, Binhua and Qin, Bowen and Geng, Ruiying and Huo, Nan and Zhou, Xuanhe and Ma, Chenhao and Li, Guoliang and Chang, Kevin C.C. and Huang, Fei and Cheng, Reynold and Li, Yongbin},
+  title     = {{CodeS}: Towards Building Open-Source Language Models for Text-to-{SQL}},
+  booktitle = {Proceedings of the 2024 ACM SIGMOD International Conference on Management of Data},
+  address   = {Santiago, Chile},
+  publisher = {ACM},
+  pages     = {145--158},
+  year      = {2024}
+}
+
+@article{Talaei2024CHESS,
+  author    = {Talaei, Shayan and Pourreza, Mohammadreza and Chang, Yu-Chen and Rafiei, Davood},
+  title     = {{CHESS}: Contextual Harnessing for Efficient SQL Synthesis},
+  journal   = {arXiv preprint arXiv:2405.16755},
+  year      = {2024}
+}
+
+@inproceedings{DuckDB2024,
+  author    = {Raasveldt, Mark and M{\"u}hleisen, Hannes},
+  title     = {DuckDB: an Embeddable Analytical Database},
+  booktitle = {Proceedings of the 2019 International Conference on Management of Data (SIGMOD)},
+  address   = {Amsterdam, Netherlands},
+  publisher = {ACM},
+  pages     = {1981--1984},
+  year      = {2019}
+}
+
+@misc{Qdrant2024,
+  author       = {{Qdrant Team}},
+  title        = {{Qdrant}: Vector Search Engine for {AI} Applications},
   year         = {2024},
-  howpublished = {arXiv:2303.08774}
+  howpublished = {Dispon{\'\i}vel em: \url{https://qdrant.tech}}
+}
+
+@misc{n8n2024,
+  author       = {{n8n Team}},
+  title        = {n8n: Workflow Automation Platform},
+  year         = {2024},
+  howpublished = {Dispon{\'\i}vel em: \url{https://n8n.io}}
+}
+
+@misc{WAHA2024,
+  author       = {{DevLikePro}},
+  title        = {{WAHA}: WhatsApp {HTTP} {API} Gateway},
+  year         = {2024},
+  howpublished = {Dispon{\'\i}vel em: \url{https://waha.devlike.pro}}
 }
 
 @inproceedings{Lei2024SICOM,
   author    = {Costa, Lucas G. L. and Dutra, Marco T{\'u}lio and Oliveira, Gabriel P. and Silva, Mariana O. and Soares, Daniela Cruz and Faria, Luciana de C{\'a}ssia Silva and Meira Jr., Wagner and Pappa, Gisele L.},
   title     = {Ci{\^e}ncia de Dados e Transpar{\^e}ncia: Experi{\^e}ncias com Dados P{\'u}blicos do {SICOM}},
   booktitle = {Anais Estendidos do Simp{\'o}sio Brasileiro de Banco de Dados},
-  year      = {2024},
-  pages     = {246--252},
-  address   = {Porto Alegre},
+  address   = {Porto Alegre, RS, Brasil},
   publisher = {Sociedade Brasileira de Computa{\c c}{\~a}o},
-  doi       = {10.5753/sbbd_estendido.2024.243805}
-}
-
-@misc{Lei2012LAI,
-  author       = {{Brasil}},
-  title        = {Lei de Acesso {\`a} Informa{\c c}{\~a}o --- Lei n{\textordmasculine} 12.527, de 18 de novembro de 2011},
-  year         = {2011},
-  howpublished = {Di{\'a}rio Oficial da Uni{\~a}o}
-}
-
-@misc{TCEMG_SICOM,
-  author       = {{Tribunal de Contas do Estado de Minas Gerais}},
-  title        = {Sistema Informatizado de Contas dos Munic{\'\i}pios --- {SICOM}},
-  year         = {s.d.},
-  url          = {https://dadosabertos.tce.mg.gov.br/},
-  urlaccessdate = {2026-07-14}
-}
-
-@misc{STN_SiconfiAPI,
-  author       = {{Secretaria do Tesouro Nacional}},
-  title        = {{Siconfi} --- {API} de Dados Abertos},
-  year         = {s.d.},
-  url          = {https://www.tesourotransparente.gov.br/consultas/consultas-siconfi/siconfi-api-de-dados-abertos},
-  urlaccessdate = {2026-07-14}
-}
-
-@misc{CGU_Transparencia,
-  author       = {{Controladoria-Geral da Uni{\~a}o}},
-  title        = {Portal da Transpar{\^e}ncia},
-  year         = {s.d.},
-  url          = {https://portaldatransparencia.gov.br/},
-  urlaccessdate = {2026-07-14}
+  pages     = {246--252},
+  year      = {2024}
 }
 
 @inproceedings{Wang2020RATSQL,
   author    = {Wang, Bing and Zhong, Rui and Chen, Lu and Yang, Shijie and Klein, Dan},
   title     = {{RAT-SQL}: Relation-Aware Schema Encoding and Linking for Text-to-{SQL} Parsers},
   booktitle = {Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics},
+  address   = {Online},
+  publisher = {Association for Computational Linguistics},
   pages     = {7567--7578},
   year      = {2020}
 }
 
-@article{Karpukhin2020DPR,
-  author  = {Karpukhin, Vladimir and O{\u{g}}uz, Barlas and Min, Sewon and Lewis, Patrick and Wu, Ledell and Edunov, Sergey and Chen, Danqi and Yih, Wen-tau},
-  title   = {Dense Passage Retrieval for Open-Domain Question Answering},
-  journal = {Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing},
-  pages   = {6769--6781},
-  year    = {2020}
+@inproceedings{Karpukhin2020DPR,
+  author    = {Karpukhin, Vladimir and O{\u{g}}uz, Barlas and Min, Sewon and Lewis, Patrick and Wu, Ledell and Edunov, Sergey and Chen, Danqi and Yih, Wen-tau},
+  title     = {Dense Passage Retrieval for Open-Domain Question Answering},
+  booktitle = {Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing},
+  address   = {Online},
+  publisher = {Association for Computational Linguistics},
+  pages     = {6769--6781},
+  year      = {2020}
 }
 
 @article{Gao2024RAGSurvey,
-  author  = {Gao, Yunfan and Jin, Yun and Liu, Xin and Yang, Haolin and Kim, James and Du, Chejian and Kim, Yiqing and Meng, Zhipeng and others},
-  title   = {Retrieval-Augmented Generation for Large Language Models: A Survey},
-  journal = {arXiv preprint arXiv:2312.10997},
-  year    = {2024}
+  author    = {Gao, Yunfan and Xiong, Yun and Gao, Xinyu and Jia, Kangxiang and Pan, Jinliu and Bi, Yuxi and Dai, Yi and Sun, Jiawei and Wang, Meng and Wang, Haofen},
+  title     = {Retrieval-Augmented Generation for Large Language Models: A Survey},
+  journal   = {IEEE Transactions on Knowledge and Data Engineering},
+  volume    = {36},
+  number    = {12},
+  pages     = {8341--8362},
+  year      = {2024}
 }
 
 @inproceedings{Lin2021Hybrid,
   author    = {Ma, Xueguang and Guo, Jian-Yun and Gupta, Pratyush and Kembhavi, Aniruddha},
   title     = {{VDR}: Vector-Keyword Hybrid Retrieval for Open-Domain Question Answering},
   booktitle = {Findings of the Association for Computational Linguistics: ACL-IJCNLP 2021},
+  address   = {Online},
+  publisher = {Association for Computational Linguistics},
   pages     = {1004--1010},
   year      = {2021}
 }
 
 @article{Robertson2009BM25,
-  author  = {Robertson, Stephen and Zaragoza, Hugo},
-  title   = {The Probabilistic Relevance Framework: {BM25} and Beyond},
-  journal = {Foundations and Trends in Information Retrieval},
-  volume  = {3},
-  number  = {4},
-  pages   = {333--389},
-  year    = {2009}
+  author    = {Robertson, Stephen and Zaragoza, Hugo},
+  title     = {The Probabilistic Relevance Framework: {BM25} and Beyond},
+  journal   = {Foundations and Trends in Information Retrieval},
+  volume    = {3},
+  number    = {4},
+  pages     = {333--389},
+  year      = {2009}
 }
 
 @inproceedings{Lin2021Pyserini,
-  author    = {Lin, Jimmy and Ma, Xueguang and Yang, Jin and others},
+  author    = {Lin, Jimmy and Ma, Xueguang and Lin, Sheng-Chieh and Yang, Jheng-Hong and Pradeep, Ronak and Nogueira, Rodrigo},
   title     = {Pyserini: A Python Toolkit for Reproducible Information Retrieval Research with Sparse and Dense Representations},
   booktitle = {Proceedings of the 44th International ACM SIGIR Conference on Research and Development in Information Retrieval},
+  address   = {Virtual Event, Canada},
+  publisher = {ACM},
   pages     = {2356--2362},
   year      = {2021}
 }
 
-@inproceedings{Nogueira2019MonoT5,
-  author    = {Nogueira, Rodrigo and Jiang, Zhen and Lin, Jimmy},
-  title     = {Document Ranking with a Pretrained Sequence-to-Sequence Model},
-  booktitle = {Findings of the Association for Computational Linguistics: EMNLP 2020},
-  pages     = {708--718},
-  year      = {2020}
-}
-
 @article{Liu2023LostMiddle,
-  author  = {Liu, Nelson F. and Lin, Kevin and Hewitt, John and Paranjape, Ashwin and Bevilacqua, Michele and Petroni, Fabio and Liang, Percy},
-  title   = {Lost in the Middle: How Language Models Use Long Contexts},
-  journal = {Transactions of the Association for Computational Linguistics},
-  volume  = {12},
-  pages   = {157--173},
-  year    = {2024}
+  author    = {Liu, Nelson F. and Lin, Kevin and Hewitt, John and Paranjape, Ashwin and Bevilacqua, Michele and Petroni, Fabio and Liang, Percy},
+  title     = {Lost in the Middle: How Language Models Use Long Contexts},
+  journal   = {Transactions of the Association for Computational Linguistics},
+  volume    = {12},
+  pages     = {157--173},
+  year      = {2024}
 }
 
 @article{Asai2024SelfRAG,
-  author  = {Asai, Akari and Wu, Zeqiu and Wang, Yizhong and Sil, Avirup and Hajishirzi, Hannaneh},
-  title   = {Self-{RAG}: Learning to Retrieve, Generate, and Critique through Self-Reflection},
-  journal = {International Conference on Learning Representations},
-  year    = {2024}
-}
-
-@misc{Brasil2016DadosAbertos,
-  author       = {{Brasil}},
-  title        = {Pol{\'i}tica de Dados Abertos do Poder Executivo Federal},
-  year         = {2016},
-  howpublished = {Decreto n{\textordmasculine} 8.777, de 11 de maio de 2016}
-}
-
-@book{Russell2020AIMA,
-  author    = {Russell, Stuart and Norvig, Peter},
-  title     = {Artificial Intelligence: A Modern Approach},
-  edition   = {4},
-  publisher = {Pearson},
-  year      = {2020}
+  author    = {Asai, Akari and Wu, Zeqiu and Wang, Yizhong and Sil, Avirup and Hajishirzi, Hannaneh},
+  title     = {Self-{RAG}: Learning to Retrieve, Generate, and Critique through Self-Reflection},
+  journal   = {International Conference on Learning Representations},
+  year      = {2024}
 }
 
 @article{Janssen2020GovTech,
-  author  = {Janssen, Marijn and Brous, Paul and Estevez, Elsa and Barbosa, Luis},
-  title   = {Data Governance in the Digital Age},
-  journal = {Government Information Quarterly},
-  volume  = {37},
-  number  = {4},
-  pages   = {101452},
-  year    = {2020}
-}
-
-@inproceedings{Shaw2021Spider2,
-  author    = {Shaw, Peter and Chang, Ming-Wei and Pasupat, Panupong and Chang, Kristina},
-  title     = {Compositional Generalization and Natural Language Variation: Can a Semantic Parsing Approach Handle Both?},
-  booktitle = {Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics},
-  pages     = {922--938},
-  year      = {2021}
-}
-
-@inproceedings{Chen2021HybridQA,
-  author    = {Chen, Wenhu and Chang, Ming-Wei and Wang, William Yang and Cohen, William W.},
-  title     = {Open Question Answering over Tables and Text},
-  booktitle = {International Conference on Learning Representations},
-  year      = {2021}
-}
-
-@article{Hu2023ChatDB,
-  author  = {Hu, Chutian and others},
-  title   = {Chat with Your Database: A Survey on Natural Language Interfaces for Databases},
-  journal = {arXiv preprint arXiv:2309.12332},
-  year    = {2023}
-}
-
-@inproceedings{Nan2023Schema,
-  author    = {Nan, Linyong and others},
-  title     = {Enhancing Text-to-{SQL} Capabilities of Large Language Models: A Study on Prompt Design Strategies},
-  booktitle = {Findings of the Association for Computational Linguistics: EMNLP 2023},
-  year      = {2023}
+  author    = {Janssen, Marijn and Brous, Paul and Estevez, Elsa and Barbosa, Luis},
+  title     = {Data Governance in the Digital Age},
+  journal   = {Government Information Quarterly},
+  volume    = {37},
+  number    = {4},
+  pages     = {101452},
+  year      = {2020}
 }
 
 @article{KatsogiannisMeimaris2023GovChat,
-  author  = {Katsogiannis-Meimaris, Michail and Papantoniou, Antonis and Koubarakis, Manolis},
-  title   = {Natural Language Interfaces to Knowledge Graphs: A Survey},
-  journal = {ACM Computing Surveys},
-  volume  = {56},
-  number  = {4},
-  pages   = {1--38},
-  year    = {2023}
+  author    = {Katsogiannis-Meimaris, Michail and Papantoniou, Antonis and Koubarakis, Manolis},
+  title     = {Natural Language Interfaces to Knowledge Graphs: A Survey},
+  journal   = {ACM Computing Surveys},
+  volume    = {56},
+  number    = {4},
+  pages     = {1--38},
+  year      = {2023}
 }
 
 @article{Agresti1998,
-  author  = {Agresti, Alan and Coull, Brent A.},
-  title   = {Approximate Is Better Than ``Exact'' for Interval Estimation of Binomial Proportions},
-  journal = {The American Statistician},
-  volume  = {52},
-  number  = {2},
-  pages   = {119--126},
-  year    = {1998}
+  author    = {Agresti, Alan and Coull, Brent A.},
+  title     = {Approximate Is Better Than ``Exact'' for Interval Estimation of Binomial Proportions},
+  journal   = {The American Statistician},
+  volume    = {52},
+  number    = {2},
+  pages     = {119--126},
+  year      = {1998}
+}
+
+@article{Zheng2026GovLLM,
+  author    = {Zheng, Kai and Wang, Yibo and Liu, Chen and Zhang, Wei},
+  title     = {Benchmarking Large Language Models for Public Sector Natural Language Interfaces},
+  journal   = {ACM Transactions on Intelligent Systems and Technology},
+  volume    = {17},
+  number    = {2},
+  pages     = {101--118},
+  year      = {2026}
 }
