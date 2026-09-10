@@ -29,14 +29,15 @@
 
         % retorno: resposta em linguagem natural (roteada acima da linha)
         \coordinate (top) at ($(orch.north)+(0,0.9)$);
+        \coordinate (topL) at ($(user.north)+(0,0.9)$);
         \draw[flow] (orch.north) -- (top) -| (user.north);
         \node[elabel] at ($(user.north)!0.5!(orch.north)+(0,0.9)$)
               {resposta em linguagem natural};
 
         % ===== Camada 2: recuperação e consulta =====
-        \node[box, below=1.8cm of n8n,  minimum width=3.0cm] (rag)
+        \node[box, below=2.6cm of n8n,  minimum width=3.0cm] (rag)
               {RAG documental\\{\scriptsize Diário Oficial}};
-        \node[box, below=1.8cm of orch, minimum width=3.0cm] (sql)
+        \node[box, below=2.6cm of orch, minimum width=3.0cm] (sql)
               {Text-to-SQL\\[1pt]{\scriptsize\itshape\color{black!60}\texttt{GPT-4.1-mini}}};
 
         % Setas de mão dupla entre Orquestrador e Subsistemas (Nota #39)
@@ -46,6 +47,8 @@
         \draw[biflow] (sp) -- (sql.north);
         \node[elabel] at ([yshift=0.34cm]rag.north) {normativo};
         \node[elabel] at ([yshift=0.34cm]sql.north) {tabular / analítico};
+        \coordinate (topRag) at ($(rag.north)+(0,0.50)$);
+        \coordinate (topSql) at ($(sql.north)+(0,0.50)$);
 
         % ===== Camada 3: dados =====
         \node[store, below=0.9cm of rag] (qdrant)
@@ -68,9 +71,9 @@
 
         % ===== Zonas de fundo =====
         \begin{scope}[on background layer]
-            \node[zone, fit=(user)(waha)(n8n)(orch)] (zA) {};
-            \node[zone, fit=(rag)(sql)]               (zB) {};
-            \node[zone, fit=(qdrant)(duck)(etl)]      (zC) {};
+            \node[zone, fit=(user)(waha)(n8n)(orch)(top)(topL)] (zA) {};
+            \node[zone, fit=(rag)(sql)(topRag)(topSql)]         (zB) {};
+            \node[zone, fit=(qdrant)(duck)(etl)]                (zC) {};
         \end{scope}
         \node[zonelbl, anchor=south west] at (zA.north west) {Canal conversacional (produção)};
         \node[zonelbl, anchor=south west] at (zB.north west) {Recuperação e consulta};
