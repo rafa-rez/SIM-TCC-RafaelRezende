@@ -1,0 +1,647 @@
+[
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 1,
+    "comentario": "Não se coloca dados disponíveis dessa forma.\n\nCrie uma seção (\\section*), após a Conclusão, chamada \"Dsiponibilidade de Dados\""
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 1,
+    "comentario": "sem ponto"
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 1,
+    "comentario": "estaduais"
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 2,
+    "comentario": "O que é s.d.?"
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 2,
+    "comentario": "Adicione links para o SICOM (TCE-MG) e para a GCU Siconfi na forma de nota de rodapé."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 2,
+    "comentario": "Larga"
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 2,
+    "comentario": "Não se usa negrito e itálico dessa forma em artigos científicos.\nRevise em todo o texto."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 2,
+    "comentario": "Você ainda não explicou o que é Text-to-SQL. Fale disso antes no texto e use uma referência bibliográfica para o assunto. Talvez isso possa ser integrado com o texto do segundo parágrafo."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 2,
+    "comentario": "Pode tirar isso daqui."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 2,
+    "comentario": "O que é essa comparação? Não entendi."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 2,
+    "comentario": "Fale também o que é RAG antes no texto, e use referência bibliográfica."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 2,
+    "comentario": "O que é isso?"
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 2,
+    "comentario": "Você está fazendo uso excessivo de informações entre parênteses. Isso deve ser excessão. Na maioria dos casos, isso deve estar no próprio texto com explicação.\n\nRevise em todo o seu texto."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 2,
+    "comentario": "Esses detalhes em parênsteses não precisam ficar na Introdução."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 3,
+    "comentario": "Indique uma referência que demonstra isso."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 3,
+    "comentario": "... de ponta, como o GPT-4, frequentemente ..."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 3,
+    "comentario": "Você diz \"Métodos recentes...\", mas sua referência mais recente é de 2023.\n\nAdicione referências mais recentes, de 2026. Existem inúmeros trabalhos em Text-to-SQL."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 3,
+    "comentario": "Não necessáriamente é vetorial.\nDiga apenas \"...combina recuperação e geração textual\"."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 3,
+    "comentario": "Novamente, só referências antigas.\nExistem inúmeras referências recentes sobre RAG."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 3,
+    "comentario": "O SIM não vai dar contribuição na técnica de RAG. Ele apenas usa técnicas conhecidas de RAG, certo?\nDiga qual."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 3,
+    "comentario": "Essa referência é para grafos, e não para o GovChat. Deixe-a no final da sentença."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 3,
+    "comentario": "Pesquise por mais referências que usam RAG e/ou Text-to-SQL para aplicações com dados governamentais. \nExistem várias também."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 3,
+    "comentario": "Faça uma introdução dizendo o que vem nas subseções."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 4,
+    "comentario": "Faça uma introdução aqui explicando o que é o SIM de Caeté e porque você escolheu Caeté\nTambém diga o que vem nas subseções a seguir.\n\n\nEssa arquitetura é genérica e pode ser aplicada a outros municípios?\nSe sim, destaque isso. E fale que Caeté é apenas uma estudo de caso."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 4,
+    "comentario": "Use a mesma fonte que você usou para GT-4o e GPT-4.1-mini acima.\nSão todos tecnologias que você usou."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 4,
+    "comentario": "O RAG tem a parte de indexação dos documentos, que depois são usados nas consultas.\nA figura deve mostrar isso."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 4,
+    "comentario": "Suas setas não voltam no orquestrador. Não deveriam ser de mão dupla?"
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 4,
+    "comentario": "Você deve usar referências bibliográficas ou links em rodapé para todas as tecnologias que você cita no texto: WAHA, n8n, GPT, Qdrant, DuckDB, ..."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 4,
+    "comentario": "De onde vem este número?\nSe for o número resultante da sua implementação, ele não deve ficar aqui, e sim, na seção de experimentos."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 5,
+    "comentario": "Esta seção precisa de muito mais detalhes. Não entendi nada do que você fez!\n\nAs técnicas, se conhecidas, precisam ser referenciadas. Se forem suas, precisam ser mais detalhadas.\n\nAdicione exemplos para facilitar o entendimento."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 5,
+    "comentario": "Faça uma introdução dizendo o que vem nas subseções."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 5,
+    "comentario": "N subscrito SQL\nMesmo padrão do N RAG"
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 5,
+    "comentario": "Não entendi isso"
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 5,
+    "comentario": "Faça tabelas com exemplos de consultas tanto de SQL quanto de RAG, com a devida classificação de dificuldade ou estrato."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 5,
+    "comentario": "Você ainda não falou o que é o Prompt A. Ele deveria aparecer antes do Prompt B."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 5,
+    "comentario": "Quais são as 10 intenções analíticas centrais?\nSe são apenas 10, acho que você pode apresentá-las em uma tabela aqui no texto."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 6,
+    "comentario": "Que símbolo é este?\nExplicar o que significa."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 6,
+    "comentario": "Não entendi isso. É preciso mais detalhes.\nPor que precisa de tolerência numérica?\nO que é uma cardinalidade compatível?\nO que é EF = 1?"
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 6,
+    "comentario": "Adicionar referência."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 6,
+    "comentario": "As configurações precisam ser explicadas."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 7,
+    "comentario": "Faça uma introdução dizendo o que vem nas subseções."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 7,
+    "comentario": "Este seria o Prompt B?"
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 7,
+    "comentario": "Explique o que é o IC.\nImagino que seja o Intervalo de Confiança.\nSe sim, então você não pode afirmar que E1 é melhor do que E2, pois os intervalos se sobrepõem.\nÉ preciso fazer uma análise estatística dos resultados. São 4 experimentos, como você compara eles em um teste estatístico?"
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 8,
+    "comentario": "Precio entender melhor esse Prompt B. Se você o criou a partir dos erros do primeiro experimento, você pode estar gerando overfitting, ajustando o prompt para os casos de erros do conjunto de referência. Seria importante ter mais casos de teste."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 9,
+    "comentario": "Adicione e explique a métrica na Seção 4.2."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 9,
+    "comentario": "Não entendi como foi feita essa avaliação.\nE1 (n = 30) ????\nE o RAG ????"
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 9,
+    "comentario": "Referência de 2024 já está muito ultrapassada.\nVeja resultados alcançados em artigos recentes, deste ano."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 10,
+    "comentario": "Adicione o nome de todos os autores. Não se usa et al. nesta seção.\nRevise em todas as referências.\nDeve ser uma configuração do template Latex."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 10,
+    "comentario": "Isso indica que o seu bibtex está incompleto."
+  },
+  {
+    "arquivo": "17-agosot.pdf",
+    "pagina": 10,
+    "comentario": "A conclusão está muito resumida."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 2,
+    "comentario": "(LLMs - Large Language Models)"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 2,
+    "comentario": "sem ;"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 3,
+    "comentario": "Não entendi o que você quer dizer com lacunas históricas.\nTambém não entendi as bases de dados. São duas bases de dados, uma com dados de 2020 a 2025 e outra com dados de 2020 a 2022?\nExplique isso melhor."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 3,
+    "comentario": "Você diz \"Métodos recentes...\", mas sua referência mais recente é de 2024.\n\nAdicione referências mais recentes, de 2026. Existem inúmeros trabalhos em Text-to-SQL.\n\nSe você pretende publicar o artigo, precisa mostrar que está atualizado no estado-da-arte."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 4,
+    "comentario": "Novamente, só referências \"antigas\".\nExistem inúmeras referências recentes sobre RAG (2025, 2026)."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 5,
+    "comentario": "sem ;"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 5,
+    "comentario": "Isso está solto aqui.\nDDL é uma linguagem, não o esquema."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 5,
+    "comentario": "O que são essas lacunas. Não entendi. São dados faltantes?\nSe sim, seja direto e explique que faltam os dados desse período e explique porquê.\nÉ preciso explicar os detalhes."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 6,
+    "comentario": "Nunca vi esse termo. Isso é comum na literatura?\nSe não, diga que é feito uma pré-processamento com limpeza e padronização de dados como remoção de pontuação e ... em chaves primárias."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 6,
+    "comentario": "Não seria de esquema?\nDDL é a linguagem.\n\nMinificação é também um termo usado na literatura?"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 6,
+    "comentario": "Não sei o que é condensação de metadados relacionais.\nTudo deve ser explicado.\nDê exemplos.\n\nDê exemplo de atributos redundantes."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 6,
+    "comentario": "Os exemplos foram incluídos no prompt?\nDê exemplos."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 6,
+    "comentario": "esquema do banco de dados"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 6,
+    "comentario": "Os prompts estão no GitHub?\nEles são importante para reproduzir o seu trabalho."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 6,
+    "comentario": "Não entendi!\nPossui o mesmo prompt A + o que você descreve abaixo? Se sim, qual o total de tokens?\nOU\nReduziu o conteúdo do Prompt A e adicionou o que você descreve abaixo, totalizando 16.500 tokens? Se sim, o que foi reduzido?"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 6,
+    "comentario": "Use . como separador de milhares.\nVerifique em todos os números do texto."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 6,
+    "comentario": "Sem ; antes de \"e\""
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 6,
+    "comentario": "Ficou muito confuso isso. Antes, estava melhor.\n\n(i) 32 perguntas perguntas contendo número e ano explícitos envolvendo decretos sorteados uniformemente do índice vetorial (com_numero) e (ii) 8 perguntas curadas sobre tópicos normativos sem menção a número de\nato (temático). A Tabela 2 apresenta alguns exemplos.\n\nMas ainda não entendi os seguintes:\n1. sobre 9.346 trechos (chunks) ... Esse é o total de chunks de toda a documentação do Diário Oficial? Descreva isso em frases separadas. Você está misturando perguntas com detalhes da base de dados.\n\n2. O que é sortear uniformemente? Os chunks mencionados são só desses decretos? Quantos decretos foram sorteados? As respostas das 32 perguntas estão nesses decretos sorteados? As consultas foram feitas só com esses decretos no Qdrant ou com todos os decretos misturados?\n\nPrecisa ser explicado no texto."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 7,
+    "comentario": "Tabela 1\n\nVeificar as outras."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 8,
+    "comentario": "Você pode deixar essa métrica, já que você já fez as avaliações.\nPorém, essa métrica tem pouquíssima importância, e não deveria ser enfatizada nos seus resultados.\nUma consulta sem erro sintático, mas semanticamente incorreta só gera incerteza ao sistema.\n\nUm sistema de agentes de IA deveria ser capaz de detectar erros sintáticos e solicitar a regeração da consulta. Isso pode ser feito simplesmente executando o código e verificando se retorna erro sintático.\nAssim, nenhuma consulta gerada teria erro sintático."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 8,
+    "comentario": "Não seria Ri?"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 8,
+    "comentario": "O que Ci?\nQual a diferença entre Ci e Gi?"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 8,
+    "comentario": "O que siginica isso?"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 8,
+    "comentario": "O que é correspondência posicial?\nO que é cardinalidade de linhas compatíveis?"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 8,
+    "comentario": "Separe as equações.\nEF é uma coisa e a normalização celular é outra.\nExplique a equação EF, você não fez isso no texto.\nEla é simplesmente a taxa de acertos, de acordo com a definição de Equivalência Funcional."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 8,
+    "comentario": "O que é o épsilon?\nPor que 0,005?\nPor é o máximo de v(b), e não de v(a)?"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 8,
+    "comentario": "Você continua usando negritos no texto."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 8,
+    "comentario": "Adicione referências bibliográficas para essas métricas.\n\nEsta é uma boa referência:\nBaeza-Yates, Ricardo; Ribeiro-Neto, Berthier. Recuperação de Informação: Conceitos e Tecnologia das Máquinas de Busca. Bookman, 2 a Edição, 2013. 612 p. ISBN: 978-85-8260-049-8"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 8,
+    "comentario": "Não repita. Deixe só a referência do final da frase."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 8,
+    "comentario": "As verificações de EF foram feitas de forma manual ou automática?\nExplicar."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 9,
+    "comentario": "Colque o nome dos modelos.\nEssas abreviações podem confundir.\n\nO que é compacto e estendido? Desta forma, está parecendo que é o modelo.\nPadronize os termos."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 9,
+    "comentario": "Você continua colocando dados soltos dentro de parênteses. Isso não deixa claro o que você fez.\n\nO Prompt B não usou E1?"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 9,
+    "comentario": "Esses termos soltos assim não explicam nada.\n\nAdicione uma explicação no texto."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 9,
+    "comentario": "Não deveria estar em negrito. Deixe apenas os número em negrito, se forem estatisticamente maiores. Senão, deixe tudo sem negrito."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 9,
+    "comentario": "Lote Experimental I"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 9,
+    "comentario": "E quais são os prompts de E2, E3 e E4?\nEstá tudo muito confuso!\nPadronize a forma de descrever.\n\nDependendo dos prompt de cada experimento, a análise feita no texto pode mudar. As comparações devem ser justas."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 10,
+    "comentario": "Não deveria estar em negrito. Deixe apenas os número em negrito, se forem estatisticamente maiores. Senão, deixe tudo sem negrito."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 10,
+    "comentario": "sem negrito"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 10,
+    "comentario": "Não é estatisticamente melhor.\nSua amostra de teste de 80 consultas é muito pequena.\nPara resultados conclusivos, precisaria de mais consultas."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 10,
+    "comentario": "Prompt A"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 10,
+    "comentario": "Eu não consigo entender o que realmente foi feito só pela sua descrição.\n\nÉ importante que você dê exemplos ou apresente o texto do prompt.\n\nQuem vai ler o seu texto precisa entender todos os detalhes.\nTodo experimento deve ser reproduzível, senão, não é um experimento científico."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 11,
+    "comentario": "Não deveria estar em negrito. Deixe apenas os número em negrito, se forem estatisticamente maiores. Senão, deixe tudo sem negrito."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 11,
+    "comentario": "Conforme já mencionado na Tabela 3, sem uma explicação detalhada das suas estratégias, não é possível avaliar os seus resultados."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 11,
+    "comentario": "Que amostra é essa?"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 11,
+    "comentario": "excluir isso, não adiciona informação útil saber o nome do arquivo."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 11,
+    "comentario": "Não entendi o que você fez.\nPor que separar em duas avaliações?"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 11,
+    "comentario": "Isso você coloca nas conclusões."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 11,
+    "comentario": "O que é Validação Qualitativa?\nA avaliação da Seção 5.3 não foi qualitativa?\n\nAqui você usou o LLM as a Judge, certo?\nE como foi feita a avaliação de Seção 5.3?"
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 12,
+    "comentario": "Você continua usando negritos no texto."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 12,
+    "comentario": "E continua usando parênteses em excesso e sem sentido."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 12,
+    "comentario": "Essa questão de SQL válidas não deve ser destacada.\nEla é uma obrigação de qualquer sistema de agentes."
+  },
+  {
+    "arquivo": "28-agosto.pdf",
+    "pagina": 13,
+    "comentario": "Ainda tem referências incompletas."
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 2,
+    "comentario": "(LLMs - Large Language Models)"
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 3,
+    "comentario": "Não entendi o que você quer dizer com lacunas históricas.\nTambém não entendi as bases de dados. São duas bases de dados, uma com dados de 2020 a 2025 e outra com dados de 2020 a 2022?\nExplique isso melhor."
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 3,
+    "comentario": "Esta seção não foi revisada."
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 6,
+    "comentario": "ponto, e não, dois pontos."
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 7,
+    "comentario": "DDL é a linguagem.\nVocê não representa a linguagem.\n\n... para representar o seu código.    (o código do esquema, e não da linguagem)"
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 8,
+    "comentario": "Use . como separador de milhares.\nVerifique em todos os números do texto."
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 9,
+    "comentario": "Ficou muito confuso isso.\n\n(i) 32 perguntas perguntas contendo número e ano explícitos envolvendo decretos sorteados uniformemente do índice vetorial (com_numero) e (ii) 8 perguntas curadas sobre tópicos normativos sem menção a número de\nato (temático). A Tabela 3 apresenta alguns exemplos.\n\nMas ainda não entendi os seguintes:\n1. sobre 9.346 trechos (chunks) ... Esse é o total de chunks de toda a documentação do Diário Oficial? Descreva isso em frases separadas. Você está misturando perguntas com detalhes da base de dados.\n\n2. O que é sortear uniformemente? Os chunks mencionados são só desses decretos? Quantos decretos foram sorteados? As respostas das 32 perguntas estão nesses decretos sorteados? As consultas foram feitas só com esses decretos no Qdrant ou com todos os decretos misturados?\n\nPrecisa ser explicado no texto."
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 10,
+    "comentario": "Não entendi o que é a função v(.)\nMostre sua fórmula. Como ela é calculada?\n\nPelo que parece, ela retorna um valor muito baixo, pois a está comparando com épsilon, que é muito baixo."
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 10,
+    "comentario": "Deixe a fórmula de EF separada.\nEla não usa v(.)"
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 11,
+    "comentario": "Colque o nome dos modelos.\nEssas abreviações podem confundir.\n\nO que é compacto e estendido? Desta forma, está parecendo que é o modelo.\nPadronize os termos."
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 11,
+    "comentario": "Você continua colocando dados soltos dentro de parênteses. Isso não deixa claro o que você fez.\n\nO Prompt B não usou E1?"
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 11,
+    "comentario": "Esses termos soltos assim não explicam nada.\n\nAdicione uma explicação no texto."
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 11,
+    "comentario": "Lote Experimental I"
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 11,
+    "comentario": "E quais são os prompts de E2, E3 e E4?\nEstá tudo muito confuso!\nPadronize a forma de descrever.\n\nDependendo dos prompt de cada experimento, a análise feita no texto pode mudar. As comparações devem ser justas."
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 11,
+    "comentario": "(GPT-4.1-mini, Prompt B)  ???"
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 11,
+    "comentario": "Esse é o Prompt B?\nNa descrição da Seção 3.3, o Prompt B usa o mesmo número de tokens.\n\nOu  é um outro prompt, que você não descreveu anteriormente?"
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 11,
+    "comentario": "(GPT-4o-min, Prompt A)   ???\ni"
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 11,
+    "comentario": "(GPT-4o, Prompt A)    ???"
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 11,
+    "comentario": "deste trabalho.\n\nEvite expressões assim em textos científicos."
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 12,
+    "comentario": "Não entendi o que você quer dizer com isso."
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 12,
+    "comentario": "Conforme já mencionado na Tabela 4, sem uma explicação detalhada das suas estratégias, não é possível avaliar os seus resultados."
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 13,
+    "comentario": "Deixe apenas os números em negrito."
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 14,
+    "comentario": "Quebrar o parágrafo, você mudou completamente de assunto. É outra análise."
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 14,
+    "comentario": "Excluir, o nome do arquivo não é importante."
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 14,
+    "comentario": "Continuo não entendendo!\nQual a diferença dessa avaliação de RAG para aquela descrita na Seção 5.3?"
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 15,
+    "comentario": "Essa questão de SQL válidas não deve ser destacada.\nEla é uma obrigação de qualquer sistema de agentes."
+  },
+  {
+    "arquivo": "28-setembro.pdf",
+    "pagina": 16,
+    "comentario": "O repositório não está disponível nesse link."
+  }
+]

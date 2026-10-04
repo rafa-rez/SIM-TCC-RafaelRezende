@@ -1,0 +1,631 @@
+[
+  {
+    "id": 1,
+    "page": 2,
+    "type": "Highlight",
+    "type_code": 8,
+    "title": "Denilson",
+    "content": "",
+    "highlighted_text": "a (LLMs) v",
+    "rect": [
+      385.7000732421875,
+      243.125,
+      431.2999267578125,
+      258.875
+    ],
+    "modDate": "D:20261002105715-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 2,
+    "page": 2,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson",
+    "content": "(LLMs - Large Language Models)",
+    "highlighted_text": "",
+    "rect": [
+      401.75,
+      224.875,
+      419.75,
+      242.875
+    ],
+    "modDate": "D:20261002105723-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 3,
+    "page": 3,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson",
+    "content": "Não entendi o que você quer dizer com lacunas históricas.\nTambém não entendi as bases de dados. São duas bases de dados, uma com dados de 2020 a 2025 e outra com dados de 2020 a 2022?\nExplique isso melhor.",
+    "highlighted_text": "",
+    "rect": [
+      44.875,
+      141.4375,
+      62.875,
+      159.4375
+    ],
+    "modDate": "D:20261002105954-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 4,
+    "page": 3,
+    "type": "Highlight",
+    "type_code": 8,
+    "title": "Denilson",
+    "content": "",
+    "highlighted_text": "mútuo de viabilizar a fiscalização cidadã. Ademais, a base contábil de Caeté reúne dados\nde 2020 a 2025 com lacunas históricas reais de publicação em folha de pagamento e\nservidores de 2020 a 2022, o que permitiu testar a resiliência do sistema sob condições\nautênticas do setor público.",
+    "rect": [
+      78.1644058227539,
+      158.125,
+      517.8355712890625,
+      217.9375
+    ],
+    "modDate": "D:20261002110009-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 5,
+    "page": 4,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson",
+    "content": "Acho que teve alguma confusão aqui.\n\nVolte com o texto anterior.",
+    "highlighted_text": "",
+    "rect": [
+      44.875,
+      150.8125,
+      62.875,
+      168.8125
+    ],
+    "modDate": "D:20261002111609-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 6,
+    "page": 6,
+    "type": "Highlight",
+    "type_code": 8,
+    "title": "Denilson",
+    "content": "",
+    "highlighted_text": "DDL.",
+    "rect": [
+      469.7000732421875,
+      622.125,
+      501.2999267578125,
+      637.875
+    ],
+    "modDate": "D:20261002111818-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 7,
+    "page": 6,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson",
+    "content": "DDL é a linguagem.\nVocê não representa a linguagem.\n\n... para representar o seu código.    (o código do esquema, e não da linguagem)",
+    "highlighted_text": "",
+    "rect": [
+      478.9375,
+      637.375,
+      496.9375,
+      655.375
+    ],
+    "modDate": "D:20261002111843-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 8,
+    "page": 7,
+    "type": "Highlight",
+    "type_code": 8,
+    "title": "Denilson Alves Pereira",
+    "content": "",
+    "highlighted_text": "e altíssima g",
+    "rect": [
+      249.70005798339844,
+      552.125,
+      304.2999267578125,
+      567.875
+    ],
+    "modDate": "D:20261002164527-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 9,
+    "page": 7,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson Alves Pereira",
+    "content": "alta\n\nNão use superlativos em textos científicos.",
+    "highlighted_text": "",
+    "rect": [
+      271.5,
+      535.5,
+      289.5,
+      553.5
+    ],
+    "modDate": "D:20261002164551-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 10,
+    "page": 9,
+    "type": "Highlight",
+    "type_code": 8,
+    "title": "Denilson",
+    "content": "",
+    "highlighted_text": "a e uniforme 3",
+    "rect": [
+      154.46435546875,
+      129.0625,
+      214.53564453125,
+      145.9375
+    ],
+    "modDate": "D:20261002112552-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 11,
+    "page": 9,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson",
+    "content": "O que significa uniforme aqui?",
+    "highlighted_text": "",
+    "rect": [
+      76.75,
+      128.625,
+      94.75,
+      146.625
+    ],
+    "modDate": "D:20261002112605-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 12,
+    "page": 10,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson Alves Pereira",
+    "content": "É aqui que você tem de explicar os lotes e os detalhes apresentados na Tabela 4.",
+    "highlighted_text": "",
+    "rect": [
+      57.75,
+      593.25,
+      75.75,
+      611.25
+    ],
+    "modDate": "D:20261002164828-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 13,
+    "page": 11,
+    "type": "Highlight",
+    "type_code": 8,
+    "title": "Denilson Alves Pereira",
+    "content": "",
+    "highlighted_text": "gpt-4o-mini c",
+    "rect": [
+      81.70005798339844,
+      428.125,
+      167.29994201660156,
+      443.875
+    ],
+    "modDate": "D:20261002165124-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 14,
+    "page": 11,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson Alves Pereira",
+    "content": "gpt-4.1-mini   ?????\n\nVocê trocou os modelos em vários pontos do texto.",
+    "highlighted_text": "",
+    "rect": [
+      46.125,
+      429.0,
+      64.125,
+      447.0
+    ],
+    "modDate": "D:20261002165907-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 15,
+    "page": 11,
+    "type": "Highlight",
+    "type_code": 8,
+    "title": "Denilson Alves Pereira",
+    "content": "",
+    "highlighted_text": "o gpt-4o-mini,",
+    "rect": [
+      236.46435546875,
+      471.0625,
+      323.53564453125,
+      487.9375
+    ],
+    "modDate": "D:20261002165212-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 16,
+    "page": 11,
+    "type": "Highlight",
+    "type_code": 8,
+    "title": "Denilson Alves Pereira",
+    "content": "",
+    "highlighted_text": "documentação de metadados o",
+    "rect": [
+      96.70005798339844,
+      486.125,
+      245.29994201660156,
+      501.875
+    ],
+    "modDate": "D:20261002165313-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 17,
+    "page": 11,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson Alves Pereira",
+    "content": "Explique que documentação de metadados é essa.",
+    "highlighted_text": "",
+    "rect": [
+      44.25,
+      491.625,
+      62.25,
+      509.625
+    ],
+    "modDate": "D:20261002165336-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 18,
+    "page": 11,
+    "type": "Highlight",
+    "type_code": 8,
+    "title": "Denilson Alves Pereira",
+    "content": "",
+    "highlighted_text": "pt: e",
+    "rect": [
+      372.46435546875,
+      529.0625,
+      393.53564453125,
+      545.9375
+    ],
+    "modDate": "D:20261002165422-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 19,
+    "page": 11,
+    "type": "Highlight",
+    "type_code": 8,
+    "title": "Denilson Alves Pereira",
+    "content": "",
+    "highlighted_text": "o gpt-4o-mini p",
+    "rect": [
+      370.7000732421875,
+      645.125,
+      457.2999267578125,
+      660.875
+    ],
+    "modDate": "D:20261002165603-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 20,
+    "page": 11,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson Alves Pereira",
+    "content": "A explicação das configurações deve ser feita na Seção 4.3.\nAqui é apenas resultados.",
+    "highlighted_text": "",
+    "rect": [
+      99.0,
+      391.125,
+      117.0,
+      409.125
+    ],
+    "modDate": "D:20261002170710-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 21,
+    "page": 12,
+    "type": "Highlight",
+    "type_code": 8,
+    "title": "Denilson Alves Pereira",
+    "content": "",
+    "highlighted_text": "gpt-4o-mini e\nd d\ní i d",
+    "rect": [
+      212.2286376953125,
+      232.0,
+      299.7713623046875,
+      250.0
+    ],
+    "modDate": "D:20261002165922-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 22,
+    "page": 12,
+    "type": "Highlight",
+    "type_code": 8,
+    "title": "Denilson Alves Pereira",
+    "content": "",
+    "highlighted_text": "s (mantidas em sigilo de teste).",
+    "rect": [
+      283.7000732421875,
+      596.125,
+      431.2999267578125,
+      611.875
+    ],
+    "modDate": "D:20261002165956-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 23,
+    "page": 12,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson Alves Pereira",
+    "content": "Continuo não entendendo o que você quer dizer com isso!",
+    "highlighted_text": "",
+    "rect": [
+      441.0,
+      597.375,
+      459.0,
+      615.375
+    ],
+    "modDate": "D:20261002170033-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 24,
+    "page": 12,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson Alves Pereira",
+    "content": "A explicação das configurações deve ser feita na Seção 4.3.\nAqui é apenas resultados.",
+    "highlighted_text": "",
+    "rect": [
+      55.5,
+      707.25,
+      73.5,
+      725.25
+    ],
+    "modDate": "D:20261002170721-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 25,
+    "page": 13,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson Alves Pereira",
+    "content": "Deixe apenas os números em negrito.",
+    "highlighted_text": "",
+    "rect": [
+      70.875,
+      657.75,
+      88.875,
+      675.75
+    ],
+    "modDate": "D:20261002170228-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 26,
+    "page": 13,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson Alves Pereira",
+    "content": "Se os três anteriores não mudaram o resultado, então somente a busca híbrida mudou.\nAssim, você deveria relatar o resultado apenas com a busca híbrida, sem adicionar dedep + filtro.",
+    "highlighted_text": "",
+    "rect": [
+      215.25,
+      664.5,
+      233.25,
+      682.5
+    ],
+    "modDate": "D:20261002171225-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 27,
+    "page": 14,
+    "type": "Highlight",
+    "type_code": 8,
+    "title": "Denilson Alves Pereira",
+    "content": "",
+    "highlighted_text": "RAG, a avaliação qualitativa sobre o conjunto de referência completo (NRAG = 40, derivado\nde golden_rag_v1.3.csv) registrou 100% de Recall@5 e MRR de 97,5% na busca",
+    "rect": [
+      81.70005798339844,
+      685.0,
+      514.7713623046875,
+      715.875
+    ],
+    "modDate": "D:20261002171451-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 28,
+    "page": 14,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson Alves Pereira",
+    "content": "Excluir, o nome do arquivo não é importante.",
+    "highlighted_text": "",
+    "rect": [
+      54.375,
+      702.375,
+      72.375,
+      720.375
+    ],
+    "modDate": "D:20261002171517-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 29,
+    "page": 14,
+    "type": "Highlight",
+    "type_code": 8,
+    "title": "Denilson Alves Pereira",
+    "content": "",
+    "highlighted_text": "la:",
+    "rect": [
+      499.46435546875,
+      613.0625,
+      515.53564453125,
+      629.9375
+    ],
+    "modDate": "D:20261002171637-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 30,
+    "page": 14,
+    "type": "Highlight",
+    "type_code": 8,
+    "title": "Denilson Alves Pereira",
+    "content": "",
+    "highlighted_text": "Para o",
+    "rect": [
+      422.46435546875,
+      671.0625,
+      451.53564453125,
+      687.9375
+    ],
+    "modDate": "D:20261002171643-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 31,
+    "page": 14,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson Alves Pereira",
+    "content": "Quebrar o parágrafo, você mudou completamente de assunto. É outra análise.",
+    "highlighted_text": "",
+    "rect": [
+      526.5,
+      682.875,
+      544.5,
+      700.875
+    ],
+    "modDate": "D:20261002171659-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 32,
+    "page": 14,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson Alves Pereira",
+    "content": "Continuo não entendendo!\nQual a diferença dessa avaliação de RAG para aquela descrita na Seção 5.3?",
+    "highlighted_text": "",
+    "rect": [
+      522.0,
+      718.5,
+      540.0,
+      736.5
+    ],
+    "modDate": "D:20261002171734-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 33,
+    "page": 14,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson Alves Pereira",
+    "content": "Este parágrafo não foi corrigido.",
+    "highlighted_text": "",
+    "rect": [
+      47.25,
+      591.0,
+      65.25,
+      609.0
+    ],
+    "modDate": "D:20261002171823-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 34,
+    "page": 16,
+    "type": "Highlight",
+    "type_code": 8,
+    "title": "Denilson Alves Pereira",
+    "content": "",
+    "highlighted_text": "instabilidade típica dos dados públicos. No motor analítico relacional, evidenciou-se a\nexequibilidade operacional ao registrar 100% de SQLs válidas quando o agente detém",
+    "rect": [
+      81.46434783935547,
+      294.125,
+      514.2999267578125,
+      324.9375
+    ],
+    "modDate": "D:20261002171900-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 35,
+    "page": 16,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson Alves Pereira",
+    "content": "Essa questão de SQL válidas não deve ser destacada.\nEla é uma obrigação de qualquer sistema de agentes.",
+    "highlighted_text": "",
+    "rect": [
+      42.0,
+      307.875,
+      60.0,
+      325.875
+    ],
+    "modDate": "D:20261002171917-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 36,
+    "page": 16,
+    "type": "Highlight",
+    "type_code": 8,
+    "title": "Denilson Alves Pereira",
+    "content": "",
+    "highlighted_text": "experimentos estão disponíveis publicamente sob licença aberta em: <https://github.com/\nrafa-rez/SIM-TCC-RafaelRezende>.",
+    "rect": [
+      81.70005798339844,
+      617.0625,
+      514.53564453125,
+      647.875
+    ],
+    "modDate": "D:20261002172010-03'00'",
+    "creationDate": ""
+  },
+  {
+    "id": 37,
+    "page": 16,
+    "type": "Text",
+    "type_code": 0,
+    "title": "Denilson Alves Pereira",
+    "content": "O repositório não está disponível nesse link.",
+    "highlighted_text": "",
+    "rect": [
+      38.25,
+      625.5,
+      56.25,
+      643.5
+    ],
+    "modDate": "D:20261002172024-03'00'",
+    "creationDate": ""
+  }
+]
