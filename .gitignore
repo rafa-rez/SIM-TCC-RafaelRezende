@@ -71,6 +71,9 @@ ollama_data/
 scripts/_test_year.py
 .DS_Store
 Thumbs.db
+auditoria.md
+checklist_notas.json
+
 
 # Prompts legados na raiz (versões canônicas em avaliacao/eval/prompts/)
 Póscagada.txt

@@ -1,0 +1,668 @@
+[
+  {
+    "id": 1,
+    "page": 1,
+    "secao": "Capa / Resumo",
+    "highlighted_text": "s∗",
+    "line_context": "ais: amentais∗",
+    "professor_comment": "Não se coloca dados disponíveis dessa forma.\n\nCrie uma seção (\\section*), após a Conclusão, chamada \"Dsiponibilidade de Dados\"",
+    "has_written_comment": true
+  },
+  {
+    "id": 2,
+    "page": 1,
+    "secao": "Capa / Resumo",
+    "highlighted_text": "on.per",
+    "line_context": "e, denilson.pereira}@ufl",
+    "professor_comment": "sem ponto",
+    "has_written_comment": true
+  },
+  {
+    "id": 3,
+    "page": 1,
+    "secao": "Capa / Resumo",
+    "highlighted_text": ") e federais (",
+    "line_context": "sobre o Diário Oficial e consulta analíti OM/TCE-MG) e federais (CGU). Avalia da ao WhatsApp com orquestração po",
+    "professor_comment": "estaduais",
+    "has_written_comment": true
+  },
+  {
+    "id": 4,
+    "page": 2,
+    "secao": "1. Introdução",
+    "highlighted_text": ", s.d.)",
+    "line_context": "nível municipal, sistemas com Minas Gerais, s.d.) e portais fed eis, despesas, contratos e folh",
+    "professor_comment": "O que é s.d.?",
+    "has_written_comment": true
+  },
+  {
+    "id": 5,
+    "page": 2,
+    "secao": "1. Introdução",
+    "highlighted_text": "e Grande E",
+    "line_context": "s, interfaces heterogêneas e vocabu inguagem de Grande Escala (Larg nguagem natural para bancos de da",
+    "professor_comment": "Larga",
+    "has_written_comment": true
+  },
+  {
+    "id": 6,
+    "page": 2,
+    "secao": "1. Introdução",
+    "highlighted_text": "e Text-to-SQL e",
+    "line_context": "ste trabalho investiga a seguinte pergu documental e Text-to-SQL em canal con nicipais padronizados (SICOM/CGU),",
+    "professor_comment": "Você ainda não explicou o que é Text-to-SQL. Fale disso antes no texto e use uma referência bibliográfica para o assunto. Talvez isso possa ser integrado com o texto do segundo parágrafo.",
+    "has_written_comment": true
+  },
+  {
+    "id": 7,
+    "page": 2,
+    "secao": "1. Introdução",
+    "highlighted_text": "(SICOM/CGU),",
+    "line_context": "al e Text-to-SQL em canal conversacional adronizados (SICOM/CGU), e qual o imp aração à troca de modelo — sobre a fidel",
+    "professor_comment": "O que é essa comparação? Não entendi.",
+    "has_written_comment": true
+  },
+  {
+    "id": 8,
+    "page": 2,
+    "secao": "1. Introdução",
+    "highlighted_text": "s; e",
+    "line_context": "ostula-se que: (i) a orquestra unicipais reais; e (ii) a inserç va a equivalência funcional",
+    "professor_comment": "O que é essa comparação? Não entendi.",
+    "has_written_comment": true
+  },
+  {
+    "id": 9,
+    "page": 2,
+    "secao": "1. Introdução",
+    "highlighted_text": "(RAG +",
+    "line_context": "ação híbrida (RAG + Text-to-SQ ção de regras de domínio no cont",
+    "professor_comment": "Fale também o que é RAG antes no texto, e use referência bibliográfica.",
+    "has_written_comment": true
+  },
+  {
+    "id": 10,
+    "page": 2,
+    "secao": "1. Introdução",
+    "highlighted_text": "(IBGE 3110004)",
+    "line_context": "is, uma plataforma conversacional multi-in Caeté (MG) (IBGE 3110004), integrada a /CGU (2020–2025) e do Diário Oficial.",
+    "professor_comment": "O que é isso?",
+    "has_written_comment": true
+  },
+  {
+    "id": 11,
+    "page": 2,
+    "secao": "1. Introdução",
+    "highlighted_text": "(2020–2025)",
+    "line_context": "o de Caeté (MG) (IBGE 3110004), in ICOM/CGU (2020–2025) e do Diário O Contribuições principais:",
+    "professor_comment": "O que é isso?",
+    "has_written_comment": true
+  },
+  {
+    "id": 12,
+    "page": 2,
+    "secao": "1. Introdução",
+    "highlighted_text": "G (Qdrant) e",
+    "line_context": "1. Concepção e arquitetura do RAG (Qdrant) e Text-to-SQ",
+    "professor_comment": "Esses detalhes em parênsteses não precisam ficar na Introdução.",
+    "has_written_comment": true
+  },
+  {
+    "id": 13,
+    "page": 2,
+    "secao": "1. Introdução",
+    "highlighted_text": "L (DuckDB in-memory) e",
+    "line_context": "quitetura do SIM, integrando orquestração por L Text-to-SQL (DuckDB in-memory) em canal Wh",
+    "professor_comment": "O que é isso?",
+    "has_written_comment": true
+  },
+  {
+    "id": 14,
+    "page": 2,
+    "secao": "1. Introdução",
+    "highlighted_text": "s (SICOM/CGU);",
+    "line_context": ". Pipeline reprodutível de ingestão, norm municipais (SICOM/CGU);",
+    "professor_comment": "Esses detalhes em parênsteses não precisam ficar na Introdução.",
+    "has_written_comment": true
+  },
+  {
+    "id": 15,
+    "page": 2,
+    "secao": "1. Introdução",
+    "highlighted_text": "s (d",
+    "line_context": "L executáveis (derivados das;",
+    "professor_comment": "(Marcação visual sem texto adicional)",
+    "has_written_comment": false
+  },
+  {
+    "id": 16,
+    "page": 2,
+    "secao": "1. Introdução",
+    "highlighted_text": "s) e",
+    "line_context": "e referência (golden dataset) ões analíticas) e 40 pergunta",
+    "professor_comment": "(Marcação visual sem texto adicional)",
+    "has_written_comment": false
+  },
+  {
+    "id": 17,
+    "page": 2,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 2",
+    "professor_comment": "Adicione links para o SICOM (TCE-MG) e para a GCU Siconfi na forma de nota de rodapé.",
+    "has_written_comment": true
+  },
+  {
+    "id": 18,
+    "page": 2,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 2",
+    "professor_comment": "Não se usa negrito e itálico dessa forma em artigos científicos.\nRevise em todo o texto.",
+    "has_written_comment": true
+  },
+  {
+    "id": 19,
+    "page": 2,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 2",
+    "professor_comment": "Pode tirar isso daqui.",
+    "has_written_comment": true
+  },
+  {
+    "id": 20,
+    "page": 2,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 2",
+    "professor_comment": "Você está fazendo uso excessivo de informações entre parênteses. Isso deve ser excessão. Na maioria dos casos, isso deve estar no próprio texto com explicação.\n\nRevise em todo o seu texto.",
+    "has_written_comment": true
+  },
+  {
+    "id": 21,
+    "page": 3,
+    "secao": "2. Trabalhos Relacionados",
+    "highlighted_text": "a (GPT-4) f",
+    "line_context": "volumosos com valores sujos e de ponta (GPT-4) frequentemen Métodos recentes expl",
+    "professor_comment": "... de ponta, como o GPT-4, frequentemente ...",
+    "has_written_comment": true
+  },
+  {
+    "id": 22,
+    "page": 3,
+    "secao": "2. Trabalhos Relacionados",
+    "highlighted_text": "m EX inferior a 60% e",
+    "line_context": "os e conhecimento externo, demonstrando que mente obtêm EX inferior a 60% em condiçõe exploram decomposição de consultas e sche",
+    "professor_comment": "Indique uma referência que demonstra isso.",
+    "has_written_comment": true
+  },
+  {
+    "id": 23,
+    "page": 3,
+    "secao": "2. Trabalhos Relacionados",
+    "highlighted_text": "Métodos recentes",
+    "line_context": "de ponta (GPT-4) frequentemente obtêm Métodos recentes exploram de DIN-SQL (POURREZA; RAFIEI, 20",
+    "professor_comment": "... de ponta, como o GPT-4, frequentemente ...",
+    "has_written_comment": true
+  },
+  {
+    "id": 24,
+    "page": 3,
+    "secao": "2. Trabalhos Relacionados",
+    "highlighted_text": "vetorial",
+    "line_context": "(Retrieval-Augmented Generation recuperação vetorial e geração te et al., 2020) capturam similaridad",
+    "professor_comment": "Não necessáriamente é vetorial.\nDiga apenas \"...combina recuperação e geração textual\".",
+    "has_written_comment": true
+  },
+  {
+    "id": 25,
+    "page": 3,
+    "secao": "2. Trabalhos Relacionados",
+    "highlighted_text": "s (números e anos de leis).",
+    "line_context": "imilaridade semântica, mas exibem falhas sis- adores exatos (números e anos de leis). Métodos ensas e esparsas (como BM25 (ROBERTSON;",
+    "professor_comment": "Não necessáriamente é vetorial.\nDiga apenas \"...combina recuperação e geração textual\".",
+    "has_written_comment": true
+  },
+  {
+    "id": 26,
+    "page": 3,
+    "secao": "2. Trabalhos Relacionados",
+    "highlighted_text": "s (c",
+    "line_context": "ores exatos (números e anos d sas e esparsas (como BM25 t al., 2021)) atenuam essa fra",
+    "professor_comment": "Não necessáriamente é vetorial.\nDiga apenas \"...combina recuperação e geração textual\".",
+    "has_written_comment": true
+  },
+  {
+    "id": 27,
+    "page": 3,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 3",
+    "professor_comment": "Você diz \"Métodos recentes...\", mas sua referência mais recente é de 2023.\n\nAdicione referências mais recentes, de 2026. Existem inúmeros trabalhos em Text-to-SQL.",
+    "has_written_comment": true
+  },
+  {
+    "id": 28,
+    "page": 3,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 3",
+    "professor_comment": "Novamente, só referências antigas.\nExistem inúmeras referências recentes sobre RAG.",
+    "has_written_comment": true
+  },
+  {
+    "id": 29,
+    "page": 3,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 3",
+    "professor_comment": "O SIM não vai dar contribuição na técnica de RAG. Ele apenas usa técnicas conhecidas de RAG, certo?\nDiga qual.",
+    "has_written_comment": true
+  },
+  {
+    "id": 30,
+    "page": 3,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 3",
+    "professor_comment": "Essa referência é para grafos, e não para o GovChat. Deixe-a no final da sentença.",
+    "has_written_comment": true
+  },
+  {
+    "id": 31,
+    "page": 3,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 3",
+    "professor_comment": "Pesquise por mais referências que usam RAG e/ou Text-to-SQL para aplicações com dados governamentais. \nExistem várias também.",
+    "has_written_comment": true
+  },
+  {
+    "id": 32,
+    "page": 3,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 3",
+    "professor_comment": "Faça uma introdução dizendo o que vem nas subseções.",
+    "has_written_comment": true
+  },
+  {
+    "id": 33,
+    "page": 4,
+    "secao": "3. O SIM e Caeté",
+    "highlighted_text": "Qdrant",
+    "line_context": "Índice vetorial Qdrant A Duck",
+    "professor_comment": "Use a mesma fonte que você usou para GT-4o e GPT-4.1-mini acima.\nSão todos tecnologias que você usou.",
+    "has_written_comment": true
+  },
+  {
+    "id": 34,
+    "page": 4,
+    "secao": "3. O SIM e Caeté",
+    "highlighted_text": "DuckDB in-memory",
+    "line_context": "e vetorial drant API analítica DuckDB in-memory",
+    "professor_comment": "Use a mesma fonte que você usou para GT-4o e GPT-4.1-mini acima.\nSão todos tecnologias que você usou.",
+    "has_written_comment": true
+  },
+  {
+    "id": 35,
+    "page": 4,
+    "secao": "3. O SIM e Caeté",
+    "highlighted_text": "(9 346 c",
+    "line_context": "orial Qdrant (9 346 chunks do ). O subsistema Text-to-SQL",
+    "professor_comment": "De onde vem este número?\nSe for o número resultante da sua implementação, ele não deve ficar aqui, e sim, na seção de experimentos.",
+    "has_written_comment": true
+  },
+  {
+    "id": 36,
+    "page": 4,
+    "secao": "3. O SIM e Caeté",
+    "highlighted_text": "o (Data",
+    "line_context": "s tabulares, padroniza ma analítico (Data",
+    "professor_comment": "(Marcação visual sem texto adicional)",
+    "has_written_comment": false
+  },
+  {
+    "id": 37,
+    "page": 4,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 4",
+    "professor_comment": "Faça uma introdução aqui explicando o que é o SIM de Caeté e porque você escolheu Caeté\nTambém diga o que vem nas subseções a seguir.\n\n\nEssa arquitetura é genérica e pode ser aplicada a outros municípios?\nSe sim, destaque isso. E fale que Caeté é apenas uma estudo de caso.",
+    "has_written_comment": true
+  },
+  {
+    "id": 38,
+    "page": 4,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 4",
+    "professor_comment": "O RAG tem a parte de indexação dos documentos, que depois são usados nas consultas.\nA figura deve mostrar isso.",
+    "has_written_comment": true
+  },
+  {
+    "id": 39,
+    "page": 4,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 4",
+    "professor_comment": "Suas setas não voltam no orquestrador. Não deveriam ser de mão dupla?",
+    "has_written_comment": true
+  },
+  {
+    "id": 40,
+    "page": 4,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 4",
+    "professor_comment": "Você deve usar referências bibliográficas ou links em rodapé para todas as tecnologias que você cita no texto: WAHA, n8n, GPT, Qdrant, DuckDB, ...",
+    "has_written_comment": true
+  },
+  {
+    "id": 41,
+    "page": 5,
+    "secao": "3. O SIM e Caeté",
+    "highlighted_text": "Definition Language, DDL).",
+    "line_context": "Definition Language, DDL). As lacunas d de servidores dos anos de 2020 a 2022 co",
+    "professor_comment": "Esta seção precisa de muito mais detalhes. Não entendi nada do que você fez!\n\nAs técnicas, se conhecidas, precisam ser referenciadas. Se forem suas, precisam ser mais detalhadas.\n\nAdicione exemplos para facilitar o entendimento.",
+    "has_written_comment": true
+  },
+  {
+    "id": 42,
+    "page": 5,
+    "secao": "3. O SIM e Caeté",
+    "highlighted_text": "s (c",
+    "line_context": "ia Text-to-SQL reúne N = 80 íticas centrais (consultas-bas amente por variações de ano",
+    "professor_comment": "N subscrito SQL\nMesmo padrão do N RAG",
+    "has_written_comment": true
+  },
+  {
+    "id": 43,
+    "page": 5,
+    "secao": "3. O SIM e Caeté",
+    "highlighted_text": "a)",
+    "line_context": "uturados a par- administrativa) Os itens foram",
+    "professor_comment": "(Marcação visual sem texto adicional)",
+    "has_written_comment": false
+  },
+  {
+    "id": 44,
+    "page": 5,
+    "secao": "3. O SIM e Caeté",
+    "highlighted_text": "e N",
+    "line_context": "( ) to-SQL reúne N = 80 casos e entrais (consultas-base de rele",
+    "professor_comment": "N subscrito SQL\nMesmo padrão do N RAG",
+    "has_written_comment": true
+  },
+  {
+    "id": 45,
+    "page": 5,
+    "secao": "3. O SIM e Caeté",
+    "highlighted_text": "(a",
+    "line_context": "tas contendo número e ano dice vetorial (amostra hone",
+    "professor_comment": "Não entendi isso",
+    "has_written_comment": true
+  },
+  {
+    "id": 46,
+    "page": 5,
+    "secao": "3. O SIM e Caeté",
+    "highlighted_text": "o);",
+    "line_context": "orteados uniformemente do anking prévio);",
+    "professor_comment": "Faça tabelas com exemplos de consultas tanto de SQL quanto de RAG, com a devida classificação de dificuldade ou estrato.",
+    "has_written_comment": true
+  },
+  {
+    "id": 47,
+    "page": 5,
+    "secao": "3. O SIM e Caeté",
+    "highlighted_text": "(Prompt B)",
+    "line_context": "de Domínio (Prompt B): Codificação TCE-MG, tais como tratamento de dat",
+    "professor_comment": "Você ainda não falou o que é o Prompt A. Ele deveria aparecer antes do Prompt B.",
+    "has_written_comment": true
+  },
+  {
+    "id": 48,
+    "page": 5,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 5",
+    "professor_comment": "Faça uma introdução dizendo o que vem nas subseções.",
+    "has_written_comment": true
+  },
+  {
+    "id": 49,
+    "page": 5,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 5",
+    "professor_comment": "Quais são as 10 intenções analíticas centrais?\nSe são apenas 10, acho que você pode apresentá-las em uma tabela aqui no texto.",
+    "has_written_comment": true
+  },
+  {
+    "id": 50,
+    "page": 6,
+    "secao": "4. Metodologia",
+    "highlighted_text": "X ⊮ h",
+    "line_context": "VSR = 1 N N X i 1 ⊮ h SQL(g) i exec",
+    "professor_comment": "Que símbolo é este?\nExplicar o que significa.",
+    "has_written_comment": true
+  },
+  {
+    "id": 51,
+    "page": 6,
+    "secao": "4. Metodologia",
+    "highlighted_text": "X ⊮[E",
+    "line_context": "EF = 1 N N X i=1 ⊮[EFi = 1]",
+    "professor_comment": "(Marcação visual sem texto adicional)",
+    "has_written_comment": false
+  },
+  {
+    "id": 52,
+    "page": 6,
+    "secao": "4. Metodologia",
+    "highlighted_text": "e McNemar.",
+    "line_context": "(AGRESTI; COULL, 1998). A teste de McNemar.",
+    "professor_comment": "Adicionar referência.",
+    "has_written_comment": true
+  },
+  {
+    "id": 53,
+    "page": 6,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 6",
+    "professor_comment": "Não entendi isso. É preciso mais detalhes.\nPor que precisa de tolerência numérica?\nO que é uma cardinalidade compatível?\nO que é EF = 1?",
+    "has_written_comment": true
+  },
+  {
+    "id": 54,
+    "page": 6,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 6",
+    "professor_comment": "As configurações precisam ser explicadas.",
+    "has_written_comment": true
+  },
+  {
+    "id": 55,
+    "page": 7,
+    "secao": "4. Metodologia",
+    "highlighted_text": "— Contexto estendido (",
+    "line_context": "E1 — Baseline (GPT-4.1-mini, Prompt A E2 — Contexto estendido (GPT-4.1-mini) E3 — Modelo leve (GPT-4o-mini)",
+    "professor_comment": "Este seria o Prompt B?",
+    "has_written_comment": true
+  },
+  {
+    "id": 56,
+    "page": 7,
+    "secao": "4. Metodologia",
+    "highlighted_text": "97,50",
+    "line_context": ") 90,00 81,5–94,8 ) 97,50 91,3–99,3",
+    "professor_comment": "(Marcação visual sem texto adicional)",
+    "has_written_comment": false
+  },
+  {
+    "id": 57,
+    "page": 7,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 7",
+    "professor_comment": "Faça uma introdução dizendo o que vem nas subseções.",
+    "has_written_comment": true
+  },
+  {
+    "id": 58,
+    "page": 7,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 7",
+    "professor_comment": "Explique o que é o IC.\nImagino que seja o Intervalo de Confiança.\nSe sim, então você não pode afirmar que E1 é melhor do que E2, pois os intervalos se sobrepõem.\nÉ preciso fazer uma análise estatística dos resultados. São 4 experimentos, como você compara eles em um teste estatístico?",
+    "has_written_comment": true
+  },
+  {
+    "id": 59,
+    "page": 8,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 8",
+    "professor_comment": "Precio entender melhor esse Prompt B. Se você o criou a partir dos erros do primeiro experimento, você pode estar gerando overfitting, ajustando o prompt para os casos de erros do conjunto de referência. Seria importante ter mais casos de teste.",
+    "has_written_comment": true
+  },
+  {
+    "id": 60,
+    "page": 9,
+    "secao": "5. Resultados",
+    "highlighted_text": "D (o",
+    "line_context": "grandeza dos resulta BIRD (onde modelos se que a EF não é di",
+    "professor_comment": "(Marcação visual sem texto adicional)",
+    "has_written_comment": false
+  },
+  {
+    "id": 61,
+    "page": 9,
+    "secao": "5. Resultados",
+    "highlighted_text": "4)).",
+    "line_context": "nais complexos como o LI et al., 2024)). Ressalta- aseline E1, a EX estrita",
+    "professor_comment": "Referência de 2024 já está muito ultrapassada.\nVeja resultados alcançados em artigos recentes, deste ano.",
+    "has_written_comment": true
+  },
+  {
+    "id": 62,
+    "page": 9,
+    "secao": "5. Resultados",
+    "highlighted_text": "al (e",
+    "line_context": "ional residual (em mação fiscal. Como",
+    "professor_comment": "(Marcação visual sem texto adicional)",
+    "has_written_comment": false
+  },
+  {
+    "id": 63,
+    "page": 9,
+    "secao": "5. Resultados",
+    "highlighted_text": "s) i",
+    "line_context": "WhatsApp, a taxa de 27,5% d os complexos) impõe riscos menda-se: (i) exibição opcion",
+    "professor_comment": "(Marcação visual sem texto adicional)",
+    "has_written_comment": false
+  },
+  {
+    "id": 64,
+    "page": 9,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 9",
+    "professor_comment": "Adicione e explique a métrica na Seção 4.2.",
+    "has_written_comment": true
+  },
+  {
+    "id": 65,
+    "page": 9,
+    "secao": "Geral / Seção",
+    "highlighted_text": "(Comentário geral na página)",
+    "line_context": "Página 9",
+    "professor_comment": "Não entendi como foi feita essa avaliação.\nE1 (n = 30) ????\nE o RAG ????",
+    "has_written_comment": true
+  },
+  {
+    "id": 66,
+    "page": 10,
+    "secao": "5. Resultados",
+    "highlighted_text": ". et al. C",
+    "line_context": "STA, L. G. L. et al. Ciência de da SICOM. In: Anais Estendidos d",
+    "professor_comment": "Adicione o nome de todos os autores. Não se usa et al. nesta seção.\nRevise em todas as referências.\nDeve ser uma configuração do template Latex.",
+    "has_written_comment": true
+  },
+  {
+    "id": 67,
+    "page": 10,
+    "secao": "5. Resultados",
+    "highlighted_text": ". [S.l.: s.n.],",
+    "line_context": "QL. In: Proceedings of the 2023 Con e Processing. [S.l.: s.n.], 2023.",
+    "professor_comment": "Isso indica que o seu bibtex está incompleto.",
+    "has_written_comment": true
+  },
+  {
+    "id": 68,
+    "page": 10,
+    "secao": "5. Resultados",
+    "highlighted_text": "s (R",
+    "line_context": "ais integradas (RAG e alidação experimental",
+    "professor_comment": "(Marcação visual sem texto adicional)",
+    "has_written_comment": false
+  },
+  {
+    "id": 69,
+    "page": 10,
+    "secao": "5. Resultados",
+    "highlighted_text": "L) p",
+    "line_context": "O SIM comprova a viabilid Text-to-SQL) para acesso a demonstrou que a engenha",
+    "professor_comment": "A conclusão está muito resumida.",
+    "has_written_comment": true
+  },
+  {
+    "id": 70,
+    "page": 11,
+    "secao": "6. Discussão",
+    "highlighted_text": "[S.l.: s.n.],",
+    "line_context": "ation for knowledge-intensive NLP ta ing Systems. [S.l.: s.n.], 2020. v. 33,",
+    "professor_comment": "(Marcação visual sem texto adicional)",
+    "has_written_comment": false
+  },
+  {
+    "id": 71,
+    "page": 11,
+    "secao": "6. Discussão",
+    "highlighted_text": "l. [S.l.: s.n.],",
+    "line_context": "44th International ACM ion Retrieval. [S.l.: s.n.],",
+    "professor_comment": "(Marcação visual sem texto adicional)",
+    "has_written_comment": false
+  },
+  {
+    "id": 72,
+    "page": 11,
+    "secao": "6. Discussão",
+    "highlighted_text": ". [S.l.: s.n.],",
+    "line_context": "t learning of text-to-SQL sing Systems. [S.l.: s.n.],",
+    "professor_comment": "(Marcação visual sem texto adicional)",
+    "has_written_comment": false
+  },
+  {
+    "id": 73,
+    "page": 11,
+    "secao": "6. Discussão",
+    "highlighted_text": "In: Findings of the Association for Computational Linguistics: ACL-IJCNLP 2021. [S.l.: s.n.], 2021. p. 1004–1010.",
+    "line_context": "MA, X. et al. VDR: Vector-keyword hybrid retrieval for open-domain question answering. In: Findings of the Association for Computational Linguistics: ACL-IJCNLP 2021. [S.l.: s.n.], 2021. p. 1004–1010.",
+    "professor_comment": "(Marcação visual sem texto adicional)",
+    "has_written_comment": false
+  },
+  {
+    "id": 74,
+    "page": 11,
+    "secao": "6. Discussão",
+    "highlighted_text": "[S.l.: s.n.],",
+    "line_context": "parsers. In: Proceedings of the 58th Linguistics. [S.l.: s.n.], 2020. p. 756",
+    "professor_comment": "(Marcação visual sem texto adicional)",
+    "has_written_comment": false
+  }
+]

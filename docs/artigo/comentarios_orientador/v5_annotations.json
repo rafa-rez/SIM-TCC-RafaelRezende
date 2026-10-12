@@ -1,0 +1,30 @@
+[
+  {
+    "page": 11,
+    "type": "Highlight",
+    "author": "Denilson Alves Pereira",
+    "content": "",
+    "subject": "",
+    "rect": [
+      81.46434783935547,
+      638.125,
+      514.53564453125,
+      697.9375
+    ],
+    "highlighted_text": "fixos: (i) busca densa pura; (ii) busca densa com deduplicação semântica de chunks\nidênticos; (iii) busca densa combinando filtro determinístico prévio por tipo de ato e\ndeduplicação; e (iv) busca híbrida que integra ranqueamento vetorial e casamento léxico\nde identificadores exatos (número e ano) no cabeçalho dos atos normativos."
+  },
+  {
+    "page": 11,
+    "type": "Text",
+    "author": "Denilson Alves Pereira",
+    "content": "Você resumiu demais, e não ficou claro.\nO texto que estava na versão anterior, na Seção 5.3, estava muito melhor.\n",
+    "subject": "",
+    "rect": [
+      54.75,
+      648.75,
+      72.75,
+      666.75
+    ],
+    "highlighted_text": ""
+  }
+]
