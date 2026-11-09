@@ -792,6 +792,9 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
       <button class="gov-tab-btn" id="tabbtn-rag" onclick="switchGovTab('rag')">
         📰 4. Auditoria do Diário Oficial (RAG Atos Atomizados &amp; BM25)
       </button>
+      <button class="gov-tab-btn" id="tabbtn-wpp" style="border-color:rgba(16,185,129,0.5); color:#6ee7b7;" onclick="switchPersona('wpp')">
+        📲 5. Parear WhatsApp Real (WAHA) &amp; Simulador de Voz
+      </button>
     </div>
 
     <!-- ABA 1: CHAT ANALÍTICO COM FILTRO DE BASES E GRÁFICOS CLAROS -->
@@ -1634,6 +1637,7 @@ function switchPersona(persona) {
     vWpp.classList.remove('hidden');
     bGov.className = 'persona-btn';
     bWpp.className = 'persona-btn active-wpp';
+    checkWahaLiveStatus(true);
   } else {
     vWpp.classList.add('hidden');
     vGov.classList.remove('hidden');

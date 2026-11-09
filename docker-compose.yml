@@ -12,7 +12,7 @@ services:
     networks:
       - prefeitura_net
 
-  # --- WAHA (WhatsApp API — Zero-Config conectado direto ao SIM API) ---
+  # --- WAHA (WhatsApp API) ---
   waha:
     image: devlikeapro/waha:latest
     platform: linux/amd64
@@ -21,7 +21,6 @@ services:
       WHATSAPP_HOOK_URL: http://duckdb_api:8000/webhook/waha
       WHATSAPP_DEFAULT_ENGINE: GOWS
       WHATSAPP_HOOK_EVENTS: message.any
-      WHATSAPP_DOWNLOAD_MEDIA: "true"
       WAHA_NO_API_KEY: "true"
       WAHA_DASHBOARD_NO_PASSWORD: "true"
       WHATSAPP_SWAGGER_NO_PASSWORD: "true"

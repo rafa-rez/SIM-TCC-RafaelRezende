@@ -1,6 +1,6 @@
 {
-  "last_sync_timestamp": "2026-11-09 22:41:00",
-  "duration_ms": 976.43,
+  "last_sync_timestamp": "2026-11-09 22:50:15",
+  "duration_ms": 969.56,
   "enriched_tables_synced": {
     "ibge_indicadores_municipais": 6,
     "siconfi_finbra_indicadores": 6,
