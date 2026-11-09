@@ -18,7 +18,7 @@ from sim_platform.engine.duckdb_manager import DuckDBManager, TenantContext
 from sim_platform.orchestrator.router import SIMOrchestrator
 
 
-WORKSPACE = Path("/home/antigravity/sim-workspace")
+WORKSPACE = Path(__file__).resolve().parents[1]
 RAW_DB_DIR = WORKSPACE / "avaliacao" / "dados" / "database"
 RAG_DENSO_CHECKPOINT = WORKSPACE / "avaliacao" / "experimentos" / "rag_golden_v13_denso" / "checkpoint_rag.jsonl"
 OUTPUT_JSON = WORKSPACE / "AUDIT" / "PRE_VS_POST_COMPARISON.json"

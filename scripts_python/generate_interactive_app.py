@@ -17,7 +17,7 @@ from sim_platform.audit.proactive_insights import ProactiveAuditEngine
 from sim_platform.ingestion.sync_manager import DataSyncManager
 
 
-WORKSPACE = Path("/home/antigravity/sim-workspace")
+WORKSPACE = Path(__file__).resolve().parents[1]
 PQ_DIR = WORKSPACE / "avaliacao" / "dados" / "parquet" / "caete_mg_3110004"
 API_HTML_PATH = WORKSPACE / "sim_platform" / "api" / "auditor_console_v0.html"
 ARTIFACT_HTML_PATH = Path(
@@ -894,12 +894,12 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 
           <label style="font-size:11.5px; color:var(--muted);">Motor Text-to-SQL:</label>
           <select id="llm-provider-select" class="select-control" style="margin-bottom:8px;" onchange="toggleApiKeyBox()">
-            <option value="native" selected>⚡ Compilador NL2SQL Nativo SIM (Offline / Custo R$ 0,00)</option>
+            <option value="openai" selected>🧠 OpenAI GPT-4.1-mini (Chave Já Salva no Sistema — Pronto p/ Uso)</option>
+            <option value="native">⚡ Compilador NL2SQL Nativo SIM (Offline / Custo R$ 0,00)</option>
             <option value="gemini">✨ Google Gemini 2.5 Flash (Google AI Studio — Free Tier)</option>
-            <option value="openai">🧠 OpenAI GPT-4.1-mini (API Key sk-...)</option>
           </select>
           <div id="api-key-box" class="hidden">
-            <input type="password" id="llm-api-key-input" class="input-control" placeholder="Cole sua GEMINI_API_KEY ou OPENAI_API_KEY (sk-...)">
+            <input type="password" id="llm-api-key-input" class="input-control" placeholder="Opcional: Chave OpenAI já embutida no backend (cole outra se desejar)">
           </div>
         </div>
       </aside>
@@ -1794,7 +1794,7 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
           llm_provider: provider !== 'native' ? provider : null,
           llm_api_key: apiKey || null
         }),
-        signal: AbortSignal.timeout(1800)
+        signal: AbortSignal.timeout(18000)
       });
       if (res.ok) {
         return await res.json();

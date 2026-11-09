@@ -468,15 +468,17 @@ class SIMOrchestrator:
         provider = (llm_provider if llm_provider is not None else (self._active_llm_provider or "")).lower().strip()
         user_key = (llm_api_key if llm_api_key is not None else (self._active_llm_api_key or "")).strip()
 
+        from sim_platform import get_configured_openai_key
+
         gemini_key = (
             user_key
             if (provider == "gemini" or (user_key and not user_key.startswith("sk-")))
             else os.environ.get("GEMINI_API_KEY", os.environ.get("GOOGLE_API_KEY", "")).strip()
         )
         openai_key = (
-            user_key
-            if (provider == "openai" or user_key.startswith("sk-"))
-            else os.environ.get("OPENAI_API_KEY", "").strip()
+            get_configured_openai_key(user_key if (provider == "openai" or user_key.startswith("sk-")) else None)
+            if provider != "gemini"
+            else ""
         )
 
         # 1. Tentar Google Gemini (Google AI Studio) se chave presente

@@ -16,7 +16,7 @@ from sim_platform.orchestrator.router import SIMOrchestrator
 from sim_platform.rag.hybrid_retriever import HybridRAGRetriever
 
 
-WORKSPACE_ROOT = Path("/home/antigravity/sim-workspace")
+WORKSPACE_ROOT = Path(__file__).resolve().parents[1]
 AUDIT_JSON = WORKSPACE_ROOT / "AUDIT" / "PRE_VS_POST_COMPARISON.json"
 PARQUET_JSON = WORKSPACE_ROOT / "AUDIT" / "PARQUET_PHASE1_BENCHMARK.json"
 APP_HTML_PATH = WORKSPACE_ROOT / "sim_platform" / "api" / "auditor_console_v0.html"

@@ -12,7 +12,7 @@ from pathlib import Path
 from sim_platform.engine.duckdb_manager import DuckDBManager, TenantContext
 
 
-WORKSPACE = Path("/home/antigravity/sim-workspace")
+WORKSPACE = Path(__file__).resolve().parents[1]
 PARQUET_DIR = WORKSPACE / "avaliacao" / "dados" / "parquet" / "caete_mg_3110004"
 BENCHMARK_JSON = WORKSPACE / "AUDIT" / "PARQUET_PHASE1_BENCHMARK.json"
 

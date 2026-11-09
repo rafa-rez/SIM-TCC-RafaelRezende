@@ -115,15 +115,17 @@ def transcribe_audio_content(
     user_key = (llm_api_key or "").strip()
     prov = (llm_provider or "").lower().strip()
 
+    from sim_platform import get_configured_openai_key
+
     gemini_key = (
         user_key
         if (prov == "gemini" or (user_key and not user_key.startswith("sk-")))
         else os.environ.get("GEMINI_API_KEY", os.environ.get("GOOGLE_API_KEY", "")).strip()
     )
     openai_key = (
-        user_key
-        if (prov == "openai" or user_key.startswith("sk-"))
-        else os.environ.get("OPENAI_API_KEY", "").strip()
+        get_configured_openai_key(user_key if (prov == "openai" or user_key.startswith("sk-")) else None)
+        if prov != "gemini"
+        else ""
     )
 
     if audio_base64:

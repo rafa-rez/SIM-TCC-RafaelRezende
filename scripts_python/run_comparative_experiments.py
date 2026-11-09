@@ -19,7 +19,7 @@ from sim_platform.engine.duckdb_manager import DuckDBManager, TenantContext
 from sim_platform.prompts.builder import ModularPromptBuilder
 
 
-WORKSPACE = Path("/home/antigravity/sim-workspace")
+WORKSPACE = Path(__file__).resolve().parents[1]
 DATA_DIR = WORKSPACE / "avaliacao" / "dados" / "database"
 FIX2023_DIR = WORKSPACE / "avaliacao" / "dados" / "database_fix2023"
 GOLDEN_V1 = WORKSPACE / "avaliacao" / "dados" / "golden" / "golden_dataset_v1.0.csv"

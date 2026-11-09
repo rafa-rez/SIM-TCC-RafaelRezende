@@ -38,7 +38,7 @@ from sim_platform.security.sql_guard import (
 )
 
 
-WORKSPACE_ROOT = Path("/home/antigravity/sim-workspace")
+WORKSPACE_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = WORKSPACE_ROOT / "avaliacao" / "dados" / "database"
 FIX2023_DIR = WORKSPACE_ROOT / "avaliacao" / "dados" / "database_fix2023"
 GOLDEN_V1 = WORKSPACE_ROOT / "avaliacao" / "dados" / "golden" / "golden_dataset_v1.0.csv"
