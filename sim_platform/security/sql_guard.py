@@ -27,6 +27,7 @@ BLOCKED_FUNCTIONS: Set[str] = {
     "read_json_objects",
     "read_text",
     "read_blob",
+    "read_xlsx",
     "glob",
     "parquet_scan",
     "csv_scan",
@@ -35,12 +36,19 @@ BLOCKED_FUNCTIONS: Set[str] = {
     "mysql_scan",
     "iceberg_scan",
     "delta_scan",
+    "excel_scan",
+    "spatial_scan",
+    "st_read",
+    "sniff_csv",
+    "json_execute_serialized_sql",
+    "json_serialize_sql",
     "getenv",
     "current_setting",
     "query",
     "query_table",
     "system",
     "shell",
+    "copy",
 }
 
 BLOCKED_SCHEMAS: Set[str] = {
@@ -271,6 +279,8 @@ class SQLGuard:
                 or func_name.startswith("pragma_")
                 or func_name.startswith("sqlite_")
                 or func_name.startswith("postgres_")
+                or func_name.startswith("json_execute")
+                or func_name.startswith("sniff_")
             ):
                 return SQLValidationResult(
                     is_valid=False,
@@ -326,25 +336,33 @@ class SQLGuard:
                 error_message="A consulta deve referenciar pelo menos uma tabela do catálogo de dados públicos.",
             )
 
-        # 8. Aplicar LIMIT máximo de proteção caso seja SELECT não agregado na raiz
+        # 8. Aplicar LIMIT máximo de proteção em SELECT, UNION, INTERSECT, EXCEPT e GROUP BY
         limit_applied = False
-        if enforce_limit and self.max_limit > 0 and isinstance(root, exp.Select):
-            has_agg = any(
-                isinstance(n, exp.AggFunc)
-                for expr in root.expressions
-                for n in expr.walk()
-            )
-            has_group = root.args.get("group") is not None
+        if enforce_limit and self.max_limit > 0 and isinstance(root, (exp.Select, exp.Union, exp.Intersect, exp.Except)):
+            is_scalar_agg = False
+            if isinstance(root, exp.Select):
+                has_agg = any(
+                    isinstance(n, exp.AggFunc)
+                    for expr in root.expressions
+                    for n in expr.walk()
+                )
+                has_group = root.args.get("group") is not None
+                is_scalar_agg = has_agg and not has_group
+
             current_limit = root.args.get("limit")
             if current_limit is not None:
+                lim_expr = current_limit.expression
+                lim_raw = (lim_expr.sql(dialect="duckdb") if lim_expr is not None else "").strip().upper()
                 try:
-                    limit_val = int(current_limit.expression.name)
-                    if limit_val > self.max_limit:
+                    limit_val = int(lim_raw)
+                    if limit_val <= 0 or limit_val > self.max_limit:
                         root = root.limit(self.max_limit)
                         limit_applied = True
                 except Exception:
-                    pass
-            elif not has_agg and not has_group:
+                    # Bloqueia LIMIT ALL, LIMIT NULL ou expressões malformadas
+                    root = root.limit(self.max_limit)
+                    limit_applied = True
+            elif not is_scalar_agg:
                 root = root.limit(self.max_limit)
                 limit_applied = True
 
@@ -354,7 +372,7 @@ class SQLGuard:
         years = self._extract_years_from_ast(root)
         fontes = self._resolve_source_files(base_tables, years)
 
-        # 10. Detectar lacunas de transparência determinísticas (ex: folha 2020-2022)
+        # 10. Detectar lacunas de transparência determinísticas (ex: folha 2020-2022 e exercício parcial 2025)
         warnings = self._detect_transparency_gaps(base_tables, years)
 
         return SQLValidationResult(
@@ -478,7 +496,7 @@ class SQLGuard:
         warnings: List[TransparencyWarning] = []
         gap_payroll_years = {2020, 2021, 2022}
 
-        if "remuneracao_municipio" in base_tables:
+        if "remuneracao_municipio" in base_tables or "vw_gold_folha_servidores" in base_tables:
             overlap = sorted(gap_payroll_years.intersection(queried_years)) if queried_years else [2020, 2021, 2022]
             if overlap:
                 warnings.append(
@@ -492,11 +510,28 @@ class SQLGuard:
                             "de 2020, 2021 e 2022. Os dados estão disponíveis exclusivamente a partir de 2023. "
                             "Ausência de registros nesse período reflete lacuna de publicação na origem, e não gasto zero."
                         ),
-                        affected_tables=["remuneracao_municipio", "pessoa_municipio"],
+                        affected_tables=["remuneracao_municipio", "pessoa_municipio", "vw_gold_folha_servidores"],
                         affected_years=overlap,
                         available_years=[2023, 2024, 2025],
                     )
                 )
+
+        if 2025 in queried_years or (not queried_years and len(base_tables) > 0):
+            warnings.append(
+                TransparencyWarning(
+                    gap_id="GAP-EXERCICIO-PARCIAL-2025",
+                    severity="INFO",
+                    title="Nota Técnica — Exercício 2025 em Execução Parcial (Jan–Ago/Set)",
+                    message=(
+                        "A base pública do exercício de 2025 reflete remessas parciais acumuladas até meados do 2º semestre "
+                        "(ex.: ~7 a 9 meses de execução no SICOM/CGU). Ao comparar totais de 2025 com 2024 (12 meses fechados), "
+                        "considere a proporcionalidade mensal para evitar falsas conclusões de queda de arrecadação ou despesa."
+                    ),
+                    affected_tables=base_tables[:4],
+                    affected_years=[2025],
+                    available_years=[2020, 2021, 2022, 2023, 2024, 2025],
+                )
+            )
 
         if not self.repaired_2023:
             corrupted_used = sorted(TABLES_2023_CORRUPTED.intersection(base_tables))
@@ -520,20 +555,48 @@ class SQLGuard:
         return warnings
 
 
-def mask_cpf_value(val: Any) -> Any:
+_EMBEDDED_CPF_RE = re.compile(r"(?<![\d/])\b(\d{3})\.?(\d{3})\.?(\d{3})-?(\d{2})\b(?![\d/])")
+
+
+def mask_cpf_value(val: Any, is_sensitive_col: bool = False) -> Any:
     """
-    Mascara CPFs (11 dígitos numéricos ou formatados XXX.XXX.XXX-XX) para '***.XXX.XXX-**',
-    preservando CNPJs (14 dígitos) intactos (pessoas jurídicas contratadas são públicas pela LAI).
+    Mascara CPFs (11 dígitos numéricos, formatados XXX.XXX.XXX-XX, inteiros resultantes de CAST ou
+    embutidos em razão social de MEI) para '***.XXX.XXX-**', preservando CNPJs (14 dígitos) intactos.
     """
+    if val is None or isinstance(val, bool):
+        return val
+
+    if isinstance(val, int):
+        if is_sensitive_col and 100_000_000 <= val <= 99_999_999_999:
+            s = f"{val:011d}"
+            return f"***.{s[3:6]}.{s[6:9]}-**"
+        return val
+
+    if isinstance(val, (list, tuple)):
+        return [mask_cpf_value(v, is_sensitive_col=is_sensitive_col) for v in val]
+
+    if isinstance(val, dict):
+        return {k: mask_cpf_value(v, is_sensitive_col=is_sensitive_col) for k, v in val.items()}
+
     if not isinstance(val, str):
         return val
+
     stripped = val.strip()
-    # Já mascarado pela CGU
     if stripped.startswith("***"):
         return stripped
+
     digits = re.sub(r"\D", "", stripped)
+    # Se for exatamente um CNPJ de 14 dígitos, preserva integralmente (LAI)
+    if len(digits) == 14 and len(stripped) in (14, 18):
+        return val
+
     if len(digits) == 11 and len(stripped) in (11, 14):
         return f"***.{digits[3:6]}.{digits[6:9]}-**"
+
+    # Mascarar CPF embutido em strings compostas ou nomes de MEI (ex: "JOAO DA SILVA 01234567890")
+    if _EMBEDDED_CPF_RE.search(stripped):
+        return _EMBEDDED_CPF_RE.sub(r"***. \2.\3-**".replace(" ", ""), val)
+
     return val
 
 
@@ -549,7 +612,10 @@ def mask_sensitive_rows(
     if role in ("admin", "auditor", "controller"):
         return rows, 0
 
-    sensitive_col_keywords = ("documento", "cpf", "nis")
+    sensitive_col_keywords = (
+        "documento", "cpf", "nis", "cgc_habilitado", "doc_socio",
+        "doc_credor", "doc_resp", "doc_liquidante", "doc_signatario", "doc_representante",
+    )
     masked_count = 0
     out_rows: List[Dict[str, Any]] = []
 
@@ -557,17 +623,11 @@ def mask_sensitive_rows(
         new_row = dict(row)
         for col, val in row.items():
             col_lower = col.lower()
-            if any(k in col_lower for k in sensitive_col_keywords) and isinstance(val, str):
-                masked_val = mask_cpf_value(val)
-                if masked_val != val:
-                    masked_count += 1
-                    new_row[col] = masked_val
-            elif isinstance(val, str):
-                # Também verifica se uma coluna genérica projeta um CPF puro de 11 dígitos
-                digits = re.sub(r"\D", "", val.strip())
-                if len(digits) == 11 and re.match(r"^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$", val.strip()):
-                    new_row[col] = f"***.{digits[3:6]}.{digits[6:9]}-**"
-                    masked_count += 1
+            is_sens = any(k in col_lower for k in sensitive_col_keywords)
+            masked_val = mask_cpf_value(val, is_sensitive_col=is_sens)
+            if masked_val != val:
+                masked_count += 1
+                new_row[col] = masked_val
         out_rows.append(new_row)
 
     return out_rows, masked_count

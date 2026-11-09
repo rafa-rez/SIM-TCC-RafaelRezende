@@ -14,17 +14,16 @@ Diagnóstico do Pipeline Legado (`ETL_RAG_JORNAIS.py` e snapshots Qdrant):
 3. Artefatos de diagramação em 2 colunas do PDF do *Jornal Opinião*:
    - Ligaduras tipográficas quebradas com espaço (`"ﬁ ns"` -> `"fins"`, `"modiﬁ cações"` -> `"modificações"`,
      `"proﬁ ssional"` -> `"profissional"`, `"ﬁ ca"` -> `"fica"`).
-   - Hifenização de quebra de coluna (`"ORÇA- MENTO"`, `"EDU- CACIONAL"`, `"Munici- pal"`).
-4. Duplicação massiva (47,9% dos 9.346 pontos no Qdrant):
-   - Uso de `uuid4()` aleatório + republicação do mesmo decreto em edições subsequentes (`_A.pdf` a `_E.pdf`).
+   - Hifenização de quebra de coluna (`"ORÇA- MENTO"`, `"EDU- CACIONAL"`, `"GE- RAIS"`, `"MU- NICIPAL"`).
+4. Duplicação massiva (47,9% dos 9.346 pontos no Qdrant) e 24 chunks com múltiplos atos colados.
 
-Este módulo implementa a solução definitiva para a plataforma SIM:
-- `clean_newspaper_pdf_text()`: reparo de ligaduras PDF, des-hifenização de colunas e normalização.
+Este módulo implementa a solução definitiva para a plataforma SIM v3.0:
+- `clean_newspaper_pdf_text()`: reparo de ligaduras PDF, des-hifenização de colunas (incluindo sílabas de 2 letras) e limpeza de prefixos truncados.
 - `ActBoundaryChunker`: corte semântico estrito por fronteira de ato jurídico (`DECRETO`, `LEI`, `PORTARIA`,
-  `EDITAL`, `EXTRATO`, `DISPENSA`), sub-divisão apenas em fronteira de artigo (`Art. Xº`) com cabeçalho
+  `EDITAL`, `EXTRATO`, `DISPENSA`, `INEXIGIBILIDADE`, `TERMO ADITIVO`), sub-divisão apenas em fronteira de artigo (`Art. Xº`) com cabeçalho
   contextual `[TIPO Nº X/AAAA | PARTE k/N]` e proibição de chunks órfãos de fecho/assinatura.
-- `build_clean_individual_collection()`: reconstrói e persiste a collection limpa, contendo apenas atos
-  individuais únicos (0% duplicatas) com `UUIDv5` determinístico.
+- `build_clean_individual_collection()`: aplica `ActBoundaryChunker` sobre os documentos brutos para separar atos colados,
+  sem vazamento do benchmark (`include_golden_benchmark=False` por padrão) e com `UUIDv5` determinístico.
 """
 
 from __future__ import annotations
@@ -44,17 +43,26 @@ NAMESPACE_SIM_RAG = uuid.UUID("6ba7b810-9dad-11d1-80b4-00c04fd430c8")
 DEFAULT_WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
 
 # Regex para identificar início de um novo Ato Normativo no Diário Oficial
+# Lookbehind negativo impede que citações no meio de frases ("conforme Decreto nº 15/2024", "nos termos da Lei 101/2000")
+# quebram um ato ao meio.
 RE_ACT_BOUNDARY = re.compile(
-    r"(?=(?:\b(?:DECRETO|LEI\s+COMPLEMENTAR|LEI\s+MUNICIPAL|LEI|PORTARIA|EDITAL(?:\s+DE\s+LICITA[CÇ][AÃ]O)?|"
-    r"RESOLU[CÇ][AÃ]O|EXTRATO\s+DE\s+(?:CONTRATO|TERMO\s+ADITIVO|DISPENSA|INEXIGIBILIDADE)|"
-    r"AVISO\s+DE\s+(?:LICITA[CÇ][AÃ]O|DISPENSA|PREG[AÃ]O)|TERMO\s+ADITIVO)\s+"
-    r"(?:MUNICIPAL\s+)?(?:N[ºO°\.]?\s*\.?\s*\d{1,5}|\d{1,5}/\d{2,4})))",
+    r"(?=(?<!\bde\s)(?<!\bpelo\s)(?<!\bpela\s)(?<!\bno\s)(?<!\bna\s)(?<!\bdo\s)(?<!\bda\s)(?<!\bao\s)(?<!\bà\s)(?<!\bconforme\s)"
+    r"\b(?:DECRETO|LEI\s+COMPLEMENTAR|LEI\s+MUNICIPAL|LEI|PORTARIA|EDITAL(?:\s+DE\s+LICITA[CÇ][AÃ]O)?|"
+    r"RESOLU[CÇ][AÃ]O|EXTRATO\s+DE\s+(?:CONTRATO|TERMO\s+ADITIVO|DISPENSA|INEXIGIBILIDADE|CHAMAMENTO)|"
+    r"AVISO\s+DE\s+(?:LICITA[CÇ][AÃ]O|DISPENSA|PREG[AÃ]O|INEXIGIBILIDADE)|"
+    r"TERMO\s+(?:ADITIVO|DE\s+FOMENTO|DE\s+COLABORA[CÇ][AÃ]O|DE\s+ADITAMENTO)|"
+    r"DISPENSA\s+DE\s+LICITA[CÇ][AÃ]O|INEXIGIBILIDADE\s+DE\s+LICITA[CÇ][AÃ]O)\s+"
+    r"(?:MUNICIPAL\s+)?(?:N[ºO°\.]?\s*\.?\s*\d{1,5}|\d{1,5}/\d{2,4}))",
     re.IGNORECASE,
 )
 
 RE_ACT_HEADER = re.compile(
-    r"\b(DECRETO|LEI\s+COMPLEMENTAR|LEI\s+MUNICIPAL|LEI|PORTARIA|EDITAL|RESOLU[CÇ][AÃ]O|"
-    r"EXTRATO\s+DE\s+CONTRATO|TERMO\s+ADITIVO)\s+(?:MUNICIPAL\s+)?"
+    r"(?<!\bde\s)(?<!\bpelo\s)(?<!\bpela\s)(?<!\bno\s)(?<!\bna\s)(?<!\bdo\s)(?<!\bda\s)(?<!\bconforme\s)"
+    r"\b(DECRETO|LEI\s+COMPLEMENTAR|LEI\s+MUNICIPAL|LEI|PORTARIA|EDITAL(?:\s+DE\s+LICITA[CÇ][AÃ]O)?|"
+    r"RESOLU[CÇ][AÃ]O|EXTRATO\s+DE\s+(?:CONTRATO|TERMO\s+ADITIVO|DISPENSA|INEXIGIBILIDADE|CHAMAMENTO)|"
+    r"AVISO\s+DE\s+(?:LICITA[CÇ][AÃ]O|DISPENSA|PREG[AÃ]O)|"
+    r"TERMO\s+(?:ADITIVO|DE\s+FOMENTO|DE\s+COLABORA[CÇ][AÃ]O|DE\s+ADITAMENTO)|"
+    r"DISPENSA\s+DE\s+LICITA[CÇ][AÃ]O|INEXIGIBILIDADE\s+DE\s+LICITA[CÇ][AÃ]O)\s+(?:MUNICIPAL\s+)?"
     r"(?:N[ºO°\.]?\s*\.?\s*)?(\d{1,5}(?:\.\d{3})*)\s*(?:/|\s+DE\s+|\s*-\s*)(\d{2,4})\b",
     re.IGNORECASE,
 )
@@ -73,8 +81,8 @@ def clean_newspaper_pdf_text(raw_text: str) -> Tuple[str, Dict[str, int]]:
     """
     Corrige artefatos de extração PDF em duas colunas típicos do *Jornal Opinião* (Caeté/MG):
     1. Ligaduras Unicode (`ﬁ`, `ﬂ`, `ﬀ`, `ﬃ`, `ﬄ`) seguidas de espaço espúrio (`"ﬁ ns"` -> `"fins"`).
-    2. Hifenização de quebra de linha/coluna (`"ORÇA- MENTO"` -> `"ORÇAMENTO"`, `"munici- pal"` -> `"municipal"`).
-    3. Fragmentos truncados no início logo após cabeçalho colado (`"DECRETO Nº 064/2023     reto. Art."`).
+    2. Hifenização de quebra de linha/coluna (`"ORÇA- MENTO"` -> `"ORÇAMENTO"`, `"GE- RAIS"` -> `"GERAIS"`, `"MU- NICIPAL"` -> `"MUNICIPAL"`).
+    3. Fragmentos truncados no início logo após cabeçalho colado (`"DECRETO Nº 064/2023 reto. Art."`).
     """
     text = raw_text or ""
     stats = {"ligatures_fixed": 0, "hyphenations_fixed": 0, "truncated_prefix_cleaned": 0}
@@ -93,17 +101,16 @@ def clean_newspaper_pdf_text(raw_text: str) -> Tuple[str, Dict[str, int]]:
         text, n = pat.subn(repl, text)
         stats["ligatures_fixed"] += n
 
-    # 2. Des-hifenizar palavras quebradas entre linhas/colunas do jornal
-    # Ex: "ORÇA- MENTO" -> "ORÇAMENTO", "profi- ssional" -> "profissional"
+    # 2. Des-hifenizar palavras quebradas entre linhas/colunas do jornal (incluindo sílabas de 2 letras como GE- RAIS, MU- NICIPAL, CAE- TÉ)
     hyphen_pat_lower = re.compile(r"\b([A-Za-zÀ-ÿ]{2,})-\s+([a-zà-ÿ]{2,})\b")
     text, n_low = hyphen_pat_lower.subn(r"\1\2", text)
-    hyphen_pat_upper = re.compile(r"\b([A-ZÀ-Ý]{3,})-\s+([A-ZÀ-Ý]{3,})\b")
+    hyphen_pat_upper = re.compile(r"\b([A-ZÀ-Ý]{2,})-\s+([A-ZÀ-Ý]{2,})\b")
     text, n_up = hyphen_pat_upper.subn(r"\1\2", text)
     stats["hyphenations_fixed"] += n_low + n_up
 
-    # 3. Remover sílaba inicial truncada colada após cabeçalho (ex: "DECRETO Nº 064/2023     reto. Art. 6º")
+    # 3. Remover sílaba inicial truncada colada após cabeçalho (ex: "DECRETO Nº 064/2023 reto. Art. 6º")
     trunc_pat = re.compile(
-        r"^(\s*(?:DECRETO|LEI|PORTARIA|EDITAL)\s+N[ºO°\.]?\s*\d{1,5}/\d{2,4})\s{2,}[a-zà-ÿ]{1,5}\.\s+(?=Art\.)",
+        r"^(\s*(?:DECRETO|LEI|PORTARIA|EDITAL)\s+N[ºO°\.]?\s*\d{1,5}/\d{2,4})\s+[a-zà-ÿ]{1,6}\.\s+(?=Art\.)",
         re.IGNORECASE,
     )
     text, n_trunc = trunc_pat.subn(r"\1 — ", text)
@@ -117,33 +124,48 @@ def clean_newspaper_pdf_text(raw_text: str) -> Tuple[str, Dict[str, int]]:
 def extract_canonical_act_info(text: str) -> Dict[str, Any]:
     """
     Extrai metadados estruturados do ato normativo (tipo, número canônico, ano, CNPJs, valores, se é fecho órfão).
+    Ignora referências a leis federais históricas (ex: Lei 4.320/1964, Lei 8.666/1993, LC 101/2000) quando aparecem no preâmbulo.
     """
-    head_window = (text or "")[:320]
-    m = RE_ACT_HEADER.search(head_window)
+    head_window = (text or "")[:360]
     tipo_canon = "GERAL / OUTROS"
     numero_canon: Optional[str] = None
     ano_canon: Optional[int] = None
     act_key: Optional[str] = None
 
-    if m:
-        raw_tipo = m.group(1).upper()
+    chosen_match = None
+    for m in RE_ACT_HEADER.finditer(head_window):
+        ano_raw = m.group(3)
+        if len(ano_raw) == 2:
+            ano_raw = "20" + ano_raw
+        try:
+            yr_int = int(ano_raw)
+        except ValueError:
+            yr_int = 0
+        # Ignorar leis federais clássicas citadas em preâmbulos se não forem atos municipais recentes (2018-2026)
+        if yr_int and yr_int < 2017:
+            continue
+        chosen_match = m
+        break
+
+    if chosen_match:
+        raw_tipo = chosen_match.group(1).upper()
         if "DECRETO" in raw_tipo:
             tipo_canon = "DECRETO"
         elif "LEI" in raw_tipo:
             tipo_canon = "LEI"
         elif "PORTARIA" in raw_tipo:
             tipo_canon = "PORTARIA"
-        elif "EDITAL" in raw_tipo:
+        elif "DISPENSA" in raw_tipo or "INEXIGIBILIDADE" in raw_tipo or "EDITAL" in raw_tipo or "AVISO" in raw_tipo:
             tipo_canon = "EDITAL / LICITAÇÃO"
-        elif "EXTRATO" in raw_tipo:
-            tipo_canon = "EXTRATO CONTRATUAL"
-        elif "ADITIVO" in raw_tipo:
+        elif "ADITIVO" in raw_tipo or "ADITAMENTO" in raw_tipo:
             tipo_canon = "TERMO ADITIVO"
+        elif "EXTRATO" in raw_tipo or "FOMENTO" in raw_tipo or "COLABORA" in raw_tipo:
+            tipo_canon = "EXTRATO CONTRATUAL"
         else:
             tipo_canon = raw_tipo
 
-        num_raw = m.group(2).replace(".", "").lstrip("0") or "0"
-        ano_raw = m.group(3)
+        num_raw = chosen_match.group(2).replace(".", "").lstrip("0") or "0"
+        ano_raw = chosen_match.group(3)
         if len(ano_raw) == 2:
             ano_raw = "20" + ano_raw
         numero_canon = f"{num_raw}/{ano_raw}"
@@ -153,15 +175,14 @@ def extract_canonical_act_info(text: str) -> Dict[str, Any]:
             ano_canon = None
         act_key = f"{tipo_canon}::{numero_canon}"
     else:
-        # Fallback por palavras-chave
         up = head_window.upper()
         for label, kws in (
             ("PORTARIA", ("PORTARIA",)),
             ("DECRETO", ("DECRETO",)),
             ("LEI", ("LEI COMPLEMENTAR", "LEI MUNICIPAL", "LEI Nº", "PROJETO DE LEI")),
             ("TERMO ADITIVO", ("TERMO ADITIVO", "ADITAMENTO")),
-            ("EXTRATO CONTRATUAL", ("EXTRATO DE CONTRATO", "EXTRATO CONTRATUAL")),
-            ("EDITAL / LICITAÇÃO", ("EDITAL", "DISPENSA", "PREGÃO", "LICITAÇÃO")),
+            ("EXTRATO CONTRATUAL", ("EXTRATO DE CONTRATO", "EXTRATO CONTRATUAL", "TERMO DE FOMENTO", "TERMO DE COLABORAÇÃO")),
+            ("EDITAL / LICITAÇÃO", ("EDITAL", "DISPENSA", "INEXIGIBILIDADE", "PREGÃO", "LICITAÇÃO", "CHAMAMENTO PÚBLICO")),
         ):
             if any(k in up for k in kws):
                 tipo_canon = label
@@ -285,7 +306,6 @@ class ActBoundaryChunker:
                     )
                 )
             else:
-                # Dividir em fronteiras de Artigo ("Art. 1º", "Art. 2º"...) mantendo fecho junto ao último artigo
                 art_parts = re.split(r"(?=\bArt\.\s*\d+[º°]?)", act_text)
                 sub_texts: List[str] = []
                 current_buf = ""
@@ -298,7 +318,6 @@ class ActBoundaryChunker:
                         sub_texts.append(current_buf)
                         current_buf = part.strip()
                 if current_buf:
-                    # Nunca deixar um fecho curto sozinho na última parte
                     if sub_texts and len(current_buf) < self.min_orphan_chars:
                         sub_texts[-1] = f"{sub_texts[-1]} {current_buf}"
                     else:
@@ -342,45 +361,45 @@ class ActBoundaryChunker:
 def build_clean_individual_collection(
     workspace_root: Path = DEFAULT_WORKSPACE_ROOT,
     persist_json: bool = True,
+    include_golden_benchmark: bool = False,
 ) -> Dict[str, Any]:
     """
-    Varre todas as fontes de atos do Diário Oficial no repositório (`checkpoint_rag.jsonl`,
-    `reference_chunks/*.json`, `golden_rag_v1.3.csv`), aplica limpeza tipográfica (`clean_newspaper_pdf_text`),
-    enriquece fechos órfãos com a ementa/contexto quando disponível no Golden, e deduplica 100%
-    por ato individual (`act_key` ou fingerprint canônico), salvando a collection limpa.
+    Varre as fontes reais de atos do Diário Oficial no repositório (`checkpoint_rag.jsonl` e `reference_chunks/*.json`,
+    sem injetar o gabarito `golden_rag_v1.*.csv` por padrão para evitar data leakage), aplica limpeza tipográfica
+    (`clean_newspaper_pdf_text`), executa `ActBoundaryChunker` para separar atos múltiplos colados num mesmo chunk,
+    e deduplica 100% por ato individual (`act_key` ou fingerprint canônico).
     """
     raw_candidates: List[Dict[str, Any]] = []
     total_ligatures_repaired = 0
     total_hyphenations_repaired = 0
     orphan_tails_detected = 0
     duplicates_removed = 0
+    multi_act_chunks_split = 0
 
-    # 1. Mapear descrições completas dos golden_rag_v1.0 a v1.3.csv para enriquecer eventuais fragmentos órfãos
-    golden_context_by_act: Dict[str, str] = {}
-    for g_name in ("golden_rag_v1.3.csv", "golden_rag_v1.2.csv", "golden_rag_v1.1.csv", "golden_rag_v1.0.csv"):
-        g_rag = workspace_root / "avaliacao" / "dados" / "golden_rag" / g_name
-        if g_rag.exists():
-            with open(g_rag, encoding="utf-8-sig") as f:
-                for row in csv.DictReader(f, delimiter=";"):
-                    trecho = (row.get("trecho_referencia") or "").strip()
-                    pergunta = (row.get("pergunta") or "").strip()
-                    titulo = (row.get("titulo_documento") or "").strip()
-                    if not trecho:
-                        continue
-                    cleaned_t, st = clean_newspaper_pdf_text(trecho)
-                    total_ligatures_repaired += st["ligatures_fixed"]
-                    total_hyphenations_repaired += st["hyphenations_fixed"]
-                    info = extract_canonical_act_info(cleaned_t)
-                    if info["act_key"] and info["act_key"] not in golden_context_by_act:
-                        golden_context_by_act[info["act_key"]] = f"{titulo} — Contexto: {pergunta}"
-                    raw_candidates.append(
-                        {
-                            "source": f"Jornal_Opiniao_{titulo.replace(' ', '_') or 'Caete'}.pdf",
-                            "tipo_ato": (row.get("tipo") or info["tipo_ato"]).upper(),
-                            "page_content": cleaned_t,
-                            "origin": g_name,
-                        }
-                    )
+    chunker = ActBoundaryChunker(max_chunk_chars=2200, min_orphan_chars=180)
+
+    # 1. Opcionalmente carregar golden_rag apenas se solicitado explicitamente (desativado por padrão em produção!)
+    if include_golden_benchmark:
+        for g_name in ("golden_rag_v1.3.csv", "golden_rag_v1.2.csv", "golden_rag_v1.1.csv", "golden_rag_v1.0.csv"):
+            g_rag = workspace_root / "avaliacao" / "dados" / "golden_rag" / g_name
+            if g_rag.exists():
+                with open(g_rag, encoding="utf-8-sig") as f:
+                    for row in csv.DictReader(f, delimiter=";"):
+                        trecho = (row.get("trecho_referencia") or "").strip()
+                        titulo = (row.get("titulo_documento") or "").strip()
+                        if not trecho:
+                            continue
+                        cleaned_t, st = clean_newspaper_pdf_text(trecho)
+                        total_ligatures_repaired += st["ligatures_fixed"]
+                        total_hyphenations_repaired += st["hyphenations_fixed"]
+                        raw_candidates.append(
+                            {
+                                "source": f"Jornal_Opiniao_{titulo.replace(' ', '_') or 'Caete'}.pdf",
+                                "tipo_ato": (row.get("tipo") or "ATO").upper(),
+                                "page_content": cleaned_t,
+                                "origin": g_name,
+                            }
+                        )
 
     # 2. Carregar reference_chunks/*.json
     ref_dir = workspace_root / "avaliacao" / "dados" / "golden_rag" / "reference_chunks"
@@ -396,7 +415,7 @@ def build_clean_individual_collection(
                 total_hyphenations_repaired += st["hyphenations_fixed"]
                 raw_candidates.append(
                     {
-                        "source": f"Jornal_Opiniao_Ref_{jf.stem}.pdf",
+                        "source": obj.get("source") or f"Jornal_Opiniao_Ref_{jf.stem}.pdf",
                         "tipo_ato": (obj.get("tipo") or "ATO").upper(),
                         "page_content": cleaned_t,
                         "origin": f"reference_chunks/{jf.name}",
@@ -437,22 +456,43 @@ def build_clean_individual_collection(
                 except Exception:
                     continue
 
-    # 4. Deduplicar estritamente garantindo que cada ato individual apareça 1 única vez (mantendo a versão mais completa)
+    # 4. Aplicar ActBoundaryChunker para separar chunks com múltiplos atos colados (ex: Portaria 42 + 43 + 196)
+    atomic_candidates: List[Dict[str, Any]] = []
+    for cand in raw_candidates:
+        sub_chunks = chunker.chunk_edition_text(
+            raw_edition_text=cand["page_content"],
+            source_pdf=cand.get("source") or "Jornal_Oficial_Caete.pdf",
+            default_year=cand.get("ano_edicao"),
+        )
+        if len(sub_chunks) > 1:
+            multi_act_chunks_split += 1
+        for sc in sub_chunks:
+            atomic_candidates.append(
+                {
+                    "source": sc.source,
+                    "tipo_ato": sc.tipo_ato if sc.tipo_ato != "GERAL / OUTROS" else cand.get("tipo_ato", "GERAL / OUTROS"),
+                    "ano_edicao": sc.ano_edicao or cand.get("ano_edicao"),
+                    "numero_edicao": cand.get("numero_edicao"),
+                    "cnpjs_Mencionados": sorted(set((cand.get("cnpjs_Mencionados") or []) + sc.cnpjs_mencionados)),
+                    "page_content": sc.page_content,
+                    "origin": cand.get("origin"),
+                    "quality_flags": sc.quality_flags,
+                }
+            )
+
+    # 5. Deduplicar estritamente garantindo que cada ato individual apareça 1 única vez (mantendo a versão mais completa)
     by_unique_key: Dict[str, Dict[str, Any]] = {}
 
-    for cand in raw_candidates:
+    for cand in atomic_candidates:
         content = cand["page_content"]
         info = extract_canonical_act_info(content)
-        flags: List[str] = ["cleaned_pdf_text"]
+        flags: List[str] = ["cleaned_pdf_text"] + list(cand.get("quality_flags") or [])
 
         if info["is_orphan_closing"]:
             orphan_tails_detected += 1
-            flags.append("repaired_orphan_closing")
-            if info["act_key"] and info["act_key"] in golden_context_by_act:
-                content = f"[{golden_context_by_act[info['act_key']]}] {content}"
+            flags.append("orphan_closing_fragment")
 
-        # Chave de unicidade individual: prioriza act_key canônico (ex: DECRETO::64/2023) + parte
-        parte_m = re.search(r"\[PARTE\s+(\d+/\d+)\]", content[:120], re.IGNORECASE)
+        parte_m = re.search(r"\[[^\]]*PARTE\s+(\d+/\d+)\]", content[:140], re.IGNORECASE)
         parte_suffix = f"::{parte_m.group(1)}" if parte_m else ""
         nfkd = unicodedata.normalize("NFKD", content.lower())
         alnum = re.sub(r"[^a-z0-9]", "", "".join(c for c in nfkd if not unicodedata.combining(c)))
@@ -463,7 +503,6 @@ def build_clean_individual_collection(
         existing = by_unique_key.get(unique_key)
         if existing is not None:
             duplicates_removed += 1
-            # Sempre preserva a versão com texto mais rico/completo e que não seja órfã
             if len(content) <= len(existing["page_content"]):
                 continue
 
@@ -484,7 +523,7 @@ def build_clean_individual_collection(
             "source": cand.get("source") or "Jornal_Oficial_Caete.pdf",
             "cnpjs_Mencionados": sorted(set((cand.get("cnpjs_Mencionados") or []) + info["cnpjs_mencionados"])),
             "valores_mencionados": info["valores_mencionados"],
-            "quality_flags": flags,
+            "quality_flags": list(dict.fromkeys(flags)),
             "page_content": content,
         }
 
@@ -495,14 +534,17 @@ def build_clean_individual_collection(
 
     audit_summary = {
         "raw_candidates_scanned": len(raw_candidates),
+        "atomic_candidates_after_split": len(atomic_candidates),
+        "multi_act_chunks_split": multi_act_chunks_split,
         "unique_individual_acts": len(individual_collection),
         "duplicates_eliminated": duplicates_removed,
         "duplication_rate_eliminated_pct": round(
-            100.0 * duplicates_removed / max(1, len(raw_candidates)), 2
+            100.0 * duplicates_removed / max(1, len(atomic_candidates)), 2
         ),
         "ligatures_repaired": total_ligatures_repaired,
         "hyphenations_repaired": total_hyphenations_repaired,
         "orphan_closing_tails_detected_and_repaired": orphan_tails_detected,
+        "golden_benchmark_leakage_removed": not include_golden_benchmark,
         "qdrant_historical_stats": {
             "raw_points_in_qdrant_before": 9346,
             "numbered_act_headers_in_qdrant_before": 3020,

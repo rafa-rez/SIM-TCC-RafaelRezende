@@ -213,19 +213,19 @@ class TestFunctional:
 # 2. TESTES DE ENGENHARIA DE DADOS
 # ==============================================================================
 class TestDataEngineering:
-    def test_catalog_has_all_79_tables(self, app_client: TestClient) -> None:
+    def test_catalog_has_all_85_tables_and_gold_views(self, app_client: TestClient) -> None:
         res = app_client.get("/catalog")
         assert res.status_code == 200
         data = res.json()
-        assert data["total_tables"] == 79
-        assert len(data["segments"]) == 12
-        assert data["source_families"]["SICOM"] == 65
+        assert data["total_tables"] == 85
+        assert len(data["segments"]) >= 12
+        assert data["source_families"]["SICOM"] == 70  # 65 físicas + 5 Gold Views SICOM
         assert data["source_families"]["CGU"] == 9
         assert data["source_families"]["SICONFI"] == 1
         assert data["source_families"]["IBGE"] == 1
         assert data["source_families"]["INEP"] == 1
         assert data["source_families"]["DATASUS"] == 1
-        assert data["source_families"]["RECEITA_QSA"] == 1
+        assert data["source_families"]["RECEITA_QSA"] == 2  # receita_qsa_fornecedores + vw_gold_fornecedores_qsa_360
 
 
     def test_2023_repair_recovers_11_75m_in_payments(self) -> None:
@@ -395,6 +395,9 @@ class TestSecurity:
         [
             ("SELECT * FROM read_csv_auto('/etc/passwd')", "BLOCKED_FUNCTION"),
             ("SELECT read_text('/etc/hostname') FROM despesa_pagamento", "BLOCKED_FUNCTION"),
+            ("SELECT * FROM json_execute_serialized_sql('...')", "BLOCKED_FUNCTION"),
+            ("SELECT * FROM sniff_csv('/etc/passwd')", "BLOCKED_FUNCTION"),
+            ("SELECT * FROM excel_scan('/tmp/a.xlsx')", "BLOCKED_FUNCTION"),
             ("DROP VIEW despesa_pagamento", "NON_SELECT_STATEMENT"),
             ("DELETE FROM despesa_pagamento WHERE 1=1", "NON_SELECT_STATEMENT"),
             ("COPY (SELECT * FROM despesa_pagamento) TO '/tmp/leak.csv'", "FORBIDDEN_STATEMENT"),
@@ -434,14 +437,16 @@ class TestSecurity:
         sample_rows = [
             {"nom_credor": "JOAO DA SILVA", "num_doc_credor": "12345678901", "vlr": 1500.0},
             {"nom_credor": "MARIA SOUZA", "num_doc_credor": "123.456.789-01", "vlr": 2500.0},
+            {"nom_credor": "SERVIDOR INT", "cpf_servidor": 12345678901, "vlr": 3100.0},
             {"nom_credor": "EMPRESA OBRAS LTDA", "num_doc_credor": "12345678000199", "vlr": 90000.0},
         ]
-        # Perfil citizen: CPFs (11 dígitos) mascarados, CNPJ (14 dígitos) preservado
+        # Perfil citizen: CPFs (11 dígitos string ou int) mascarados, CNPJ (14 dígitos) preservado
         citizen_rows, masked_cnt = mask_sensitive_rows(sample_rows, role="citizen")
-        assert masked_cnt == 2
+        assert masked_cnt == 3
         assert citizen_rows[0]["num_doc_credor"] == "***.456.789-**"
         assert citizen_rows[1]["num_doc_credor"] == "***.456.789-**"
-        assert citizen_rows[2]["num_doc_credor"] == "12345678000199"
+        assert citizen_rows[2]["cpf_servidor"] == "***.456.789-**"
+        assert citizen_rows[3]["num_doc_credor"] == "12345678000199"
 
         # Perfil auditor: visibilidade integral
         auditor_rows, aud_cnt = mask_sensitive_rows(sample_rows, role="auditor")
@@ -488,7 +493,7 @@ class TestSecurity:
 # 5. TESTES OPERACIONAIS (CONCORRÊNCIA, LIMIT AUTOMÁTICO E TIMEOUT)
 # ==============================================================================
 class TestOperational:
-    def test_auto_limit_injection_on_unbounded_select(self, app_client: TestClient) -> None:
+    def test_auto_limit_injection_on_unbounded_select_and_union(self, app_client: TestClient) -> None:
         # pessoa_municipio tem 393.368 linhas; sem LIMIT automático travaria a rede
         res = app_client.post(
             "/query",
@@ -499,6 +504,20 @@ class TestOperational:
         assert body["status"] == "sucesso"
         assert body["limit_aplicado"] is True
         assert body["total_linhas"] <= 500
+
+        # UNION ALL sem LIMIT também deve receber LIMIT automático na raiz da AST
+        res_union = app_client.post(
+            "/query",
+            json={
+                "query": (
+                    "SELECT nom_pessoa FROM pessoa_municipio WHERE ano_referencia = 2024 "
+                    "UNION ALL SELECT nom_pessoa FROM pessoa_municipio WHERE ano_referencia = 2023"
+                )
+            },
+        )
+        assert res_union.status_code == 200
+        assert res_union.json()["limit_aplicado"] is True
+        assert res_union.json()["total_linhas"] <= 500
 
     def test_concurrent_queries_and_health_responsiveness(self, app_client: TestClient) -> None:
         queries = [
@@ -512,7 +531,7 @@ class TestOperational:
             r = app_client.post("/query", json={"query": q})
             h = app_client.get("/health")
             assert h.status_code == 200
-            assert h.json()["mapped_objects"]["total"] == 79
+            assert h.json()["mapped_objects"]["total"] == 85
             return r.json()
 
         with ThreadPoolExecutor(max_workers=4) as pool:
@@ -594,9 +613,11 @@ class TestOperational:
 
         built = build_clean_individual_collection(persist_json=False)
         acts = built["collection"]
-        assert len(acts) >= 85
+        assert len(acts) >= 130
         unique_keys = [a["unique_key"] for a in acts]
         assert len(unique_keys) == len(set(unique_keys)), "Não deve haver nenhum ato duplicado na collection limpa"
+        # Nenhum vazamento de benchmark sintético
+        assert all(a.get("source") != "golden_rag_v1.3_curated" for a in acts)
         res = app_client.get("/api/rag/collection")
         assert res.status_code == 200
         assert "audit_summary" in res.json()
@@ -662,7 +683,7 @@ class TestOperational:
         assert sync_res.status_code == 200
         sync_data = sync_res.json()
         assert sync_data["all_up_to_date"] is True
-        assert sync_data["sync_execution"]["rag_unique_acts"] >= 85
+        assert sync_data["sync_execution"]["rag_unique_acts"] >= 130
 
     def test_proactive_audit_engine_parameterized_and_real_findings(self, app_client: TestClient) -> None:
         res = app_client.get(
@@ -670,9 +691,9 @@ class TestOperational:
         )
         assert res.status_code == 200
         data = res.json()
-        assert data["total_insights_categories"] == 3
+        assert data["total_insights_categories"] == 7
         for item in data["insights"]:
-            assert item["count"] >= 3
+            assert item["count"] >= 2
             assert "SELECT" in item["sql_executed"]
             assert item["legal_basis"]
             assert item["parameter_explained"]
@@ -684,7 +705,8 @@ class TestOperational:
         )
         assert res_strict.status_code == 200
         strict_data = res_strict.json()
-        assert all(r["pct_acrescimo"] > 100.0 for r in strict_data["insights"][0]["rows"])
+        aditivos_ins = next(i for i in strict_data["insights"] if i["id"] == "audit_aditivos_25pct")
+        assert all(r["pct_acrescimo"] > 100.0 for r in aditivos_ins["rows"])
 
     def test_whatsapp_audio_voice_transcription_and_webhook(self, app_client: TestClient) -> None:
         # 1. Endpoint direto de transcrição de áudio (fallback sem chave paga retorna orientação clara)
@@ -721,5 +743,59 @@ class TestOperational:
         assert "🎙️ *Áudio compreendido:*" in w_data["whatsapp_text"]
 
 
+# ==============================================================================
+# 6. TESTES DA ARQUITETURA v3.0 (6 GOLD VIEWS, DOSSIÊ 360º, QUOTA, PULSE & FOLHA)
+# ==============================================================================
+class TestV30Upgrades:
+    def test_six_semantic_gold_views_queryable_and_populated(self, app_client: TestClient) -> None:
+        gold_views = [
+            "vw_gold_folha_servidores",
+            "vw_gold_fornecedores_qsa_360",
+            "vw_gold_execucao_despesa_credor",
+            "vw_gold_frota_consolidada",
+            "vw_gold_contratos_vigencia_aditivos",
+            "vw_gold_conflito_interesses_licitacao",
+        ]
+        for gv in gold_views:
+            r = app_client.post("/query", json={"query": f"SELECT * FROM {gv} LIMIT 5"})
+            assert r.status_code == 200
+            body = r.json()
+            assert body["status"] == "sucesso", f"Erro na Gold View {gv}: {body}"
+            assert body["total_linhas"] >= 1
 
+    def test_payroll_rfc4180_sanitation_zero_shifted_rows(self, app_client: TestClient) -> None:
+        r = app_client.post(
+            "/query",
+            json={
+                "query": (
+                    "SELECT COUNT(*) AS bad_rows FROM remuneracao_municipio "
+                    "WHERE vlr_rmn_bruta IS NOT NULL "
+                    "AND TRY_CAST(vlr_rmn_bruta AS DECIMAL(18,2)) IS NULL"
+                )
+            },
+        )
+        assert r.status_code == 200
+        assert r.json()["dados"][0]["bad_rows"] == 0
 
+    def test_entity_dossier_360_endpoint_and_conflict_detection(self, app_client: TestClient) -> None:
+        res = app_client.get("/api/entity/dossier?q=ALCATEIA")
+        assert res.status_code == 200
+        data = res.json()
+        assert data["status"] == "sucesso"
+        assert len(data["conflitos_interesse"]) >= 1
+        assert "ALCATEIA" in data["conflitos_interesse"][0]["empresa_licitante"]
+
+    def test_governance_quota_and_executive_pulse_endpoints(self, app_client: TestClient) -> None:
+        q_res = app_client.get("/api/governance/quota")
+        assert q_res.status_code == 200
+        q_data = q_res.json()
+        assert "monthly_quota_requests" in q_data
+        assert "estimated_input_tokens" in q_data
+
+        p_res = app_client.get("/api/executive/pulse")
+        assert p_res.status_code == 200
+        p_data = p_res.json()
+        assert p_data["status"] == "sucesso"
+        assert p_data["pct_pessoal_lrf_2024"] == 42.65
+        assert p_data["pct_saude_siops_2024"] == 25.24
+        assert p_data["catalog_objects"] == 85

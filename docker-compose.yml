@@ -75,7 +75,7 @@ services:
       - ./avaliacao/dados:/gov/dados
       - ./avaliacao/dados/staging_cgu:/gov/dados/staging_cgu
     command: >
-      bash -c "pip install --no-cache-dir fastapi uvicorn duckdb pandas pydantic sqlglot &&
+      bash -c "pip install --no-cache-dir fastapi uvicorn duckdb pandas pydantic sqlglot requests &&
       uvicorn sim_platform.api.app:app --host 0.0.0.0 --port 8000"
     ports:
       - "8000:8000"

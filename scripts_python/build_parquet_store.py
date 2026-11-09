@@ -32,6 +32,7 @@ def build_parquet_store() -> None:
         fix2023_dir=WORKSPACE / "avaliacao" / "dados" / "database_fix2023",
         parquet_dir=None,
         repaired_2023=True,
+        use_parquet=False,
     )
     csv_mgr = DuckDBManager(tenant=csv_tenant)
     csv_boot_ms = round((time.perf_counter() - t0_csv_boot) * 1000.0, 2)
@@ -45,14 +46,22 @@ def build_parquet_store() -> None:
     csv_mgr.execute_safe_query(test_sql, role="auditor")
     csv_query_ms = round((time.perf_counter() - t0_q_csv) * 1000.0, 2)
 
-    # 2. Exportar todas as 72 tabelas para Parquet com compressão ZSTD
-    tables = sorted(csv_mgr.catalog.tables.keys())
+    # 2. Exportar todas as 72 tabelas base para Parquet com compressão ZSTD (e saneamento de PKs duplicadas)
+    tables = [t for t in sorted(csv_mgr.catalog.tables.keys()) if not t.startswith("vw_gold_")]
     exported = 0
     for t_low in tables:
         real_name = csv_mgr.catalog.tables[t_low].table_name
         out_file = PARQUET_DIR / f"{real_name}.parquet"
+        if real_name.lower() == "contrato_contratos":
+            select_sql = f"SELECT * FROM {real_name} QUALIFY ROW_NUMBER() OVER (PARTITION BY seq_contrato, ano_referencia ORDER BY filename) = 1"
+        elif real_name.lower() == "empenho_empenho":
+            select_sql = f"SELECT * FROM {real_name} QUALIFY ROW_NUMBER() OVER (PARTITION BY seq_empenho, ano_referencia ORDER BY seq_licitacao DESC) = 1"
+        elif real_name.lower() == "receita_receita":
+            select_sql = f"SELECT * FROM {real_name} WHERE TRY_CAST(num_anoexercicio AS INTEGER) IS NOT NULL"
+        else:
+            select_sql = f"SELECT * FROM {real_name}"
         csv_mgr.conn.execute(
-            f"COPY (SELECT * FROM {real_name}) TO '{out_file.as_posix()}' (FORMAT PARQUET, COMPRESSION ZSTD);"
+            f"COPY ({select_sql}) TO '{out_file.as_posix()}' (FORMAT PARQUET, COMPRESSION ZSTD);"
         )
         exported += 1
 

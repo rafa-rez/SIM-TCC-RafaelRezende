@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SIM GovTech — Matriz de Padrões &amp; Template de Onboarding para Novas Cidades</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { padding: 0 !important; }
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-6">
+  <div class="max-w-6xl mx-auto space-y-6">
+
+    <!-- CABEÇALHO -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-sky-500/15 text-sky-500 border border-sky-500/30 mb-2">
+          <span>ENGENHARIA DE EXPANSÃO MULTI-TENANT</span>
+          <span>•</span>
+          <span>DE 1 PARA 853 MUNICÍPIOS (MG) E 5.570 (BRASIL)</span>
+        </div>
+        <h1 class="text-2xl font-extrabold tracking-tight text-[var(--foreground)]">
+          O Que Aprendemos em Caeté: Matriz de Padrões &amp; Template para Novas Cidades
+        </h1>
+        <p class="text-sm text-[var(--muted-foreground)] mt-1">
+          Como transformar cada dor, bug e tesouro descoberto na auditoria de Caeté em um <strong>Motor de Onboarding Automatizado</strong> que ativa uma nova cidade em menos de 30 minutos.
+        </p>
+      </div>
+      <div class="no-print">
+        <button onclick="window.print()" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition cursor-pointer">
+          🖨️ Imprimir Guia de Expansão (PDF)
+        </button>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 1: O QUE É PADRÃO UNIVERSAL VS. O QUE MUDA DE CIDADE PARA CIDADE -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-4">
+      <div class="border-b border-[var(--border)] pb-3">
+        <h2 class="text-lg font-extrabold text-[var(--foreground)]">
+          1. A Grande Descoberta: 90% dos Problemas e Tesouros de Caeté Se Repetem em TODAS as Cidades de MG!
+        </h2>
+        <p class="text-xs text-[var(--muted-foreground)] mt-0.5">
+          Porque o exportador do SICOM/TCE-MG e as APIs Federais são idênticos para os 853 municípios mineiros. Veja o que é 100% reaproveitável sem mudar 1 linha de SQL:
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Camada 1: Nacional -->
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-emerald-500/40 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold uppercase text-emerald-500">Camada 1 — Padrão Nacional</span>
+            <span class="px-2 py-0.5 rounded text-xs font-bold bg-emerald-500/15 text-emerald-500">5.570 Cidades (100% Automático)</span>
+          </div>
+          <h3 class="text-sm font-bold">Fontes Federais (Apenas Trocar Código IBGE)</h3>
+          <ul class="text-xs text-[var(--muted-foreground)] space-y-1.5 leading-relaxed">
+            <li>• <strong>SICONFI / Tesouro (`apidatalake.tesouro.gov.br`):</strong> RCL, Gasto com Pessoal LRF, RREO e DCA usam o parâmetro <code>id_ente={cod_ibge}</code>.</li>
+            <li>• <strong>IBGE SIDRA (`servicodados.ibge.gov.br`):</strong> População e PIB usam <code>localidades=N6[{cod_ibge}]</code>.</li>
+            <li>• <strong>CGU Portal da Transparência:</strong> Novo Bolsa Família, BPC, Transferências e Emendas usam o código IBGE/SIAFI.</li>
+            <li>• <strong>INEP (IDEB) &amp; DATASUS (SIOPS):</strong> Anos ímpares bienais do IDEB e indicadores SIOPS por código IBGE de 7 dígitos.</li>
+          </ul>
+        </div>
+
+        <!-- Camada 2: Estadual MG -->
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-sky-500/40 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold uppercase text-sky-500">Camada 2 — Padrão Estadual (MG)</span>
+            <span class="px-2 py-0.5 rounded text-xs font-bold bg-sky-500/15 text-sky-500">853 Cidades (Mesmo Schema)</span>
+          </div>
+          <h3 class="text-sm font-bold">SICOM / TCE-MG (65 Tabelas + 6 Views Gold)</h3>
+          <ul class="text-xs text-[var(--muted-foreground)] space-y-1.5 leading-relaxed">
+            <li>• <strong>Mesmo Bug de Exportação CSV:</strong> O ponto-e-vírgula em <code>dsc_req_crg</code> ("profissionais de saúde; ...") e em <code>dsc_fonte_recurso</code> ("EC 123/2022") vem da tabela de domínio do próprio TCE-MG! Ou seja: <strong>nosso script reparador conserta qualquer prefeitura de MG automaticamente</strong>.</li>
+            <li>• <strong>Mesmas 6 Gold Views (`vw_gold_*`):</strong> Funcionam sem mudar uma vírgula em Sabará, Nova Lima, Itabira, Santa Luzia, Betim, etc.</li>
+            <li>• <strong>Mesmas 7 Trilhas TCE-MG:</strong> O detector de Conflito QSA×Folha, Conluio Licitatório, Caronas, Frota sem Placa e Aditivos roda igual em todas!</li>
+          </ul>
+        </div>
+
+        <!-- Camada 3: Local -->
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-amber-500/40 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold uppercase text-amber-500">Camada 3 — Parametrização Local</span>
+            <span class="px-2 py-0.5 rounded text-xs font-bold bg-amber-500/15 text-amber-500">1 Arquivo YAML/JSON por Cidade</span>
+          </div>
+          <h3 class="text-sm font-bold">O Que Realmente Muda por Prefeitura (~10%)</h3>
+          <ul class="text-xs text-[var(--muted-foreground)] space-y-1.5 leading-relaxed">
+            <li>• <strong>Diário Oficial (RAG):</strong> Algumas cidades têm PDF próprio (como o <em>Jornal Opinião</em> em Caeté), mas <strong>mais de 650 prefeituras de MG publicam no Diário Oficial dos Municípios da AMM-MG</strong> (que tem formato único padronizado!).</li>
+            <li>• <strong>Mapa de Órgãos (`cod_orgao`):</strong> Identificar qual código é Câmara (`01`), Prefeitura (`02`), Autarquia de Água (`SAAE`/`DMAE` = `03`) e Previdência (`IPREV` = `04`).</li>
+            <li>• <strong>Apelidos Locais (`entity_aliases`):</strong> Nome do hospital local (ex: Santa Casa) e principais bairros/distritos.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 2: OS 6 PADRÕES DE CORRUPÇÃO E ARMADILHAS QUE NOSSO MOTOR JÁ DETECTA E CONSERTA SOZINHO -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-4">
+      <div class="border-b border-[var(--border)] pb-3">
+        <h2 class="text-lg font-extrabold text-[var(--foreground)]">
+          2. Catálogo de "Vacinas": As 6 Armadilhas do SICOM que Agora Viraram Diagnóstico Automático
+        </h2>
+        <p class="text-xs text-[var(--muted-foreground)] mt-0.5">
+          Quando você rodar o comando de onboarding para uma cidade nova, o sistema verifica essas 6 patologias em 5 segundos e já gera o laudo para você levar na primeira reunião comercial:
+        </p>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="border-b border-[var(--border)] text-[var(--muted-foreground)] uppercase">
+              <th class="py-2.5 px-3">Padrão / Patologia do SICOM</th>
+              <th class="py-2.5 px-3">Por que acontece em outras cidades?</th>
+              <th class="py-2.5 px-3">O que acontecia sem a vacina</th>
+              <th class="py-2.5 px-3">Como nosso Template resolve sozinho</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[var(--border)]">
+            <tr>
+              <td class="py-2.5 px-3 font-bold text-rose-500">1. Shift da Folha (Saúde e Engenheiros)</td>
+              <td class="py-2.5 px-3">Descrição padrão de requisito de cargo do TCE-MG contém <code>;</code> interno sem aspas.</td>
+              <td class="py-2.5 px-3">Salário bruto vira <code>R$ 20,00 / R$ 40,00</code> (carga horária) e esconde 30%+ da folha bruta.</td>
+              <td class="py-2.5 px-3 text-emerald-500 font-semibold">Auto-reparo no Parquet + <code>vw_gold_folha_servidores</code> (recuperou R$ 60,7M em Caeté).</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3 font-bold text-rose-500">2. Shift da Fonte EC 123/2022 e Taxas</td>
+              <td class="py-2.5 px-3">Nome da fonte de recurso no layout 2023 do TCE-MG continha <code>;</code> ou traço <code>-</code>.</td>
+              <td class="py-2.5 px-3">Coluna de valor vira texto (<code>VARCHAR</code>) e some de <code>SUM(TRY_CAST)</code>.</td>
+              <td class="py-2.5 px-3 text-emerald-500 font-semibold">Reparador ancorado pelas extremidades recupera 100% dos valores numéricos.</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3 font-bold text-amber-500">3. QSA Escondido na Tabela de Habilitação</td>
+              <td class="py-2.5 px-3">No SICOM, <code>quadroSocLicitacao</code> guarda o CPF do sócio, e o CNPJ fica em <code>habLicitacao</code>.</td>
+              <td class="py-2.5 px-3">97% das empresas parecem não ter sócios cadastrados.</td>
+              <td class="py-2.5 px-3 text-emerald-500 font-semibold"><code>vw_gold_fornecedores_qsa_360</code> faz a ponte automática e já cruza CPF de sócio com CPF de servidor!</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3 font-bold text-amber-500">4. Veículos Cadastrados em Exercício Anterior</td>
+              <td class="py-2.5 px-3">O SICOM só exige registro em <code>frota_frota</code> no ano de aquisição/cadastro do veículo.</td>
+              <td class="py-2.5 px-3">JOIN com <code>ano_referencia</code> apaga até 99% dos gastos de combustível/peças.</td>
+              <td class="py-2.5 px-3 text-emerald-500 font-semibold"><code>vw_gold_frota_consolidada</code> une por <code>seq_veiculo</code> deduplicado e sinaliza frota sem placa.</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3 font-bold text-sky-500">5. Multiplicação Cartesiana (Fan-Out 1:N)</td>
+              <td class="py-2.5 px-3"><code>pessoa_municipio</code> repete por ano e <code>orgaoUnidade</code> tem subunidades (Educação/Saúde).</td>
+              <td class="py-2.5 px-3">Triplica a folha de pagamento (2,9x) e quadruplica o gasto da Educação (4x).</td>
+              <td class="py-2.5 px-3 text-emerald-500 font-semibold">Views Gold pré-agregam as dimensões por chave composta antes de expor ao LLM.</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3 font-bold text-purple-400">6. Atos Engolidos e Dispensas em Jornais PDF</td>
+              <td class="py-2.5 px-3">Jornais municipais colam vários decretos/dispensas na mesma página de duas colunas.</td>
+              <td class="py-2.5 px-3">Atos secundários somem e dispensas colidem com o decreto que nomeou a comissão.</td>
+              <td class="py-2.5 px-3 text-emerald-500 font-semibold"><code>ActBoundaryChunker</code> + negative lookbehind separa cada ato individualmente.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 3: O TEMPLATE DE CONFIGURAÇÃO DE UMA NOVA CIDADE (JSON/YAML) + FLUXO DE 4 PASSOS -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-4">
+      <div class="border-b border-[var(--border)] pb-3">
+        <h2 class="text-lg font-extrabold text-[var(--foreground)]">
+          3. O Template Prático de Onboarding: Como Ligar "Sabará", "Nova Lima" ou "Barão de Cocais" em 30 Minutos
+        </h2>
+        <p class="text-xs text-[var(--muted-foreground)] mt-0.5">
+          Para adicionar qualquer nova cidade, você preenche apenas um perfil de 15 linhas e roda o script de onboarding que gera o dossiê comercial automaticamente:
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] font-mono text-xs leading-relaxed">
+          <div class="text-emerald-500 font-bold mb-2"># Exemplo de Template: tenants/sabara_mg_3156700.json</div>
+<pre class="overflow-x-auto text-[var(--foreground)]">{
+  "tenant_id": "sabara_mg_3156700",
+  "municipality_name": "Sabará",
+  "state_uf": "MG",
+  "ibge_code": "3156700",
+  "populacao_faixa": "PORTE_II_60K_150K",
+  "orgaos_map": {
+    "01": "Câmara Municipal de Sabará",
+    "02": "Prefeitura Municipal de Sabará",
+    "03": "Instituto de Previdência (SABARAPREV)"
+  },
+  "diario_oficial": {
+    "source_type": "AMM_MG_PADRAO_OU_PDF_LOCAL",
+    "newspaper_name": "Diário Oficial Eletrônico de Sabará"
+  },
+  "local_aliases": {
+    "santa casa": "SANTA CASA DE MISERICORDIA DE SABARA",
+    "upa": "UNIDADE DE PRONTO ATENDIMENTO"
+  }
+}</pre>
+        </div>
+
+        <div class="space-y-3">
+          <div class="p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+            <div class="text-xs font-extrabold text-emerald-500">PASSO 1 — Ingestão &amp; Auto-Saneamento (10 min)</div>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1">
+              Baixa os zips anuais do SICOM da cidade-alvo + roda as APIs federais (`ibge_code`). O `build_parquet_store.py` detecta e corrige sozinho os *column shifts* da folha e da receita e materializa as 79 tabelas Parquet + 6 Gold Views.
+            </p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+            <div class="text-xs font-extrabold text-sky-500">PASSO 2 — Varredura Automática das 7 Trilhas TCE-MG (1 min)</div>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1">
+              O `ProactiveAuditEngine` roda imediatamente sobre os Parquets da nova cidade e já descobre: quais sócios de fornecedores estão na folha daquela prefeitura, quais empresas disputaram licitação juntas com os mesmos sócios, quanto foi gasto em Caronas, qual o % da frota sem placa e quais contratos estouraram 25% de aditivo!
+            </p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+            <div class="text-xs font-extrabold text-amber-500">PASSO 3 — Geração do "Dossiê de Choque" p/ a Reunião (2 min)</div>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1">
+              Antes mesmo de ligar para agendar a visita na Câmara ou na Controladoria da nova cidade, você já imprime 3 Notas Técnicas em PDF com os achados reais que o sistema descobriu naquela prefeitura (inclusive quantos milhões estavam escondidos pelo bug do CSV da folha!).
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

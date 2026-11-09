@@ -24,6 +24,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import duckdb
 
 from sim_platform.catalog.data_catalog import DataCatalog
+from sim_platform.engine.gold_views import register_gold_views
 from sim_platform.security.sql_guard import (
     SQLGuard,
     SQLValidationResult,
@@ -67,6 +68,7 @@ class TenantContext:
     parquet_dir: Optional[Path] = None
     db_path: Optional[Path] = None
     repaired_2023: bool = True
+    use_parquet: bool = True
 
 
 class DuckDBManager:
@@ -95,6 +97,7 @@ class DuckDBManager:
                 fix2023_dir=ws_root / "avaliacao" / "dados" / "database_fix2023",
                 parquet_dir=default_pq if default_pq.exists() else None,
                 repaired_2023=True,
+                use_parquet=True,
             )
         self.tenant = tenant
         if self.tenant.cgu_dir is None:
@@ -102,7 +105,8 @@ class DuckDBManager:
             if candidate_cgu.exists():
                 self.tenant.cgu_dir = candidate_cgu
         if (
-            self.tenant.parquet_dir is None
+            self.tenant.use_parquet
+            and self.tenant.parquet_dir is None
             and self.tenant.repaired_2023
             and self.tenant.data_dir == (ws_root / "avaliacao" / "dados" / "database")
             and default_pq.exists()
@@ -165,7 +169,7 @@ class DuckDBManager:
 
     def _create_views_from_csv(self, con: duckdb.DuckDBPyConnection) -> None:
         # 0. Fast-path Fase 1: se Parquet colunar já existe para o tenant, criar views direto sobre Parquet
-        if self.tenant.parquet_dir and self.tenant.parquet_dir.exists():
+        if self.tenant.use_parquet and self.tenant.parquet_dir and self.tenant.parquet_dir.exists():
             pq_files = sorted(self.tenant.parquet_dir.glob("*.parquet"))
             if len(pq_files) >= 60:
                 for pq_path in pq_files:
@@ -173,6 +177,7 @@ class DuckDBManager:
                     con.execute(
                         f"CREATE OR REPLACE VIEW {tname} AS SELECT * FROM read_parquet('{pq_path.as_posix()}');"
                     )
+                register_gold_views(con)
                 return
 
         # 1. Views SICOM (65 views com ano_referencia extraído do nome do arquivo)
@@ -207,6 +212,9 @@ class DuckDBManager:
                     FROM read_csv_auto('{padrao_busca}', delim='|', header=True, filename=true, union_by_name=true, ignore_errors=true);
                 """
                 con.execute(query_cgu)
+
+        # 3. Registrar Camada Gold Semântica (6 Views pré-desduplicadas)
+        register_gold_views(con)
 
     def reload_catalog_and_views(self) -> None:
         """

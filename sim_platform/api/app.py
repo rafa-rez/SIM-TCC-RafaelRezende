@@ -287,13 +287,197 @@ def create_app(
         req: Optional[SyncRequest] = None,
         role: str = Depends(verify_auth),
     ) -> Dict[str, Any]:
+        from sim_platform.catalog.entity_linker import EntityLinker
         selected = req.sources if req else None
         _log(f"POST /api/ingestion/sync disparado (role={role}, sources={selected or 'ALL'})")
-        return sync_manager.sync_all(
+        sync_res = sync_manager.sync_all(
             selected_sources=selected,
             db_manager=db_manager,
             rag_retriever=rag_retriever,
         )
+        orchestrator.entity_linker = EntityLinker(
+            workspace_root=DEFAULT_REPO_ROOT,
+            conn=db_manager.conn,
+        )
+        return sync_res
+
+    @app.get("/api/governance/quota")
+    def get_governance_quota_status() -> Dict[str, Any]:
+        return orchestrator.quota_manager.get_quota_status()
+
+    @app.get("/api/executive/pulse")
+    def get_executive_municipal_pulse() -> Dict[str, Any]:
+        """
+        Retorna os indicadores executivos reais do Termômetro Municipal (2024/2025)
+        para o cabeçalho de Inteligência Executiva.
+        """
+        cur = db_manager.conn.cursor()
+        pulse: Dict[str, Any] = {
+            "status": "sucesso",
+            "tenant_id": tenant.tenant_id,
+            "municipality": f"{tenant.municipality_name}/{tenant.state_uf}",
+            "ibge_code": tenant.ibge_code,
+            "catalog_objects": len(db_manager.catalog.tables),
+            "rag_unique_acts": len(rag_retriever.corpus_chunks),
+        }
+        try:
+            row_fin = cur.execute(
+                """
+                SELECT vlr_receita_corrente_liquida, pct_despesa_pessoal_rcl,
+                       nota_capag_tesouro, pct_aplicacao_saude_siops, pct_aplicacao_educacao_mde,
+                       situacao_fiscal_lrf
+                FROM siconfi_finbra_indicadores
+                WHERE ano_referencia = 2024
+                LIMIT 1
+                """
+            ).fetchone()
+            if row_fin:
+                pulse["rcl_2024"] = float(row_fin[0] or 0)
+                pulse["pct_pessoal_lrf_2024"] = float(row_fin[1] or 0)
+                pulse["nota_capag"] = str(row_fin[2] or "A")
+                pulse["pct_saude_siops_2024"] = float(row_fin[3] or 0)
+                pulse["pct_educacao_mde_2024"] = float(row_fin[4] or 0)
+                pulse["situacao_fiscal_lrf"] = str(row_fin[5] or "REGULAR")
+        except Exception:
+            pass
+        try:
+            row_ibge = cur.execute(
+                """
+                SELECT populacao_residente, pib_per_capita_reais, idhm_geral
+                FROM ibge_indicadores_municipais
+                WHERE ano_referencia = 2024
+                LIMIT 1
+                """
+            ).fetchone()
+            if row_ibge:
+                pulse["populacao_2024"] = int(row_ibge[0] or 0)
+                pulse["pib_per_capita_reais"] = float(row_ibge[1] or 0)
+                pulse["idhm_geral"] = float(row_ibge[2] or 0)
+        except Exception:
+            pass
+        return pulse
+
+    @app.get("/api/entity/dossier")
+    def get_entity_dossier(
+        q: str,
+        role: str = Depends(verify_auth),
+    ) -> Dict[str, Any]:
+        """
+        Gera o Dossiê 360º de Entidade (Fornecedor / CNPJ / Servidor) cruzando:
+        1. Cadastro & QSA Reconciliado (`receita_qsa_fornecedores`)
+        2. Série Histórica de Pagamentos 2020-2025 (`despesa_pagamento`)
+        3. Contratos e Termos Aditivos (`vw_gold_contratos_vigencia_aditivos`)
+        4. Verificação de Conflito de Interesses (`vw_gold_conflito_interesses_licitacao`)
+        5. Atos Publicados no Diário Oficial (`Jornal Opinião`)
+        """
+        from sim_platform.security.sql_guard import mask_sensitive_rows
+        raw_q = (q or "").strip()
+        if not raw_q:
+            raise HTTPException(status_code=400, detail="Parâmetro 'q' (nome ou CNPJ/CPF) obrigatório.")
+
+        digits = "".join(ch for ch in raw_q if ch.isdigit())
+        safe_like = raw_q.replace("'", "''").upper().strip()
+        cur = db_manager.conn.cursor()
+
+        def _fetch_dicts(sql_str: str) -> List[Dict[str, Any]]:
+            try:
+                rel = cur.execute(sql_str)
+                cols = [d[0] for d in rel.description]
+                rows = []
+                for r in rel.fetchall():
+                    item = {}
+                    for idx, c in enumerate(cols):
+                        v = r[idx]
+                        if hasattr(v, "__float__") and not isinstance(v, (int, bool)):
+                            v = round(float(v), 2)
+                        item[c] = v
+                    rows.append(item)
+                masked, _ = mask_sensitive_rows(rows, role=role)
+                return masked
+            except Exception:
+                return []
+
+        if len(digits) >= 11:
+            filter_qsa = f"regexp_replace(COALESCE(num_cnpj, ''), '[^0-9]', '', 'g') = '{digits}'"
+            filter_pag = f"regexp_replace(COALESCE(num_doc_credor, ''), '[^0-9]', '', 'g') = '{digits}'"
+            filter_cont = f"regexp_replace(COALESCE(num_doc_credor, ''), '[^0-9]', '', 'g') = '{digits}'"
+            filter_conf = (
+                f"regexp_replace(COALESCE(cnpj_empresa, ''), '[^0-9]', '', 'g') = '{digits}' "
+                f"OR regexp_replace(COALESCE(num_cpf, ''), '[^0-9]', '', 'g') = '{digits}'"
+            )
+        else:
+            filter_qsa = f"UPPER(COALESCE(razao_social, '')) ILIKE '%{safe_like}%' OR UPPER(COALESCE(nomes_socios_qsa, '')) ILIKE '%{safe_like}%'"
+            filter_pag = f"UPPER(COALESCE(nom_credor, '')) ILIKE '%{safe_like}%'"
+            filter_cont = f"UPPER(COALESCE(nom_contratado, '')) ILIKE '%{safe_like}%'"
+            filter_conf = f"UPPER(COALESCE(nom_empresa, '')) ILIKE '%{safe_like}%' OR UPPER(COALESCE(nom_pessoa, '')) ILIKE '%{safe_like}%'"
+
+        qsa_rows = _fetch_dicts(
+            f"SELECT razao_social, num_cnpj, situacao_cadastral, porte_empresa, cnae_principal_descricao, "
+            f"qtd_socios_identificados, nomes_socios_qsa, qtd_pagamentos, total_pago_historico, alerta_auditoria_controladoria "
+            f"FROM receita_qsa_fornecedores WHERE {filter_qsa} ORDER BY total_pago_historico DESC LIMIT 5"
+        )
+        pag_series = _fetch_dicts(
+            f"SELECT ano_referencia, MAX(nom_credor) AS nom_credor, MAX(num_doc_credor) AS num_doc_credor, "
+            f"COUNT(*) AS qtd_pagamentos, ROUND(SUM(TRY_CAST(vlr_pag_fonte AS DECIMAL(18,2))), 2) AS total_pago "
+            f"FROM despesa_pagamento WHERE {filter_pag} GROUP BY ano_referencia ORDER BY ano_referencia"
+        )
+        contratos = _fetch_dicts(
+            f"SELECT ano_referencia, num_contrato, nom_contratado, num_doc_credor, "
+            f"SUBSTR(COALESCE(dsc_objetocontrato, ''), 1, 120) AS objeto, "
+            f"vlr_original_contrato, qtd_aditivos, vlr_total_aditivos, pct_acrescimo_aditivos "
+            f"FROM vw_gold_contratos_vigencia_aditivos WHERE {filter_cont} ORDER BY ano_referencia DESC, vlr_original_contrato DESC LIMIT 10"
+        )
+        conflitos = _fetch_dicts(
+            f"SELECT num_cpf, nom_pessoa, nom_pessoa AS nome_socio_servidor, dsc_cargo, dsc_cargo AS cargos_servidor_prefeitura, "
+            f"dsc_lotacao, primeiro_ano_folha, ultimo_ano_folha, total_remuneracao_bruta AS total_bruto_recebido_como_servidor, "
+            f"nom_empresa, nom_empresa AS empresa_licitante, cnpj_empresa, dsc_tipo_participacao, "
+            f"dsc_tipo_participacao AS vinculo_societario, total_pago_empresa, total_pago_empresa AS total_pago_empresa_prefeitura "
+            f"FROM vw_gold_conflito_interesses_licitacao WHERE {filter_conf} LIMIT 10"
+        )
+
+        entity_terms = [raw_q]
+        if qsa_rows:
+            if qsa_rows[0].get("razao_social"):
+                entity_terms.append(str(qsa_rows[0]["razao_social"]))
+            if qsa_rows[0].get("num_cnpj"):
+                entity_terms.append(str(qsa_rows[0]["num_cnpj"]))
+        elif pag_series:
+            if pag_series[0].get("nom_credor"):
+                entity_terms.append(str(pag_series[0]["nom_credor"]))
+
+        rag_acts = rag_retriever.search_by_entities(entity_terms, top_k=5)
+        total_pago_acum = round(sum(float(r.get("total_pago") or 0) for r in pag_series), 2)
+
+        canonical_name = (
+            (qsa_rows[0].get("razao_social") if qsa_rows else None)
+            or (pag_series[0].get("nom_credor") if pag_series else None)
+            or (contratos[0].get("nom_contratado") if contratos else None)
+            or raw_q
+        )
+        canonical_doc = (
+            (qsa_rows[0].get("num_cnpj") if qsa_rows else None)
+            or (pag_series[0].get("num_doc_credor") if pag_series else None)
+            or (contratos[0].get("num_doc_credor") if contratos else None)
+            or (digits if digits else "N/D")
+        )
+
+        return {
+            "status": "sucesso",
+            "query": raw_q,
+            "canonical_name": canonical_name,
+            "canonical_doc": canonical_doc,
+            "total_pago_acumulado": total_pago_acum,
+            "qsa_summary": qsa_rows,
+            "qsa_matches": qsa_rows,
+            "payments_by_year": pag_series,
+            "execucao_anual": pag_series,
+            "contracts_and_amendments": contratos,
+            "contratos": contratos,
+            "conflict_of_interest_alerts": conflitos,
+            "conflitos_interesse": conflitos,
+            "diario_oficial_acts": rag_acts,
+            "diario_oficial_atos": rag_acts,
+        }
 
     @app.get("/api/audit/insights")
     def get_proactive_audit_insights(
@@ -544,6 +728,15 @@ def create_app(
             return {"status": "ignored", "reason": "group_or_status", "chat_id": chat_id}
         if not message_text:
             return {"status": "ignored", "reason": "empty_body", "chat_id": chat_id}
+
+        allowed_rl, rl_msg = orchestrator.quota_manager.check_rate_limit(chat_id, channel="whatsapp")
+        if not allowed_rl:
+            return {
+                "status": "rate_limited",
+                "session": session,
+                "chat_id": chat_id,
+                "whatsapp_text": rl_msg,
+            }
 
         _log(f"WAHA Webhook ({event}, chat={chat_id}, audio={was_audio}): {message_text[:100]}")
 

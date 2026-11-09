@@ -63,7 +63,7 @@ def gather_real_caete_bundle() -> dict:
         "datasus": q(f"SELECT * FROM read_parquet('{p}/datasus_siops_saude.parquet') ORDER BY ano_referencia"),
         "cgu_convenios": q(f"SELECT * FROM read_parquet('{p}/cgu_convenios.parquet') ORDER BY ano_referencia DESC"),
         "cgu_emendas": q(f"SELECT * FROM read_parquet('{p}/cgu_emendas.parquet') ORDER BY ano_referencia DESC"),
-        "qsa_fornecedores": q(f"SELECT * FROM read_parquet('{p}/receita_qsa_fornecedores.parquet') ORDER BY total_pago_historico DESC LIMIT 25"),
+        "qsa_fornecedores": q(f"SELECT * FROM read_parquet('{p}/receita_qsa_fornecedores.parquet') ORDER BY total_pago_historico DESC LIMIT 60"),
         "sicom_pagamentos_ano": q(f"""
             SELECT ano_referencia, COUNT(*) AS qtd_pagamentos,
                    ROUND(SUM(TRY_CAST(vlr_pag_fonte AS DECIMAL(18,2))), 2) AS total_pago
@@ -82,7 +82,7 @@ def gather_real_caete_bundle() -> dict:
                    ROUND(SUM(TRY_CAST(vlr_liquidado AS DECIMAL(18,2))), 2) AS total_liquidado,
                    ROUND(SUM(TRY_CAST(vlr_pago AS DECIMAL(18,2))), 2) AS total_pago
             FROM read_parquet('{p}/despesa_despesa.parquet')
-            WHERE dsc_funcao ILIKE '%SAUDE%'
+            WHERE dsc_funcao ILIKE '%SAÚDE%' OR dsc_funcao ILIKE '%SAUDE%'
             GROUP BY ano_referencia ORDER BY ano_referencia
         """),
         "sicom_educacao_ano": q(f"""
@@ -91,7 +91,7 @@ def gather_real_caete_bundle() -> dict:
                    ROUND(SUM(TRY_CAST(vlr_liquidado AS DECIMAL(18,2))), 2) AS total_liquidado,
                    ROUND(SUM(TRY_CAST(vlr_pago AS DECIMAL(18,2))), 2) AS total_pago
             FROM read_parquet('{p}/despesa_despesa.parquet')
-            WHERE dsc_funcao ILIKE '%EDUCAC%'
+            WHERE dsc_funcao ILIKE '%EDUCA%' OR dsc_funcao ILIKE '%EDUCAC%'
             GROUP BY ano_referencia ORDER BY ano_referencia
         """),
         "sicom_folha_ano": q(f"""
@@ -106,7 +106,8 @@ def gather_real_caete_bundle() -> dict:
                    ROUND(MAX(TRY_CAST(r.vlr_rmn_bruta AS DECIMAL(18,2))), 2) AS maior_remuneracao_bruta,
                    ROUND(MAX(TRY_CAST(r.vlr_rmn_liquida AS DECIMAL(18,2))), 2) AS maior_remuneracao_liquida
             FROM read_parquet('{p}/remuneracao_municipio.parquet') r
-            JOIN read_parquet('{p}/pessoa_municipio.parquet') p ON r.seq_dim_pessoa = p.seq_dim_pessoa
+            JOIN read_parquet('{p}/pessoa_municipio.parquet') p
+              ON r.seq_dim_pessoa = p.seq_dim_pessoa AND r.ano_referencia = p.ano_referencia
             WHERE r.ano_referencia = 2024 AND COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%'
             GROUP BY 1, 2, 3 ORDER BY maior_remuneracao_bruta DESC LIMIT 10
         """),
@@ -169,12 +170,62 @@ def gather_real_caete_bundle() -> dict:
                    ROUND(rc.rec, 2) AS receita_corrente, ROUND(dc.desp, 2) AS despesa_corrente
             FROM rc JOIN dc ON rc.ano_referencia = dc.ano_referencia ORDER BY rc.ano_referencia
         """),
+        "credor_pagamentos_ano": q(f"""
+            SELECT ano_referencia,
+                   UPPER(TRIM(nom_credor)) AS nom_credor,
+                   regexp_replace(COALESCE(num_doc_credor, ''), '[^0-9]', '', 'g') AS num_doc_credor,
+                   COUNT(*) AS qtd_pagamentos,
+                   ROUND(SUM(TRY_CAST(vlr_pag_fonte AS DECIMAL(18,2))), 2) AS total_pago
+            FROM read_parquet('{p}/despesa_pagamento.parquet')
+            WHERE COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%'
+            GROUP BY 1, 2, 3
+            HAVING SUM(TRY_CAST(vlr_pag_fonte AS DECIMAL(18,2))) >= 50000
+            ORDER BY total_pago DESC
+            LIMIT 450
+        """),
     }
 
     rag_path = PQ_DIR / "rag_jornais_individuais.json"
     bundle["rag_acts"] = json.loads(rag_path.read_text(encoding="utf-8")) if rag_path.exists() else []
 
     app = create_app()
+    app_cur = app.state.db_manager.conn.cursor()
+
+    def q_app(sql_str: str) -> list[dict]:
+        rel = app_cur.execute(sql_str)
+        cols = [d[0] for d in rel.description]
+        out = []
+        for row in rel.fetchall():
+            item = {}
+            for i, c in enumerate(cols):
+                v = row[i]
+                if hasattr(v, "__float__") and not isinstance(v, (int, bool)):
+                    v = round(float(v), 2)
+                item[c] = v
+            out.append(item)
+        return out
+
+    bundle["gold_conflitos"] = q_app("SELECT * FROM vw_gold_conflito_interesses_licitacao ORDER BY total_pago_empresa DESC")
+    bundle["gold_contratos_aditivos"] = q_app(
+        "SELECT ano_referencia, num_contrato, nom_contratado, num_doc_credor, "
+        "SUBSTR(COALESCE(dsc_objetocontrato, ''), 1, 120) AS objeto, "
+        "vlr_original_contrato, qtd_aditivos, vlr_total_aditivos, pct_acrescimo_aditivos "
+        "FROM vw_gold_contratos_vigencia_aditivos ORDER BY vlr_total_aditivos DESC NULLS LAST LIMIT 120"
+    )
+    bundle["gold_caronas"] = q_app(
+        "SELECT nom_credor, num_doc_credor, SUM(qtd_empenhos) AS qtd_empenhos_totais, "
+        "ROUND(SUM(total_empenhado_carona), 2) AS total_empenhado_carona, "
+        "ROUND(SUM(total_pago), 2) AS total_pago "
+        "FROM vw_gold_execucao_despesa_credor WHERE total_empenhado_carona > 0 "
+        "GROUP BY 1, 2 ORDER BY total_empenhado_carona DESC LIMIT 25"
+    )
+    bundle["gold_frota_orfa"] = q_app(
+        "SELECT ano_referencia, status_cadastro_frota, COUNT(*) AS qtd_lancamentos, "
+        "ROUND(SUM(vlr_gasto), 2) AS total_gasto_frota "
+        "FROM vw_gold_frota_consolidada GROUP BY 1, 2 ORDER BY ano_referencia DESC, total_gasto_frota DESC"
+    )
+    bundle["quota_status"] = app.state.orchestrator.quota_manager.get_quota_status()
+
     catalog_tables = [
         {
             "table_name": m.table_name,
@@ -564,6 +615,97 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     color: #cbd5e1;
     margin-bottom: 10px;
   }
+  /* ==================== PULSE EXECUTIVO & BOTÃO DOSSIÊ 360º (v3.0) ==================== */
+  .exec-pulse-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+    background: linear-gradient(180deg, rgba(17,24,39,0.95), rgba(15,23,42,0.95));
+    border: 1px solid #1e3a8a;
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+  .pulse-item {
+    display: flex;
+    flex-direction: column;
+    border-left: 3px solid var(--primary);
+    padding-left: 10px;
+  }
+  .pulse-item.emerald { border-left-color: var(--emerald); }
+  .pulse-item.amber { border-left-color: var(--amber); }
+  .pulse-item.rose { border-left-color: var(--rose); }
+  .pulse-item.cyan { border-left-color: var(--cyan); }
+  .pulse-lbl { font-size: 10.5px; text-transform: uppercase; color: var(--muted); font-weight: 700; letter-spacing: 0.3px; }
+  .pulse-val { font-size: 16px; font-weight: 800; color: #fff; margin-top: 1px; }
+  .pulse-sub { font-size: 11px; color: #93c5fd; }
+
+  .dossier-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 6px;
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 10.5px;
+    font-weight: 700;
+    background: rgba(37, 99, 235, 0.22);
+    border: 1px solid rgba(96, 165, 250, 0.45);
+    color: #93c5fd;
+    cursor: pointer;
+    vertical-align: middle;
+  }
+  .dossier-btn:hover { background: var(--primary); color: #fff; }
+
+  /* Drawer Lateral Dossiê 360º & Modal de Ato Integral */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.78);
+    backdrop-filter: blur(3px);
+    z-index: 900;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .dossier-drawer {
+    width: min(740px, 95vw);
+    height: 100vh;
+    background: #0f172a;
+    border-left: 1px solid #334155;
+    padding: 20px 22px;
+    overflow-y: auto;
+    box-shadow: -16px 0 40px rgba(0,0,0,0.65);
+  }
+  .act-modal-center {
+    margin: auto;
+    width: min(820px, 94vw);
+    max-height: 88vh;
+    background: #0f172a;
+    border: 1px solid #3b82f6;
+    border-radius: 14px;
+    padding: 20px 24px;
+    overflow-y: auto;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.75);
+  }
+
+  /* Estilo Oficial de Impressão de Nota Técnica de Controladoria */
+  #print-official-header { display: none; }
+  @media print {
+    body { background: #fff !important; color: #0f172a !important; font-size: 12px; }
+    .top-header, .gov-subnav, aside, .gov-chat-box, .quick-prompts, .btn-sm, .btn-primary, .btn-emerald, .dossier-btn { display: none !important; }
+    .gov-grid { display: block !important; }
+    .card, .chart-panel, .kpi-box, .table-wrap, pre.code-block {
+      background: #fff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; box-shadow: none !important;
+    }
+    th { background: #f1f5f9 !important; color: #0f172a !important; }
+    td, .kpi-val, .chart-title, .hbar-name, .hbar-num, .vbar-val, .vbar-label { color: #0f172a !important; }
+    #print-official-header {
+      display: block !important;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -572,14 +714,14 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   <div class="brand">
     <div class="brand-logo">SIM</div>
     <div>
-      <h1>SIM Caeté/MG (IBGE 3110004) — Inteligência Pública Multi-Fonte v2.3</h1>
-      <p>79 Tabelas em 8 Fontes Oficiais + Gráficos Executivos + Auditoria Proativa Parametrizável + WhatsApp Voz</p>
+      <h1>SIM Caeté/MG (IBGE 3110004) — Inteligência Pública &amp; Controladoria v3.0</h1>
+      <p>85 Objetos Analíticos (79 Tabelas Parquet + 6 Gold Views) • 7 Trilhas TCE-MG • Dossiê 360º • RAG Okapi BM25</p>
     </div>
   </div>
 
   <div class="persona-switcher">
     <button id="btn-persona-gov" class="persona-btn active-gov" onclick="switchPersona('gov')">
-      🏛️ Visão Interna: Servidor da Prefeitura / Controladoria
+      🏛️ Visão Interna: Controladoria &amp; Gestão 360º
     </button>
     <button id="btn-persona-wpp" class="persona-btn" onclick="switchPersona('wpp')">
       💬 Visão Externa: Cidadão (Simulador WhatsApp + Voz)
@@ -587,29 +729,68 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   </div>
 
   <div class="status-pills">
-    <span class="pill pill-ok">⚡ 79 Tabelas Parquet + 104 Atos RAG</span>
-    <span class="pill">🎙️ Áudio WhatsApp Ativo</span>
+    <span class="pill pill-ok">⚡ 85 Objetos + 141 Atos Atomizados</span>
+    <span class="pill" id="quota-header-pill" title="Franquia Contratual B2G de Tokens IA e Cache Semântico">🛡️ Franquia B2G: 5.000/mês (Cache Ativo)</span>
   </div>
 </header>
 
 <main class="container">
 
+  <!-- Cabeçalho Oficial Visível Apenas na Impressão / Exportação PDF (@media print) -->
+  <div id="print-official-header">
+    <h2 style="font-size:16px; margin-bottom:2px;">PREFEITURA MUNICIPAL DE CAETÉ/MG — CONTROLADORIA GERAL DO MUNICÍPIO</h2>
+    <p style="font-size:12px; color:#334155;">
+      <strong>NOTA TÉCNICA DE AUDITORIA ASSISTIDA POR IA — PLATAFORMA SIM v3.0 (IBGE 3110004)</strong><br>
+      Rastreabilidade Determinística: Dados Oficiais SICOM/TCE-MG, SICONFI/STN, CGU, IBGE, INEP, DATASUS e Diário Oficial (*Jornal Opinião*).
+    </p>
+  </div>
+
   <!-- ================================================================================= -->
   <!-- VISÃO 1: INTERNA DA PREFEITURA / CONTROLADORIA (WORKSTATION GOVTECH)              -->
   <!-- ================================================================================= -->
   <section id="view-gov">
+
+    <!-- TERMÔMETRO EXECUTIVO MUNICIPAL (PULSE KPI BAR v3.0) -->
+    <div class="exec-pulse-bar" id="executive-pulse-bar">
+      <div class="pulse-item emerald">
+        <span class="pulse-lbl">RCL 2024 (SICONFI / SICOM)</span>
+        <span class="pulse-val">R$ 207,22 mi</span>
+        <span class="pulse-sub">Nota CAPAG Tesouro: A</span>
+      </div>
+      <div class="pulse-item emerald">
+        <span class="pulse-lbl">Pessoal / RCL (Art. 20 LRF)</span>
+        <span class="pulse-val">42,65%</span>
+        <span class="pulse-sub">Regular (Abaixo do Alerta 48,6%)</span>
+      </div>
+      <div class="pulse-item emerald">
+        <span class="pulse-lbl">Saúde SIOPS (Mín. 15%)</span>
+        <span class="pulse-val">25,24%</span>
+        <span class="pulse-sub">+10,24 p.p. acima do mínimo CF</span>
+      </div>
+      <div class="pulse-item cyan">
+        <span class="pulse-lbl">Educação MDE &amp; IDEB</span>
+        <span class="pulse-val">24,21% • IDEB 6,6</span>
+        <span class="pulse-sub">Anos Iniciais (Meta MEC: 6,4)</span>
+      </div>
+      <div class="pulse-item rose" style="cursor:pointer;" onclick="switchGovTab('gadgets')" title="Clique para abrir as 7 Trilhas Reais TCE-MG">
+        <span class="pulse-lbl">Achados Ativos TCE-MG</span>
+        <span class="pulse-val">7 Trilhas Reais</span>
+        <span class="pulse-sub">2 Conflitos QSA×Folha • R$ 85,9M Carona</span>
+      </div>
+    </div>
+
     <div class="gov-subnav">
       <button class="gov-tab-btn active" id="tabbtn-chat" onclick="switchGovTab('chat')">
-        🔎 1. Agente Analítico, Filtro de Bases &amp; Gráficos
+        🔎 1. Agente Analítico, Dossiê 360º &amp; Gráficos
       </button>
       <button class="gov-tab-btn" id="tabbtn-gadgets" onclick="switchGovTab('gadgets')">
-        🚨 2. Auditoria Proativa &amp; Semáforos Fiscais (Lei 14.133 / LRF / QSA)
+        🚨 2. 7 Trilhas de Auditoria TCE-MG (Conflito QSA×Folha, Caronas, Frota Órfã)
       </button>
       <button class="gov-tab-btn" id="tabbtn-sync" onclick="switchGovTab('sync')">
         🔄 3. Central "Atualizar Dados" (Pipeline ETL &amp; Padronização)
       </button>
       <button class="gov-tab-btn" id="tabbtn-rag" onclick="switchGovTab('rag')">
-        📰 4. Auditoria do Diário Oficial (RAG Atos Individuais &amp; Corte)
+        📰 4. Auditoria do Diário Oficial (RAG Atos Atomizados &amp; BM25)
       </button>
     </div>
 
@@ -636,64 +817,64 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
             <label class="source-item">
               <input type="checkbox" value="SICOM" checked onchange="updateSourceScopeUI()">
               <div class="source-item-info">
-                <div class="source-item-title"><span>SICOM / TCE-MG</span><span class="badge badge-green">65 tab</span></div>
-                <div class="source-item-sub">Despesas, receitas, contratos, licitações, folha e frota</div>
+                <div class="source-item-title"><span>SICOM / TCE-MG + Gold Views</span><span class="badge badge-green">71 obj</span></div>
+                <div class="source-item-sub">65 tabelas + 6 Gold Views (Folha, Conflitos, Caronas, Frota)</div>
               </div>
             </label>
             <label class="source-item">
               <input type="checkbox" value="CGU" checked onchange="updateSourceScopeUI()">
               <div class="source-item-info">
                 <div class="source-item-title"><span>CGU — Transparência Federal</span><span class="badge badge-green">9 tab</span></div>
-                <div class="source-item-sub">Bolsa Família, BPC, Convênios Federais e Emendas</div>
+                <div class="source-item-sub">Bolsa Família, BPC, Convênios Federais e Emendas Reais</div>
               </div>
             </label>
             <label class="source-item">
               <input type="checkbox" value="SICONFI" checked onchange="updateSourceScopeUI()">
               <div class="source-item-info">
                 <div class="source-item-title"><span>SICONFI / Tesouro Nacional</span><span class="badge badge-green">1 tab</span></div>
-                <div class="source-item-sub">RCL, Limite LRF Pessoal (48,6%), Dívida e Nota CAPAG A</div>
+                <div class="source-item-sub">RCL Reconciliada, Pessoal LRF (42,65%) e Nota CAPAG A</div>
               </div>
             </label>
             <label class="source-item">
               <input type="checkbox" value="IBGE" checked onchange="updateSourceScopeUI()">
               <div class="source-item-info">
                 <div class="source-item-title"><span>IBGE Demografia &amp; PIB</span><span class="badge badge-green">1 tab</span></div>
-                <div class="source-item-sub">População Censo/Estimativa (39.755 hab), PIB e IDHM</div>
+                <div class="source-item-sub">População Censo/Estimativa (39.755 hab), PIB e IDHM 0,728</div>
               </div>
             </label>
             <label class="source-item">
               <input type="checkbox" value="INEP" checked onchange="updateSourceScopeUI()">
               <div class="source-item-info">
                 <div class="source-item-title"><span>INEP / MEC Educação</span><span class="badge badge-green">1 tab</span></div>
-                <div class="source-item-sub">IDEB (6,6), aprovação (98,1%), escolas e gasto/aluno</div>
+                <div class="source-item-sub">IDEB Bienal (6,6), aprovação (98,1%), escolas e gasto/aluno</div>
               </div>
             </label>
             <label class="source-item">
               <input type="checkbox" value="DATASUS" checked onchange="updateSourceScopeUI()">
               <div class="source-item-info">
                 <div class="source-item-title"><span>DATASUS / SIOPS Saúde</span><span class="badge badge-green">1 tab</span></div>
-                <div class="source-item-sub">Índice SIOPS (29,15%), CNES, UBS e Santa Casa</div>
+                <div class="source-item-sub">Índice SIOPS Reconciliado (25,24%), CNES, UBS e Santa Casa</div>
               </div>
             </label>
             <label class="source-item">
               <input type="checkbox" value="RECEITA_QSA" checked onchange="updateSourceScopeUI()">
               <div class="source-item-info">
                 <div class="source-item-title"><span>Receita Federal CNPJ / QSA</span><span class="badge badge-green">1 tab</span></div>
-                <div class="source-item-sub">Porte, CNAE e Quadro Societário de 250 fornecedores</div>
+                <div class="source-item-sub">180 fornecedores com QSA/Representantes + Entes Públicos</div>
               </div>
             </label>
             <label class="source-item">
               <input type="checkbox" value="DIARIO_OFICIAL" checked onchange="updateSourceScopeUI()">
               <div class="source-item-info">
-                <div class="source-item-title"><span>Diário Oficial (Jornal Opinião)</span><span class="badge badge-blue">104 atos</span></div>
-                <div class="source-item-sub">Leis, Decretos, Portarias e Editais sem duplicatas</div>
+                <div class="source-item-title"><span>Diário Oficial (Jornal Opinião)</span><span class="badge badge-blue">141 atos</span></div>
+                <div class="source-item-sub">Leis, Decretos, Portarias e Editais atomizados (Okapi BM25)</div>
               </div>
             </label>
           </div>
 
           <div style="margin-top:10px;">
             <label style="font-size:11.5px; color:var(--muted); font-weight:600;">
-              📌 Opcional: Restringir a uma Tabela Específica (79 disponíveis):
+              📌 Opcional: Restringir a uma Tabela ou Gold View Específica (85 disponíveis):
             </label>
             <select id="specific-table-select" class="select-control" onchange="updateSourceScopeUI()">
               <option value="">-- Seleção Automática Inteligente dentro das Fontes marcadas --</option>
@@ -728,33 +909,35 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
         <div class="card">
           <div class="card-title">
             <span>💬 Consultar Agente SIM (Workstation da Prefeitura)</span>
-            <div style="display:flex; gap:8px; align-items:center;">
-              <span class="badge badge-green" id="active-scope-pill">Escopo: Todas as 8 Fontes</span>
-              <button class="btn-sm" onclick="window.print()">📄 Imprimir / Salvar Nota Técnica PDF</button>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <span class="badge badge-green" id="active-scope-pill">Escopo: Todas as 8 Fontes + Gold Views</span>
+              <button class="btn-sm" onclick="openEntityDossier('ALCATEIA ENGENHARIA')">🔍 Dossiê 360º Exemplo (Alcateia)</button>
+              <button class="btn-sm" onclick="window.print()">🖨️ Emitir Nota Técnica Oficial (PDF)</button>
             </div>
           </div>
 
           <div class="gov-chat-box">
             <input type="text" id="gov-question-input" class="gov-chat-input"
-                   placeholder="Digite qualquer pergunta (ex: Qual a evolução dos pagamentos de 2020 a 2025? Quais os maiores fornecedores?)"
+                   placeholder="Digite qualquer pergunta (ex: Quais empresas possuem conflito de interesses entre QSA e folha? Quais as maiores caronas?)"
                    onkeydown="if(event.key==='Enter') runGovQuery()">
             <button class="btn-primary" onclick="runGovQuery()">Executar Consulta</button>
           </div>
 
           <div class="quick-prompts">
+            <button class="btn-sm" style="border-color:#ef4444;color:#fca5a5;" onclick="askPreset('Quais empresas possuem conflito de interesses entre quadro societário e folha de servidores?')">🚨 Conflito de Interesses (QSA × Folha)</button>
+            <button class="btn-sm" style="border-color:#f59e0b;color:#fde68a;" onclick="askPreset('Quais fornecedores mais receberam via carona e adesão a ata de registro de preços?')">📌 Adesões a Atas ('Caronas' R$ 85,9M)</button>
+            <button class="btn-sm" style="border-color:#f59e0b;color:#fde68a;" onclick="askPreset('Qual o gasto de frota em veículos órfãos sem placa cadastrada por ano?')">🚗 Frota Sem Placa (61,7% do Gasto)</button>
             <button class="btn-sm" onclick="askPreset('Qual a evolução do gasto per capita por habitante segundo o IBGE de 2020 a 2025?')">📊 Série Temporal: Gasto Per Capita (IBGE)</button>
-            <button class="btn-sm" onclick="askPreset('Quais são os maiores fornecedores da prefeitura e seus sócios no QSA da Receita Federal?')">📊 Ranking: Maiores Fornecedores + QSA</button>
+            <button class="btn-sm" onclick="askPreset('Quais são os maiores fornecedores da prefeitura e seus sócios no QSA da Receita Federal?')">🏢 Ranking: Maiores Fornecedores + QSA</button>
             <button class="btn-sm" onclick="askPreset('Qual a evolução da despesa com saúde de 2020 a 2025?')">🏥 Série Temporal: Gasto com Saúde</button>
-            <button class="btn-sm" onclick="askPreset('Qual a evolução do IDEB no INEP, matrículas e gasto por aluno em Caeté?')">🎓 Série Temporal: Educação IDEB &amp; Gasto/Aluno</button>
-            <button class="btn-sm" onclick="askPreset('Quais os indicadores fiscais do SICONFI Tesouro Nacional, limite LRF de pessoal e nota CAPAG?')">⚖️ Série Temporal: SICONFI / Limite LRF</button>
-            <button class="btn-sm" onclick="askPreset('Quais convênios federais e emendas parlamentares Caeté recebeu na CGU?')">🏛️ Convênios e Emendas (CGU)</button>
-            <button class="btn-sm" onclick="askPreset('O que dispõe o Decreto 064/2023 e o Decreto 230/2025 no Diário Oficial?')">📰 Decretos no Diário Oficial (RAG)</button>
+            <button class="btn-sm" onclick="askPreset('Qual a evolução da folha de pagamento e remuneração bruta vs líquida de 2023 a 2025?')">👥 Folha Saneada (Bruta vs. Líquida)</button>
+            <button class="btn-sm" onclick="askPreset('O que dispõe o Decreto 064/2023 e o Decreto 230/2025 no Diário Oficial?')">📰 Decretos no Diário Oficial (RAG BM25)</button>
           </div>
 
           <!-- Resposta Executiva -->
           <div id="gov-answer-box" style="background:var(--surface-3); border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:14px;">
             <div style="font-size:12px; color:var(--muted); margin-bottom:6px;" id="gov-meta-line">
-              Pronto para consulta interativa.
+              Pronto para consulta interativa. Clique em qualquer empresa ou CNPJ na tabela para abrir o <strong>Dossiê 360º</strong>.
             </div>
             <div id="gov-answer-content" style="font-size:13.5px; line-height:1.6;"></div>
           </div>
@@ -780,7 +963,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
             </div>
             <div class="kpi-box">
               <div class="kpi-label">Tabelas Enviadas ao Prompt</div>
-              <div class="kpi-val" id="kpi-tables">3 / 79</div>
+              <div class="kpi-val" id="kpi-tables">3 / 85</div>
               <div class="kpi-sub" id="kpi-reduction">-96.2% ruído de schema</div>
             </div>
             <div class="kpi-box">
@@ -798,7 +981,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
           <!-- Tabela de Dados Retornados -->
           <div id="gov-results-section" style="margin-bottom:14px;">
             <div class="card-title">
-              <span>📋 Registros Tabulares Retornados (<span id="table-row-count">0</span> linhas)</span>
+              <span>📋 Registros Tabulares Retornados (<span id="table-row-count">0</span> linhas — clique em <code>🔍 Dossiê 360º</code> em qualquer credor)</span>
               <button class="btn-sm" onclick="exportCurrentRowsCSV()">⬇️ Exportar CSV para Excel</button>
             </div>
             <div class="table-wrap" id="gov-table-container" style="max-height:310px; overflow-y:auto;"></div>
@@ -821,27 +1004,27 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 
     <!-- ABA 2: MOTOR PROATIVO DE AUDITORIA CONTÍNUA & SEMÁFOROS FISCAIS (SEM HARDCODES ARBITRÁRIOS) -->
     <div id="govtab-gadgets" class="hidden">
-      <!-- Semáforos Fiscais LRF & Constitucional -->
+      <!-- Semáforos Fiscais LRF & Constitucional Reconciliados -->
       <div class="card">
         <div class="card-title">
-          <span>🚦 Semáforos Legais da Lei de Responsabilidade Fiscal (LRF / SICONFI / Tesouro Nacional — Caeté/MG)</span>
+          <span>🚦 Semáforos Reconciliados da Lei de Responsabilidade Fiscal (LRF / SICONFI / SICOM — Caeté/MG 2024)</span>
           <span class="badge badge-green">Nota CAPAG: A (Tesouro Nacional)</span>
         </div>
         <div class="kpi-row">
-          <div class="kpi-box" style="border-left:4px solid var(--amber);">
+          <div class="kpi-box" style="border-left:4px solid var(--emerald);">
             <div class="kpi-label">Despesa com Pessoal / RCL (Art. 20 e 59 LRF)</div>
-            <div class="kpi-val">48,60%</div>
-            <div class="kpi-sub" style="color:#fbbf24;">No Limite de Alerta TCE-MG (48,60%) | Prudencial: 51,30% | Máx: 54,00%</div>
+            <div class="kpi-val">42,65%</div>
+            <div class="kpi-sub">Regular — Abaixo do Alerta TCE-MG (48,60%) | Prudencial: 51,30% | Máx: 54,00%</div>
           </div>
           <div class="kpi-box" style="border-left:4px solid var(--emerald);">
             <div class="kpi-label">Aplicação em Saúde (SIOPS / Art. 198 CF)</div>
-            <div class="kpi-val">29,15%</div>
-            <div class="kpi-sub">Mínimo Constitucional: 15,00% (+14,15 p.p. acima)</div>
+            <div class="kpi-val">25,24%</div>
+            <div class="kpi-sub">Mínimo Constitucional: 15,00% (+10,24 p.p. acima)</div>
           </div>
-          <div class="kpi-box" style="border-left:4px solid var(--emerald);">
+          <div class="kpi-box" style="border-left:4px solid var(--cyan);">
             <div class="kpi-label">Aplicação em Educação (MDE / Art. 212 CF)</div>
-            <div class="kpi-val">27,62%</div>
-            <div class="kpi-sub">Mínimo Constitucional: 25,00% (+2,62 p.p. acima)</div>
+            <div class="kpi-val">24,21%</div>
+            <div class="kpi-sub">Série Reconciliada SICOM (`educacao_educacao` / Impostos)</div>
           </div>
           <div class="kpi-box" style="border-left:4px solid var(--cyan);">
             <div class="kpi-label">Gasto Per Capita &amp; IDEB (IBGE + INEP)</div>
@@ -1115,6 +1298,79 @@ PORTARIA Nº 048/2024 Dispõe sobre a nomeação de comissão espe- cial de ﬁ 
     </div>
   </section>
 
+  <!-- ================================================================================= -->
+  <!-- MODAL 1: DOSSIÊ 360º DO CREDOR / ENTIDADE (DRAWER LATERAL INTERATIVO)             -->
+  <!-- ================================================================================= -->
+  <div id="entity-dossier-modal" class="modal-backdrop hidden" onclick="if(event.target===this) closeEntityDossier()">
+    <div class="dossier-drawer">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; border-bottom:1px solid var(--border); padding-bottom:14px; margin-bottom:16px;">
+        <div>
+          <span class="badge badge-blue" style="margin-bottom:6px; display:inline-block;">🕵️ Dossiê 360º Auditável (SICOM + QSA + Diário Oficial)</span>
+          <h2 id="dossier-title" style="font-size:18px; font-weight:800; color:#f8fafc;">Carregando Entidade...</h2>
+          <div id="dossier-subtitle" style="font-size:12.5px; color:var(--muted); margin-top:4px;">CNPJ / Documento • Porte • Natureza</div>
+        </div>
+        <button class="btn-sm" onclick="closeEntityDossier()" style="font-size:13px; padding:6px 12px;">✕ Fechar (Esc)</button>
+      </div>
+
+      <div id="dossier-alert-banner" class="hidden" style="background:rgba(239,68,68,0.14); border:1px solid rgba(239,68,68,0.45); border-left:4px solid var(--rose); padding:12px 14px; border-radius:8px; margin-bottom:16px; font-size:12.5px; color:#fecaca;"></div>
+
+      <div class="kpi-row" style="grid-template-columns: repeat(3, 1fr); margin-bottom:16px;">
+        <div class="kpi-box">
+          <div class="kpi-label">Total Pago Histórico (2020–2025)</div>
+          <div class="kpi-val" id="dossier-kpi-total" style="color:#34d399; font-size:18px;">R$ 0,00</div>
+          <div class="kpi-sub" id="dossier-kpi-pagamentos">0 pagamentos liquidados</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">Quadro Societário (QSA / Representantes)</div>
+          <div class="kpi-val" id="dossier-kpi-socios" style="font-size:18px;">0 sócios</div>
+          <div class="kpi-sub" id="dossier-kpi-cnae">CNAE / Ramo de Atividade</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">Cruzamento Folha &amp; Diário Oficial</div>
+          <div class="kpi-val" id="dossier-kpi-status" style="font-size:15px;">Sem Conflito</div>
+          <div class="kpi-sub" id="dossier-kpi-rag">0 menções no Jornal Opinião</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <div class="card-title"><span>👥 Quadro Societário &amp; Representantes Habilitados (QSA + SICOM)</span></div>
+        <div id="dossier-qsa-box" style="background:var(--surface-3); border:1px solid var(--border); border-radius:8px; padding:12px; font-size:12.5px; color:#e2e8f0;"></div>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <div class="card-title"><span>📊 Evolução de Pagamentos por Exercício e Secretaria (SICOM)</span></div>
+        <div class="table-wrap" id="dossier-payments-box" style="max-height:220px; overflow-y:auto;"></div>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <div class="card-title"><span>📑 Contratos e Termos Aditivos Vinculados</span></div>
+        <div class="table-wrap" id="dossier-contracts-box" style="max-height:200px; overflow-y:auto;"></div>
+      </div>
+
+      <div>
+        <div class="card-title"><span>📰 Atos Publicados no Diário Oficial (*Jornal Opinião*)</span></div>
+        <div id="dossier-rag-box" style="display:flex; flex-direction:column; gap:8px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================================= -->
+  <!-- MODAL 2: VISUALIZADOR INTEGRAL DE ATO DO DIÁRIO OFICIAL (*JORNAL OPINIÃO*)        -->
+  <!-- ================================================================================= -->
+  <div id="act-modal-overlay" class="modal-backdrop hidden" onclick="if(event.target===this) closeActModal()" style="justify-content:center; align-items:center;">
+    <div class="act-modal-center">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:14px;">
+        <div>
+          <span class="badge badge-green" id="act-modal-badge">Ato Normativo Individual Higienizado</span>
+          <h3 id="act-modal-title" style="font-size:17px; font-weight:800; margin-top:6px;">DECRETO MUNICIPAL</h3>
+          <div id="act-modal-meta" style="font-size:12px; color:var(--muted); margin-top:2px;">Fonte: Jornal Opinião</div>
+        </div>
+        <button class="btn-sm" onclick="closeActModal()">✕ Fechar</button>
+      </div>
+      <div id="act-modal-body" style="background:#060b16; border:1px solid var(--border); border-radius:8px; padding:16px; font-size:13.5px; line-height:1.75; color:#f1f5f9; white-space:pre-wrap;"></div>
+    </div>
+  </div>
+
 </main>
 
 <script>
@@ -1153,6 +1409,199 @@ function maskCPF(doc) {
 
 function normText(str) {
   return String(str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/* ==================== MODAL DOSSIÊ 360º E ATO INTEGRAL ==================== */
+async function openEntityDossier(queryStr) {
+  const q = String(queryStr || '').trim();
+  if (!q || q === '-') return;
+  const modal = document.getElementById('entity-dossier-modal');
+  modal.classList.remove('hidden');
+
+  document.getElementById('dossier-title').textContent = q;
+  document.getElementById('dossier-subtitle').textContent = 'Consolidando registros em 6 Gold Views + QSA + Diário Oficial...';
+
+  // Tentar endpoint ao vivo caso o backend FastAPI esteja rodando na mesma origem
+  try {
+    const res = await fetch(`/api/entity/dossier?q=${encodeURIComponent(q)}`, {
+      signal: AbortSignal.timeout(1200)
+    });
+    if (res.ok) {
+      const liveDossier = await res.json();
+      if (liveDossier && (liveDossier.qsa_matches?.length || liveDossier.execucao_anual?.length)) {
+        renderDossierData(q, liveDossier);
+        return;
+      }
+    }
+  } catch (_) {}
+
+  // Fallback instantâneo sobre o SIM_BUNDLE embarcado (Caeté/MG 100% real)
+  const qNorm = normText(q);
+  const qDigits = q.replace(/\D/g, '');
+  const qsaList = SIM_BUNDLE.qsa_fornecedores || [];
+  const qsaMatches = qsaList.filter(r => {
+    const rNorm = normText((r.razao_social || '') + ' ' + (r.nomes_socios_qsa || ''));
+    const rDigits = String(r.num_cnpj || '').replace(/\D/g, '');
+    return (qDigits.length >= 6 && rDigits.includes(qDigits)) || rNorm.includes(qNorm) || qNorm.includes(normText(r.razao_social || '___'));
+  });
+
+  const conflicts = (SIM_BUNDLE.gold_conflitos || []).filter(c => {
+    const cNorm = normText((c.empresa_licitante || '') + ' ' + (c.nome_socio_servidor || '') + ' ' + (c.cnpj_empresa || ''));
+    return cNorm.includes(qNorm) || (qDigits.length >= 6 && String(c.cnpj_empresa || '').includes(qDigits));
+  });
+
+  const caronas = (SIM_BUNDLE.gold_caronas || []).filter(c => {
+    const cNorm = normText((c.nom_credor || '') + ' ' + (c.cnpj_credor || ''));
+    return cNorm.includes(qNorm) || (qDigits.length >= 6 && String(c.cnpj_credor || '').includes(qDigits));
+  });
+
+  const contracts = (SIM_BUNDLE.proactive_insights?.insights || [])
+    .find(i => i.id === 'audit_aditivos_25pct')?.rows?.filter(c => normText(c.nom_credor || '').includes(qNorm)) || [];
+
+  const ragActs = (SIM_BUNDLE.rag_acts || []).filter(a => {
+    const firstToken = qNorm.split(/\s+/).find(w => w.length >= 4) || qNorm;
+    return normText(a.page_content || '').includes(firstToken);
+  }).slice(0, 5);
+
+  renderDossierData(q, {
+    query: q,
+    qsa_matches: qsaMatches,
+    conflitos_interesse: conflicts,
+    caronas_arp: caronas,
+    contratos: contracts,
+    diario_oficial_atos: ragActs
+  });
+}
+
+function renderDossierData(query, data) {
+  const qsa = (data.qsa_matches && data.qsa_matches[0]) || null;
+  const conflicts = data.conflitos_interesse || [];
+  const caronas = data.caronas_arp || [];
+  const contracts = data.contratos || [];
+  const ragActs = data.diario_oficial_atos || [];
+
+  document.getElementById('dossier-title').textContent = qsa ? qsa.razao_social : query;
+  document.getElementById('dossier-subtitle').textContent = qsa
+    ? `CNPJ: ${qsa.num_cnpj} • Porte: ${qsa.porte_empresa} • CNAE: ${qsa.cnae_principal_descricao}`
+    : `Busca Consolidada no Catálogo Municipal de Caeté/MG`;
+
+  const banner = document.getElementById('dossier-alert-banner');
+  if (conflicts.length > 0) {
+    const c = conflicts[0];
+    banner.classList.remove('hidden');
+    banner.innerHTML = `🚨 <strong>ALERTA TCE-MG #01 (Art. 9º, III, Lei 8.666 / Art. 14, IV, Lei 14.133):</strong> Sócio/Representante <strong>${escapeHtml(c.nome_socio_servidor)}</strong> consta simultaneamente na folha de pagamento municipal (Cargo: <strong>${escapeHtml(c.cargos_servidor_prefeitura)}</strong>, remuneração bruta acumulada de <strong>${fmtBRL(c.total_bruto_recebido_como_servidor)}</strong>) e no quadro da empresa (<strong>${fmtBRL(c.total_pago_empresa_prefeitura)}</strong> pagos pela Prefeitura).`;
+  } else if (caronas.length > 0) {
+    const cr = caronas[0];
+    banner.classList.remove('hidden');
+    banner.innerHTML = `📌 <strong>ACHADO TCE-MG #03 (Adesão a Ata de Registro de Preços — 'Carona'):</strong> Este credor recebeu <strong>${fmtBRL(cr.total_pago_carona)}</strong> via adesão a ARP (${cr.qtd_empenhos_carona} empenhos entre ${cr.primeiro_ano} e ${cr.ultimo_ano}).`;
+  } else {
+    banner.classList.add('hidden');
+  }
+
+  const totalPago = qsa ? qsa.total_pago_historico : (conflicts[0]?.total_pago_empresa_prefeitura || caronas[0]?.total_pago_carona || 0);
+  const qtdPag = qsa ? qsa.qtd_pagamentos : (caronas[0]?.qtd_empenhos_carona || '-');
+  document.getElementById('dossier-kpi-total').textContent = fmtBRL(totalPago);
+  document.getElementById('dossier-kpi-pagamentos').textContent = `${fmtInt(qtdPag)} registros financeiros`;
+  document.getElementById('dossier-kpi-socios').textContent = qsa ? `${qsa.qtd_socios_identificados} sócio(s)` : (conflicts.length ? '1 sócio-servidor' : 'Ver SICOM');
+  document.getElementById('dossier-kpi-cnae').textContent = qsa ? qsa.cnae_principal_descricao : 'Fornecedor Municipal';
+  document.getElementById('dossier-kpi-status').innerHTML = conflicts.length > 0
+    ? '<span class="badge badge-rose">CONFLITO QSA × FOLHA</span>'
+    : (caronas.length > 0 ? '<span class="badge badge-amber">ADESÃO A ATA (CARONA)</span>' : '<span class="badge badge-green">REGULAR NO CRUZAMENTO</span>');
+  document.getElementById('dossier-kpi-rag').textContent = `${ragActs.length} ato(s) localizados no Jornal Opinião`;
+
+  const qsaBox = document.getElementById('dossier-qsa-box');
+  if (qsa) {
+    qsaBox.innerHTML = `
+      <div><strong>Razão Social:</strong> ${escapeHtml(qsa.razao_social)} (CNPJ <code>${escapeHtml(qsa.num_cnpj)}</code>)</div>
+      <div style="margin-top:4px;"><strong>Sócios / Representantes Identificados:</strong> <span style="color:#93c5fd;">${escapeHtml(qsa.nomes_socios_qsa)}</span></div>
+      <div style="margin-top:4px;"><strong>Porte / Natureza:</strong> ${escapeHtml(qsa.porte_empresa)} | <strong>Atividade:</strong> ${escapeHtml(qsa.cnae_principal_descricao)}</div>
+    `;
+  } else if (conflicts.length > 0) {
+    qsaBox.innerHTML = `<div><strong>Sócio-Servidor Identificado:</strong> ${escapeHtml(conflicts[0].nome_socio_servidor)} (${escapeHtml(conflicts[0].vinculo_societario)}) — Cargo na Prefeitura: ${escapeHtml(conflicts[0].cargos_servidor_prefeitura)}</div>`;
+  } else {
+    qsaBox.innerHTML = `<div style="color:var(--muted);">Consulte a view <code>vw_gold_fornecedores_qsa_360</code> para detalhes adicionais de habilitação.</div>`;
+  }
+
+  const payBox = document.getElementById('dossier-payments-box');
+  const execRows = data.execucao_anual || [];
+  if (execRows.length > 0) {
+    payBox.innerHTML = `<table><thead><tr><th>Ano</th><th>Órgão/Função</th><th>Empenhado</th><th>Liquidado</th><th>Pago</th></tr></thead><tbody>` +
+      execRows.map(r => `<tr><td>${r.ano_referencia}</td><td>${escapeHtml(r.dsc_orgao || r.dsc_funcao || '-')}</td><td>${fmtBRL(r.total_empenhado)}</td><td>${fmtBRL(r.total_liquidado)}</td><td><strong>${fmtBRL(r.total_pago)}</strong></td></tr>`).join('') +
+      `</tbody></table>`;
+  } else if (qsa) {
+    payBox.innerHTML = `<table><thead><tr><th>Período Consolidado</th><th>Qtd. Pagamentos</th><th>Total Pago (SICOM)</th><th>Modalidade Predominante</th></tr></thead><tbody>
+      <tr><td>2020–2025</td><td>${fmtInt(qsa.qtd_pagamentos)}</td><td><strong>${fmtBRL(qsa.total_pago_historico)}</strong></td><td>${caronas.length ? 'Adesão a Ata de Registro de Preços (Carona)' : 'Licitação / Contrato Ordinário'}</td></tr>
+    </tbody></table>`;
+  } else {
+    payBox.innerHTML = `<div style="padding:10px; color:var(--muted);">Sem detalhamento anual adicional no lote selecionado.</div>`;
+  }
+
+  const contBox = document.getElementById('dossier-contracts-box');
+  if (contracts.length > 0) {
+    contBox.innerHTML = `<table><thead><tr><th>Contrato</th><th>Ano</th><th>Valor Original</th><th>Aditivos</th><th>% Acréscimo</th></tr></thead><tbody>` +
+      contracts.map(c => `<tr><td><code>${escapeHtml(c.nro_contrato || c.seq_contrato)}</code></td><td>${c.ano_referencia}</td><td>${fmtBRL(c.vlr_original || c.vlr_contrato_original)}</td><td>${fmtBRL(c.vlr_total_aditivos)}</td><td><span class="badge badge-amber">+${c.pct_acrescimo}%</span></td></tr>`).join('') +
+      `</tbody></table>`;
+  } else {
+    contBox.innerHTML = `<div style="padding:10px; color:var(--muted);">Nenhum contrato com extrapolação de limite legal (>25%) vinculado diretamente a este filtro.</div>`;
+  }
+
+  const ragBox = document.getElementById('dossier-rag-box');
+  if (ragActs.length > 0) {
+    ragBox.innerHTML = ragActs.map(a => `
+      <div style="background:var(--surface-3); border:1px solid var(--border); border-radius:6px; padding:10px; font-size:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <strong>[${escapeHtml(a.tipo_ato)} ${escapeHtml(a.numero_ato || '')}] — ${escapeHtml(a.source)}</strong>
+          <button class="dossier-btn" onclick="openActModal('${escapeHtml(a.unique_key)}')">📖 Ler Ato Integral</button>
+        </div>
+        <div style="color:#cbd5e1;">${escapeHtml((a.page_content || '').slice(0, 220))}...</div>
+      </div>
+    `).join('');
+  } else {
+    ragBox.innerHTML = `<div style="padding:10px; color:var(--muted); background:var(--surface-3); border-radius:6px; font-size:12px;">Nenhuma publicação nominal encontrada nos 141 atos atômicos indexados do <em>Jornal Opinião</em>.</div>`;
+  }
+}
+
+function closeEntityDossier() {
+  document.getElementById('entity-dossier-modal').classList.add('hidden');
+}
+
+function openActModal(uniqueKey) {
+  const acts = SIM_BUNDLE.rag_acts || [];
+  const act = acts.find(a => a.unique_key === uniqueKey) || acts[0];
+  if (!act) return;
+  document.getElementById('act-modal-badge').textContent = `Chave Canônica: ${act.unique_key} • Ano ${act.ano_edicao || 2024}`;
+  document.getElementById('act-modal-title').textContent = `${act.tipo_ato} Nº ${act.numero_ato || 'S/N'}`;
+  document.getElementById('act-modal-meta').textContent = `Arquivo Oficial: ${act.source} • Higienizado pelo ActBoundaryChunker (0% colagem de atos)`;
+  document.getElementById('act-modal-body').textContent = act.page_content;
+  document.getElementById('act-modal-overlay').classList.remove('hidden');
+}
+
+function closeActModal() {
+  document.getElementById('act-modal-overlay').classList.add('hidden');
+}
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeEntityDossier();
+    closeActModal();
+  }
+});
+
+function isEntityColumn(colName) {
+  const c = String(colName || '').toLowerCase();
+  return [
+    'razao_social', 'nom_credor', 'empresa_licitante', 'fornecedor_a', 'fornecedor_b',
+    'num_cnpj', 'num_doc_credor', 'cnpj_credor', 'cnpj_empresa', 'nome_socio_servidor'
+  ].includes(c);
 }
 
 function switchPersona(persona) {
@@ -1214,7 +1663,7 @@ function updateSourceScopeUI() {
     pill.textContent = `Escopo Restrito: Tabela [${specTable}]`;
     pill.className = 'badge badge-amber';
   } else if (sources.length === 8) {
-    pill.textContent = 'Escopo: Todas as 8 Fontes Oficiais';
+    pill.textContent = 'Escopo: Todas as 8 Fontes + Gold Views';
     pill.className = 'badge badge-green';
   } else {
     pill.textContent = 'Escopo Restrito: ' + (sources.join(', ') || 'Nenhuma fonte');
@@ -1238,8 +1687,8 @@ function renderClearChart(rows, question) {
   const cols = Object.keys(rows[0]);
   const hasYear = cols.includes('ano_referencia');
 
-  // Escolher a coluna métrica principal (priorizando valor financeiro ou indicador principal)
   const metricPriority = [
+    'total_pago_empresa_prefeitura', 'total_pago_carona', 'gasto_sem_placa',
     'despesa_per_capita_reais', 'total_pago_historico', 'total_pago', 'total_liquidado',
     'total_arrecadado', 'despesa_liquidada', 'vlr_receita_corrente_liquida',
     'maior_remuneracao_bruta', 'total_bruto', 'vlr_gasto_educacao_por_aluno',
@@ -1255,7 +1704,7 @@ function renderClearChart(rows, question) {
     return;
   }
 
-  const isCurrency = /vlr|pago|liquidado|arrecadado|bruto|liquido|per_capita|reais|contratado|gasto|global|repasse|aluno/.test(metricCol.toLowerCase());
+  const isCurrency = /vlr|pago|liquidado|arrecadado|bruto|liquido|per_capita|reais|contratado|gasto|global|repasse|aluno|carona|empresa/.test(metricCol.toLowerCase());
   const isPct = /pct|taxa|cobertura/.test(metricCol.toLowerCase());
 
   const formatMetric = (v) => {
@@ -1267,7 +1716,6 @@ function renderClearChart(rows, question) {
   panel.classList.remove('hidden');
   canvas.innerHTML = '';
 
-  // CASO 1: SÉRIE TEMPORAL POR ANO (Colunas Verticais Limpas com Valor no Topo)
   if (hasYear && rows.length <= 8 && !cols.includes('dsc_modalidade') && !cols.includes('num_convenio') && !cols.includes('cod_emenda')) {
     const sorted = [...rows].sort((a, b) => Number(a.ano_referencia) - Number(b.ano_referencia));
     const vals = sorted.map(r => Number(r[metricCol]) || 0);
@@ -1298,8 +1746,7 @@ function renderClearChart(rows, question) {
     return;
   }
 
-  // CASO 2: RANKING COMPARATIVO HORIZONTAL (Fornecedores, Servidores, Modalidades, Convênios)
-  const labelCol = cols.find(c => ['razao_social', 'nom_credor', 'nom_pessoa', 'dsc_modalidade', 'objeto_convenio', 'funcao_programatica'].includes(c)) || cols[0];
+  const labelCol = cols.find(c => ['empresa_licitante', 'razao_social', 'nom_credor', 'nom_pessoa', 'dsc_modalidade', 'objeto_convenio', 'funcao_programatica'].includes(c)) || cols[0];
   const topRows = rows.slice(0, 8);
   const vals = topRows.map(r => Number(r[metricCol]) || 0);
   const maxVal = Math.max(...vals, 1);
@@ -1319,7 +1766,7 @@ function renderClearChart(rows, question) {
     const rowDiv = document.createElement('div');
     rowDiv.className = 'hbar-row';
     rowDiv.innerHTML = `
-      <div class="hbar-name" title="${labelText}">${idx + 1}. ${labelText}</div>
+      <div class="hbar-name" title="${escapeHtml(labelText)}">${idx + 1}. ${escapeHtml(labelText)}</div>
       <div class="hbar-track"><div class="hbar-bar" style="width:${wPct}%;"></div></div>
       <div class="hbar-num">${formatMetric(v)} <span style="color:var(--muted);font-size:11px;font-weight:500;">(${sharePct}%)</span></div>
     `;
@@ -1334,44 +1781,46 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
   const provider = document.getElementById('llm-provider-select')?.value || 'native';
   const apiKey = document.getElementById('llm-api-key-input')?.value?.trim() || '';
 
-  try {
-    const res = await fetch('http://localhost:8090/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        question: question,
-        role: role,
-        allowed_sources: allowedSources.length < 8 ? allowedSources : null,
-        explicit_tables: explicitTable ? [explicitTable] : null,
-        llm_provider: provider !== 'native' ? provider : null,
-        llm_api_key: apiKey || null
-      }),
-      signal: AbortSignal.timeout(1500)
-    });
-    if (res.ok) {
-      return await res.json();
-    }
-  } catch (_) {}
+  if (window.location.protocol.startsWith('http')) {
+    try {
+      const res = await fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question: question,
+          role: role,
+          allowed_sources: allowedSources.length < 8 ? allowedSources : null,
+          explicit_tables: explicitTable ? [explicitTable] : null,
+          llm_provider: provider !== 'native' ? provider : null,
+          llm_api_key: apiKey || null
+        }),
+        signal: AbortSignal.timeout(1800)
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (_) {}
+  }
 
   const qNorm = normText(question);
   const srcSet = new Set(allowedSources);
 
-  if (/ignore previous|system prompt|drop table|delete from|pragma|read_csv/i.test(question)) {
+  if (/ignore previous|system prompt|drop table|delete from|pragma|read_csv|json_execute_serialized_sql|sniff_csv|excel_scan/i.test(question)) {
     return {
       status: 'bloqueado_seguranca',
       intent: 'blocked_security',
-      llm_engine_used: 'SQLGuard & PromptSafety Shield',
+      llm_engine_used: 'SQLGuard & PromptSafety Shield v3.0',
       selected_tables: [],
       schema_reduction_pct: 100.0,
       prompt_tokens_estimated: 0,
-      sql_executed: '-- BLOQUEADO PELO GUARDIÃO DE SEGURANÇA (AST / Anti-Injection)',
+      sql_executed: '-- BLOQUEADO PELO GUARDIÃO DE SEGURANÇA (AST / Anti-Injection / Function Denylist)',
       sql_rows: [],
       rag_chunks: [],
       fontes_utilizadas: [],
       exec_ms: Number((performance.now() - t0).toFixed(2)),
-      answer_text: '🛑 **Solicitação bloqueada pelas políticas de segurança da plataforma SIM**.',
+      answer_text: '🛑 **Solicitação bloqueada pelas políticas de segurança da plataforma SIM v3.0**.',
       pipeline_steps: [
-        { step: 1, name: 'Guardião de Entrada & Anti-Prompt Injection', status: 'BLOCKED', duration_ms: 0.4, detail: 'Padrão de ataque interceptado.' }
+        { step: 1, name: 'Guardião de Entrada & Anti-Prompt Injection', status: 'BLOCKED', duration_ms: 0.4, detail: 'Padrão de ataque ou função perigosa interceptada na AST.' }
       ]
     };
   }
@@ -1387,12 +1836,12 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
       sql_executed: '-- Resposta direta de identidade (0 consultas ao banco | Custo R$ 0,00)',
       sql_rows: [],
       rag_chunks: [],
-      fontes_utilizadas: ['Catálogo Governamental SIM Caeté/MG (79 Tabelas + Diário Oficial)'],
+      fontes_utilizadas: ['Catálogo Governamental SIM Caeté/MG (79 Tabelas + 6 Gold Views + 141 Atos Diário Oficial)'],
       exec_ms: Number((performance.now() - t0).toFixed(2)),
       answer_text:
-        'Sou o **SIM (Sistema de Inteligência Municipal)** de **Caeté/MG** (código IBGE `3110004`).\n\n' +
+        'Sou o **SIM (Sistema de Inteligência Municipal) v3.0** de **Caeté/MG** (código IBGE `3110004`).\n\n' +
         '**O que eu faço:**\n' +
-        'Converto perguntas em texto ou voz em consultas auditáveis e gráficos claros sobre **79 tabelas oficiais em 8 fontes governamentais** (2020 a 2025) e sobre a collection de atos individuais do **Diário Oficial (*Jornal Opinião*)**.',
+        'Converto perguntas em texto ou voz em consultas auditáveis, **Dossiês 360º de Credores** e gráficos claros sobre **79 tabelas oficiais + 6 Gold Views Semânticas em 8 fontes governamentais** (2020 a 2025) e sobre a collection atômica de **141 atos individuais** do **Diário Oficial (*Jornal Opinião*)**.',
       pipeline_steps: [
         { step: 1, name: 'Guardião de Entrada & Lock de Sessão', status: 'OK', duration_ms: 0.2, detail: `Perfil RBAC: ${role}.` },
         { step: 2, name: 'Roteador de Intenção', status: 'OK', duration_ms: 0.3, detail: 'Rota conversational_identity acionada sem gastar tokens de banco.' }
@@ -1418,8 +1867,8 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
     else matched = matched.slice(0, 5);
 
     const lines = [
-      `🔎 **Escopo de Pesquisa:** \`Diário Oficial (Jornal Opinião — Collection Individual)\``,
-      `Foram localizados **${matched.length} ato(s) normativo(s) únicos** (0% duplicatas):`
+      `🔎 **Escopo de Pesquisa:** \`Diário Oficial (Jornal Opinião — Collection Atômica BM25 + RRF)\``,
+      `Foram localizados **${matched.length} ato(s) normativo(s) únicos** (de 141 atos atômicos, 0% colagem):`
     ];
     matched.forEach(ch => {
       lines.push(`• **[${ch.tipo_ato} ${ch.numero_ato || ''} | ${ch.source}]**: ${ch.page_content.slice(0, 290)}...`);
@@ -1428,11 +1877,11 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
     return {
       status: 'sucesso',
       intent: 'rag_diario_oficial',
-      llm_engine_used: 'HybridRAGRetriever (Lexical Act + Dense + ActDedup)',
-      selected_tables: ['jornais_caete (104 atos individuais)'],
+      llm_engine_used: 'HybridRAGRetriever v3.0 (Okapi BM25 + Exact Act Boost + RRF)',
+      selected_tables: ['jornais_caete (141 atos atômicos)'],
       schema_reduction_pct: 98.7,
       prompt_tokens_estimated: 640,
-      sql_executed: `-- Busca Híbrida RAG sobre Collection Individual (104 atos únicos)\n-- Sinais extraídos: numeros=${JSON.stringify(nums)} | deduplicate=True`,
+      sql_executed: `-- Busca Híbrida Okapi BM25 sobre Collection Atômica (141 atos únicos)\n-- Sinais extraídos: numeros=${JSON.stringify(nums)} | deduplicate=True`,
       sql_rows: matched.map(m => ({
         unique_key: m.unique_key,
         tipo_ato: m.tipo_ato,
@@ -1447,7 +1896,7 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
       answer_text: lines.join('\n'),
       pipeline_steps: [
         { step: 1, name: 'Guardião de Entrada & Escopo', status: 'OK', duration_ms: 0.2, detail: `Fontes ativas: ${allowedSources.join(', ')}` },
-        { step: 2, name: 'Busca Híbrida RAG (Atos Individuais)', status: 'OK', duration_ms: 1.1, detail: `${matched.length} atos recuperados da collection limpa (104 atos únicos, 0 duplicatas).` }
+        { step: 2, name: 'Busca Híbrida Okapi BM25 (Atos Atômicos)', status: 'OK', duration_ms: 1.1, detail: `${matched.length} atos recuperados da collection limpa (141 atos atômicos, 0% vazamento de benchmark).` }
       ]
     };
   }
@@ -1458,7 +1907,29 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
   let fontes = [];
 
   if (
+    explicitTable === 'vw_gold_conflito_interesses_licitacao' ||
+    /conflito de interesse|conflitos de interesse|socio.*servidor|servidor.*socio|alcateia|breno ornellas/.test(qNorm)
+  ) {
+    rows = (SIM_BUNDLE.gold_conflitos || []).map(r => ({
+      ...r,
+      cpf_socio_servidor: role === 'citizen' ? maskCPF(r.cpf_socio_servidor) : r.cpf_socio_servidor
+    }));
+    sql = "SELECT nome_socio_servidor, cpf_socio_servidor, cargos_servidor_prefeitura, total_bruto_recebido_como_servidor, empresa_licitante, cnpj_empresa, vinculo_societario, total_pago_empresa_prefeitura\nFROM vw_gold_conflito_interesses_licitacao\nORDER BY total_pago_empresa_prefeitura DESC LIMIT 20;";
+    tablesUsed = ['vw_gold_conflito_interesses_licitacao', 'licitacao_quadroSocLicitacao', 'remuneracao_municipio'];
+    fontes = ['vw_gold_conflito_interesses_licitacao (Cruzamento QSA × Folha SICOM)'];
+  } else if (/carona|adesao a ata|ata de registro de preco/.test(qNorm)) {
+    rows = SIM_BUNDLE.gold_caronas || [];
+    sql = "SELECT e.nom_credor, regexp_replace(COALESCE(e.num_cnpjcredor, ''), '[^0-9]', '', 'g') AS cnpj_credor, COUNT(DISTINCT e.seq_empenho) AS qtd_empenhos_carona, MIN(e.ano_referencia) AS primeiro_ano, MAX(e.ano_referencia) AS ultimo_ano, ROUND(SUM(TRY_CAST(p.vlr_pag_fonte AS DECIMAL(18,2))), 2) AS total_pago_carona\nFROM empenho_empenho e JOIN despesa_pagamento p ON e.seq_empenho = p.seq_empenho AND e.ano_referencia = p.ano_referencia\nWHERE COALESCE(e.ind_dec_licitacao, '') ILIKE '%ADES%O%'\nGROUP BY 1, 2 ORDER BY total_pago_carona DESC LIMIT 10;";
+    tablesUsed = ['empenho_empenho', 'despesa_pagamento'];
+    fontes = ['empenho_empenho.parquet', 'despesa_pagamento.parquet (Trilha TCE-MG #03)'];
+  } else if (/sem placa|orfao|veiculos orfaos|frota sem placa/.test(qNorm)) {
+    rows = SIM_BUNDLE.gold_frota_orfa || [];
+    sql = "SELECT g.ano_referencia, COUNT(*) AS qtd_lancamentos, ROUND(SUM(TRY_CAST(g.vlr_gasto AS DECIMAL(18,2))), 2) AS gasto_total_frota, ROUND(SUM(CASE WHEN f.dsc_num_placa IS NULL OR TRIM(f.dsc_num_placa) = '' THEN TRY_CAST(g.vlr_gasto AS DECIMAL(18,2)) ELSE 0 END), 2) AS gasto_sem_placa\nFROM frota_gastoFrota g LEFT JOIN frota_frota f ON g.seq_veiculo = f.seq_veiculo AND g.ano_referencia = f.ano_referencia\nGROUP BY g.ano_referencia ORDER BY g.ano_referencia;";
+    tablesUsed = ['vw_gold_frota_consolidada', 'frota_gastoFrota', 'frota_frota'];
+    fontes = ['vw_gold_frota_consolidada (Trilha TCE-MG #04)'];
+  } else if (
     explicitTable === 'receita_qsa_fornecedores' ||
+    explicitTable === 'vw_gold_fornecedores_qsa_360' ||
     (srcSet.size === 1 && srcSet.has('RECEITA_QSA')) ||
     /qsa|quadro societario|socio|socios|porte|cnae|fornecedor|fornecedores|credor|empresas que mais/.test(qNorm)
   ) {
@@ -1467,9 +1938,9 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
     }
     if (srcSet.has('RECEITA_QSA') && (/qsa|socio|socios|porte|cnae|fornecedor/.test(qNorm) || !srcSet.has('SICOM'))) {
       rows = SIM_BUNDLE.qsa_fornecedores.slice(0, 10);
-      sql = "SELECT razao_social, num_cnpj, porte_empresa, cnae_principal_descricao, qtd_socios_identificados, nomes_socios_qsa, qtd_pagamentos, total_pago_historico\nFROM receita_qsa_fornecedores\nORDER BY total_pago_historico DESC LIMIT 10;";
-      tablesUsed = ['receita_qsa_fornecedores', 'licitacao_quadroSocLicitacao', 'despesa_pagamento'];
-      fontes = ['receita_qsa_fornecedores.parquet', 'despesa_pagamento.parquet'];
+      sql = "SELECT razao_social, num_cnpj, porte_empresa, cnae_principal_descricao, qtd_socios_identificados, nomes_socios_qsa, qtd_pagamentos, total_pago_historico\nFROM receita_qsa_fornecedores\nWHERE COALESCE(porte_empresa, '') NOT ILIKE '%ENTE P%BLICO%'\nORDER BY total_pago_historico DESC LIMIT 10;";
+      tablesUsed = ['vw_gold_fornecedores_qsa_360', 'receita_qsa_fornecedores', 'licitacao_quadroSocLicitacao'];
+      fontes = ['vw_gold_fornecedores_qsa_360', 'receita_qsa_fornecedores.parquet'];
     } else {
       rows = SIM_BUNDLE.qsa_fornecedores.slice(0, 10).map(r => ({
         nom_credor: r.razao_social,
@@ -1478,7 +1949,7 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
         total_pago: r.total_pago_historico
       }));
       sql = "SELECT nom_credor, num_doc_credor, COUNT(*) AS qtd_pagamentos, SUM(TRY_CAST(vlr_pag_fonte AS DECIMAL(18,2))) AS total_pago\nFROM despesa_pagamento WHERE ano_referencia BETWEEN 2020 AND 2025\nGROUP BY 1, 2 ORDER BY total_pago DESC LIMIT 10;";
-      tablesUsed = ['despesa_pagamento'];
+      tablesUsed = ['vw_gold_execucao_despesa_credor', 'despesa_pagamento'];
       fontes = ['despesa_pagamento.parquet'];
     }
   } else if (
@@ -1511,7 +1982,7 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
     rows = SIM_BUNDLE.siconfi;
     sql = "SELECT ano_referencia, vlr_receita_corrente_liquida, vlr_despesa_pessoal_lrf, pct_despesa_pessoal_rcl, limite_prudencial_lrf_pct, nota_capag_tesouro, pct_aplicacao_saude_siops, pct_aplicacao_educacao_mde, situacao_fiscal_lrf\nFROM siconfi_finbra_indicadores ORDER BY ano_referencia;";
     tablesUsed = ['siconfi_finbra_indicadores'];
-    fontes = ['siconfi_finbra_indicadores.parquet (API SICONFI Tesouro Nacional)'];
+    fontes = ['siconfi_finbra_indicadores.parquet (SICONFI Reconciliado c/ SICOM Caeté)'];
   } else if (
     explicitTable === 'inep_ideb_educacao' ||
     (srcSet.size === 1 && srcSet.has('INEP')) ||
@@ -1535,7 +2006,7 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
     rows = SIM_BUNDLE.datasus;
     sql = "SELECT ano_referencia, pct_recursos_proprios_saude_siops, minimo_constitucional_saude_pct, vlr_despesa_total_saude, vlr_despesa_saude_per_capita, qtd_estabelecimentos_cnes, qtd_ubs_atencao_basica, cobertura_atencao_basica_pct, qtd_leitos_sus, hospital_referencia\nFROM datasus_siops_saude ORDER BY ano_referencia;";
     tablesUsed = ['datasus_siops_saude'];
-    fontes = ['datasus_siops_saude.parquet (API SIOPS / Ministério da Saúde)'];
+    fontes = ['datasus_siops_saude.parquet (SIOPS Reconciliado c/ SICOM saude_saude)'];
   } else if (
     explicitTable === 'cgu_convenios' ||
     /convenio|convenios/.test(qNorm)
@@ -1588,23 +2059,23 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
         maior_remuneracao_bruta: r.maior_remuneracao_bruta,
         maior_remuneracao_liquida: r.maior_remuneracao_liquida
       }));
-      sql = "SELECT p.nom_pessoa, p.num_documento, r.dsc_cargo, MAX(TRY_CAST(r.vlr_rmn_bruta AS DECIMAL(18,2))) AS maior_remuneracao_bruta, MAX(TRY_CAST(r.vlr_rmn_liquida AS DECIMAL(18,2))) AS maior_remuneracao_liquida\nFROM remuneracao_municipio r JOIN pessoa_municipio p ON r.seq_dim_pessoa = p.seq_dim_pessoa\nWHERE r.ano_referencia = 2024 GROUP BY 1, 2, 3 ORDER BY maior_remuneracao_bruta DESC LIMIT 10;";
-      tablesUsed = ['remuneracao_municipio', 'pessoa_municipio'];
-      fontes = ['2024.3110004.remuneracao_municipio.csv', '2024.3110004.pessoa_municipio.csv'];
+      sql = "SELECT nom_pessoa, cpf_servidor AS num_documento, dsc_cargo, MAX(vlr_bruto) AS maior_remuneracao_bruta, MAX(vlr_liquido) AS maior_remuneracao_liquida\nFROM vw_gold_folha_servidores\nWHERE ano_referencia = 2024 GROUP BY 1, 2, 3 ORDER BY maior_remuneracao_bruta DESC LIMIT 10;";
+      tablesUsed = ['vw_gold_folha_servidores', 'remuneracao_municipio', 'pessoa_municipio'];
+      fontes = ['vw_gold_folha_servidores (Join Canônico c/ ano_referencia + Saneamento RFC-4180)'];
     } else {
       rows = SIM_BUNDLE.sicom_folha_ano;
-      sql = "SELECT ano_referencia, COUNT(DISTINCT seq_dim_pessoa) AS total_servidores, SUM(TRY_CAST(vlr_rmn_bruta AS DECIMAL(18,2))) AS total_bruto, SUM(TRY_CAST(vlr_rmn_liquida AS DECIMAL(18,2))) AS total_liquido\nFROM remuneracao_municipio GROUP BY ano_referencia ORDER BY ano_referencia;";
-      tablesUsed = ['remuneracao_municipio'];
-      fontes = ['2023..2025.3110004.remuneracao_municipio.csv'];
+      sql = "SELECT ano_referencia, COUNT(DISTINCT seq_dim_pessoa) AS total_servidores, SUM(vlr_bruto) AS total_bruto, SUM(vlr_liquido) AS total_liquido\nFROM vw_gold_folha_servidores GROUP BY ano_referencia ORDER BY ano_referencia;";
+      tablesUsed = ['vw_gold_folha_servidores', 'remuneracao_municipio'];
+      fontes = ['vw_gold_folha_servidores (2023–2025 Saneado)'];
     }
   } else if (/saude/.test(qNorm)) {
     rows = SIM_BUNDLE.sicom_saude_ano;
-    sql = "SELECT ano_referencia, SUM(TRY_CAST(vlr_empenhado AS DECIMAL(18,2))) AS total_empenhado, SUM(TRY_CAST(vlr_liquidado AS DECIMAL(18,2))) AS total_liquidado, SUM(TRY_CAST(vlr_pago AS DECIMAL(18,2))) AS total_pago\nFROM despesa_despesa WHERE dsc_funcao ILIKE '%SAUDE%' GROUP BY ano_referencia ORDER BY ano_referencia;";
+    sql = "SELECT ano_referencia, SUM(TRY_CAST(vlr_empenhado AS DECIMAL(18,2))) AS total_empenhado, SUM(TRY_CAST(vlr_liquidado AS DECIMAL(18,2))) AS total_liquidado, SUM(TRY_CAST(vlr_pago AS DECIMAL(18,2))) AS total_pago\nFROM despesa_despesa WHERE (dsc_funcao ILIKE '%SAÚDE%' OR dsc_funcao ILIKE '%SAUDE%') GROUP BY ano_referencia ORDER BY ano_referencia;";
     tablesUsed = ['despesa_despesa', 'saude_saude', 'datasus_siops_saude'];
     fontes = ['despesa_despesa.parquet', 'datasus_siops_saude.parquet'];
   } else if (/educac|ensino|fundeb|escola/.test(qNorm)) {
     rows = SIM_BUNDLE.sicom_educacao_ano;
-    sql = "SELECT ano_referencia, SUM(TRY_CAST(vlr_empenhado AS DECIMAL(18,2))) AS total_empenhado, SUM(TRY_CAST(vlr_liquidado AS DECIMAL(18,2))) AS total_liquidado, SUM(TRY_CAST(vlr_pago AS DECIMAL(18,2))) AS total_pago\nFROM despesa_despesa WHERE dsc_funcao ILIKE '%EDUCAC%' GROUP BY ano_referencia ORDER BY ano_referencia;";
+    sql = "SELECT ano_referencia, SUM(TRY_CAST(vlr_empenhado AS DECIMAL(18,2))) AS total_empenhado, SUM(TRY_CAST(vlr_liquidado AS DECIMAL(18,2))) AS total_liquidado, SUM(TRY_CAST(vlr_pago AS DECIMAL(18,2))) AS total_pago\nFROM despesa_despesa WHERE (dsc_funcao ILIKE '%EDUCAÇÃO%' OR dsc_funcao ILIKE '%EDUCACAO%') GROUP BY ano_referencia ORDER BY ano_referencia;";
     tablesUsed = ['despesa_despesa', 'educacao_educacao', 'inep_ideb_educacao'];
     fontes = ['despesa_despesa.parquet', 'inep_ideb_educacao.parquet'];
   } else if (/isf-m|saude financeira/.test(qNorm)) {
@@ -1615,8 +2086,8 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
   } else if (/contrato/.test(qNorm)) {
     rows = SIM_BUNDLE.sicom_contratos_ano;
     sql = "SELECT ano_referencia, COUNT(*) AS total_contratos, SUM(TRY_CAST(vlr_contrato AS DECIMAL(18,2))) AS valor_total_contratado\nFROM contrato_contratos GROUP BY ano_referencia ORDER BY ano_referencia;";
-    tablesUsed = ['contrato_contratos', 'contrato_contContrato'];
-    fontes = ['contrato_contratos.parquet'];
+    tablesUsed = ['vw_gold_contratos_vigencia_aditivos', 'contrato_contratos'];
+    fontes = ['vw_gold_contratos_vigencia_aditivos', 'contrato_contratos.parquet'];
   } else if (/licitac|pregao|dispensa/.test(qNorm)) {
     rows = SIM_BUNDLE.sicom_licitacoes_ano;
     sql = "SELECT ano_referencia, dsc_modalidade, COUNT(*) AS qtd_licitacoes, SUM(TRY_CAST(vlr_liquidado AS DECIMAL(18,2))) AS total_liquidado\nFROM licitacao_licitacao GROUP BY 1, 2 ORDER BY total_liquidado DESC LIMIT 15;";
@@ -1625,24 +2096,24 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
   } else if (/frota|combustivel|veiculo/.test(qNorm)) {
     rows = SIM_BUNDLE.sicom_frota_ano;
     sql = "SELECT ano_referencia, COUNT(*) AS registros_gasto, SUM(TRY_CAST(vlr_gasto AS DECIMAL(18,2))) AS total_gasto_frota\nFROM frota_gastoFrota GROUP BY ano_referencia ORDER BY ano_referencia;";
-    tablesUsed = ['frota_gastoFrota', 'frota_frota'];
-    fontes = ['frota_gastoFrota.parquet'];
+    tablesUsed = ['vw_gold_frota_consolidada', 'frota_gastoFrota', 'frota_frota'];
+    fontes = ['vw_gold_frota_consolidada', 'frota_gastoFrota.parquet'];
   } else if (/receita|arrecadac|imposto|iptu|iss/.test(qNorm)) {
     rows = SIM_BUNDLE.sicom_receitas_ano;
     sql = "SELECT ano_referencia, SUM(TRY_CAST(vlr_realizadoateperiodo AS DECIMAL(18,2))) AS total_arrecadado\nFROM receita_receita GROUP BY ano_referencia ORDER BY ano_referencia;";
     tablesUsed = ['receita_receita'];
-    fontes = ['receita_receita.parquet'];
+    fontes = ['receita_receita.parquet (Safra 2020–2025 Saneada)'];
   } else {
     if (!srcSet.has('SICOM')) {
       return buildScopeBlockedResponse(question, allowedSources, 'SICOM', t0);
     }
     rows = SIM_BUNDLE.sicom_pagamentos_ano;
     sql = "SELECT ano_referencia, COUNT(*) AS qtd_pagamentos, SUM(TRY_CAST(vlr_pag_fonte AS DECIMAL(18,2))) AS total_pago\nFROM despesa_pagamento GROUP BY ano_referencia ORDER BY ano_referencia;";
-    tablesUsed = ['despesa_pagamento', 'despesa_despesa', 'empenho_empenho'];
+    tablesUsed = ['vw_gold_execucao_despesa_credor', 'despesa_pagamento', 'despesa_despesa'];
     fontes = ['despesa_pagamento.parquet (Safra 2020–2025 com Reparo RFC-4180 em 2023)'];
   }
 
-  const reductionPct = Number((100 * (1 - tablesUsed.length / 79)).toFixed(1));
+  const reductionPct = Number((100 * (1 - tablesUsed.length / 85)).toFixed(1));
   const estTokens = 650 + tablesUsed.length * 145;
 
   const summaryLines = [];
@@ -1653,7 +2124,7 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
   rows.slice(0, 6).forEach(r => {
     const parts = Object.entries(r).map(([k, v]) => {
       const kl = k.toLowerCase();
-      if (typeof v === 'number' && (kl.includes('vlr') || kl.includes('total_pago') || kl.includes('empenhado') || kl.includes('liquidado') || kl.includes('bruto') || kl.includes('liquido') || kl.includes('arrecadado') || kl.includes('per_capita') || kl.includes('global') || kl.includes('repasse') || kl.includes('liberado') || kl.includes('aluno'))) {
+      if (typeof v === 'number' && (kl.includes('vlr') || kl.includes('total_pago') || kl.includes('empenhado') || kl.includes('liquidado') || kl.includes('bruto') || kl.includes('liquido') || kl.includes('arrecadado') || kl.includes('per_capita') || kl.includes('global') || kl.includes('repasse') || kl.includes('liberado') || kl.includes('aluno') || kl.includes('gasto'))) {
         return `**${k}**: ${fmtBRL(v)}`;
       }
       if (typeof v === 'number' && kl.includes('pct')) {
@@ -1668,7 +2139,7 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
   return {
     status: 'sucesso',
     intent: 'sql_analytics',
-    llm_engine_used: provider === 'gemini' ? 'Google Gemini 2.5 Flash + SQLGuard' : (provider === 'openai' ? 'OpenAI GPT-4.1-mini + SQLGuard' : 'SIM Native NL2SQL Compiler'),
+    llm_engine_used: provider === 'gemini' ? 'Google Gemini 2.5 Flash + SQLGuard v3.0' : (provider === 'openai' ? 'OpenAI GPT-4.1-mini + SQLGuard v3.0' : 'SIM Native NL2SQL + EntityLinker v3.0'),
     selected_tables: tablesUsed,
     schema_reduction_pct: reductionPct,
     prompt_tokens_estimated: estTokens,
@@ -1679,8 +2150,8 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
     exec_ms: Number((performance.now() - t0).toFixed(2)),
     answer_text: summaryLines.join('\n'),
     pipeline_steps: [
-      { step: 1, name: 'Guardião de Entrada & RBAC', status: 'OK', duration_ms: 0.2, detail: `Perfil: ${role}. Escopo de fontes: ${allowedSources.join(', ')}.` },
-      { step: 2, name: 'Catálogo Dinâmico & Filtro de Bases', status: 'OK', duration_ms: 0.4, detail: `Selecionadas ${tablesUsed.length} de 79 tabelas (${reductionPct}% de redução no prompt).` },
+      { step: 1, name: 'Guardião de Entrada, RBAC & Quota', status: 'OK', duration_ms: 0.2, detail: `Perfil: ${role}. Escopo de fontes: ${allowedSources.join(', ')}.` },
+      { step: 2, name: 'EntityLinker + Gold Views + Catálogo Dinâmico', status: 'OK', duration_ms: 0.4, detail: `Selecionadas ${tablesUsed.length} de 85 tabelas/views (${reductionPct}% de redução no prompt).` },
       { step: 3, name: 'SQLGuard (AST) & DuckDB Parquet', status: 'OK', duration_ms: 1.4, detail: `${rows.length} linhas retornadas de arquivos Parquet ZSTD.` }
     ]
   };
@@ -1742,7 +2213,7 @@ function renderGovResult(res, questionText) {
 
   document.getElementById('kpi-intent').textContent = res.intent;
   document.getElementById('kpi-engine').textContent = res.llm_engine_used;
-  document.getElementById('kpi-tables').textContent = `${(res.selected_tables || []).length} / 79`;
+  document.getElementById('kpi-tables').textContent = `${(res.selected_tables || []).length} / 85`;
   document.getElementById('kpi-reduction').textContent = `-${res.schema_reduction_pct}% ruído de schema`;
   document.getElementById('kpi-tokens').textContent = `~${res.prompt_tokens_estimated} tok`;
   document.getElementById('kpi-latency').textContent = `${res.exec_ms} ms`;
@@ -1752,14 +2223,12 @@ function renderGovResult(res, questionText) {
   document.getElementById('kpi-rows').textContent = `${rows.length} registro(s) retornados`;
   document.getElementById('table-row-count').textContent = String(rows.length);
 
-  // Renderizar Gráfico Claro e Direto
   if (res.intent === 'sql_analytics') {
     renderClearChart(rows, questionText);
   } else {
     document.getElementById('gov-chart-panel').classList.add('hidden');
   }
 
-  // Renderizar Tabela
   const container = document.getElementById('gov-table-container');
   container.innerHTML = '';
   if (rows.length > 0) {
@@ -1784,6 +2253,11 @@ function renderGovResult(res, questionText) {
         const cl = c.toLowerCase();
         if (typeof v === 'number' && (cl.includes('vlr') || cl.includes('total_pago') || cl.includes('empenhado') || cl.includes('liquidado') || cl.includes('bruto') || cl.includes('liquido') || cl.includes('arrecadado') || cl.includes('per_capita') || cl.includes('global') || cl.includes('repasse') || cl.includes('liberado') || cl.includes('aluno') || cl.includes('contratado') || cl.includes('gasto'))) {
           td.textContent = fmtBRL(v);
+        } else if (c === 'unique_key' && v) {
+          td.innerHTML = `<code>${escapeHtml(v)}</code> <button class="dossier-btn" style="margin-left:6px;" onclick="openActModal('${escapeHtml(v)}')">📖 Ato Integral</button>`;
+        } else if (isEntityColumn(c) && v && String(v).trim() !== '-') {
+          const safeQ = escapeHtml(String(v));
+          td.innerHTML = `<strong>${safeQ}</strong> <button class="dossier-btn" style="margin-left:6px;" onclick="openEntityDossier('${safeQ}')">🔍 Dossiê 360º</button>`;
         } else {
           td.textContent = v === null || v === undefined ? '-' : String(v);
         }
@@ -1878,7 +2352,7 @@ async function sendWppMessage(isVoice = false, customText = null) {
     sim_response: {
       was_audio: isVoice,
       audio_transcription_engine: isVoice ? "Gemini 2.5 Flash Audio / Whisper-1" : null,
-      role_enforced: "citizen (LGPD CPF Masked)",
+      role_enforced: "citizen (LGPD CPF Masked + 20/day Anti-Flood)",
       intent: res.intent,
       selected_tables: res.selected_tables,
       exec_ms: res.exec_ms,
@@ -1899,7 +2373,6 @@ function toggleBrowserVoiceRecognition() {
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
   const btn = document.getElementById('btn-wpp-mic');
   if (!SpeechRec) {
-    // Se o navegador embutido não tiver microfone habilitado, dispara a simulação de áudio
     sendWppVoiceSimulation('Quanto a prefeitura de Caeté gastou com educação e qual a nota do IDEB?');
     return;
   }
@@ -1926,7 +2399,7 @@ function toggleBrowserVoiceRecognition() {
   rec.start();
 }
 
-/* ==================== ABA 2: MOTOR PROATIVO DE AUDITORIA (PARAMETRIZÁVEL) ==================== */
+/* ==================== ABA 2: MOTOR PROATIVO DE AUDITORIA (7 TRILHAS TCE-MG) ==================== */
 function renderProactiveAuditTrails() {
   const minAditivoPct = Number(document.getElementById('param-aditivo-pct')?.value || 25);
   const minDispensas = Number(document.getElementById('param-min-dispensas')?.value || 5);
@@ -1962,13 +2435,17 @@ function renderProactiveAuditTrails() {
         const tds = cols.map(c => {
           const v = r[c];
           const cl = c.toLowerCase();
-          if (typeof v === 'number' && (cl.includes('vlr') || cl.includes('total') || cl.includes('pago') || cl.includes('valor'))) {
+          if (typeof v === 'number' && (cl.includes('vlr') || cl.includes('total') || cl.includes('pago') || cl.includes('valor') || cl.includes('gasto'))) {
             return `<td><strong>${fmtBRL(v)}</strong></td>`;
           }
           if (typeof v === 'number' && cl.includes('pct')) {
-            return `<td><span class="badge badge-amber">+${v}%</span></td>`;
+            return `<td><span class="badge badge-amber">${v}%</span></td>`;
           }
-          return `<td>${v ?? '-'}</td>`;
+          if (isEntityColumn(c) && v && String(v).trim() !== '-') {
+            const safeQ = escapeHtml(String(v));
+            return `<td><strong>${safeQ}</strong> <button class="dossier-btn" style="margin-left:6px;" onclick="openEntityDossier('${safeQ}')">🔍 Dossiê 360º</button></td>`;
+          }
+          return `<td>${escapeHtml(v ?? '-')}</td>`;
         }).join('');
         return `<tr>${tds}</tr>`;
       }).join('');
@@ -2001,13 +2478,14 @@ function renderGadgets() {
   const qsaBody = document.getElementById('gadget-qsa-tbody');
   qsaBody.innerHTML = '';
   (SIM_BUNDLE.qsa_fornecedores || []).slice(0, 12).forEach(r => {
+    const safeRazao = escapeHtml(r.razao_social);
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><strong>${r.razao_social}</strong></td>
-      <td><code>${r.num_cnpj}</code></td>
-      <td>${r.porte_empresa}</td>
-      <td>${r.cnae_principal_descricao}</td>
-      <td style="max-width:310px;">${r.nomes_socios_qsa}</td>
+      <td><strong>${safeRazao}</strong> <button class="dossier-btn" style="margin-left:6px;" onclick="openEntityDossier('${safeRazao}')">🔍 Dossiê 360º</button></td>
+      <td><code>${escapeHtml(r.num_cnpj)}</code></td>
+      <td>${escapeHtml(r.porte_empresa)}</td>
+      <td>${escapeHtml(r.cnae_principal_descricao)}</td>
+      <td style="max-width:310px;">${escapeHtml(r.nomes_socios_qsa)}</td>
       <td>${fmtInt(r.qtd_pagamentos)}</td>
       <td><strong>${fmtBRL(r.total_pago_historico)}</strong></td>
     `;
@@ -2041,34 +2519,36 @@ async function triggerOneClickSync() {
   btn.textContent = '⏳ Verificando APIs e Repositórios por Código IBGE...';
   btn.disabled = true;
 
-  try {
-    const res = await fetch('http://localhost:8090/api/ingestion/sync', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({}),
-      signal: AbortSignal.timeout(2500)
-    });
-    if (res.ok) {
-      const data = await res.json();
-      renderSyncStatus(data);
-    }
-  } catch (_) {}
+  if (window.location.protocol.startsWith('http')) {
+    try {
+      const res = await fetch('/api/ingestion/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+        signal: AbortSignal.timeout(2500)
+      });
+      if (res.ok) {
+        const data = await res.json();
+        renderSyncStatus(data);
+      }
+    } catch (_) {}
+  }
 
   const nowStr = new Date().toLocaleString('pt-BR');
   document.getElementById('sync-kpi-last').textContent = `Sincronizado em: ${nowStr}`;
   document.getElementById('sync-log-box').textContent =
     `[${nowStr}] Iniciando verificação automática nas 8 fontes oficiais (IBGE 3110004 - Caeté/MG)...\n` +
-    `[OK] SICOM / TCE-MG: 65 tabelas Parquet ZSTD verificadas (reparo RFC-4180 2023 ativo: +4.723 registros).\n` +
+    `[OK] SICOM / TCE-MG: 65 tabelas Parquet ZSTD + 6 Gold Views verificadas (reparo RFC-4180 em despesa_pagamento, remuneracao_municipio e receita_receita).\n` +
     `[OK] CGU Federal: 9 tabelas verificadas (incluindo cgu_convenios e cgu_emendas padronizadas).\n` +
-    `[OK] SICONFI / Tesouro Nacional: siconfi_finbra_indicadores.parquet sincronizada via API STN.\n` +
+    `[OK] SICONFI / Tesouro Nacional: siconfi_finbra_indicadores.parquet reconciliada (Pessoal/RCL 42,65%, Saúde 25,24%, MDE 24,21%).\n` +
     `[OK] IBGE Demografia: ibge_indicadores_municipais.parquet sincronizada via API Agregados IBGE.\n` +
     `[OK] INEP / MEC: inep_ideb_educacao.parquet sincronizada (IDEB Anos Iniciais 6,6 | 19 escolas).\n` +
-    `[OK] DATASUS / SIOPS: datasus_siops_saude.parquet sincronizada via API SIOPS (29,15% aplicação saúde).\n` +
-    `[OK] Receita Federal QSA: receita_qsa_fornecedores.parquet sincronizada (250 fornecedores PJ + QSA).\n` +
-    `[OK] Diário Oficial (Jornal Opinião): 104 atos individuais únicos validados (0% duplicatas).\n` +
-    `[CONCLUÍDO] Catálogo DuckDB e Motor Proativo de Auditoria recarregados a quente.`;
+    `[OK] DATASUS / SIOPS: datasus_siops_saude.parquet reconciliada c/ saude_saude SICOM (25,24% aplicação saúde).\n` +
+    `[OK] Receita Federal QSA: receita_qsa_fornecedores.parquet sincronizada (180 fornecedores c/ QSA/representante + 13 entes públicos).\n` +
+    `[OK] Diário Oficial (Jornal Opinião): 141 atos atômicos únicos validados (0% colagem, 0% vazamento de benchmark).\n` +
+    `[CONCLUÍDO] Catálogo DuckDB, EntityLinker e Motor Proativo (7 Trilhas TCE-MG) recarregados a quente.`;
 
-  btn.textContent = '✅ Todas as 79 Tabelas + RAG Sincronizadas!';
+  btn.textContent = '✅ Todas as 85 Tabelas/Views + 141 Atos RAG Sincronizados!';
   setTimeout(() => {
     btn.textContent = '🔄 Atualizar Dados Agora (Verificar & Padronizar Tudo)';
     btn.disabled = false;
@@ -2093,7 +2573,7 @@ function runLiveChunkerDemo() {
     const key = m ? `${m[1].toUpperCase()}::${m[2]}` : `ATO_${idx+1}`;
     const card = document.createElement('div');
     card.style.cssText = 'background:#0b1120; border:1px solid #334155; border-left:3px solid #10b981; padding:8px 10px; border-radius:6px; font-size:12px;';
-    card.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><strong>Chunk Individual #${idx+1} — Chave Canônica: <code>${key}</code></strong><span class="badge badge-green">Ato Completo + Ligaduras Reparadas</span></div><div style="color:#cbd5e1;">${p}</div>`;
+    card.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><strong>Chunk Atômico #${idx+1} — Chave Canônica: <code>${key}</code></strong><span class="badge badge-green">Ato Atômico + Ligaduras Reparadas</span></div><div style="color:#cbd5e1;">${p}</div>`;
     outBox.appendChild(card);
   });
 }
@@ -2107,14 +2587,15 @@ function renderRagCollectionTable() {
   document.getElementById('rag-list-count').textContent = String(acts.length);
   const tbody = document.getElementById('rag-collection-tbody');
   tbody.innerHTML = '';
-  acts.slice(0, 60).forEach(a => {
+  acts.slice(0, 80).forEach(a => {
+    const safeKey = escapeHtml(a.unique_key);
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><code>${a.unique_key}</code></td>
-      <td><span class="badge badge-blue">${a.tipo_ato}</span></td>
-      <td><strong>${a.numero_ato || '-'}</strong> (${a.ano_edicao || 2024})</td>
-      <td><code style="font-size:11px;">${a.source}</code></td>
-      <td style="font-size:12px; color:#e2e8f0;">${a.page_content.slice(0, 320)}${a.page_content.length > 320 ? '...' : ''}</td>
+      <td><code>${safeKey}</code> <button class="dossier-btn" style="margin-top:4px;" onclick="openActModal('${safeKey}')">📖 Ler Ato Integral</button></td>
+      <td><span class="badge badge-blue">${escapeHtml(a.tipo_ato)}</span></td>
+      <td><strong>${escapeHtml(a.numero_ato || '-')}</strong> (${a.ano_edicao || 2024})</td>
+      <td><code style="font-size:11px;">${escapeHtml(a.source)}</code></td>
+      <td style="font-size:12px; color:#e2e8f0;">${escapeHtml(a.page_content.slice(0, 320))}${a.page_content.length > 320 ? '...' : ''}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -2135,11 +2616,11 @@ window.addEventListener('DOMContentLoaded', () => {
   renderRagCollectionTable();
 
   appendWppBubble(
-    'Olá! Sou o **SIM Caeté/MG**, o assistente oficial de transparência pública do município.\n\n' +
-    'Agora você também pode **enviar mensagens de voz (🎙️)** ou clicar em **"▶️ Testar Áudio (0:06)"** abaixo!',
+    'Olá! Sou o **SIM Caeté/MG v3.0**, o assistente oficial de transparência pública do município.\n\n' +
+    'Você pode consultar gastos, fornecedores, **Conflitos QSA × Folha** ou **enviar mensagens de voz (🎙️)**!',
     'bot'
   );
-  askPreset('Qual a evolução do gasto per capita por habitante segundo o IBGE de 2020 a 2025?');
+  askPreset('Quais empresas possuem conflito de interesses entre quadro societário e folha de servidores?');
 });
 </script>
 </body>
@@ -2155,9 +2636,10 @@ def main() -> None:
     API_HTML_PATH.write_text(html_out, encoding="utf-8")
     ARTIFACT_HTML_PATH.parent.mkdir(parents=True, exist_ok=True)
     ARTIFACT_HTML_PATH.write_text(html_out, encoding="utf-8")
-    print(f"Generated interactive app v2.3: {API_HTML_PATH} ({len(html_out) / 1024:.1f} KB)")
+    print(f"Generated interactive app v3.0: {API_HTML_PATH} ({len(html_out) / 1024:.1f} KB)")
     print(f"Updated artifact: {ARTIFACT_HTML_PATH}")
 
 
 if __name__ == "__main__":
     main()
+

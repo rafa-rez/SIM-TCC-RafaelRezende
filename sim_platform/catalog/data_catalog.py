@@ -115,6 +115,7 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
         "origin": "SICOM / TCE-MG",
         "source_family": "SICOM",
         "tables": [
+            "vw_gold_execucao_despesa_credor",
             "despesa_despesa",
             "despesa_pagamento",
             "despesa_liquidacao",
@@ -136,7 +137,7 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
             "valor pago", "maiores pagamentos", "favorecido",
         ],
         "rules": [
-            "Para pagamentos por credor/órgão/função, use `despesa_pagamento` (p) ou `empenho_empenho` (e) unido por `p.seq_empenho = e.seq_empenho AND p.ano_referencia = e.ano_referencia`.",
+            "Para pagamentos por credor/órgão/função, use `despesa_pagamento` (p), `empenho_empenho` (e) unido a `empenho_credorEmpenho` (ce) por `e.seq_empenho = ce.seq_empenho AND e.ano_referencia = ce.ano_referencia`, ou a view pré-unificada `vw_gold_execucao_despesa_credor`.",
             "Colunas `vlr_*` em `VIEW`s não tipadas podem ser VARCHAR: use `CAST(vlr_... AS DECIMAL(18,2))` ou `TRY_CAST(vlr_... AS DECIMAL(18,2))` em somas.",
             "Para filtrar credores reais em rankings, exclua sentinelas: `COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(num_doc_credor, '') NOT IN ('-1', '0')`.",
         ],
@@ -158,7 +159,7 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
             "isf-m", "isf", "saude financeira", "receita corrente", "superavit", "deficit",
         ],
         "rules": [
-            "Em `receita_receita`, receita realizada acumulada no exercício usa `vlr_realizadoateperiodo`; receita orçada usa `vlr_previsaoatualizada` ou `vlr_orcado`.",
+            "Em `receita_receita`, receita realizada acumulada no exercício usa `vlr_realizadoateperiodo`; receita orçada usa `vlr_previsaoatualizada` ou `vlr_previsaoinicial`.",
             "Para o Índice de Saúde Financeira Municipal (ISF-M), divida a Receita Corrente (`receita_receita` onde `dsc_cateconomica ILIKE '%Corrente%'`) pela Despesa Corrente Liquidada (`despesa_despesa` onde `dsc_naturezadespesa LIKE '3%'`).",
         ],
     },
@@ -186,6 +187,7 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
         "origin": "SICOM / TCE-MG",
         "source_family": "SICOM",
         "tables": [
+            "vw_gold_contratos_vigencia_aditivos",
             "contrato_contratos",
             "contrato_contContrato",
             "contrato_itemContrato",
@@ -203,9 +205,9 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
             "prestacao de servico", "trabalhando com o municipio", "terceirizada",
         ],
         "rules": [
-            "Em `contrato_contratos` (c), os dados de fornecedor/contratado estão em `contrato_contContrato` (cc) unido por `c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia`.",
-            "Para obter o nome do contratado caso não conste na ponte, una `contrato_contContrato.num_doc_contratado = pessoa_municipio.num_documento AND contrato_contContrato.ano_referencia = pessoa_municipio.ano_referencia`.",
-            "Termos aditivos estão em `contrato_termoContrato` unido por `seq_contrato` e `ano_referencia`.",
+            "Em `contrato_contratos` (c), os dados do fornecedor/contratado (`num_doc_credor`, `dsc_nome_credor`) estão em `contrato_contContrato` (cc) unido por `c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia`.",
+            "Para visão consolidada de contratos, contratados e acréscimos de aditivos sem duplicação, consulte `vw_gold_contratos_vigencia_aditivos`.",
+            "Termos aditivos detalhados estão em `contrato_termoContrato` unido por `seq_contrato`.",
         ],
     },
     "licitacoes_compras": {
@@ -213,6 +215,7 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
         "origin": "SICOM / TCE-MG",
         "source_family": "SICOM",
         "tables": [
+            "vw_gold_conflito_interesses_licitacao",
             "licitacao_licitacao",
             "licitacao_itemLicitacao",
             "licitacao_cotacaoLicitacao",
@@ -243,12 +246,12 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
             "dispensa", "inexigibilidade", "homologacao", "homologado", "vencedor",
             "licitante", "habilitacao", "habilitado", "julgamento", "ata de registro",
             "adesao", "carona", "comissao de licitacao", "socio", "socios",
-            "quadro societario", "modalidade", "edital", "compra direta",
+            "quadro societario", "modalidade", "edital", "compra direta", "conflito de interesse",
         ],
         "rules": [
             "Processos licitatórios ficam em `licitacao_licitacao` (`seq_licitacao`, `ano_referencia`); vencedores homologados ficam em `licitacao_homologLicitacao`.",
-            "Sócios de empresas licitantes ficam em `licitacao_quadroSocLicitacao`; para cadastro consolidado da Receita Federal + QSA dos fornecedores pagos, consulte também `receita_qsa_fornecedores`.",
-            "Contratações diretas (dispensa e inexigibilidade) ficam em `licitacao_dispensa` (`seq_dispensa`, `ano_referencia`).",
+            "Sócios de empresas licitantes ficam em `licitacao_quadroSocLicitacao` (q) unido a `licitacao_habLicitacao` (h) por `q.seq_hab_licitacao = h.seq_hab_licitacao AND q.ano_referencia = h.ano_referencia` (onde `h.num_documento` é o CNPJ da empresa e `q.num_cgc_habilitado` é o CPF/CNPJ do sócio). Para conflito de interesses (sócios que são servidores), consulte `vw_gold_conflito_interesses_licitacao`.",
+            "Contratações diretas (dispensa e inexigibilidade) ficam em `licitacao_dispensa` (`seq_dispensa`, `ano_referencia`); adesões a atas (caronas) têm `ind_dec_licitacao ILIKE '%ADESÃO%'` em `empenho_empenho` ou constam em `licitacao_regadesao`.",
         ],
     },
     "folha_rh": {
@@ -256,6 +259,7 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
         "origin": "SICOM / TCE-MG",
         "source_family": "SICOM",
         "tables": [
+            "vw_gold_folha_servidores",
             "remuneracao_municipio",
             "desp_pessoal_despPessoal",
             "pessoa_municipio",
@@ -268,7 +272,7 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
         ],
         "rules": [
             "LACUNA DE TRANSPARÊNCIA 2020-2022: `remuneracao_municipio` possui dados apenas para 2023, 2024 e 2025. Nunca retorne R$ 0,00 para 2020-2022 sem explicitar a lacuna de publicação do TCE-MG.",
-            "Em `remuneracao_municipio`, `vlr_rmn_bruta` é o salário bruto e `vlr_rmn_liquida` é o líquido. Para nome e documento do servidor, una com `pessoa_municipio` por `seq_dim_pessoa`.",
+            "Em `remuneracao_municipio` (r), `vlr_rmn_bruta` é o salário bruto e `vlr_rmn_liquida` é o líquido. Para nome e documento do servidor sem duplicação cartesiana, una SEMPRE com `pessoa_municipio` (p) por `r.seq_dim_pessoa = p.seq_dim_pessoa AND r.ano_referencia = p.ano_referencia`, ou consulte diretamente `vw_gold_folha_servidores`.",
         ],
     },
     "frota_veiculos": {
@@ -276,6 +280,7 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
         "origin": "SICOM / TCE-MG",
         "source_family": "SICOM",
         "tables": [
+            "vw_gold_frota_consolidada",
             "frota_frota",
             "frota_gastoFrota",
             "frota_transFrota",
@@ -286,7 +291,7 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
             "caminhao", "onibus", "ambulancia", "quilometragem", "pecas",
         ],
         "rules": [
-            "Cadastro de veículos está em `frota_frota` (`seq_veiculo`, `placa`, `dsc_veiculo`); despesas de abastecimento e manutenção estão em `frota_gastoFrota` unida por `seq_veiculo` e `ano_referencia`.",
+            "Cadastro de veículos está em `frota_frota` (`seq_veiculo`, `dsc_num_placa`, `dsc_veiculo`); despesas de abastecimento e manutenção estão em `frota_gastoFrota`. Faça JOIN entre `frota_gastoFrota` e `frota_frota` APENAS por `seq_veiculo` (desduplicando `frota_frota` por `seq_veiculo`), ou consulte diretamente `vw_gold_frota_consolidada`.",
         ],
     },
     "educacao_saude": {
@@ -307,7 +312,7 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
             "ies-c", "ies", "ieq-c", "ieq", "25%", "15%", "esforco social", "social",
         ],
         "rules": [
-            "As tabelas `educacao_educacao` e `saude_saude` (SICOM) consolidam gastos setoriais; `inep_ideb_educacao` traz o IDEB Anos Iniciais/Finais, escolas, matrículas e gasto por aluno; `datasus_siops_saude` traz o percentual SIOPS em saúde, UBS, CNES e leitos SUS em Caeté.",
+            "As tabelas `educacao_educacao` e `saude_saude` (SICOM) consolidam gastos setoriais; `inep_ideb_educacao` traz o IDEB Anos Iniciais/Finais (anos ímpares: 2019, 2021, 2023), escolas e matrículas; `datasus_siops_saude` traz o percentual SIOPS em saúde, UBS, CNES e leitos SUS em Caeté.",
         ],
     },
     "estrutura_orgaos_cadastros": {
@@ -328,7 +333,7 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
             "remessa", "cadastro", "pessoa", "cnpj",
         ],
         "rules": [
-            "Órgãos e secretarias estão mapeados em `orgao_orgao` e `orgao_orgaoUnidade` (`cod_orgao`, `cod_unidade`, `dsc_orgao`, `dsc_unidade`).",
+            "Órgãos estão em `orgao_orgao` (`seq_orgao`, `cod_orgao`, `nom_orgao`) e unidades em `orgao_orgaoUnidade` (`seq_unidade`, `seq_orgao`, `cod_orgao`, `cod_unidade`, `dsc_unidade`). Como se repetem mensalmente/anualmente, sempre desduplique por `seq_orgao` / `seq_unidade` antes de fazer JOIN.",
         ],
     },
     "cgu_transferencias_beneficios": {
@@ -355,7 +360,7 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
             "convenio", "convenios", "emenda", "emendas", "parlamentar", "emenda pix",
         ],
         "rules": [
-            "Nas tabelas `cgu_*`, valores monetários podem estar em formato texto ou numérico: use `TRY_CAST(REPLACE(CAST(coluna AS VARCHAR), ',', '.') AS DECIMAL(18,2))` quando necessário.",
+            "Nas tabelas `cgu_*`, colunas com espaços no nome devem estar entre aspas duplas (ex: `\"VALOR TRANSFERIDO\"`), e valores monetários em formato brasileiro com vírgula decimal usam `TRY_CAST(REPLACE(REPLACE(CAST(coluna AS VARCHAR), '.', ''), ',', '.') AS DECIMAL(18,2))`.",
             "Série histórica de benefícios: `cgu_bolsa_familia_pagamentos` (2020-2021), `cgu_auxilio_emergencial` (2020-2021), `cgu_auxilio_brasil` (2021-2022) e `cgu_novo_bolsa_familia` (2023-2025).",
             "Convênios federais com Caeté estão em `cgu_convenios` e emendas parlamentares destinadas ao município estão em `cgu_emendas`.",
         ],
@@ -384,17 +389,21 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
         "origin": "Receita Federal do Brasil + SICOM Habilitação",
         "source_family": "RECEITA_QSA",
         "tables": [
+            "vw_gold_fornecedores_qsa_360",
+            "vw_gold_conflito_interesses_licitacao",
             "receita_qsa_fornecedores",
             "licitacao_quadroSocLicitacao",
+            "licitacao_habLicitacao",
         ],
         "keywords": [
             "receita federal", "qsa", "quadro societario", "socio", "socios",
             "dono da empresa", "porte da empresa", "cnae", "ramo de atividade",
             "auditoria de fornecedor", "auditoria de fornecedores", "cnpj fornecedor",
-            "materialidade", "controladoria",
+            "materialidade", "controladoria", "conflito", "parente", "servidor socio",
         ],
         "rules": [
             "A tabela `receita_qsa_fornecedores` consolida os fornecedores PJ da Prefeitura de Caeté com `num_cnpj`, `razao_social`, `porte_empresa`, `cnae_principal_descricao`, `qtd_socios_identificados`, `nomes_socios_qsa`, `total_pago_historico` e `alerta_auditoria_controladoria`.",
+            "As views `vw_gold_fornecedores_qsa_360` e `vw_gold_conflito_interesses_licitacao` cruzam diretamente pagamentos, sócios habilitados no SICOM (`licitacao_quadroSocLicitacao` + `licitacao_habLicitacao`) e folha de pagamento de servidores (`pessoa_municipio` + `remuneracao_municipio`).",
         ],
     },
 }
@@ -494,7 +503,7 @@ class DataCatalog:
                 # Se a tabela já foi registrada em outro segmento (ex: pessoa_municipio), mantém a primeira mas atualiza regras
                 if t_low in self.tables:
                     continue
-                # Para as 7 novas tabelas enriquecidas, registra se existir no DuckDB (ou se conn is None)
+                # Para as 7 novas tabelas enriquecidas e Gold Views, registra se existir no DuckDB (ou se conn is None)
                 if t_low in (
                     "cgu_convenios",
                     "cgu_emendas",
@@ -503,15 +512,17 @@ class DataCatalog:
                     "inep_ideb_educacao",
                     "datasus_siops_saude",
                     "receita_qsa_fornecedores",
-                ):
+                ) or t_low.startswith("vw_gold_"):
                     if self.conn is not None and t_low not in canonical_names:
                         continue
 
                 real_name = canonical_names.get(t_low, raw_tname)
                 source_fam = infer_source_family(real_name, seg_info.get("source_family", "SICOM"))
                 yrs = sorted(csv_years.get(t_low, {2020, 2021, 2022, 2023, 2024, 2025}))
-                if t_low == "remuneracao_municipio":
+                if t_low in ("remuneracao_municipio", "vw_gold_folha_servidores"):
                     yrs = [2023, 2024, 2025]
+                elif t_low == "inep_ideb_educacao":
+                    yrs = [2019, 2021, 2023]
                 files = csv_files.get(t_low, [f"{real_name}.parquet"])
                 cols = db_columns.get(t_low, [])
                 join_keys = [
@@ -701,9 +712,9 @@ class DataCatalog:
                         rules.append(r)
 
         notes: List[str] = []
-        if "remuneracao_municipio" in selected_set:
+        if "remuneracao_municipio" in selected_set or "vw_gold_folha_servidores" in selected_set:
             notes.append(
-                "ATENÇÃO: `remuneracao_municipio` contém dados apenas de 2023 a 2025 (lacuna de transparência ativa em 2020–2022)."
+                "ATENÇÃO: `remuneracao_municipio` e `vw_gold_folha_servidores` contêm dados apenas de 2023 a 2025 (lacuna de transparência ativa em 2020–2022)."
             )
         if norm_sources:
             notes.append(
@@ -725,7 +736,7 @@ class DataCatalog:
 
     def build_dynamic_ddl(self, table_names: List[str]) -> str:
         """
-        Gera representação compacta e fiel aos tipos reais do DuckDB apenas para as tabelas selecionadas.
+        Gera representação compacta e fiel aos tipos reais e semânticos do DuckDB apenas para as tabelas selecionadas.
         """
         lines: List[str] = []
         for tname in table_names:
@@ -733,7 +744,10 @@ class DataCatalog:
             if not meta:
                 continue
             yrs_str = f"{min(meta.years_available)}-{max(meta.years_available)}" if meta.years_available else "2020-2025"
-            col_strs = [f"{c.name} ({c.physical_type})" for c in meta.columns]
+            col_strs = []
+            for c in meta.columns:
+                cname_fmt = f'"{c.name}"' if (" " in c.name or "-" in c.name) else c.name
+                col_strs.append(f"{cname_fmt} ({c.semantic_type})")
             if col_strs:
                 lines.append(f"-- [Fonte: {meta.source_family} | Segmento: {meta.segment} | Cobertura: {yrs_str}]")
                 lines.append(f"TABLE {meta.table_name}: {', '.join(col_strs)};")

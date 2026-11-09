@@ -38,7 +38,7 @@ MAX_MERGE = 4
 
 def is_num(s: str) -> bool:
     s = s.strip()
-    if s == "" or s == "-":
+    if s == "":
         return True  # vazio é aceitável em colunas de valor
     try:
         float(s)
@@ -109,6 +109,47 @@ def main() -> None:
             total_fix += fixed
             total_fail += failed
             print(f"{path.name}: {fixed} reparadas, {failed} irreparáveis")
+
+    # Reparo de remuneracao.municipio (2023–2025): ';' / '|' embutido em dsc_req_crg desloca cod_municipio (3110004) em +1 ou +2
+    for path in sorted(src.glob("*remuneracao*municipio.csv")):
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        if not lines:
+            continue
+        header = lines[0].split("|")
+        n_cols = len(header)
+        if "dsc_req_crg" not in header or "cod_municipio" not in header:
+            continue
+        req_idx = header.index("dsc_req_crg")
+        mun_idx = header.index("cod_municipio")
+        fixed, failed = 0, 0
+        new_lines = [lines[0]]
+        for line in lines[1:]:
+            fields = line.split("|")
+            if len(fields) == n_cols and fields[mun_idx].strip() == "3110004":
+                new_lines.append(line)
+                continue
+            repaired_row = None
+            for k in (1, 2, 3):
+                merged = (
+                    fields[:req_idx]
+                    + [" / ".join(f.strip() for f in fields[req_idx : req_idx + k + 1])]
+                    + fields[req_idx + k + 1 :]
+                )
+                merged = merged + [""] * (n_cols - len(merged))
+                if len(merged) == n_cols and merged[mun_idx].strip() == "3110004":
+                    repaired_row = merged
+                    break
+            if repaired_row is not None:
+                new_lines.append("|".join(repaired_row))
+                fixed += 1
+            else:
+                new_lines.append(line)
+                failed += 1
+        if fixed > 0:
+            (out / path.name).write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+            total_fix += fixed
+            total_fail += failed
+            print(f"{path.name}: {fixed} contracheques reparados, {failed} irreparáveis")
 
     print(f"\nTotal: {total_fix} linhas reparadas | {total_fail} não reparadas | saída: {out}")
     if total_fail:
