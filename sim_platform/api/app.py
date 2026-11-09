@@ -869,7 +869,7 @@ def create_app(
             "config": {
                 "webhooks": [
                     {
-                        "url": "http://sim-api.local:8000/webhook/waha",
+                        "url": "http://sim-api:8000/webhook/waha",
                         "events": ["message.any"],
                     }
                 ]
