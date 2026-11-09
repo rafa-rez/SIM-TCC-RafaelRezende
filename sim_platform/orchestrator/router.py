@@ -537,6 +537,183 @@ class SIMOrchestrator:
 
         return None
 
+    def _synthesize_executive_answer(
+        self,
+        question: str,
+        sql_rows: List[Dict[str, Any]],
+        rag_chunks: List[Dict[str, Any]],
+        warnings: List[Dict[str, Any]],
+        fontes: List[str],
+        allowed_sources: Optional[List[str]],
+        role: str,
+        sql_executed: Optional[str],
+        intent: str,
+        llm_provider: Optional[str] = None,
+        llm_api_key: Optional[str] = None,
+    ) -> tuple[str, str]:
+        """
+        Gera uma resposta executiva em linguagem natural (prosa analítica clara e direta),
+        combinando síntese inteligente via LLM (OpenAI GPT-4.1-mini / Gemini) ou narrativa
+        analítica determinística, seguida do detalhamento estruturado e fontes oficiais.
+        """
+        from sim_platform import get_configured_openai_key
+
+        city_str = f"{self.db_manager.tenant.municipality_name}/{self.db_manager.tenant.state_uf}"
+        provider = (llm_provider or "").lower().strip()
+        user_key = (llm_api_key or "").strip()
+
+        gemini_key = (
+            user_key
+            if (provider == "gemini" or (user_key and not user_key.startswith("sk-")))
+            else os.environ.get("GEMINI_API_KEY", os.environ.get("GOOGLE_API_KEY", "")).strip()
+        )
+        openai_key = (
+            get_configured_openai_key(user_key if (provider == "openai" or user_key.startswith("sk-")) else None)
+            if provider not in ("gemini", "native")
+            else ""
+        )
+
+        llm_narrative: Optional[str] = None
+        synth_engine = "SIM Executive Narrative Synthesizer"
+
+        if (sql_rows or rag_chunks) and (openai_key or gemini_key):
+            synth_prompt = (
+                f"Você é o Auditor-Chefe e Consultor de Inteligência Pública do Município de {city_str} (SIM v3.0).\n"
+                f"Responda diretamente à pergunta do usuário em português claro, executivo, fluido e objetivo (1 a 2 parágrafos curtos), "
+                f"interpretando os números exatos abaixo (destaque valores em R$, variações, líderes de ranking ou normas do Diário Oficial). "
+                f"NÃO invente nenhum número fora dos dados fornecidos.\n\n"
+                f"Pergunta do usuário: {question}\n"
+                f"Dados oficiais retornados do banco ({len(sql_rows)} linhas, amostra top 10): "
+                f"{json.dumps(sql_rows[:10], ensure_ascii=False, default=str)}\n"
+                f"Atos do Diário Oficial vinculados ({len(rag_chunks)}): "
+                f"{json.dumps([{'tipo': c.get('tipo_ato'), 'fonte': c.get('source'), 'texto': (c.get('page_content') or '')[:300]} for c in rag_chunks[:3]], ensure_ascii=False)}\n"
+                f"Fontes oficiais: {', '.join(fontes[:8])}"
+            )
+            if openai_key and openai_key.startswith("sk-"):
+                try:
+                    import requests
+                    model_name = os.environ.get("SIM_SQL_MODEL", "gpt-4.1-mini")
+                    resp = requests.post(
+                        "https://api.openai.com/v1/chat/completions",
+                        headers={"Authorization": f"Bearer {openai_key}", "Content-Type": "application/json"},
+                        json={
+                            "model": model_name,
+                            "temperature": 0.1,
+                            "max_tokens": 380,
+                            "messages": [{"role": "user", "content": synth_prompt}],
+                        },
+                        timeout=12,
+                    )
+                    if resp.status_code == 200:
+                        llm_narrative = resp.json()["choices"][0]["message"]["content"].strip()
+                        synth_engine = f"OpenAI ({model_name}) Executive Synthesis"
+                except Exception:
+                    pass
+            elif gemini_key:
+                try:
+                    import requests
+                    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={gemini_key}"
+                    resp = requests.post(
+                        url,
+                        headers={"Content-Type": "application/json"},
+                        json={
+                            "contents": [{"parts": [{"text": synth_prompt}]}],
+                            "generationConfig": {"temperature": 0.1},
+                        },
+                        timeout=12,
+                    )
+                    if resp.status_code == 200:
+                        candidates = resp.json().get("candidates") or []
+                        if candidates:
+                            llm_narrative = candidates[0]["content"]["parts"][0]["text"].strip()
+                            synth_engine = "Google Gemini 2.5 Flash Executive Synthesis"
+                except Exception:
+                    pass
+
+        # Caso offline / modo nativo: construir síntese analítica em linguagem natural a partir dos dados
+        if not llm_narrative and sql_rows:
+            first_row = sql_rows[0]
+            num_cols = [
+                k for k, v in first_row.items()
+                if k != "ano_referencia" and isinstance(v, (int, float)) and not isinstance(v, bool)
+            ]
+            label_cols = [
+                k for k, v in first_row.items()
+                if k != "ano_referencia" and isinstance(v, str)
+            ]
+            if len(sql_rows) == 1 and num_cols:
+                m_col = num_cols[-1]
+                m_val = _format_brl_or_val(m_col, first_row.get(m_col))
+                yr_info = f" no exercício de **{first_row['ano_referencia']}**" if "ano_referencia" in first_row else ""
+                llm_narrative = (
+                    f"💬 **Resposta Direta:** Com base nos registros oficiais auditados de **{city_str}**{yr_info}, "
+                    f"o indicador **{m_col}** apurado para a sua consulta foi de **{m_val}**."
+                )
+            elif "ano_referencia" in first_row and len(sql_rows) >= 2 and num_cols:
+                m_col = num_cols[-1]
+                sorted_yr = sorted(sql_rows, key=lambda r: int(r.get("ano_referencia") or 0))
+                y0, y1 = sorted_yr[0].get("ano_referencia"), sorted_yr[-1].get("ano_referencia")
+                v0 = float(sorted_yr[0].get(m_col) or 0)
+                v1 = float(sorted_yr[-1].get(m_col) or 0)
+                total_sum = sum(float(r.get(m_col) or 0) for r in sql_rows)
+                delta_str = f" (variação de **{((v1 - v0) / v0) * 100:+.1f}%** no período)" if v0 > 0 else ""
+                llm_narrative = (
+                    f"💬 **Síntese Executiva:** Na série histórica de **{city_str}** ({y0} a {y1}), "
+                    f"o indicador **{m_col}** evoluiu de **{_format_brl_or_val(m_col, v0)}** ({y0}) para "
+                    f"**{_format_brl_or_val(m_col, v1)}** ({y1}){delta_str}, acumulando "
+                    f"**{_format_brl_or_val(m_col, total_sum)}** nos **{len(sql_rows)} exercícios** analisados."
+                )
+            elif label_cols and num_cols:
+                l_col = label_cols[0]
+                m_col = num_cols[-1]
+                top_name = first_row.get(l_col)
+                top_val = _format_brl_or_val(m_col, first_row.get(m_col))
+                total_sum = sum(float(r.get(m_col) or 0) for r in sql_rows)
+                llm_narrative = (
+                    f"💬 **Síntese Executiva:** Entre os **{len(sql_rows)} registros** identificados em **{city_str}**, "
+                    f"o primeiro colocado é **{top_name}** com **{top_val}** em `{m_col}` "
+                    f"(soma total do grupo retornado: **{_format_brl_or_val(m_col, total_sum)}**)."
+                )
+
+        answer_lines: List[str] = []
+        if allowed_sources:
+            answer_lines.append(f"🔎 **Escopo de Pesquisa Aplicado:** `{', '.join(allowed_sources)}`")
+
+        if warnings:
+            for w in warnings:
+                answer_lines.append(f"⚠️ **{w['title']}**: {w['message']}")
+
+        if llm_narrative:
+            answer_lines.append(llm_narrative)
+
+        if sql_rows:
+            answer_lines.append(
+                f"\n📊 **Detalhamento Auditável ({len(sql_rows)} registro(s) em {city_str}):**"
+            )
+            for row in sql_rows[:8]:
+                formatted_pairs = [f"**{k}**: {_format_brl_or_val(k, v)}" for k, v in row.items()]
+                answer_lines.append("- " + " | ".join(formatted_pairs))
+        elif intent in ("sql_analytics", "hybrid_sql_rag") and not warnings and not llm_narrative:
+            answer_lines.append("Não foram encontrados registros tabulares para os filtros informados.")
+
+        if rag_chunks:
+            answer_lines.append(
+                f"\n📰 **Atos Normativos Vinculados no Diário Oficial (*Jornal Opinião* — {len(rag_chunks)} ato(s)):**"
+            )
+            for ch in rag_chunks[:3]:
+                snippet = (ch.get("page_content") or "")[:320].replace("\n", " ")
+                answer_lines.append(
+                    f"- **[{ch.get('tipo_ato')} | {ch.get('source')} | match: {ch.get('match_stage')}]**: {snippet}..."
+                )
+
+        if role in ("auditor", "admin", "controller") and sql_executed:
+            answer_lines.append(f"\n**SQL Auditável Executado**:\n```sql\n{sql_executed}\n```")
+
+        if fontes:
+            answer_lines.append(f"\n📁 **Fontes Oficiais Utilizadas (`fontes_utilizadas`)**: {', '.join(fontes[:12])}")
+
+        return "\n".join(answer_lines), synth_engine
+
     def _smart_sql_generator(
         self,
         prompt_pkg: ModularPromptPackage,
@@ -1179,43 +1356,30 @@ class SIMOrchestrator:
                 cached=not is_external_llm,
             )
 
-            # Etapa 7: Síntese Executiva da Resposta Final
-            answer_lines: List[str] = []
-            if allowed_sources:
-                answer_lines.append(f"🔎 **Escopo de Pesquisa Aplicado:** `{', '.join(allowed_sources)}`")
-
-            if warnings:
-                for w in warnings:
-                    answer_lines.append(f"⚠️ **{w['title']}**: {w['message']}")
-
-            if sql_rows:
-                answer_lines.append(
-                    f"Foram localizados **{len(sql_rows)} registro(s)** oficiais para a consulta em "
-                    f"**{self.db_manager.tenant.municipality_name}/{self.db_manager.tenant.state_uf}**:"
-                )
-                for row in sql_rows[:8]:
-                    formatted_pairs = [f"**{k}**: {_format_brl_or_val(k, v)}" for k, v in row.items()]
-                    answer_lines.append("- " + " | ".join(formatted_pairs))
-            elif intent in ("sql_analytics", "hybrid_sql_rag") and not warnings:
-                answer_lines.append("Não foram encontrados registros tabulares para os filtros informados.")
-
-            if rag_chunks:
-                answer_lines.append(
-                    f"\nForam recuperados **{len(rag_chunks)} ato(s) normativo(s) individuais** no Diário Oficial (*Jornal Opinião*):"
-                )
-                for ch in rag_chunks[:3]:
-                    snippet = (ch.get("page_content") or "")[:320].replace("\n", " ")
-                    answer_lines.append(
-                        f"- **[{ch.get('tipo_ato')} | {ch.get('source')} | match: {ch.get('match_stage')}]**: {snippet}..."
-                    )
-
-            if role in ("auditor", "admin", "controller") and sql_executed:
-                answer_lines.append(f"\n**SQL Auditável Executado**:\n```sql\n{sql_executed}\n```")
-
-            if fontes:
-                answer_lines.append(f"\n**Fontes Oficiais Utilizadas (`fontes_utilizadas`)**: {', '.join(fontes[:12])}")
-
-            final_answer = "\n".join(answer_lines)
+            # Etapa 7: Síntese Executiva da Resposta Final (Linguagem Natural via LLM + Trilha Auditável)
+            s7_t0 = time.perf_counter()
+            final_answer, synth_engine = self._synthesize_executive_answer(
+                question=question,
+                sql_rows=sql_rows,
+                rag_chunks=rag_chunks,
+                warnings=warnings,
+                fontes=fontes,
+                allowed_sources=allowed_sources,
+                role=role,
+                sql_executed=sql_executed,
+                intent=intent,
+                llm_provider=llm_provider,
+                llm_api_key=llm_api_key,
+            )
+            steps.append(
+                {
+                    "step": 7,
+                    "name": "Síntese Executiva em Linguagem Natural",
+                    "status": "OK",
+                    "duration_ms": round((time.perf_counter() - s7_t0) * 1000.0, 2),
+                    "detail": f"Resposta analítica redigida ({synth_engine}) com citação auditável de {len(fontes)} fonte(s).",
+                }
+            )
 
             if session_id not in self.conversation_history:
                 self.conversation_history[session_id] = deque(maxlen=10)

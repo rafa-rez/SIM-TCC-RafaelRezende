@@ -2120,7 +2120,31 @@ async function executeQuestionInteractive(question, role, allowedSources, explic
   if (allowedSources.length < 8) {
     summaryLines.push(`🔎 **Filtro de Escopo Ativo:** \`${allowedSources.join(', ')}\``);
   }
-  summaryLines.push(`Foram localizados **${rows.length} registro(s)** oficiais auditados em **Caeté/MG**:`);
+  // Síntese Executiva em Linguagem Natural (Prosa Analítica)
+  if (rows.length > 0) {
+    const keys = Object.keys(rows[0]);
+    const moneyKey = keys.find(k => /vlr|total_pago|empenhado|liquidado|bruto|arrecadado|per_capita|global|gasto/i.test(k));
+    const entityKey = keys.find(k => /nom_|credor|fornecedor|pessoa|empresa|modalidade|funcao|orgao/i.test(k));
+    const yearKey = keys.find(k => /ano_referencia|ano/i.test(k));
+    if (entityKey && moneyKey) {
+      const totalMoney = rows.reduce((acc, r) => acc + (Number(r[moneyKey]) || 0), 0);
+      const topName = rows[0][entityKey];
+      const topVal = Number(rows[0][moneyKey]) || 0;
+      summaryLines.push(`💬 **Síntese Executiva:** Em resposta à consulta nos dados oficiais de **Caeté/MG**, foram identificados **${rows.length} registro(s)** que totalizam **${fmtBRL(totalMoney)}** na amostra analisada. O principal destaque é **${topName}**, com **${fmtBRL(topVal)}**, auditado diretamente nas bases oficiais.`);
+    } else if (yearKey && moneyKey && rows.length >= 2) {
+      const firstRow = rows[0];
+      const lastRow = rows[rows.length - 1];
+      const v0 = Number(firstRow[moneyKey]) || 0;
+      const vN = Number(lastRow[moneyKey]) || 0;
+      const totalSerie = rows.reduce((acc, r) => acc + (Number(r[moneyKey]) || 0), 0);
+      const deltaPct = v0 > 0 ? (((vN - v0) / v0) * 100).toFixed(1) : '0.0';
+      summaryLines.push(`💬 **Síntese Executiva:** Na série histórica oficial de **Caeté/MG** entre **${firstRow[yearKey]}** e **${lastRow[yearKey]}**, o montante evoluiu de **${fmtBRL(v0)}** (${firstRow[yearKey]}) para **${fmtBRL(vN)}** (${lastRow[yearKey]}), variação de **${Number(deltaPct) >= 0 ? '+' : ''}${deltaPct}%**, acumulando **${fmtBRL(totalSerie)}** no período.`);
+    } else {
+      summaryLines.push(`💬 **Síntese Executiva:** Com base nos registros oficiais auditados de **Caeté/MG**, foram apurados **${rows.length} resultado(s)** verificáveis nas fontes selecionadas.`);
+    }
+    summaryLines.push('');
+  }
+  summaryLines.push(`📊 **Detalhamento Auditável (${rows.length} registro(s)):**`);
   rows.slice(0, 6).forEach(r => {
     const parts = Object.entries(r).map(([k, v]) => {
       const kl = k.toLowerCase();

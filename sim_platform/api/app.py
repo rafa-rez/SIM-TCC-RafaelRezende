@@ -713,6 +713,33 @@ def create_app(
         was_audio = False
         audio_engine = None
 
+        # Se o WAHA enviou media.url (padrão do WAHA com WHATSAPP_DOWNLOAD_MEDIA=true), baixar o arquivo de áudio
+        media_url = str(media_obj.get("url") or "").strip()
+        if not audio_b64 and media_url and ("audio" in audio_mime.lower() or "ogg" in media_url.lower() or payload.get("hasMedia")):
+            try:
+                import urllib.request
+                waha_internal = os.environ.get("WAHA_API_URL", "http://waha:3000").rstrip("/")
+                resolved_url = (
+                    media_url.replace("http://localhost:3000", waha_internal)
+                    .replace("http://localhost:3001", waha_internal)
+                    .replace("http://127.0.0.1:3000", waha_internal)
+                )
+                with urllib.request.urlopen(resolved_url, timeout=15) as resp:
+                    audio_b64 = base64.b64encode(resp.read()).decode("ascii")
+            except Exception as exc:
+                _log(f"Aviso ao baixar media.url do WAHA ({media_url}): {exc}")
+
+        # Permitir teste no próprio número ("Mensagem para si mesmo") usando prefixo /sim
+        self_test_override = False
+        if from_me and message_text.lower().startswith("/sim "):
+            message_text = message_text[5:].strip()
+            self_test_override = True
+
+        if from_me and not self_test_override:
+            return {"status": "ignored", "reason": "fromMe=True", "chat_id": chat_id}
+        if chat_id.endswith("@g.us") or chat_id == "status@broadcast":
+            return {"status": "ignored", "reason": "group_or_status", "chat_id": chat_id}
+
         if not message_text and (audio_b64 or audio_transcript or payload.get("hasMedia")):
             tr = transcribe_audio_content(
                 audio_base64=audio_b64 or None,
@@ -724,10 +751,6 @@ def create_app(
                 was_audio = True
                 audio_engine = tr.get("engine")
 
-        if from_me:
-            return {"status": "ignored", "reason": "fromMe=True", "chat_id": chat_id}
-        if chat_id.endswith("@g.us") or chat_id == "status@broadcast":
-            return {"status": "ignored", "reason": "group_or_status", "chat_id": chat_id}
         if not message_text:
             return {"status": "ignored", "reason": "empty_body", "chat_id": chat_id}
 

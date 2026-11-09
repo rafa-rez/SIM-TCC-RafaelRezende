@@ -15,6 +15,7 @@ services:
   # --- WAHA (WhatsApp API — Zero-Config conectado direto ao SIM API) ---
   waha:
     image: devlikeapro/waha:latest
+    container_name: waha_prefeitura
     platform: linux/amd64
     restart: always
     depends_on:
@@ -23,6 +24,7 @@ services:
       WHATSAPP_HOOK_URL: http://duckdb_api:8000/webhook/waha
       WHATSAPP_DEFAULT_ENGINE: GOWS
       WHATSAPP_HOOK_EVENTS: message.any
+      WHATSAPP_DOWNLOAD_MEDIA: "true"
       WAHA_NO_API_KEY: "true"
       WAHA_DASHBOARD_NO_PASSWORD: "true"
       WHATSAPP_SWAGGER_NO_PASSWORD: "true"
@@ -59,7 +61,7 @@ services:
     networks:
       - prefeitura_net
 
-  # --- SIM PLATFORM API (Motor Parquet/DuckDB + Orquestrador + Webhook WAHA Nativo) ---
+  # --- SIM PLATFORM API v3.0 (Motor Parquet/DuckDB + Orquestrador + Console Web + Webhook WAHA Nativo) ---
   duckdb_api:
     image: python:3.11-slim
     container_name: duckdb_prefeitura
@@ -75,10 +77,11 @@ services:
       - ./avaliacao/dados:/gov/dados
       - ./avaliacao/dados/staging_cgu:/gov/dados/staging_cgu
     command: >
-      bash -c "pip install --no-cache-dir fastapi uvicorn duckdb pandas pydantic sqlglot requests &&
+      bash -c "pip install --no-cache-dir -r requirements.txt &&
       uvicorn sim_platform.api.app:app --host 0.0.0.0 --port 8000"
     ports:
       - "8000:8000"
+      - "8090:8000"
     networks:
       prefeitura_net:
         aliases:
