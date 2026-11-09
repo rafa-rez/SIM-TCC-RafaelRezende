@@ -1270,8 +1270,28 @@ PORTARIA Nº 048/2024 Dispõe sobre a nomeação de comissão espe- cial de ﬁ 
       </div>
     </div>
 
-    <!-- Painel Lateral de Telemetria do Webhook WAHA (Texto & Áudio) -->
+    <!-- Painel Lateral de Pareamento Real WAHA + Telemetria do Webhook -->
     <div>
+      <div class="card" style="border-color:rgba(16,185,129,0.45); background:linear-gradient(145deg, rgba(6,78,59,0.22), rgba(17,24,39,0.95));">
+        <div class="card-title">
+          <span>📲 Parear WhatsApp Real (QR Code WAHA Embutido)</span>
+          <span class="badge badge-green" id="waha-live-badge">Verificando WAHA...</span>
+        </div>
+        <p style="font-size:12px; color:var(--muted); margin-bottom:10px;">
+          Conecte seu WhatsApp diretamente por aqui (sem precisar abrir outra porta). Ao clicar abaixo, o SIM inicia a sessão <code>default</code> no container WAHA, configura o webhook automático e exibe o QR Code na tela:
+        </p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+          <button class="btn-primary" style="background:linear-gradient(135deg,#059669,#10b981); padding:8px 14px; font-size:12.5px;" onclick="startWahaAndShowQr()">
+            🔄 Iniciar Sessão &amp; Gerar QR Code
+          </button>
+          <button class="btn-sm" onclick="checkWahaLiveStatus(true)">🔍 Atualizar Status / QR</button>
+          <a href="http://localhost:3001/" target="_blank" class="btn-sm" style="text-decoration:none;">🌐 Abrir API WAHA (:3001)</a>
+        </div>
+        <div id="waha-qr-box" style="background:rgba(15,23,42,0.85); border:1px dashed var(--border); border-radius:10px; padding:12px; text-align:center; font-size:12.5px; color:var(--muted);">
+          Clique em <strong>"Iniciar Sessão &amp; Gerar QR Code"</strong> para carregar o QR Code do WhatsApp aqui.
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-title">
           <span>🔌 Telemetria do Webhook WAHA (Texto &amp; Áudio `.ogg`)</span>
@@ -2421,6 +2441,55 @@ function toggleBrowserVoiceRecognition() {
     btn.textContent = '🎙️ Falar';
   };
   rec.start();
+}
+
+async function checkWahaLiveStatus(loadQr = false) {
+  const badge = document.getElementById('waha-live-badge');
+  const qrBox = document.getElementById('waha-qr-box');
+  if (!badge || !qrBox) return;
+  try {
+    const res = await fetch('/api/waha/status');
+    const data = await res.json();
+    if (!data.reachable) {
+      badge.textContent = 'WAHA Offline (:3001)';
+      badge.className = 'badge badge-amber';
+      qrBox.innerHTML = 'Container WAHA não detectado em <code>http://waha:3000</code> ou <code>localhost:3001</code>. Suba com <code>docker compose up -d</code>.';
+      return;
+    }
+    const st = data.session_status || 'STOPPED';
+    badge.textContent = `WAHA: ${st}`;
+    badge.className = st === 'WORKING' ? 'badge badge-green' : 'badge badge-blue';
+    if (st === 'WORKING') {
+      const mePhone = (data.me && (data.me.id || data.me.pushName)) ? ` (${data.me.pushName || ''} - ${data.me.id || ''})` : '';
+      qrBox.innerHTML = `<div style="color:#34d399; font-weight:700;">✅ WhatsApp Conectado e Ativo${mePhone}!</div><div style="margin-top:4px; font-size:12px;">Envie qualquer mensagem ou áudio para o número conectado (ou use <code>/sim sua pergunta</code> no chat "Mensagem para si mesmo").</div>`;
+      return;
+    }
+    if (loadQr || st === 'SCAN_QR_CODE' || st === 'STARTING') {
+      const qrRes = await fetch('/api/waha/qr');
+      const qrData = await qrRes.json();
+      if (qrData.image_data_url) {
+        qrBox.innerHTML = `<div style="margin-bottom:8px; color:#e2e8f0; font-weight:600;">📱 Escaneie com seu WhatsApp (Aparelhos Conectados):</div><img src="${qrData.image_data_url}" alt="WAHA QR Code" style="max-width:260px; border-radius:10px; border:4px solid #fff; background:#fff;" />`;
+      } else {
+        qrBox.innerHTML = `<div style="color:#93c5fd;">⏳ Sessão em estado <strong>${st}</strong>. Aguarde 3 segundos e clique em <strong>"🔍 Atualizar Status / QR"</strong>.</div>`;
+      }
+    }
+  } catch (e) {
+    badge.textContent = 'Modo Local (Sem Docker)';
+    badge.className = 'badge badge-amber';
+  }
+}
+
+async function startWahaAndShowQr() {
+  const qrBox = document.getElementById('waha-qr-box');
+  if (qrBox) {
+    qrBox.innerHTML = '⏳ Iniciando sessão <code>default</code> no WAHA e gerando QR Code...';
+  }
+  try {
+    await fetch('/api/waha/start', { method: 'POST' });
+    setTimeout(() => checkWahaLiveStatus(true), 1800);
+  } catch (e) {
+    if (qrBox) qrBox.innerHTML = '⚠️ Não foi possível contatar <code>/api/waha/start</code>.';
+  }
 }
 
 /* ==================== ABA 2: MOTOR PROATIVO DE AUDITORIA (7 TRILHAS TCE-MG) ==================== */

@@ -1,6 +1,6 @@
 {
-  "last_sync_timestamp": "2026-11-09 21:26:03",
-  "duration_ms": 1158.58,
+  "last_sync_timestamp": "2026-11-09 22:41:00",
+  "duration_ms": 976.43,
   "enriched_tables_synced": {
     "ibge_indicadores_municipais": 6,
     "siconfi_finbra_indicadores": 6,
@@ -19,8 +19,6 @@
     "Padronizada e compactada tabela oficial `cgu_convenios.parquet` (6 registros validados).",
     "Padronizada e compactada tabela oficial `cgu_emendas.parquet` (10 registros validados).",
     "Padronizada e compactada tabela oficial `receita_qsa_fornecedores.parquet` (300 registros validados).",
-    "Collection RAG (*Jornal Opinião*) higienizada: 141 atos individuais únicos (1463 duplicatas eliminadas, 757 ligaduras PDF e 4339 hifenizações reparadas).",
-    "Catálogo DuckDB e SQLGuard recarregados a quente: 85 tabelas ativas.",
-    "Motor HybridRAGRetriever atualizado em memória com a nova collection individual."
+    "Collection RAG (*Jornal Opinião*) higienizada: 141 atos individuais únicos (1463 duplicatas eliminadas, 757 ligaduras PDF e 4339 hifenizações reparadas)."
   ]
 }

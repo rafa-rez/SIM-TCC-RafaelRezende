@@ -19,18 +19,12 @@ services:
     restart: always
     environment:
       WHATSAPP_HOOK_URL: http://duckdb_api:8000/webhook/waha
-      WHATSAPP_DEFAULT_ENGINE: NOWEB
+      WHATSAPP_DEFAULT_ENGINE: GOWS
       WHATSAPP_HOOK_EVENTS: message.any
       WHATSAPP_DOWNLOAD_MEDIA: "true"
-      WAHA_DASHBOARD_ENABLED: "true"
       WAHA_NO_API_KEY: "true"
-      WAHA_API_KEY: ""
       WAHA_DASHBOARD_NO_PASSWORD: "true"
-      WAHA_DASHBOARD_USERNAME: ""
-      WAHA_DASHBOARD_PASSWORD: ""
       WHATSAPP_SWAGGER_NO_PASSWORD: "true"
-      WHATSAPP_SWAGGER_USERNAME: ""
-      WHATSAPP_SWAGGER_PASSWORD: ""
     volumes:
       - waha_sessions:/app/.sessions
       - waha_media:/app/.media
@@ -66,7 +60,9 @@ services:
 
   # --- SIM PLATFORM API v3.0 (Motor Parquet/DuckDB + Orquestrador + Console Web + Webhook WAHA Nativo) ---
   duckdb_api:
-    image: python:3.11-slim
+    build:
+      context: .
+      dockerfile: Dockerfile.sim
     container_name: duckdb_prefeitura
     restart: always
     working_dir: /workspace
@@ -79,9 +75,7 @@ services:
       - ./:/workspace
       - ./avaliacao/dados:/gov/dados
       - ./avaliacao/dados/staging_cgu:/gov/dados/staging_cgu
-    command: >
-      bash -c "pip install --no-cache-dir -r requirements.txt &&
-      uvicorn sim_platform.api.app:app --host 0.0.0.0 --port 8000"
+    command: uvicorn sim_platform.api.app:app --host 0.0.0.0 --port 8000
     ports:
       - "8000:8000"
     networks:

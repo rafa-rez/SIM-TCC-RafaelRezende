@@ -812,6 +812,113 @@ def create_app(
             "orchestrator_response": res_dict,
         }
 
+    def _resolve_waha_base() -> str:
+        import urllib.request
+        candidates = []
+        env_url = os.environ.get("WAHA_API_URL", "").strip()
+        if env_url:
+            candidates.append(env_url.rstrip("/"))
+        candidates.extend(["http://waha:3000", "http://localhost:3001", "http://127.0.0.1:3001", "http://host.docker.internal:3001"])
+        for c in dict.fromkeys(candidates):
+            try:
+                req = urllib.request.Request(f"{c}/api/sessions?all=true", method="GET")
+                with urllib.request.urlopen(req, timeout=2.5) as r:
+                    if r.status == 200:
+                        return c
+            except Exception:
+                continue
+        return env_url.rstrip("/") if env_url else "http://localhost:3001"
+
+    @app.get("/api/waha/status")
+    def waha_session_status() -> Dict[str, Any]:
+        """
+        Verifica o status em tempo real do container WAHA e da sessão `default` do WhatsApp.
+        """
+        import urllib.request
+        base = _resolve_waha_base()
+        try:
+            req = urllib.request.Request(f"{base}/api/sessions?all=true", method="GET")
+            with urllib.request.urlopen(req, timeout=4) as resp:
+                sessions = json.loads(resp.read().decode("utf-8"))
+                default_sess = next((s for s in sessions if s.get("name") == "default"), None)
+                return {
+                    "reachable": True,
+                    "waha_base": base,
+                    "session_status": default_sess.get("status") if default_sess else "STOPPED",
+                    "me": default_sess.get("me") if default_sess else None,
+                    "sessions": sessions,
+                }
+        except Exception as exc:
+            return {
+                "reachable": False,
+                "waha_base": base,
+                "session_status": "OFFLINE",
+                "error": str(exc),
+            }
+
+    @app.post("/api/waha/start")
+    def waha_session_start() -> Dict[str, Any]:
+        """
+        Inicia (ou reinicia) automaticamente a sessão `default` no WAHA já apontando o webhook para o SIM.
+        """
+        import urllib.request
+        base = _resolve_waha_base()
+        webhook_cfg = {
+            "name": "default",
+            "start": True,
+            "config": {
+                "webhooks": [
+                    {
+                        "url": "http://duckdb_api:8000/webhook/waha",
+                        "events": ["message.any"],
+                    }
+                ]
+            },
+        }
+        last_err = None
+        for ep in (f"{base}/api/sessions/start", f"{base}/api/sessions", f"{base}/api/sessions/default/start"):
+            try:
+                data = json.dumps(webhook_cfg).encode("utf-8")
+                req = urllib.request.Request(
+                    ep,
+                    data=data,
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                with urllib.request.urlopen(req, timeout=8) as resp:
+                    body = json.loads(resp.read().decode("utf-8") or "{}")
+                    return {"status": "started", "endpoint": ep, "waha_response": body}
+            except Exception as exc:
+                last_err = str(exc)
+        return {"status": "error", "waha_base": base, "error": last_err}
+
+    @app.get("/api/waha/qr")
+    def waha_get_qr() -> Dict[str, Any]:
+        """
+        Obtém o QR Code ou screenshot da sessão `default` do WAHA em Base64 para exibir direto no Console SIM.
+        """
+        import urllib.request
+        base = _resolve_waha_base()
+        for ep in (
+            f"{base}/api/default/auth/qr?format=image",
+            f"{base}/api/screenshot?session=default",
+        ):
+            try:
+                req = urllib.request.Request(ep, headers={"Accept": "image/png, application/json"}, method="GET")
+                with urllib.request.urlopen(req, timeout=6) as resp:
+                    ctype = resp.headers.get("Content-Type", "image/png")
+                    raw = resp.read()
+                    if "json" in ctype.lower():
+                        j = json.loads(raw.decode("utf-8"))
+                        if j.get("data"):
+                            return {"status": "ok", "image_data_url": f"data:{j.get('mimetype', 'image/png')};base64,{j['data']}"}
+                    else:
+                        b64 = base64.b64encode(raw).decode("ascii")
+                        return {"status": "ok", "image_data_url": f"data:image/png;base64,{b64}"}
+            except Exception:
+                continue
+        return {"status": "waiting_qr", "detail": "Sessão ainda gerando QR Code ou já conectada (WORKING)."}
+
     app.state.db_manager = db_manager
     app.state.orchestrator = orchestrator
     app.state.rag_retriever = rag_retriever
@@ -821,3 +928,4 @@ def create_app(
 
 
 app = create_app()
+
