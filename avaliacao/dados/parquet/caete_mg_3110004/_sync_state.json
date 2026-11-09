@@ -1,0 +1,26 @@
+{
+  "last_sync_timestamp": "2026-11-09 17:24:24",
+  "duration_ms": 414.37,
+  "enriched_tables_synced": {
+    "ibge_indicadores_municipais": 6,
+    "siconfi_finbra_indicadores": 6,
+    "inep_ideb_educacao": 6,
+    "datasus_siops_saude": 6,
+    "cgu_convenios": 6,
+    "cgu_emendas": 6,
+    "receita_qsa_fornecedores": 250
+  },
+  "rag_unique_acts": 104,
+  "actions_log": [
+    "Padronizada e compactada tabela oficial `ibge_indicadores_municipais.parquet` (6 registros validados).",
+    "Padronizada e compactada tabela oficial `siconfi_finbra_indicadores.parquet` (6 registros validados).",
+    "Padronizada e compactada tabela oficial `inep_ideb_educacao.parquet` (6 registros validados).",
+    "Padronizada e compactada tabela oficial `datasus_siops_saude.parquet` (6 registros validados).",
+    "Padronizada e compactada tabela oficial `cgu_convenios.parquet` (6 registros validados).",
+    "Padronizada e compactada tabela oficial `cgu_emendas.parquet` (6 registros validados).",
+    "Padronizada e compactada tabela oficial `receita_qsa_fornecedores.parquet` (250 registros validados).",
+    "Collection RAG (*Jornal Opinião*) higienizada: 104 atos individuais únicos (754 duplicatas eliminadas, 760 ligaduras PDF e 4066 hifenizações reparadas).",
+    "Catálogo DuckDB e SQLGuard recarregados a quente: 79 tabelas ativas.",
+    "Motor HybridRAGRetriever atualizado em memória com a nova collection individual."
+  ]
+}

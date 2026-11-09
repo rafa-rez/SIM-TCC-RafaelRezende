@@ -19,7 +19,7 @@ import argparse
 import sys
 from pathlib import Path
 
-AVALIACAO_ROOT = Path(__file__).resolve().parents[1]
+AVALIACAO_ROOT = Path(__file__).resolve().parents[3] / "avaliacao"
 
 # tabela (sufixo do arquivo) -> nome da coluna de fonte de recurso
 FONTE_COL = {

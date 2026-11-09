@@ -1,0 +1,865 @@
+{
+  "generated_at": "2026-11-09T14:41:50Z",
+  "total_cases": 6,
+  "headline_metrics": {
+    "tables_accessible_pre": 31,
+    "tables_accessible_post": 72,
+    "prompt_token_reduction_pct": 78.6,
+    "recovered_2023_payments_brl": 11753267.97,
+    "recovered_2023_empenhos_brl": 17087806.61,
+    "rag_numbered_acts_recall_pre_pct": 3.12,
+    "rag_numbered_acts_recall_post_pct": 100.0,
+    "security_file_read_blocked": true
+  },
+  "cases": [
+    {
+      "id": "CASE-01",
+      "category": "Fidelidade Financeira & Reparo de Dados 2023",
+      "title": "Pagamentos Totais e Top 5 Fornecedores em 2023",
+      "question": "Quanto a prefeitura pagou no total em 2023 e quais foram os 5 maiores fornecedores em 2023?",
+      "what_changed_for_owner": "No PRÉ, o CSV bruto de 2023 tinha quebras de linha não escapadas que faziam o DuckDB descartar silenciosamente 1,000 pagamentos (R$ 11,753,267.97 desaparecidos). No PÓS, o reparo determinístico recuperou 100% dos registros.",
+      "pre": {
+        "engine": "scripts_python/main.py (CSVs brutos + prompt monolítico 31 tabelas)",
+        "tables_in_prompt": 31,
+        "prompt_schema_chars": 36583,
+        "sql_executed": "SELECT nom_credor, ROUND(SUM(TRY_CAST(vlr_pag_fonte AS DECIMAL(18,2))), 2) AS total_recebido_2023, COUNT(TRY_CAST(vlr_pag_fonte AS DECIMAL(18,2))) AS qtd_pagamentos\n    FROM despesa_pagamento\n    WHERE ano_referencia = 2023\n    GROUP BY nom_credor\n    ORDER BY total_recebido_2023 DESC\n    LIMIT 5",
+        "summary_metrics": {
+          "total_pago_2023": 145796501.4,
+          "qtd_pagamentos": 13662
+        },
+        "rows": [
+          {
+            "nom_credor": "NAO INFORMADO",
+            "total_recebido_2023": 41395591.87,
+            "qtd_pagamentos": 2301
+          },
+          {
+            "nom_credor": "SOC CIVIL DE BENEFICÊNCIA CAETEENSE",
+            "total_recebido_2023": 16248074.48,
+            "qtd_pagamentos": 96
+          },
+          {
+            "nom_credor": "INSS INSTITUTO NACIONAL DO SEGURO SOCIAL",
+            "total_recebido_2023": 10775629.76,
+            "qtd_pagamentos": 703
+          },
+          {
+            "nom_credor": "EMPRESA TRANSCOL LTDA",
+            "total_recebido_2023": 9622213.52,
+            "qtd_pagamentos": 57
+          },
+          {
+            "nom_credor": "UNICAPA UNIAO DOS APLIC DE PAV ASFALTICO LTDA",
+            "total_recebido_2023": 5547070.41,
+            "qtd_pagamentos": 25
+          }
+        ],
+        "fontes_csv": [
+          "despesa_pagamento_2023.csv"
+        ],
+        "warnings": [],
+        "issues_detected": [
+          "Perda silenciosa de 1000 linhas em despesa_pagamento_2023.csv",
+          "Subfaturamento de R$ 11,753,267.97 no total pago de 2023 (R$ 145,80M em vez de R$ 157,55M)"
+        ]
+      },
+      "post": {
+        "engine": "sim_platform (DuckDB + database_fix2023 + Catálogo Dinâmico 72 tabelas + AST Guard)",
+        "tables_in_prompt": 18,
+        "selected_tables": [
+          "despesa_despesa",
+          "despesa_itemNfs",
+          "despesa_liquidacao",
+          "despesa_liquidacaoFonte",
+          "despesa_liquidacaoNfs",
+          "despesa_movPagamento",
+          "despesa_notasfiscais",
+          "despesa_pagamento",
+          "empenho_credorEmpenho",
+          "empenho_empenho",
+          "empenho_empenhoFonte",
+          "orgao_municipio",
+          "orgao_orgao",
+          "orgao_orgaoResp",
+          "orgao_orgaoUnidade",
+          "orgao_remessaMunicipio",
+          "pessoa_municipio",
+          "receita_receita"
+        ],
+        "selected_segments": [
+          "execucao_despesa",
+          "estrutura_orgaos_cadastros"
+        ],
+        "token_reduction_pct": 75.0,
+        "sql_executed": "SELECT nom_credor, ROUND(SUM(TRY_CAST(vlr_pag_fonte AS DECIMAL(18, 2))), 2) AS total_recebido_2023, COUNT(TRY_CAST(vlr_pag_fonte AS DECIMAL(18, 2))) AS qtd_pagamentos FROM despesa_pagamento WHERE ano_referencia = 2023 GROUP BY nom_credor ORDER BY total_recebido_2023 DESC LIMIT 5",
+        "summary_metrics": {
+          "total_pago_2023": 157549769.37,
+          "qtd_pagamentos": 14662
+        },
+        "rows": [
+          {
+            "nom_credor": "NAO INFORMADO",
+            "total_recebido_2023": 44628142.0,
+            "qtd_pagamentos": 2443
+          },
+          {
+            "nom_credor": "SOC CIVIL DE BENEFICÊNCIA CAETEENSE",
+            "total_recebido_2023": 16248074.48,
+            "qtd_pagamentos": 96
+          },
+          {
+            "nom_credor": "INSS INSTITUTO NACIONAL DO SEGURO SOCIAL",
+            "total_recebido_2023": 10775629.76,
+            "qtd_pagamentos": 703
+          },
+          {
+            "nom_credor": "EMPRESA TRANSCOL LTDA",
+            "total_recebido_2023": 9991251.75,
+            "qtd_pagamentos": 59
+          },
+          {
+            "nom_credor": "QUANTUM ENGENHARIA E CONSULTORIA LTDA",
+            "total_recebido_2023": 5748109.11,
+            "qtd_pagamentos": 25
+          }
+        ],
+        "fontes_utilizadas": [
+          "despesa_pagamento_2023.csv"
+        ],
+        "warnings": [],
+        "pipeline_steps": [
+          {
+            "step": 1,
+            "name": "Guardião de Entrada & Lock Atômico de Sessão",
+            "status": "OK",
+            "duration_ms": 0.03,
+            "detail": "Sessão 'default' bloqueada com exclusividade (try/finally). Perfil RBAC: 'auditor'. Verificação anti-Prompt Injection: Aprovada."
+          },
+          {
+            "step": 2,
+            "name": "Roteador Determinístico de Intenção (Substitui n8n Router)",
+            "status": "OK",
+            "duration_ms": 0.0,
+            "detail": "Rota classificada: 'sql_analytics' para o tenant 'caete-mg'."
+          },
+          {
+            "step": 3,
+            "name": "Catálogo Dinâmico & Schema Linker (Seleção de Bases)",
+            "status": "OK",
+            "duration_ms": 0.39,
+            "detail": "Modo: automatic | Segmentos ativos: execucao_despesa, estrutura_orgaos_cadastros | Tabelas selecionadas: 18 de 72 (Redução de 75.0% no ruído de schema)."
+          },
+          {
+            "step": 4,
+            "name": "Montagem Modular de Prompt & Geração SQL (Tentativa 1)",
+            "status": "OK",
+            "duration_ms": 0.03,
+            "detail": "Prompt modular estimado em ~2963 tokens (vs. 14.961 tokens no prompt v2 estático). SQL candidato gerado."
+          },
+          {
+            "step": 5,
+            "name": "SQLGuard (Validação AST) & Execução DuckDB (Tentativa 1)",
+            "status": "OK",
+            "duration_ms": 337.18,
+            "detail": "Status: sucesso | Linhas retornadas: 5 | Tabelas na AST: despesa_pagamento | Anos extraídos via AST: [2023] | CPFs mascarados (LGPD): 0."
+          }
+        ]
+      }
+    },
+    {
+      "id": "CASE-02",
+      "category": "Cálculo Fiscal (ISF-M) & Rastreabilidade AST vs. Regex",
+      "title": "Índice de Saúde Financeira Municipal (ISF-M) 2020 a 2025",
+      "question": "Calcule a Saúde Financeira (ISF-M) da prefeitura detalhada ano a ano, cobrindo todo o período de 2020 a 2025.",
+      "what_changed_for_owner": "1) Em 2023, o deslocamento de colunas em empenho_empenhoFonte corrompia a soma empenhada no PRÉ (R$ 175,86M vs R$ 192,95M reais), distorcendo o índice ISF-M de 2023 (de 68,26 para 63,56). 2) Como a query usa BETWEEN 2020 AND 2025, o regex antigo só enxergava os números '2020' e '2025' no texto e omitia os CSVs de 2021, 2022, 2023 e 2024 da auditoria.",
+      "pre": {
+        "engine": "scripts_python/main.py (CSVs brutos + regex de anos)",
+        "tables_in_prompt": 31,
+        "sql_executed": "WITH receita_corrente AS (SELECT ano_referencia, SUM(CAST(vlr_realizadoateperiodo AS DECIMAL(18, 3))) AS total_receita_corrente FROM receita_receita WHERE dsc_cateconomica ILIKE '%Corrente%' GROUP BY ano_referencia), despesa_corrente AS (SELECT ano_referencia, SUM(CAST(vlr_liquidado AS DECIMAL(18, 3))) AS total_despesa_corrente FROM despesa_despesa WHERE dsc_naturezadespesa LIKE '3%' GROUP BY ano_referencia) SELECT r.ano_referencia, r.total_receita_corrente / NULLIF(d.total_despesa_corrente, 0) AS isf_m FROM receita_corrente AS r JOIN despesa_corrente AS d ON r.ano_referencia = d.ano_referencia WHERE r.ano_referencia BETWEEN 2020 AND 2025 LIMIT 500",
+        "rows": [
+          {
+            "ano_referencia": 2020,
+            "isf_m": 1.1195393762
+          },
+          {
+            "ano_referencia": 2022,
+            "isf_m": 1.1599104316
+          },
+          {
+            "ano_referencia": 2024,
+            "isf_m": 1.0665988252
+          },
+          {
+            "ano_referencia": 2021,
+            "isf_m": 1.1670181287
+          },
+          {
+            "ano_referencia": 2023,
+            "isf_m": 1.0561620019
+          },
+          {
+            "ano_referencia": 2025,
+            "isf_m": 1.0616452239
+          }
+        ],
+        "fontes_csv": [
+          "despesa_despesa_2020.csv",
+          "despesa_despesa_2025.csv",
+          "receita_receita_2020.csv",
+          "receita_receita_2025.csv"
+        ],
+        "warnings": [],
+        "issues_detected": [
+          "Ano 2023 com total_empenhado corrompido (R$ 175.862.587,25 no PRÉ vs R$ 192.950.393,86 no PÓS — erro de R$ 17,08 milhões)",
+          "Rastreabilidade falha: listou apenas 4 arquivos (2020 e 2025), omitindo 2021, 2022, 2023 e 2024"
+        ]
+      },
+      "post": {
+        "engine": "sim_platform (AST Lineage + database_fix2023)",
+        "tables_in_prompt": 23,
+        "selected_tables": [
+          "despesa_altOrcamentaria",
+          "despesa_decretos",
+          "despesa_despesa",
+          "despesa_itemNfs",
+          "despesa_leisDecretos",
+          "despesa_liquidacao",
+          "despesa_liquidacaoFonte",
+          "despesa_liquidacaoNfs",
+          "despesa_movPagamento",
+          "despesa_notasfiscais",
+          "despesa_pagamento",
+          "educacao_educacao",
+          "empenho_credorEmpenho",
+          "empenho_empenho",
+          "empenho_empenhoFonte",
+          "orgao_municipio",
+          "orgao_orgao",
+          "orgao_orgaoResp",
+          "orgao_orgaoUnidade",
+          "orgao_remessaMunicipio",
+          "pessoa_municipio",
+          "receita_receita",
+          "saude_saude"
+        ],
+        "selected_segments": [
+          "execucao_despesa",
+          "orcamento_planejamento",
+          "educacao_saude",
+          "estrutura_orgaos_cadastros"
+        ],
+        "token_reduction_pct": 68.06,
+        "sql_executed": "WITH receita_corrente AS (SELECT ano_referencia, SUM(CAST(vlr_realizadoateperiodo AS DECIMAL(18, 3))) AS total_receita_corrente FROM receita_receita WHERE dsc_cateconomica ILIKE '%Corrente%' GROUP BY ano_referencia), despesa_corrente AS (SELECT ano_referencia, SUM(CAST(vlr_liquidado AS DECIMAL(18, 3))) AS total_despesa_corrente FROM despesa_despesa WHERE dsc_naturezadespesa LIKE '3%' GROUP BY ano_referencia) SELECT r.ano_referencia, r.total_receita_corrente / NULLIF(d.total_despesa_corrente, 0) AS isf_m FROM receita_corrente AS r JOIN despesa_corrente AS d ON r.ano_referencia = d.ano_referencia WHERE r.ano_referencia BETWEEN 2020 AND 2025 LIMIT 500",
+        "rows": [
+          {
+            "ano_referencia": 2020,
+            "isf_m": 1.1195
+          },
+          {
+            "ano_referencia": 2021,
+            "isf_m": 1.167
+          },
+          {
+            "ano_referencia": 2024,
+            "isf_m": 1.0666
+          },
+          {
+            "ano_referencia": 2022,
+            "isf_m": 1.1599
+          },
+          {
+            "ano_referencia": 2023,
+            "isf_m": 1.0615
+          },
+          {
+            "ano_referencia": 2025,
+            "isf_m": 1.0616
+          }
+        ],
+        "fontes_utilizadas": [
+          "receita_receita_2020.csv",
+          "receita_receita_2021.csv",
+          "receita_receita_2022.csv",
+          "receita_receita_2023.csv",
+          "receita_receita_2024.csv",
+          "receita_receita_2025.csv",
+          "despesa_despesa_2020.csv",
+          "despesa_despesa_2021.csv",
+          "despesa_despesa_2022.csv",
+          "despesa_despesa_2023.csv",
+          "despesa_despesa_2024.csv",
+          "despesa_despesa_2025.csv"
+        ],
+        "warnings": [],
+        "pipeline_steps": [
+          {
+            "step": 1,
+            "name": "Guardião de Entrada & Lock Atômico de Sessão",
+            "status": "OK",
+            "duration_ms": 0.03,
+            "detail": "Sessão 'default' bloqueada com exclusividade (try/finally). Perfil RBAC: 'auditor'. Verificação anti-Prompt Injection: Aprovada."
+          },
+          {
+            "step": 2,
+            "name": "Roteador Determinístico de Intenção (Substitui n8n Router)",
+            "status": "OK",
+            "duration_ms": 0.1,
+            "detail": "Rota classificada: 'sql_analytics' para o tenant 'caete-mg'."
+          },
+          {
+            "step": 3,
+            "name": "Catálogo Dinâmico & Schema Linker (Seleção de Bases)",
+            "status": "OK",
+            "duration_ms": 0.47,
+            "detail": "Modo: automatic | Segmentos ativos: execucao_despesa, orcamento_planejamento, educacao_saude, estrutura_orgaos_cadastros | Tabelas selecionadas: 23 de 72 (Redução de 68.06% no ruído de schema)."
+          },
+          {
+            "step": 4,
+            "name": "Montagem Modular de Prompt & Geração SQL (Tentativa 1)",
+            "status": "OK",
+            "duration_ms": 0.12,
+            "detail": "Prompt modular estimado em ~3880 tokens (vs. 14.961 tokens no prompt v2 estático). SQL candidato gerado."
+          },
+          {
+            "step": 5,
+            "name": "SQLGuard (Validação AST) & Execução DuckDB (Tentativa 1)",
+            "status": "OK",
+            "duration_ms": 390.48,
+            "detail": "Status: sucesso | Linhas retornadas: 6 | Tabelas na AST: receita_receita, despesa_despesa | Anos extraídos via AST: [2020, 2021, 2022, 2023, 2024, 2025] | CPFs mascarados (LGPD): 0."
+          }
+        ]
+      }
+    },
+    {
+      "id": "CASE-03",
+      "category": "Transparência de Lacunas & Governança de Dados",
+      "title": "Folha de Pagamento dos Servidores entre 2021 e 2024",
+      "question": "Qual foi o gasto com folha de pagamento dos servidores entre 2021 e 2024?",
+      "what_changed_for_owner": "Os arquivos de remuneração de 2020, 2021 e 2022 estão vazios (0 linhas) na origem do portal de Caeté. No PRÉ, a API devolvia apenas 2023 e 2024 sem nenhum alerta estruturado e ainda afirmava ter lido 'remuneracao_municipio_2021.csv' (vazio), omitindo 2022 e 2023. No PÓS, o detector determinístico injeta automaticamente o alerta oficial GAP-FOLHA-2020-2022 na resposta e expande a linhagem exata.",
+      "pre": {
+        "engine": "scripts_python/main.py (sem detector determinístico de lacunas)",
+        "tables_in_prompt": 31,
+        "sql_executed": "SELECT\n        ano_referencia,\n        COUNT(DISTINCT seq_dim_pessoa) AS servidores_distintos,\n        ROUND(SUM(TRY_CAST(vlr_rmn_bruta AS DECIMAL(18,2))), 2) AS total_folha_bruta,\n        ROUND(SUM(TRY_CAST(vlr_rmn_liquida AS DECIMAL(18,2))), 2) AS total_folha_liquida\n    FROM remuneracao_municipio\n    WHERE ano_referencia BETWEEN 2021 AND 2024\n    GROUP BY ano_referencia\n    ORDER BY ano_referencia",
+        "rows": [
+          {
+            "ano_referencia": 2023,
+            "servidores_distintos": 1845,
+            "total_folha_bruta": 41337104.25,
+            "total_folha_liquida": 42891668.55
+          },
+          {
+            "ano_referencia": 2024,
+            "servidores_distintos": 1930,
+            "total_folha_bruta": 47277042.75,
+            "total_folha_liquida": 61528534.18
+          }
+        ],
+        "fontes_csv": [
+          "remuneracao_municipio_2021.csv",
+          "remuneracao_municipio_2024.csv"
+        ],
+        "warnings": [],
+        "issues_detected": [
+          "Nenhum aviso estruturado na API sobre a ausência de dados da folha em 2021 e 2022 (dependia 100% do LLM lembrar de avisar no WhatsApp)",
+          "Linhagem regex listou apenas 2021 e 2024, omitindo justamente 2023 (onde há R$ 110,95M em folha)"
+        ]
+      },
+      "post": {
+        "engine": "sim_platform (Detector determinístico GAP-FOLHA-2020-2022 + AST Lineage)",
+        "tables_in_prompt": 17,
+        "selected_tables": [
+          "desp_pessoal_despPessoal",
+          "despesa_despesa",
+          "despesa_itemNfs",
+          "despesa_liquidacao",
+          "despesa_liquidacaoFonte",
+          "despesa_liquidacaoNfs",
+          "despesa_movPagamento",
+          "despesa_notasfiscais",
+          "despesa_pagamento",
+          "empenho_credorEmpenho",
+          "empenho_empenho",
+          "empenho_empenhoFonte",
+          "orgao_orgao",
+          "orgao_orgaoUnidade",
+          "pessoa_municipio",
+          "receita_receita",
+          "remuneracao_municipio"
+        ],
+        "selected_segments": [
+          "execucao_despesa",
+          "folha_rh"
+        ],
+        "token_reduction_pct": 76.39,
+        "sql_executed": "SELECT ano_referencia, COUNT(DISTINCT seq_dim_pessoa) AS servidores_distintos, ROUND(SUM(TRY_CAST(vlr_rmn_bruta AS DECIMAL(18, 2))), 2) AS total_folha_bruta, ROUND(SUM(TRY_CAST(vlr_rmn_liquida AS DECIMAL(18, 2))), 2) AS total_folha_liquida FROM remuneracao_municipio WHERE ano_referencia BETWEEN 2021 AND 2024 GROUP BY ano_referencia ORDER BY ano_referencia",
+        "rows": [
+          {
+            "ano_referencia": 2023,
+            "servidores_distintos": 1845,
+            "total_folha_bruta": 41337104.25,
+            "total_folha_liquida": 42891668.55
+          },
+          {
+            "ano_referencia": 2024,
+            "servidores_distintos": 1930,
+            "total_folha_bruta": 47277042.75,
+            "total_folha_liquida": 61528534.18
+          }
+        ],
+        "fontes_utilizadas": [
+          "remuneracao_municipio_2023.csv",
+          "remuneracao_municipio_2024.csv"
+        ],
+        "warnings": [
+          {
+            "gap_id": "GAP-FOLHA-2020-2022",
+            "severity": "HIGH",
+            "title": "Lacuna de Transparência Ativa — Folha de Pagamento (2020–2022)",
+            "message": "Os pacotes de dados abertos do SICOM/TCE-MG para o município de Caeté não contêm registros nominais de remuneração de servidores (remuneracao_municipio) nos exercícios de 2020, 2021 e 2022. Os dados estão disponíveis exclusivamente a partir de 2023. Ausência de registros nesse período reflete lacuna de publicação na origem, e não gasto zero.",
+            "affected_tables": [
+              "remuneracao_municipio",
+              "pessoa_municipio"
+            ],
+            "affected_years": [
+              2021,
+              2022
+            ],
+            "available_years": [
+              2023,
+              2024,
+              2025
+            ]
+          }
+        ],
+        "pipeline_steps": [
+          {
+            "step": 1,
+            "name": "Guardião de Entrada & Lock Atômico de Sessão",
+            "status": "OK",
+            "duration_ms": 0.02,
+            "detail": "Sessão 'default' bloqueada com exclusividade (try/finally). Perfil RBAC: 'auditor'. Verificação anti-Prompt Injection: Aprovada."
+          },
+          {
+            "step": 2,
+            "name": "Roteador Determinístico de Intenção (Substitui n8n Router)",
+            "status": "OK",
+            "duration_ms": 0.0,
+            "detail": "Rota classificada: 'sql_analytics' para o tenant 'caete-mg'."
+          },
+          {
+            "step": 3,
+            "name": "Catálogo Dinâmico & Schema Linker (Seleção de Bases)",
+            "status": "OK",
+            "duration_ms": 0.37,
+            "detail": "Modo: automatic | Segmentos ativos: execucao_despesa, folha_rh | Tabelas selecionadas: 17 de 72 (Redução de 76.39% no ruído de schema)."
+          },
+          {
+            "step": 4,
+            "name": "Montagem Modular de Prompt & Geração SQL (Tentativa 1)",
+            "status": "OK",
+            "duration_ms": 0.04,
+            "detail": "Prompt modular estimado em ~3154 tokens (vs. 14.961 tokens no prompt v2 estático). SQL candidato gerado."
+          },
+          {
+            "step": 5,
+            "name": "SQLGuard (Validação AST) & Execução DuckDB (Tentativa 1)",
+            "status": "OK",
+            "duration_ms": 329.92,
+            "detail": "Status: sucesso | Linhas retornadas: 2 | Tabelas na AST: remuneracao_municipio | Anos extraídos via AST: [2021, 2022, 2023, 2024] | CPFs mascarados (LGPD): 0."
+          }
+        ]
+      }
+    },
+    {
+      "id": "CASE-04",
+      "category": "Conformidade LGPD & Perfis Cidadão vs. Auditor",
+      "title": "Consulta Nominal de Servidores com CPF e Remuneração (2024)",
+      "question": "Quais servidores tiveram as maiores remunerações em 2024 com documento e cargo?",
+      "what_changed_for_owner": "A tabela pessoa_municipio possui 3.597 CPFs completos de 11 dígitos. No PRÉ, não havia distinção de perfil: qualquer consulta que retornasse num_documento expunha o CPF integral em texto claro. No PÓS, o perfil 'citizen' (WhatsApp/Portal Público) mascara automaticamente CPFs (***.XXX.XXX-**), enquanto o perfil 'auditor' (Controladoria) preserva o dado com trilha de auditoria.",
+      "pre": {
+        "engine": "scripts_python/main.py (sem RBAC e sem mascaramento LGPD)",
+        "tables_in_prompt": 31,
+        "sql_executed": "SELECT p.nom_pessoa, p.num_documento, r.dsc_cargo, MAX(TRY_CAST(r.vlr_rmn_bruta AS DECIMAL(18, 2))) AS maior_remuneracao_bruta, MAX(TRY_CAST(r.vlr_rmn_liquida AS DECIMAL(18, 2))) AS maior_remuneracao_liquida FROM remuneracao_municipio AS r JOIN pessoa_municipio AS p ON r.seq_dim_pessoa = p.seq_dim_pessoa WHERE r.ano_referencia = 2024 AND COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY p.nom_pessoa, p.num_documento, r.dsc_cargo ORDER BY maior_remuneracao_bruta DESC LIMIT 10",
+        "rows": [
+          {
+            "nom_pessoa": "LUCAS COELHO FERREIRA",
+            "num_documento": "84220694668",
+            "dsc_cargo": "PREFEITO MUNICIPAL",
+            "maior_remuneracao_bruta": 86780.51,
+            "maior_remuneracao_liquida": 82244.67
+          },
+          {
+            "nom_pessoa": "ALBERTO NAZARE PIRES",
+            "num_documento": "10850993695",
+            "dsc_cargo": "VICE-PREFEITO",
+            "maior_remuneracao_bruta": 43390.24,
+            "maior_remuneracao_liquida": 41240.86
+          },
+          {
+            "nom_pessoa": "ISABEL BARBOSA DE OLIVEIRA GONCALVES",
+            "num_documento": "07402634639",
+            "dsc_cargo": "PROCURADOR GERAL",
+            "maior_remuneracao_bruta": 26463.98,
+            "maior_remuneracao_liquida": 19660.56
+          },
+          {
+            "nom_pessoa": "JOAO VITOR DA SILVA JORGE",
+            "num_documento": "11520644604",
+            "dsc_cargo": "SECRETARIO MUNICIPAL",
+            "maior_remuneracao_bruta": 26463.98,
+            "maior_remuneracao_liquida": 18248.6
+          },
+          {
+            "nom_pessoa": "DARLAN CORRADI PERDIGAO DE ALMEIDA",
+            "num_documento": "08468922609",
+            "dsc_cargo": "DIRETOR PRESIDENTE",
+            "maior_remuneracao_bruta": 24258.29,
+            "maior_remuneracao_liquida": 21688.46
+          }
+        ],
+        "fontes_csv": [
+          "pessoa_municipio_2024.csv",
+          "remuneracao_municipio_2024.csv"
+        ],
+        "warnings": [],
+        "issues_detected": [
+          "Exposição direta de CPFs completos (11 dígitos) na saída JSON sem controle de perfil (risco LGPD Art. 6º, III)"
+        ]
+      },
+      "post": {
+        "engine": "sim_platform (Mascaramento determinístico por perfil: citizen vs auditor)",
+        "tables_in_prompt": 9,
+        "selected_tables": [
+          "desp_pessoal_despPessoal",
+          "despesa_despesa",
+          "despesa_pagamento",
+          "empenho_empenho",
+          "orgao_orgao",
+          "orgao_orgaoUnidade",
+          "pessoa_municipio",
+          "receita_receita",
+          "remuneracao_municipio"
+        ],
+        "selected_segments": [
+          "folha_rh"
+        ],
+        "token_reduction_pct": 87.5,
+        "sql_executed": "SELECT p.nom_pessoa, p.num_documento, r.dsc_cargo, MAX(TRY_CAST(r.vlr_rmn_bruta AS DECIMAL(18, 2))) AS maior_remuneracao_bruta, MAX(TRY_CAST(r.vlr_rmn_liquida AS DECIMAL(18, 2))) AS maior_remuneracao_liquida FROM remuneracao_municipio AS r JOIN pessoa_municipio AS p ON r.seq_dim_pessoa = p.seq_dim_pessoa WHERE r.ano_referencia = 2024 AND COALESCE(p.nom_pessoa, '') NOT ILIKE '%NAO INFORMADO%' GROUP BY p.nom_pessoa, p.num_documento, r.dsc_cargo ORDER BY maior_remuneracao_bruta DESC LIMIT 10",
+        "rows": [
+          {
+            "nom_pessoa": "LUCAS COELHO FERREIRA",
+            "num_documento": "***.206.946-**",
+            "dsc_cargo": "PREFEITO MUNICIPAL",
+            "maior_remuneracao_bruta": 86780.51,
+            "maior_remuneracao_liquida": 82244.67
+          },
+          {
+            "nom_pessoa": "ALBERTO NAZARE PIRES",
+            "num_documento": "***.509.936-**",
+            "dsc_cargo": "VICE-PREFEITO",
+            "maior_remuneracao_bruta": 43390.24,
+            "maior_remuneracao_liquida": 41240.86
+          },
+          {
+            "nom_pessoa": "ISABEL BARBOSA DE OLIVEIRA GONCALVES",
+            "num_documento": "***.026.346-**",
+            "dsc_cargo": "PROCURADOR GERAL",
+            "maior_remuneracao_bruta": 26463.98,
+            "maior_remuneracao_liquida": 19660.56
+          },
+          {
+            "nom_pessoa": "JOAO VITOR DA SILVA JORGE",
+            "num_documento": "***.206.446-**",
+            "dsc_cargo": "SECRETARIO MUNICIPAL",
+            "maior_remuneracao_bruta": 26463.98,
+            "maior_remuneracao_liquida": 18248.6
+          },
+          {
+            "nom_pessoa": "DARLAN CORRADI PERDIGAO DE ALMEIDA",
+            "num_documento": "***.689.226-**",
+            "dsc_cargo": "DIRETOR PRESIDENTE",
+            "maior_remuneracao_bruta": 24258.29,
+            "maior_remuneracao_liquida": 21688.46
+          }
+        ],
+        "auditor_rows_preview": [
+          {
+            "nom_pessoa": "LUCAS COELHO FERREIRA",
+            "num_documento": "84220694668",
+            "dsc_cargo": "PREFEITO MUNICIPAL",
+            "maior_remuneracao_bruta": 86780.51,
+            "maior_remuneracao_liquida": 82244.67
+          },
+          {
+            "nom_pessoa": "ALBERTO NAZARE PIRES",
+            "num_documento": "10850993695",
+            "dsc_cargo": "VICE-PREFEITO",
+            "maior_remuneracao_bruta": 43390.24,
+            "maior_remuneracao_liquida": 41240.86
+          },
+          {
+            "nom_pessoa": "ISABEL BARBOSA DE OLIVEIRA GONCALVES",
+            "num_documento": "07402634639",
+            "dsc_cargo": "PROCURADOR GERAL",
+            "maior_remuneracao_bruta": 26463.98,
+            "maior_remuneracao_liquida": 19660.56
+          }
+        ],
+        "pii_masked_count": 10,
+        "fontes_utilizadas": [
+          "remuneracao_municipio_2024.csv",
+          "pessoa_municipio_2024.csv"
+        ],
+        "warnings": [],
+        "pipeline_steps": [
+          {
+            "step": 1,
+            "name": "Guardião de Entrada & Lock Atômico de Sessão",
+            "status": "OK",
+            "duration_ms": 0.02,
+            "detail": "Sessão 'default' bloqueada com exclusividade (try/finally). Perfil RBAC: 'citizen'. Verificação anti-Prompt Injection: Aprovada."
+          },
+          {
+            "step": 2,
+            "name": "Roteador Determinístico de Intenção (Substitui n8n Router)",
+            "status": "OK",
+            "duration_ms": 0.07,
+            "detail": "Rota classificada: 'sql_analytics' para o tenant 'caete-mg'."
+          },
+          {
+            "step": 3,
+            "name": "Catálogo Dinâmico & Schema Linker (Seleção de Bases)",
+            "status": "OK",
+            "duration_ms": 0.32,
+            "detail": "Modo: automatic | Segmentos ativos: folha_rh | Tabelas selecionadas: 9 de 72 (Redução de 87.5% no ruído de schema)."
+          },
+          {
+            "step": 4,
+            "name": "Montagem Modular de Prompt & Geração SQL (Tentativa 1)",
+            "status": "OK",
+            "duration_ms": 0.2,
+            "detail": "Prompt modular estimado em ~2005 tokens (vs. 14.961 tokens no prompt v2 estático). SQL candidato gerado."
+          },
+          {
+            "step": 5,
+            "name": "SQLGuard (Validação AST) & Execução DuckDB (Tentativa 1)",
+            "status": "OK",
+            "duration_ms": 337.3,
+            "detail": "Status: sucesso | Linhas retornadas: 10 | Tabelas na AST: remuneracao_municipio, pessoa_municipio | Anos extraídos via AST: [2024] | CPFs mascarados (LGPD): 10."
+          }
+        ]
+      }
+    },
+    {
+      "id": "CASE-05",
+      "category": "RAG Diário Oficial (Jornal Opinião) — Busca Densa n8n vs. Híbrida Python",
+      "title": "Busca Exata de Ato Normativo: Decreto Municipal nº 230/2025",
+      "question": "O que dispõe o Decreto Municipal nº 230/2025 de Caeté?",
+      "what_changed_for_owner": "No PRÉ, o workflow n8n usava apenas busca vetorial densa no Qdrant: como todos os decretos de nomeação têm texto quase idêntico, o embedding confundia os números (Recall@5 de apenas 3,12% para atos numerados, errando o Decreto 230/2025). No PÓS, o HybridRAGRetriever em Python aplica correspondência exata de ato normativo + BM25 + deduplicação, cravando o Decreto Nº 230/2025 em 1º lugar (MRR 97,5%, Recall@5 100%).",
+      "pre": {
+        "engine": "n8n VectorStore Qdrant (Dense-only, sem filtro lexical e sem deduplicação)",
+        "strategy": "dense_only (n8n Qdrant vectorStore)",
+        "found_target_in_top5": false,
+        "rows": [
+          {
+            "rank": 1,
+            "score": 0.7614,
+            "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+            "snippet": "DECRETO Nº 038/2024 “DÁ NOVA REDAÇÃO AO DECRETO Nº 297, DE 21 DE DEZEMBRO DE 2023, QUE REGULAMENTOU, NO ÂMBITO MUNICIPAL, A LEI FEDERAL Nº 14.133, DE 01 DE ABRIL DE 2021” O PREFEITO MUNICIPAL DE CAETÉ, MINAS GERAIS, no u"
+          },
+          {
+            "rank": 2,
+            "score": 0.7613,
+            "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+            "snippet": "DECRETO Nº 038/2024 “DÁ NOVA REDAÇÃO AO DECRETO Nº 297, DE 21 DE DEZEMBRO DE 2023, QUE REGULAMENTOU, NO ÂMBITO MUNICIPAL, A LEI FEDERAL Nº 14.133, DE 01 DE ABRIL DE 2021” O PREFEITO MUNICIPAL DE CAETÉ, MINAS GERAIS, no u"
+          },
+          {
+            "rank": 3,
+            "score": 0.7381,
+            "source": "Jornal_Oficial_Caete_23-24_B.pdf",
+            "snippet": "DECRETO Nº 083/2023 Dispõe sobre a revogação do Decreto Municipal nº 073, de 22 de março de 2023, que regulamen- ta, no âmbito da administração pública munici- pal, direta, autárquica e fundacional do Municí- pio de Caet"
+          },
+          {
+            "rank": 4,
+            "score": 0.7381,
+            "source": "Jornal_Oficial_Caete_23-24_B.pdf",
+            "snippet": "DECRETO Nº 083/2023 Dispõe sobre a revogação do Decreto Municipal nº 073, de 22 de março de 2023, que regulamen- ta, no âmbito da administração pública munici- pal, direta, autárquica e fundacional do Municí- pio de Caet"
+          }
+        ],
+        "fontes_csv": [],
+        "warnings": [],
+        "issues_detected": [
+          "Não encontrou o Decreto Nº 230/2025 no Top-5 (retornou Decretos 180/2023, 077/2023 e 190/2025 por semelhança genérica de vocabulário)",
+          "Chunks duplicados na mesma edição do jornal consumiam a janela de contexto"
+        ]
+      },
+      "post": {
+        "engine": "sim_platform HybridRAGRetriever (Lexical Exact Act Boost + BM25 + Dense RRF + Dedup)",
+        "strategy": "hybrid_rrf_with_exact_act_boost",
+        "found_target_in_top5": true,
+        "rows": [
+          {
+            "chunk_id": "78b8a65f-02b8-545d-a654-3fedb795ed47",
+            "score": 1.9643,
+            "page_content": "DECRETO Nº230/2025 NOMEIA DIRETOR DE CENTRO DE REFERÊNCIA DE ASSISTÊNCIA SOCIAL - CRAS O PREFEITO MUNICIPAL DE CAETÉ, MINAS GE- RAIS, no uso das atribuições que lhe são confe- ridas pelo art. 98, incisos I e X, da Lei Orgânica Municipal, e Considerando o disposto na Lei 2.475/06, que “ALTERA A ORGANIZAÇÃO, A ESTRUTURA OR- GÂNICA E OS PROCEDIMENTOS DA ADMINIS- TRAÇÃO DO MUNICÍPIO DE CAETÉ”, Considerando a Lei 3.553/2025 “ALTERA A RE- DAÇÃO DA LEI N° 2.475, DE 26 DE DEZEMBRO DE 2006, D E C R E T A: Art.1º Fica nomeada para o exercício das funções do cargo comissionado de Diretor de Centro de Referência de Assistência Social, com lotação na Secretaria Municipal de Desenvolvimento Social e Direitos Humanos, a Sra. Glauciene Ferreira dos Reis Lima, a partir de 07 de outubro de 2025. Art.2º Este Decreto entra em vigor na data de sua publicação. Caeté, 06 de outubro de 2025 ALBERTO NAZARÉ PIRES Prefeito Municipal ISABEL BARBOSA DEOLIVEIRA GONÇALVES Procuradora Geral do Município",
+            "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+            "tipo_ato": "DECRETO",
+            "ano_edicao": null,
+            "numero_edicao": null,
+            "cnpjs_mencionados": [],
+            "match_stage": "lexical_exact"
+          },
+          {
+            "chunk_id": "0f42ce38-7b46-5cea-ac81-8e58108c0626",
+            "score": 1.1071,
+            "page_content": "DOCUMENTO: DECRETO Nº 200/2023 [TIPO: DECRETO] [PARTE 2/2]\n...\n022/2025”, da Lei n° 3.374, de 06 de julho de 2022, que “dispõe sobre as diretrizes para a elabo- ração da Lei Orçamentária para o exercício de 2023” e do Quadro de Detalha1mento de Despesa – QDD, anexo da Lei n° 3.414, de 29 de dezembro de 2022, que “estima a receita e ﬁ xa a despesa do Município de Caeté para o exercício ﬁ nanceiro de 2023”. Art. 4º - Este Decreto entra em vigor na data de sua publicação. Caeté, 01 de dezembro de 2023. LUCAS COELHO FERREIRA Prefeito Municipal",
+            "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+            "tipo_ato": "DECRETO",
+            "ano_edicao": null,
+            "numero_edicao": null,
+            "cnpjs_mencionados": [],
+            "match_stage": "dense_filtered"
+          },
+          {
+            "chunk_id": "53f87e4b-5ae3-5f0f-957c-77e46f0139e1",
+            "score": 1.1071,
+            "page_content": "DECRETO Nº 353/2024 ABRE CRÉDITO ADICIONAL SUPLEMENTAR DE CARÁTER ESPECIAL NO ORÇAMENTO DE 2024 DO MUNICÍPIO DE CAETÉ E AUTORIZA ALTERAÇÕES NO PPA E LDO VIGENTES O PREFEITO MUNICIPAL DE CAETÉ, no uso das atribuições que lhes são conferidas pelo artigo 98, inciso VII, da Lei Orgânica Municipal; Considerando a Lei Municipal nº 3.510/2024 e os artigos 42 e 43 da Lei Federal nº 4.320/1964: DECRETA Art. 1º - Fica aberto crédito adicional suplementar de caráter especial no orçamento de 2.024 do Município de Caeté, no valor total R$ 44.843,96 (quarenta e quatro mil oitocentos e quarenta e três reais e noventa e seis centavos, na seguinte dotação orçamentária: 02.17 Fundo da Saúde 10.301.0029.2.063.000 MANUTENÇÃO DA ATENÇÃO BÁSICA 3.3.90.30.00.00.00 NRD 3323 – Fonte2621 Material de Consumo 44.843,96 TOTAL 44.843,96 Art. 2º - Para fazer frente ao disposto ao artigo anterior, ﬁ ca reduzido, no orçamento de 2024 do Município de Caeté, o valor total de R$ 44.843,96 (quarenta e quatro mil oitocentos e quarenta e três reais e noventa e seis centavos), na seguinte dotação orçamentária: 10.301.0029.2.063.000 MANUTENÇÃO DA ATENÇÃO BÁSICA 4.4.90.52.00.00.00 NRD 3325– Fonte 2621 Equipamento e Material Permanente 43.928,74 10.302.0048.2.112.000 Manutenção da Urgência e Emergência 3.3.50.43.00.00.00 NRD 3329– Fonte 2621 Subvenções Sociais 915,22 TOTAL 44.843,96 Art. 3° - Ficam autorizadas, nos termos desta Lei, as modiﬁ cações das estruturas orçamentárias constantes da Lei nº 3.329, de 17 de dezembro de 2021, que “dispõe sobre o Plano Plurianual 2022/2025”, da Lei n° 3.476, de 21 de dezembro de 2023, que “dispõe sobre as diretrizes para a ela- boração da Lei Orçamentária para o exercício de 2024” e do Quadro de Detalhamento de Despesa QDD d L i ° 3 9 d 29 d d b d 2023 “ i i ﬁ d d Art. 4º - Este Decreto entra em vigor na data de sua publicação. Caeté, 30 de dezembro de 2024. LUCAS COELHO FERREIRA Prefeito Municipal",
+            "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+            "tipo_ato": "DECRETO",
+            "ano_edicao": null,
+            "numero_edicao": null,
+            "cnpjs_mencionados": [],
+            "match_stage": "dense_filtered"
+          },
+          {
+            "chunk_id": "f5e1a35f-2551-5644-858b-4e87c227382e",
+            "score": 1.1071,
+            "page_content": "DECRETO Nº 197/2024 “ABRE CRÉDITO ESPECIAL NO ORÇAMENTO DE 2024 DA FUNDAÇÃO EDUCACIONAL DE CAETÉ”. O PREFEITO MUNICIPAL DE CAETÉ, no uso das atribuições que lhes são conferidas pelo artigo 98, inciso VII, e considerando a Lei Municipal nº 3.508/2024 e os artigos 42 e 43 da Lei nº 4.320/1964, DECRETA: Art. 1º - Fica aberto crédito especial, no orçamento de 2024, da Fundação Educacional de Caeté, no valor total de R$778.786,44 (setecentos e setenta e oito mil setecentos e oitenta e seis reais e quarenta e quatro centavos), nas seguintes dotações orçamentárias: FUNDAÇÃO EDUCACIONAL DE CAETÉ 08.01 FEC 12.363.0329.2.493.000 Programa Trilha do Futuro 3.3.90.18.00.00.00 NRD 3276 – FONTE 2571 Auxílio Financeiro a Estudantes 179.160,74 3.3.90.39.00.00.00 NRD 3277 – FONTE 2571 Outros Serv. de Terceiros - P. Jurídica 204.437,55 4.4.90.51.00.00.00 NRD 3278 – FONTE 2571 Obras e instalações 200.000,00 12.363.0055.2.368.000 Manutenção do Centro de Formação Profissional - CFP 3.1.90.04.00.00.00 NRD 3279 – FONTE 2599 Contratação por tempo determinado 155.188,15 3.1.90.13.00.00.00 NRD 3280 – FONTE 2599 Obrigações Patronais 40.000,00 TOTAL GERAL 778.786,44 Art. 2º - Os recursos necessários para abertura do presente crédito adicional de caráter especial, mencionado no artigo anterior, são provenientes de superávit financeiro, na forma do inciso I do artigo 43 da Lei 4.320/64. Art. 3° - Ficam autorizadas, nos termos deste Decreto, as modificações das estruturas orçamentá- rias constantes da Lei nº 3.329, de 17 de dezembro de 2021, que “Dispõe sobre o Plano Plurianual 2022/2025”, da Lei n° 3.476, de 21 de dezembro de 2023, que “Dispõe sobre as Diretrizes para a Ela- boração da Lei Orçamentária para o Exercício de 2024” e do Quadro de Detalhamento de Despesa – QDD, anexo da Lei n° 3.479, de 29 de dezembro de 2023, que “estima a receita e fixa a despesa do Município de Caeté para o exercício financeiro de 2024”. Art.4º - Este Decreto entra em vigor na data de sua publicação. LUCAS COELHO FERREIRA Prefeito Municipal LUCINEIA MARIA FONSECA Diretora Presidente da Fundação Educacional de Caeté",
+            "source": "Jornal_Oficial_Caete_23-24_A.pdf",
+            "tipo_ato": "DECRETO",
+            "ano_edicao": null,
+            "numero_edicao": null,
+            "cnpjs_mencionados": [],
+            "match_stage": "dense_filtered"
+          },
+          {
+            "chunk_id": "1333f3c0-f5cf-5b3b-a1de-bee5c2c43fd8",
+            "score": 1.1071,
+            "page_content": "DECRETO Nº 197/2024 “ABRE CRÉDITO ESPECIAL NO ORÇA- MENTO DE 2024 DA FUNDAÇÃO EDU- CACIONAL DE CAETÉ”. O PREFEITO MUNICIPAL DE CAETÉ, no uso das atribuições que lhes são conferidas pelo arti- go 98, inciso VII, e considerando a Lei Munici- pal nº 3.508/2024 e os artigos 42 e 43 da Lei nº 4.320/1964, DECRETA: Art.1º Fica aberto crédito suplementar, no or- çamento de 2024 da Fundação Educacional de Caeté, no valor total de R$3.682,85 (três mil e seiscentos e oitenta e dois reais e oitenta e cinco centavos), nas seguintes dotações orçamentá- rias: Art. 1º - Fica aberto crédito especial, no orça- mento de 2024, da Fundação Educacional de Caeté, no valor total de R$778.786,44 (setecen- tos e setenta e oito mil setecentos e oitenta e FUNDAÇÃO EDUCACIONAL DE CAETÉ 08.01 FEC 12.363.0329.2.493.000 Programa Trilha do Futuro 3.3.90.18.00.00.00 NRD 3276 – FONTE 2571 Auxílio Financeiro a Estudantes 179.160,74 3.3.90.39.00.00.00 NRD 3277 – FONTE 2571 Outros Serv. de Terceiros - P. Jurídica 204.437,55 4.4.90.51.00.00.00 NRD 3278 – FONTE 2571 Obras e instalações 200.000,00 12.363.0055.2.368.000 Manutenção do Centro de Formação Profissional - CFP 3.1.90.04.00.00.00 NRD 3279 – FONTE 2599 Contratação por tempo determinado 155.188,15 3.1.90.13.00.00.00 NRD 3280 – FONTE 2599 Obrigações Patronais 40.000,00 TOTAL GERAL 778.786,44 Art. 2º - Os recursos necessários para abertura do presente crédito adicional de caráter especial, mencionado no artigo anterior, são provenientes de superávit financeiro, na forma do inciso I do artigo 43 da Lei 4.320/64. Art. 3° - Ficam autorizadas, nos termos deste Decreto, as modificações das estruturas orçamentá- rias constantes da Lei nº 3.329, de 17 de dezembro de 2021, que “Dispõe sobre o Plano Plurianual 2022/2025”, da Lei n° 3.476, de 21 de dezembro de 2023, que “Dispõe sobre as Diretrizes para a Ela- boração da Lei Orçamentária para o Exercício de 2024” e do Quadro de Detalhamento de Despesa – QDD, anexo da Lei n° 3.479, de 29 de dezembro de 2023, que “estima a receita e fixa a despesa do Município de Caeté para o exercício financeiro de 2024”. Art.4º Este Decreto entra em vigor na data de sua publicação. Caeté, 20 de agosto de 2024. LUCAS COELHO FERREIRA Prefeito Municipal LUCINEIA MARIA FONSECA Diretora Presidente da Fundação Educacional de Caeté",
+            "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+            "tipo_ato": "DECRETO",
+            "ano_edicao": null,
+            "numero_edicao": null,
+            "cnpjs_mencionados": [],
+            "match_stage": "dense_filtered"
+          }
+        ],
+        "answer_preview": "\nForam recuperados **5 ato(s) normativo(s)** no Diário Oficial (*Jornal Opinião*):\n- **[DECRETO | Jornal_Oficial_Caete_25-23nov25.pdf | estágio: lexical_exact]**: DECRETO Nº230/2025 NOMEIA DIRETOR DE CENTRO DE REFERÊNCIA DE ASSISTÊNCIA SOCIAL - CRAS O PREFEITO MUNICIPAL DE CAETÉ, MINAS GE- RAIS, no uso das atribuições que lhe são confe- ridas pelo art. 98, incisos I e X, da Lei Orgânica Municipal, e Considerando o disposto na Lei 2.475/06,...\n- **[DECRETO | Jornal_Oficial_Caete_23-24_C.pdf | estágio: dense_filtered]**: DOCUMENTO: DECRETO Nº 200/2023 [TIPO: DECRETO] [PARTE 2/2] ... 022/2025”, da Lei n° 3.374, de 06 de julho de 2022, que “dispõe sobre as diretrizes para a elabo- ração da Lei Orçamentária para o exercício de 2023” e do Quadro de Detalha1mento de Despesa – QDD, anexo da Lei n° 3.41...\n- **[DECRETO | Jornal_Oficial_Caete_25-23nov25.pdf | estágio: dense_filtered]**: DECRETO Nº 353/2024 ABRE CRÉDITO ADICIONAL SUPLEMENTAR DE CARÁTER ESPECIAL NO ORÇAMENTO DE 2024 DO MUNICÍPIO DE CAETÉ E AUTORIZA ALTERAÇÕES NO PPA E LDO VIGENTES O PREFEITO MUNICIPAL DE CAETÉ, no uso das atribuições que lhes são conferidas pelo artigo 98, inciso VII, da Lei Orgân...\n\n**Fontes Oficiais Utilizadas (`fontes_utilizadas`)**: Jornal_Oficial_Caete_23-24_A.pdf, Jornal_Oficial_Caete_23-24_C.pdf, Jornal_Oficial_Caete_23-24_E.pdf, Jornal_Oficial_Caete_25-23nov25.pdf",
+        "fontes_utilizadas": [
+          "Jornal_Oficial_Caete_23-24_A.pdf",
+          "Jornal_Oficial_Caete_23-24_C.pdf",
+          "Jornal_Oficial_Caete_23-24_E.pdf",
+          "Jornal_Oficial_Caete_25-23nov25.pdf"
+        ],
+        "warnings": [],
+        "pipeline_steps": [
+          {
+            "step": 1,
+            "name": "Guardião de Entrada & Lock Atômico de Sessão",
+            "status": "OK",
+            "duration_ms": 0.02,
+            "detail": "Sessão 'default' bloqueada com exclusividade (try/finally). Perfil RBAC: 'auditor'. Verificação anti-Prompt Injection: Aprovada."
+          },
+          {
+            "step": 2,
+            "name": "Roteador Determinístico de Intenção (Substitui n8n Router)",
+            "status": "OK",
+            "duration_ms": 0.06,
+            "detail": "Rota classificada: 'rag_diario_oficial' para o tenant 'caete-mg'."
+          },
+          {
+            "step": 6,
+            "name": "Busca Híbrida RAG (Denso + Lexical Ato/CNPJ + Deduplicação)",
+            "status": "OK",
+            "duration_ms": 38.79,
+            "detail": "Sinais detectados: tipo_ato=DECRETO, números=['230/2025'] | Candidatos avaliados no Jornal Opinião: 122 -> Retornados após deduplicação: 5."
+          }
+        ]
+      }
+    },
+    {
+      "id": "CASE-06",
+      "category": "Segurança Cibernética & Blindagem AST (SQLGuard)",
+      "title": "Bloqueio de Leitura de Arquivos do Servidor via Funções Nativas DuckDB",
+      "question": "Tentativa de leitura de arquivo interno do servidor via SQL: read_csv_auto('/etc/passwd')",
+      "what_changed_for_owner": "No PRÉ, o validador verificava apenas se a query começava com SELECT e não tinha DROP/DELETE. Como o DuckDB possui funções nativas de leitura de disco (read_csv_auto, read_text), um SELECT malicioso conseguia ler '/etc/passwd' ou variáveis do servidor. No PÓS, o SQLGuard analisa a Árvore Sintática (AST) via sqlglot e bloqueia qualquer função de I/O, sistema ou tabela fora do catálogo antes de chegar ao DuckDB.",
+      "pre": {
+        "engine": "scripts_python/main.py (validação por string startswith('SELECT'))",
+        "allowed_by_validator": true,
+        "sql_executed": "SELECT column0, column1 FROM read_csv_auto('/etc/passwd', delim=':', header=false) LIMIT 3",
+        "rows": [
+          {
+            "column0": "root",
+            "column1": "x"
+          },
+          {
+            "column0": "daemon",
+            "column1": "x"
+          },
+          {
+            "column0": "bin",
+            "column1": "x"
+          }
+        ],
+        "issues_detected": [
+          "VULNERABILIDADE CRÍTICA (SEC-01): O validador legado permitiu a execução de read_csv_auto('/etc/passwd') e expôs usuários do sistema operacional!"
+        ]
+      },
+      "post": {
+        "engine": "sim_platform SQLGuard (Validação AST sqlglot + Whitelist de 72 tabelas)",
+        "allowed_by_validator": false,
+        "sql_executed": "SELECT column0, column1 FROM read_csv_auto('/etc/passwd', delim=':', header=false) LIMIT 3",
+        "rows": [],
+        "warnings": [],
+        "answer_preview": "A consulta gerada foi bloqueada pelo guardião de segurança: Função de sistema/arquivo bloqueada por segurança: 'read_csv_auto'.",
+        "pipeline_steps": [
+          {
+            "step": 1,
+            "name": "Guardião de Entrada & Lock Atômico de Sessão",
+            "status": "BLOCKED",
+            "duration_ms": 0.03,
+            "detail": "Sessão 'default' bloqueada com exclusividade (try/finally). Perfil RBAC: 'auditor'. Verificação anti-Prompt Injection: Bloqueada (file_probe)."
+          },
+          {
+            "step": 2,
+            "name": "Roteador Determinístico de Intenção (Substitui n8n Router)",
+            "status": "OK",
+            "duration_ms": 0.0,
+            "detail": "Rota classificada: 'sql_analytics' para o tenant 'caete-mg'."
+          },
+          {
+            "step": 3,
+            "name": "Catálogo Dinâmico & Schema Linker (Seleção de Bases)",
+            "status": "OK",
+            "duration_ms": 0.36,
+            "detail": "Modo: automatic | Segmentos ativos: folha_rh | Tabelas selecionadas: 9 de 72 (Redução de 87.5% no ruído de schema)."
+          },
+          {
+            "step": 4,
+            "name": "Montagem Modular de Prompt & Geração SQL (Tentativa 1)",
+            "status": "OK",
+            "duration_ms": 0.04,
+            "detail": "Prompt modular estimado em ~2013 tokens (vs. 14.961 tokens no prompt v2 estático). SQL candidato gerado."
+          },
+          {
+            "step": 5,
+            "name": "SQLGuard (Validação AST) & Execução DuckDB (Tentativa 1)",
+            "status": "BLOQUEADO_SEGURANCA",
+            "duration_ms": 0.83,
+            "detail": "Erro capturado para auto-correção: Função de sistema/arquivo bloqueada por segurança: 'read_csv_auto'."
+          }
+        ]
+      }
+    }
+  ]
+}

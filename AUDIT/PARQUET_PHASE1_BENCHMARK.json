@@ -1,0 +1,14 @@
+{
+  "tables_exported": 72,
+  "parquet_dir": "/home/antigravity/sim-workspace/avaliacao/dados/parquet/caete_mg_3110004",
+  "csv_size_mb": 216.41,
+  "parquet_size_mb": 14.9,
+  "storage_reduction_pct": 93.1,
+  "csv_boot_ms": 2582.81,
+  "parquet_boot_ms": 107.26,
+  "boot_speedup_x": 24.1,
+  "csv_query_ms": 526.69,
+  "parquet_query_ms": 11.64,
+  "query_speedup_x": 45.2,
+  "sample_rows_verified": 6
+}

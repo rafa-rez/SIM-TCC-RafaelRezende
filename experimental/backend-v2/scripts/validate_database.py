@@ -17,7 +17,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-AVALIACAO_ROOT = Path(__file__).resolve().parents[1]
+AVALIACAO_ROOT = Path(__file__).resolve().parents[3] / "avaliacao"
 sys.path.insert(0, str(AVALIACAO_ROOT))
 
 from eval.lib.duckdb_engine import get_connection  # noqa: E402

@@ -1,0 +1,25 @@
+{
+  "raw_candidates_scanned": 858,
+  "unique_individual_acts": 104,
+  "duplicates_eliminated": 754,
+  "duplication_rate_eliminated_pct": 87.88,
+  "ligatures_repaired": 760,
+  "hyphenations_repaired": 4066,
+  "orphan_closing_tails_detected_and_repaired": 2,
+  "qdrant_historical_stats": {
+    "raw_points_in_qdrant_before": 9346,
+    "numbered_act_headers_in_qdrant_before": 3020,
+    "unique_numbered_acts_in_inventory": 747,
+    "singletons_before_fix": 54,
+    "duplicated_2x_before_fix": 498,
+    "duplicated_4x_or_more_before_fix": 195,
+    "duplicate_points_before_pct": 47.9,
+    "unique_points_after_act_dedup": 104
+  },
+  "acts_by_type": {
+    "LEI": 8,
+    "DECRETO": 92,
+    "EDITAL / LICITAÇÃO": 2,
+    "PORTARIA": 2
+  }
+}

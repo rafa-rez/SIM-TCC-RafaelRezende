@@ -1,0 +1,124 @@
+{
+  "E_A_2023_repair": {
+    "tables": [
+      {
+        "table": "despesa_pagamento",
+        "value_column": "vlr_pag_fonte",
+        "corrupted_rows_raw": 1000,
+        "corrupted_rows_repaired": 0,
+        "sum_raw_brl": 145796501.4,
+        "sum_repaired_brl": 157549769.37,
+        "recovered_brl": 11753267.97
+      },
+      {
+        "table": "despesa_despesa",
+        "value_column": "vlr_liquidado",
+        "corrupted_rows_raw": 0,
+        "corrupted_rows_repaired": 0,
+        "sum_raw_brl": 175071294.35,
+        "sum_repaired_brl": 173810018.75,
+        "recovered_brl": -1261275.6
+      },
+      {
+        "table": "despesa_liquidacaoFonte",
+        "value_column": "vlr_liq_fonte",
+        "corrupted_rows_raw": 1093,
+        "corrupted_rows_repaired": 0,
+        "sum_raw_brl": 165547429.72,
+        "sum_repaired_brl": 178839511.24,
+        "recovered_brl": 13292081.52
+      },
+      {
+        "table": "empenho_empenhoFonte",
+        "value_column": "vlr_empenho",
+        "corrupted_rows_raw": 1542,
+        "corrupted_rows_repaired": 0,
+        "sum_raw_brl": 186289945.01,
+        "sum_repaired_brl": 203377751.62,
+        "recovered_brl": 17087806.61
+      },
+      {
+        "table": "receita_receita",
+        "value_column": "vlr_realizadoateperiodo",
+        "corrupted_rows_raw": 0,
+        "corrupted_rows_repaired": 0,
+        "sum_raw_brl": 180329675.76,
+        "sum_repaired_brl": 180329675.76,
+        "recovered_brl": 0.0
+      },
+      {
+        "table": "contrato_creditoContrato",
+        "value_column": "vlr_recurso",
+        "corrupted_rows_raw": 34,
+        "corrupted_rows_repaired": 0,
+        "sum_raw_brl": 0.0,
+        "sum_repaired_brl": 0.0,
+        "recovered_brl": 0.0
+      },
+      {
+        "table": "licitacao_recLicitacao",
+        "value_column": "vlr_recurso",
+        "corrupted_rows_raw": 30,
+        "corrupted_rows_repaired": 0,
+        "sum_raw_brl": 0.0,
+        "sum_repaired_brl": 0.0,
+        "recovered_brl": 0.0
+      },
+      {
+        "table": "empenho_movFonteRsp",
+        "value_column": "vlr_mov_fonte",
+        "corrupted_rows_raw": 2,
+        "corrupted_rows_repaired": 0,
+        "sum_raw_brl": 17216956.55,
+        "sum_repaired_brl": 17216956.55,
+        "recovered_brl": 0.0
+      }
+    ],
+    "isf_m_2023_raw": 1.0562,
+    "isf_m_2023_repaired": 1.0615
+  },
+  "E_B_dynamic_catalog": {
+    "static_v1_prompt_bytes": 51805,
+    "static_v1_prompt_tokens_est": 12951,
+    "static_v2_prompt_bytes": 59844,
+    "static_v2_prompt_tokens_est": 14961,
+    "benchmarks": {
+      "golden_v1_n80": {
+        "queries_evaluated": 80,
+        "tsa_hits": 80,
+        "tsa_pct": 100.0,
+        "avg_tables_selected": 18.25,
+        "min_tables_selected": 9,
+        "max_tables_selected": 39,
+        "avg_schema_reduction_pct": 74.65,
+        "avg_modular_prompt_tokens": 3110.8,
+        "token_reduction_vs_v1_pct": 75.98,
+        "token_reduction_vs_v2_pct": 79.21
+      },
+      "golden_v2_n14": {
+        "queries_evaluated": 14,
+        "tsa_hits": 14,
+        "tsa_pct": 100.0,
+        "avg_tables_selected": 20.14,
+        "min_tables_selected": 12,
+        "max_tables_selected": 39,
+        "avg_schema_reduction_pct": 72.02,
+        "avg_modular_prompt_tokens": 3445.8,
+        "token_reduction_vs_v1_pct": 73.39,
+        "token_reduction_vs_v2_pct": 76.97
+      }
+    }
+  },
+  "E_C_lineage_accuracy": {
+    "total_golden_v1_queries": 80,
+    "ast_valid_and_exact": 80,
+    "legacy_substring_table_errors": 0,
+    "legacy_year_range_errors": 3
+  },
+  "E_D_materialization_speedup": {
+    "avg_view_csv_scan_ms": 279.36,
+    "avg_materialized_table_ms": 2.42,
+    "speedup_factor": 115.44
+  },
+  "E_E_rag_ablation": {}
+}

@@ -1,0 +1,956 @@
+{
+  "name": "wpp-tiokk-sql",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "webhook",
+        "options": {
+          "ignoreBots": false
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        448,
+        240
+      ],
+      "id": "48cef8fb-6e80-4b85-87b4-742d7d9c6c2c",
+      "name": "Webhook",
+      "webhookId": "25c95241-e19a-482e-ae9b-2b7146e46c1a"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Contexto_total').item.json.full_context }}",
+        "options": {
+          "systemMessage": "CONTEXTO TEMPORAL E IDENTIDADE\nO ano atual e 2026. Voce tem acesso aos dados consolidados de 2020 ate 2025. Se o usuario usar termos como \"hoje\", \"atualmente\" ou \"neste ano\" (2026), voce DEVE informar rapidamente que os dados consolidados vao ate 2025 e executar a busca assumindo o ano de 2025.\n\nVoce e o CIC (Centro de Informacoes Caetense), um Analista de Dados Publicos Senior com perfil cetico, cooperativo e altamente analitico.\nSua missao e fornecer transparencia absoluta sobre a prefeitura de Caete, cruzando a \"Verdade Financeira\" (Tabelas do SICOM + Transparencia Brasil) com a \"Verdade Juridica\" (Textos do Diario Oficial).\n\n[ALERTA GRAVE] BURACO DE TRANSPARENCIA:\nA prefeitura NAO forneceu os dados de Folha de Pagamento e Cadastro de Servidores (salarios, cargos, matriculas) referentes aos anos de 2020, 2021 e 2022. Se o usuario pedir esses dados especificos nestes anos, NAO acione a ferramenta de banco de dados. Responda imediatamente informando que ha um \"apagao de dados\" por parte da prefeitura para este periodo e sugira pesquisar os salarios de 2023 em diante.\n\n1. O ROTEADOR (PROTOCOLO DE SELECAO DE FERRAMENTAS)\nAnalise a pergunta e escolha a ferramenta correta. NUNCA tente adivinhar dados sem usar uma ferramenta. Se a pergunta for hibrida, use a ferramenta que responde a intencao principal.\n\nFERRAMENTA 1: MOTOR DE DADOS SICOM E CGU (AUDITORIA FINANCEIRA QUANTITATIVA)\nGatilhos: Valores (R$), listas exatas, contagens, pagamentos, frotas, salarios, rankings, nomes de empresas, CNPJ, repasses federais, verbas de Brasilia, transferencias do governo, Bolsa Familia, Auxilio Emergencial.\nO que faz: Consulta o banco de dados exato (SQL/DuckDB) que cruza as contas da prefeitura (SICOM) com o dinheiro federal (CGU).\nREGRA DE CRUZAMENTO: Se o usuario pedir para cruzar dados da Prefeitura com Governo Federal, NAO divida a intencao. Envie a instrucao completa para o Gerador de SQL em uma unica chamada.\n\nFERRAMENTA 2: DIARIO OFICIAL (VERDADE JURIDICA E QUALITATIVA)\nGatilhos: Leis, decretos, portarias, justificativas, nomeacoes, motivos de dispensas.\nO que faz: Busca em textos nao-estruturados (RAG/Vetorial). NUNCA use esta ferramenta para somar valores ou listar itens financeiros.\n\n2. A REGRA DE OURO ANTI-ALUCINACAO (TOLERANCIA ZERO)\nSe a ferramenta de banco de dados retornar uma lista vazia ([], 0 resultados, null, ou \"data\": []), voce e ESTRITAMENTE PROIBIDO de inventar, simular, deduzir ou preencher a lista com dados genericos (como \"Joao Silva\", \"Empresa X\", etc).\nSe nao ha dados retornados, sua UNICA resposta permitida para os dados e: \"A auditoria foi concluida com sucesso, mas o cruzamento nao retornou nenhum registro que se enquadre nesses filtros exatos no banco de dados.\" NUNCA crie dados falsos para tentar satisfazer o pedido do usuario.\n\n3. COMPORTAMENTO DE INVESTIGACAO CRUZADA (O CEREBRO)\nVoce e um auditor proativo. Apos entregar a resposta solicitada, sempre sugira o proximo passo logico usando a outra base de dados:\n- Do Dinheiro para a Lei: Achou um gasto suspeito ou dispensa? Pergunte: \"Gostaria que eu buscasse no Diario Oficial a justificativa juridica para essa contratacao?\"\n- Da Lei para o Dinheiro: Achou um Decreto/Lei? Pergunte: \"Quer que eu consulte no sistema financeiro quanto de dinheiro ja foi gasto sob este decreto?\"\n\n4. ESTILO DE CONVERSA E FORMATACAO (WHATSAPP)\nO cidadao le no celular. A leitura deve ser amigavel, como um auditor conversando no WhatsApp.\n- FORMATO NATIVO OBRIGATORIO: Voce esta ESTRITAMENTE PROIBIDO de usar asteriscos duplos (**) para negrito ou hashtags (#) para titulos. Use apenas UM asterisco simples para *negrito* ou underline para _italico_.\n- REGRA ANTI-PREGUICA: Se a API retornar 15, 20 ou 50 resultados, IMPRIMA TODOS. E proibido cortar a lista pela metade.\n- FIDELIDADE AOS DADOS: Nunca omita colunas (datas, meses, valores, medias) que a API retornar, exiba todas as metricas para o cidadao.\n\n5. MODULO DE DIAGNOSTICO FISCAL E PERFILAMENTO\nQuando a ferramenta de banco de dados retornar metricas fiscais (ISF-M, IEP, CAPAG, Saude, Educacao), voce DEVE interpretar os numeros e adaptar a resposta ao perfil detectado do usuario, conforme os seguintes:\n\nPERFIS DE RESPOSTA OBRIGATORIOS:\n- Perfil Tecnico: Se a pergunta usar jargoes (ex: \"Qual a RCL?\", \"Deficit primario\"), responda com rigor contabil, detalhamento de variaveis e o valor exato do indice.\n- Perfil Politico: Se a pergunta focar em gestao (ex: \"A prefeitura ta bem?\", \"Tem margem pra investir?\"), foque na visao estrategica, capacidade de novos creditos e impacto na maquina publica.\n- Perfil Cidadao: Se a pergunta for popular (ex: \"A saude ta gastando certo?\", \"A prefeitura ta endividada?\"), traduza os numeros para o impacto nos servicos publicos, com linguagem simples e direta.\n\nTABELA DE DIAGNOSTICOS (REGRA DO SEMAFORO):\n- Saude Financeira (ISF-M): Saudavel (> 1.1); Atencao (1.0 a 1.1); Critico (< 1.0).\n- Endividamento (IEP): Baixo Risco (< 30%); Moderado (30% a 60%); Alto Risco (> 60%). Limite legal LRF: 120%.\n- Liquidez (CAPAG): Nota A (> 1.2); Nota B (1.0 a 1.2); Nota C (< 1.0).\n- Minimo da Saude (IES-C): Saudavel (> 15%); Atencao (15% a 17%); Critico (< 15%).\n- Minimo da Educacao (IEQ-C): Aprovado (>= 25%).\n- Camara Municipal (IEV-C): Aprovado (<= 6%). Se > 6%, emita ALERTA GRAVE de crime de responsabilidade.\n\nFLUXO DA RESPOSTA:\nA. Abertura: Va direto ao ponto. Responda o valor/fato principal.\nB. Os Dados (Formatacao Compacta): Liste cada resultado em no maximo 3 ou 4 linhas para nao poluir a tela.\nExemplo:\n1. *NOME DA PESSOA OU EMPRESA* (Cargo ou Info) - Ingresso: 20110401\nSalario: R$ X | Bolsa Familia: R$ Y (Z meses - de 202401 a 202412) | Media: R$ W\nAlerta de Acumulo: SIM\n\n6. MOTOR DE INTELIGENCIA DE PADROES (ALERTAS AUTOMATICOS)\nSe detectar estes padroes nos dados reais, inclua a secao \"[ALERTAS DE AUDITORIA]\":\n- Concentracao de Mercado: Uma mesma empresa domina os primeiros lugares.\n- Variacao Atipica: Mesmo produto com precos muito diferentes.\n- Possivel Fracionamento: Multiplas dispensas de licitacao proximas para a mesma empresa.\n(Nota: Nunca acuse crimes como \"fraude\". Use \"Indicio de fracionamento\", \"Concentracao atipica\".)\n\n7. PROTOCOLO DE TRANSPARENCIA E RASTREABILIDADE (OBRIGATORIO)\nAo final de TODA resposta que contiver dados, voce DEVE obrigatoriamente adicionar um texto natural citando as fontes exatas utilizadas e o aviso de IA. \n- Se utilizou o Banco de Dados (SQL): Liste os arquivos recebidos na variavel 'fontes_utilizadas'.\n- Se utilizou o Diario Oficial (RAG): Cite o nome do documento recebido no metadado.\n\nTexto de exemplo exigido no final de cada mensagem que tenha dados:\nConteudo gerado por Inteligencia Artificial. Recomenda-se conferir os dados na base original. Seguem os arquivos consultados para gerar a resposta fornecida:\n- [Arquivo 1]\n- [Arquivo 2]\n\nAlguma outra duvida em que posso te ajudar ou melhoria na resposta passada?\n\n8. PROTOCOLO DE BOAS VINDAS\nSe o usuario mandar apenas \"Oi\", \"O que voce faz?\" ou \"Ajuda\", NAO acione ferramentas. Responda:\n\"Ola! Eu sou o CIC (Centro de Informacoes Caetense). Sou uma inteligencia artificial criada para trazer transparencia total aos dados de Caete (2020 a 2025). Posso investigar o *Dinheiro* (Gastos e Salarios) ou as *Leis* (Diario Oficial). O que voce gostaria de investigar hoje?\"",
+          "maxIterations": 10,
+          "returnIntermediateSteps": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3168,
+        224
+      ],
+      "id": "8487a48a-a09e-468c-a0f8-eaea359c3203",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "={{ $('Limpeza de Dados').item.json.session }}",
+        "chatId": "={{ $('Limpeza de Dados').item.json.chatid }}",
+        "text": "={{ $json.output }}",
+        "linkPreview": false,
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        3632,
+        224
+      ],
+      "id": "5dc1101a-b10c-4081-81c4-9a2a44531f89",
+      "name": "Send a text message",
+      "credentials": {
+        "wahaApi": {
+          "id": "J1l6Ksx0XJLfh05W",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Geração de Respostas\n",
+        "height": 656,
+        "width": 1536,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2512,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "5ddec4bc-35b8-420e-b6e8-9fcd6032c14a",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "e8171ee0-e99e-4bf4-b5b0-82d0bbf98d84",
+                    "leftValue": "={{ $json.is_bot_msg }}",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Webhook').item.json.body.payload.fromMe }}",
+                    "rightValue": false,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "equals"
+                    },
+                    "id": "75be0418-f059-40db-aa58-dcc70d08ed86"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "51324f33-a85d-41dc-b041-0647bede44e6",
+                    "leftValue": "={{ $('Webhook').item.json.body.payload.fromMe }}",
+                    "rightValue": true,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        656,
+        224
+      ],
+      "id": "00780467-7a08-467a-b056-e98fd216e4b3",
+      "name": "FromMe?"
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "=bot_time:{{ $('Webhook').item.json.body.payload._data.Info.Chat }}",
+        "value": "true",
+        "expire": true,
+        "ttl": 5
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        3456,
+        224
+      ],
+      "id": "a936a9fa-b8bd-4a8f-9730-986d4e36abae",
+      "name": "Tempo de fala do BOT",
+      "credentials": {
+        "redis": {
+          "id": "egN9TBFaXixk0oGS",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Limpeza de Dados').item.json.chatid }}",
+        "sessionTTL": 3600,
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        2944,
+        480
+      ],
+      "id": "59178b2b-9ffd-4055-af8f-c2b5eb7f2538",
+      "name": "Contexto",
+      "credentials": {
+        "redis": {
+          "id": "egN9TBFaXixk0oGS",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5d2e51b9-7006-4f1c-841f-71300270e42f",
+              "name": "session",
+              "value": "={{ $('Webhook').item.json.body.session }}",
+              "type": "string"
+            },
+            {
+              "id": "f153cd9b-13e4-4099-8df3-e40320387263",
+              "name": "chatid",
+              "value": "={{ $('Webhook').item.json.body.payload.from }}",
+              "type": "string"
+            },
+            {
+              "id": "828c04a6-9af6-4518-a85c-1a91210a54ed",
+              "name": "pushname",
+              "value": "={{ $('Webhook').item.json.body.payload._data.Info.PushName }}",
+              "type": "string"
+            },
+            {
+              "id": "b86b0bc0-90b0-438b-b214-ea47b6c224b8",
+              "name": "payload_id",
+              "value": "={{ $('Webhook').item.json.body.payload.id }}",
+              "type": "string"
+            },
+            {
+              "id": "2a0f174a-ea77-49cd-af26-7833953aa69d",
+              "name": "event",
+              "value": "={{ $('Webhook').item.json.body.event }}",
+              "type": "string"
+            },
+            {
+              "id": "71ad98e8-2b8f-4bb1-90fb-088939984bd1",
+              "name": "message",
+              "value": "={{ $('Contexto_total').item.json.full_context }}",
+              "type": "string"
+            },
+            {
+              "id": "164ba8ae-ee5e-4d8f-8039-5371dcac106e",
+              "name": "fromMe",
+              "value": "={{ $('Webhook').item.json.body.payload.fromMe }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2992,
+        224
+      ],
+      "id": "511141ec-e086-4b92-83dd-c5d64ee1bbe7",
+      "name": "Limpeza de Dados"
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Start Typing",
+        "session": "={{ $('Webhook').item.json.body.session }}",
+        "chatId": "={{ $('Webhook').item.json.body.payload.from }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        2672,
+        224
+      ],
+      "id": "719668a9-ba4e-4d39-9f8b-c89fc4fd63fd",
+      "name": "Start Typing",
+      "credentials": {
+        "wahaApi": {
+          "id": "J1l6Ksx0XJLfh05W",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Stop Typing",
+        "session": "={{ $('Webhook').item.json.body.session }}",
+        "chatId": "={{ $('Limpeza de Dados').item.json.chatid }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        3840,
+        224
+      ],
+      "id": "49f01013-556e-47a7-b262-8319ebf41e70",
+      "name": "Stop Typing",
+      "credentials": {
+        "wahaApi": {
+          "id": "J1l6Ksx0XJLfh05W",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "lock_status",
+        "key": "=lock:{{ $('Webhook').item.json.body.payload._data.Info.Chat }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        240
+      ],
+      "id": "1210a45c-4cba-43c1-a169-4a144df0af16",
+      "name": "busca status lock do chat",
+      "credentials": {
+        "redis": {
+          "id": "egN9TBFaXixk0oGS",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6ffb35c2-f7b4-47ed-b02c-f6c3c68ae3f1",
+              "leftValue": "={{ $json.lock_status }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1536,
+        240
+      ],
+      "id": "376b89c8-bcc7-4028-9352-97715d2bfe14",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1536,
+        480
+      ],
+      "id": "0568e921-76b9-4f22-8783-999b073b32cb",
+      "name": "morte do fluxo"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "key": "=buffer: {{ $('Webhook').item.json.body.payload._data.Info.Chat }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        240
+      ],
+      "id": "a53bff38-31f3-4afb-90d9-f822d1c1d4e9",
+      "name": "Ler anterior",
+      "alwaysOutputData": true,
+      "credentials": {
+        "redis": {
+          "id": "egN9TBFaXixk0oGS",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "=buffer: {{ $('Webhook').item.json.body.payload._data.Info.Chat }}",
+        "value": "={{ $('Ler anterior').item.json.propertyName || \"\" }}\n{{ $('Ler anterior').item.json.propertyName ? \"\\n\" : \"\" }}\n{{ $('Webhook').item.json.body.payload._data.Message.conversation || $('Webhook').item.json.body.payload.message.extendedTextMessage.text }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1232,
+        240
+      ],
+      "id": "ac34fba5-8eff-4e3d-96be-fc39c14c51a3",
+      "name": "Salvar Acumulado",
+      "credentials": {
+        "redis": {
+          "id": "egN9TBFaXixk0oGS",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "full_context",
+        "key": "=buffer: {{ $('Webhook').item.json.body.payload._data.Info.Chat }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2016,
+        224
+      ],
+      "id": "1a95f36a-5678-46e3-8d99-9c7f3f241993",
+      "name": "Contexto_total",
+      "credentials": {
+        "redis": {
+          "id": "egN9TBFaXixk0oGS",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "=buffer: {{ $('Webhook').item.json.body.payload._data.Info.Chat }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2160,
+        224
+      ],
+      "id": "3ebdbcee-345f-424e-a9d0-a479e498a448",
+      "name": "Limpar buffer",
+      "credentials": {
+        "redis": {
+          "id": "egN9TBFaXixk0oGS",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "=lock:{{ $('Webhook').item.json.body.payload._data.Info.Chat }}",
+        "value": "true",
+        "expire": true,
+        "ttl": 15
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        224
+      ],
+      "id": "ab26aebc-fa8e-43e8-afcd-b726a8d17d78",
+      "name": "define estado de lock",
+      "credentials": {
+        "redis": {
+          "id": "egN9TBFaXixk0oGS",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "=lock:{{ $('Webhook').item.json.body.payload._data.Info.Chat }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2320,
+        224
+      ],
+      "id": "9f682696-c85c-4098-a92b-e982ee67d23f",
+      "name": "limpar estado de lock",
+      "credentials": {
+        "redis": {
+          "id": "egN9TBFaXixk0oGS",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Filtragem de inputs",
+        "height": 656,
+        "width": 608,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        384,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "a1edd365-caae-49dd-9dd0-333e19f994e9",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Debouncer",
+        "height": 656,
+        "width": 1392,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1056,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "9407e64b-0cd3-45f4-89c4-ee874c8f1d44",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        832,
+        384
+      ],
+      "id": "44826ffa-6f91-4e46-a526-2b12c9f2c82d",
+      "name": "Quando a ms é do bot"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        3488,
+        688
+      ],
+      "id": "1a6815f3-2882-4d05-92fd-24a6e855b6fc",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "T7trAzZ4l1Vz41rd",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 4096,
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2816,
+        480
+      ],
+      "id": "fad90b73-d0f1-4b68-8e9f-e57c107f7856",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "T7trAzZ4l1Vz41rd",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        832,
+        96
+      ],
+      "id": "2351bbf1-5b0f-473b-b1c5-5e3bcc0d0930",
+      "name": "Quando a ms é do bot1"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1856,
+        224
+      ],
+      "id": "7eaa573d-06b9-48e1-9c40-51398ab7afdc",
+      "name": "Wait1",
+      "webhookId": "822f8374-9b4b-47f2-8bd7-7ccdf6322d73",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "FERRAMENTA DE AUDITORIA LEGAL (Jornal Oficial 2023-2025). Use para buscar o texto integral de atos oficiais. Essencial para encontrar: Justificativas de Dispensas, Objetos de Contratos, Íntegra de Leis/Decretos e Nomeações.\n\nParâmetros:\n\nquery (String): A pergunta do usuário ou palavras-chave (ex: \"justificativa dispensa obras\", \"atribuições cargo médico\").\n\nfiltro_tipo_ato (String, Opcional): Restringe a busca. Valores: ['DECRETO', 'LEI', 'PORTARIA', 'CONTRATO_NOVO', 'ADITIVO_CONTRATUAL', 'LICITACAO', 'RESULTADO_LICITACAO', 'DISPENSA_INEXIGIBILIDADE', 'RH_NOMEACAO', 'PROCESSO_SELETIVO_RH', 'REVOGACAO_ANULACAO'].\n\nfiltro_cnpj (String, Opcional): Se houver uma empresa específica, passe o CNPJ.",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "jornais_caete",
+          "mode": "list",
+          "cachedResultName": "jornais_caete"
+        },
+        "topK": 5,
+        "options": {
+          "contentPayloadKey": "page_content",
+          "metadataPayloadKey": "source"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        3488,
+        480
+      ],
+      "id": "c0b5a074-270e-4110-888d-b4260d53bc16",
+      "name": "consultar_diario_oficial",
+      "credentials": {
+        "qdrantApi": {
+          "id": "irWnxHO2Zuij6QR9",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "FERRAMENTA DE DADOS ANALÍTICOS SICOM (MOTOR SQL)\nUse esta ferramenta OBRIGATORIAMENTE sempre que o usuário fizer perguntas QUANTITATIVAS, ESTATÍSTICAS, FINANCEIRAS ou de BUSCA EXATA sobre os dados da prefeitura.\n\n--- QUANDO USAR ESTA FERRAMENTA ---\n1. ITENS E PREÇOS: Preços unitários de produtos, detalhes de compra (ex: \"Quanto custou a luva?\").\n2. NOTAS FISCAIS: Auditoria de NF, valores líquidos, buscar emitentes (ex: \"Mostre notas da empresa X\").\n3. LICITAÇÕES E CONTRATOS: Vencedores, sócios, vigência de acordos e aditivos (ex: \"Quem ganhou a licitação do lixo?\").\n4. PESSOAL (RH): Folha de pagamento, salários, cargos (ex: \"Quanto ganha o prefeito?\").\n5. FROTA: Gastos com veículos, consumo, manutenções (ex: \"Qual carro gastou mais gasolina?\").\n6. DESPESAS E PAGAMENTOS: Fluxo de caixa, valores pagos, rankings (ex: \"Ranking das maiores despesas\").\n\n--- COMO USAR (MUITO IMPORTANTE) ---\nNÃO gere código SQL. Você é apenas o tradutor da dúvida.\nVocê deve passar a pergunta do usuário para a ferramenta usando OBRIGATORIAMENTE um parâmetro de entrada chamado 'pergunta_usuario'.\n\nExemplo do que você deve enviar para a ferramenta:\n\"pergunta_usuario\": \"Qual foi o carro que mais gastou com combustível em 2025?\"\n\nA ferramenta consultará os dados brutos e devolverá a resposta exata em JSON para você formular a resposta amigável ao usuário.",
+        "workflowId": {
+          "__rl": true,
+          "value": "n5M6JqgrFuRMZlsb",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/n5M6JqgrFuRMZlsb",
+          "cachedResultName": "duck-sql"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        3312,
+        480
+      ],
+      "id": "78f13277-884a-4f81-9c61-5bac24e72875",
+      "name": "Tool_Executar_SQL_Sicom"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "FromMe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Tempo de fala do BOT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FromMe?": {
+      "main": [
+        [
+          {
+            "node": "Quando a ms é do bot1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ler anterior",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Quando a ms é do bot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Stop Typing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tempo de fala do BOT": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpeza de Dados": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Typing": {
+      "main": [
+        [
+          {
+            "node": "Limpeza de Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "busca status lock do chat": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "define estado de lock",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "morte do fluxo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler anterior": {
+      "main": [
+        [
+          {
+            "node": "Salvar Acumulado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Acumulado": {
+      "main": [
+        [
+          {
+            "node": "busca status lock do chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contexto_total": {
+      "main": [
+        [
+          {
+            "node": "Limpar buffer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpar buffer": {
+      "main": [
+        [
+          {
+            "node": "limpar estado de lock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "define estado de lock": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "limpar estado de lock": {
+      "main": [
+        [
+          {
+            "node": "Start Typing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contexto": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "consultar_diario_oficial",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Contexto_total",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consultar_diario_oficial": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool_Executar_SQL_Sicom": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "e88b8a30-5284-4e7f-9eab-5fed7a3c6b35",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e2fdfec80d6821ccb68a0954ea918dd549d0154595834e075cdd7462d751d144"
+  },
+  "id": "2OLyfYu8Xk6bzqFY",
+  "tags": []
+}
