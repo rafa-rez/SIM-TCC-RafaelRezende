@@ -69,6 +69,7 @@ services:
       PYTHONPATH: /workspace
       WAHA_API_URL: http://waha:3000
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
     volumes:
       - ./:/workspace
       - ./avaliacao/dados:/gov/dados
