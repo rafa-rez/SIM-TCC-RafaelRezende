@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SIM GovTech — Playbook Comercial, Precificação B2G &amp; Economia de Tokens</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { padding: 0 !important; }
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-6">
+  <div class="max-w-6xl mx-auto space-y-6">
+
+    <!-- CABEÇALHO EXECUTIVO -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 mb-2">
+          <span>ESTRATEGIA COMERCIAL B2G &amp; UNIT ECONOMICS</span>
+          <span>•</span>
+          <span>PLATAFORMA SIM v2.3</span>
+        </div>
+        <h1 class="text-2xl font-extrabold tracking-tight text-[var(--foreground)]">
+          Playbook de Vendas, Pacotes por Porte e Blindagem de Tokens (Power User)
+        </h1>
+        <p class="text-sm text-[var(--muted-foreground)] mt-1">
+          Como posicionar o preço na faixa corporativa de Prefeituras/Câmaras (R$ 8,9k a R$ 26,9k/mês), entrar rápido via Dispensa (Art. 75, II) e blindar 98%+ de margem mesmo em cidades de uso extremo.
+        </p>
+      </div>
+      <div class="no-print">
+        <button onclick="window.print()" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition cursor-pointer">
+          🖨️ Imprimir / Salvar Playbook em PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 1: COMO FUNCIONA O CUSTO DE TOKENS EM CIDADES "POWER USER" -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-5">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] pb-4">
+        <div>
+          <h2 class="text-lg font-extrabold text-[var(--foreground)]">
+            1. O Dilema do "Power User": Eu abraço o custo de tokens ou repasso para a cidade?
+          </h2>
+          <p class="text-xs text-[var(--muted-foreground)] mt-0.5">
+            A regra jurídica do Direito Financeiro Público (Lei 4.320/1964, Art. 60) + a matemática real da arquitetura SIM v2.3
+          </p>
+        </div>
+        <span class="px-3 py-1 rounded-lg text-xs font-bold bg-amber-500/15 text-amber-500 border border-amber-500/30">
+          Custo Real p/ Você: ~R$ 0,0041 por pergunta
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+          <div class="text-xs font-extrabold uppercase tracking-wider text-rose-500 mb-1">❌ O que NUNCA fazer em Governo</div>
+          <div class="text-sm font-bold mb-1.5">Cobrar "centavos variáveis pós-pagos"</div>
+          <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
+            Pela <strong>Lei 4.320/64 (Art. 60)</strong>, é proibido ao poder público pagar despesa sem <strong>Prévio Empenho com valor fixo/teto definido</strong>. Se você mandar uma nota fiscal de <em>"R$ 12.900 + R$ 143,27 de tokens excedentes"</em>, a Contabilidade trava o seu pagamento.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-emerald-500/40">
+          <div class="text-xs font-extrabold uppercase tracking-wider text-emerald-500 mb-1">✅ O Modelo Ideal (Franquia Inclusa)</div>
+          <div class="text-sm font-bold mb-1.5">Você abraça até uma Franquia Generosa</div>
+          <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
+            No plano de <strong>R$ 12.900/mês</strong>, você entrega <strong>15.000 perguntas/mês inclusas</strong> (500 por dia!). Para o Prefeito parece infinito; para você, 15.000 perguntas custam apenas <strong>R$ 61,50 de tokens</strong> (<strong>0,47%</strong> do valor que ele te paga!).
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+          <div class="text-xs font-extrabold uppercase tracking-wider text-sky-500 mb-1">🚀 E se passar da Franquia?</div>
+          <div class="text-sm font-bold mb-1.5">Lote Fechado de Expansão (+10k = R$ 1.500)</div>
+          <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
+            Acima da franquia, o contrato prevê um <strong>Lote Adicional Pré-Fixado de 10.000 requisições por R$ 1.500,00</strong>. Como 10.000 requisições custam <strong>R$ 41,00</strong> para você na API, até o excedente gera <strong>97,2% de lucro líquido</strong>!
+          </p>
+        </div>
+      </div>
+
+      <!-- GRÁFICO COMPARATIVO DE BARRAS: CUSTO DE TOKENS VS MENSALIDADE -->
+      <div class="p-5 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-sm font-bold text-[var(--foreground)]">
+            📊 Gráfico Real: Quanto uma Cidade "Power User" Gasta de Tokens vs. Quanto Ela Paga por Mês
+          </h3>
+          <span class="text-xs text-[var(--muted-foreground)]">Cálculo com GPT-4.1-mini / Gemini 2.5 Flash + 30% Áudio WhatsApp + 40% Cache Hit</span>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Cenário 1 -->
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs">
+              <span class="font-bold">Cenário 1 — Uso Normal (3.000 perguntas/mês • 100/dia)</span>
+              <span>Seu gasto IA: <strong class="text-rose-500">R$ 12,30</strong> | Receita: <strong class="text-emerald-500">R$ 12.900,00</strong> (Margem: <strong>99,4%</strong>)</span>
+            </div>
+            <div class="w-full h-6 rounded-lg bg-emerald-500/15 overflow-hidden flex items-center">
+              <div class="h-full bg-rose-500" style="width: 1%"></div>
+              <div class="h-full bg-emerald-500 flex items-center justify-end pr-3 text-xs font-extrabold text-slate-950" style="width: 99%">
+                Lucro Líquido: R$ 12.822 / mês
+              </div>
+            </div>
+          </div>
+
+          <!-- Cenário 2 -->
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs">
+              <span class="font-bold">Cenário 2 — Teto da Franquia Porte I (15.000 perguntas/mês • 500/dia)</span>
+              <span>Seu gasto IA: <strong class="text-rose-500">R$ 61,50</strong> | Receita: <strong class="text-emerald-500">R$ 12.900,00</strong> (Margem: <strong>99,0%</strong>)</span>
+            </div>
+            <div class="w-full h-6 rounded-lg bg-emerald-500/15 overflow-hidden flex items-center">
+              <div class="h-full bg-rose-500" style="width: 2%"></div>
+              <div class="h-full bg-emerald-500 flex items-center justify-end pr-3 text-xs font-extrabold text-slate-950" style="width: 98%">
+                Lucro Líquido: R$ 12.773 / mês
+              </div>
+            </div>
+          </div>
+
+          <!-- Cenário 3 -->
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs">
+              <span class="font-bold">Cenário 3 — Power User Intenso Porte II (30.000 perguntas/mês • 1.000/dia)</span>
+              <span>Seu gasto IA: <strong class="text-rose-500">R$ 123,00</strong> | Receita: <strong class="text-emerald-500">R$ 18.900,00</strong> (Margem: <strong>99,0%</strong>)</span>
+            </div>
+            <div class="w-full h-6 rounded-lg bg-emerald-500/15 overflow-hidden flex items-center">
+              <div class="h-full bg-rose-500" style="width: 2.5%"></div>
+              <div class="h-full bg-emerald-500 flex items-center justify-end pr-3 text-xs font-extrabold text-slate-950" style="width: 97.5%">
+                Lucro Líquido: R$ 18.712 / mês
+              </div>
+            </div>
+          </div>
+
+          <!-- Cenário 4 -->
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs">
+              <span class="font-bold">Cenário 4 — Cidade Viral + 2 Lotes Extras (50.000 perguntas/mês • 1.660/dia)</span>
+              <span>Seu gasto IA: <strong class="text-rose-500">R$ 205,00</strong> | Receita c/ Lotes: <strong class="text-emerald-500">R$ 21.900,00</strong> (Margem: <strong>98,8%</strong>)</span>
+            </div>
+            <div class="w-full h-6 rounded-lg bg-emerald-500/15 overflow-hidden flex items-center">
+              <div class="h-full bg-rose-500" style="width: 3%"></div>
+              <div class="h-full bg-emerald-500 flex items-center justify-end pr-3 text-xs font-extrabold text-slate-950" style="width: 97%">
+                Lucro Líquido: R$ 21.630 / mês
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+          <div class="p-3 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs">
+            <span class="font-bold text-emerald-500">🛡️ Trava 1 — Cache Semântico &amp; SQL:</span> Perguntas iguais no mesmo dia (ex.: cidadãos perguntando sobre IPTU ou Bolsa Família) respondem direto do cache em <strong>2 ms com custo R$ 0,00</strong>.
+          </div>
+          <div class="p-3 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs">
+            <span class="font-bold text-emerald-500">🛡️ Trava 2 — Rate Limit Anti-Bot no WhatsApp:</span> Limite automático de <strong>20 perguntas/dia por número de telefone</strong> no WhatsApp Cidadão, impedindo que scripts maliciosos queimem sua franquia.
+          </div>
+          <div class="p-3 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs">
+            <span class="font-bold text-emerald-500">🛡️ Trava 3 — Catálogo Dinâmico (-75% tokens):</span> Como o <code>DataCatalog</code> envia apenas 4 a 8 tabelas por pergunta (e não as 79), cada chamada custa 4x menos que no modelo antigo.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 2: TABELA OFICIAL DE PLANOS POR PORTE + ENTRADA RÁPIDA VIA DISPENSA -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-5">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] pb-4">
+        <div>
+          <h2 class="text-lg font-extrabold text-[var(--foreground)]">
+            2. Tabela Oficial de Planos por Porte (Ancoragem Enterprise + Entrada Rápida Art. 75, II)
+          </h2>
+          <p class="text-xs text-[var(--muted-foreground)] mt-0.5">
+            Preços que impõem respeito institucional perante Prefeitos e Controladores, mantendo a porta de entrada rápida sem Pregão
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- Plano 1: Câmara -->
+        <div class="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4 flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-bold uppercase text-sky-500">Poder Legislativo</div>
+            <h3 class="text-base font-extrabold mt-1">SIM Câmara Municipal</h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1">Fiscalização do Executivo para Gabinetes de Vereadores e Comissões</p>
+            <div class="my-4 pb-3 border-b border-[var(--border)]">
+              <div class="text-2xl font-extrabold text-[var(--foreground)]">R$ 8.900<span class="text-xs font-normal text-[var(--muted-foreground)]">/mês</span></div>
+              <div class="text-xs text-[var(--muted-foreground)] mt-0.5">+ Setup Único: <strong>R$ 12.000</strong></div>
+            </div>
+            <ul class="space-y-2 text-xs">
+              <li>✅ <strong>Franquia: 10.000 consultas/mês</strong></li>
+              <li>✅ Workstation Web p/ até 15 Gabinetes</li>
+              <li>✅ Gráficos Claros + Nota Técnica PDF</li>
+              <li>✅ Trilha de Aditivos, Dispensas e Emendas</li>
+              <li>✅ Busca nos Jornais Oficiais (RAG)</li>
+            </ul>
+          </div>
+          <div class="mt-4 pt-3 border-t border-[var(--border)] text-xs">
+            <span class="font-bold text-emerald-500">Entrada Rápida (Dispensa):</span><br>
+            Setup R$ 12k + 5 meses (R$ 44,5k) = <strong>R$ 56.500</strong> (Direto via Art. 75, II)
+          </div>
+        </div>
+
+        <!-- Plano 2: Porte I -->
+        <div class="rounded-xl border-2 border-emerald-500 bg-[var(--background)] p-4 flex flex-col justify-between relative">
+          <div class="absolute -top-3 right-3 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-500 text-slate-950">
+            IDEAL P/ CAETÉ (CARRO-CHEFE)
+          </div>
+          <div>
+            <div class="text-xs font-bold uppercase text-emerald-500">Prefeituras Porte I</div>
+            <h3 class="text-base font-extrabold mt-1">Até 60 mil habitantes</h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1">Orçamento até R$ 250M/ano (Ex.: Caeté, Rio Acima, Barão de Cocais)</p>
+            <div class="my-4 pb-3 border-b border-[var(--border)]">
+              <div class="text-2xl font-extrabold text-emerald-500">R$ 12.900<span class="text-xs font-normal text-[var(--muted-foreground)]">/mês</span></div>
+              <div class="text-xs text-[var(--muted-foreground)] mt-0.5">+ Setup &amp; Saneamento: <strong>R$ 18.000</strong></div>
+            </div>
+            <ul class="space-y-2 text-xs">
+              <li>✅ <strong>Franquia: 15.000 consultas/mês</strong></li>
+              <li>✅ <strong>Workstation Controladoria &amp; Gestão</strong></li>
+              <li>✅ <strong>WhatsApp Cidadão c/ Voz (Ouvidoria)</strong></li>
+              <li>✅ 79 Bases Oficiais + Sincronização 1-Click</li>
+              <li>✅ Monitor Proativo LRF (48,6%) &amp; TCE-MG</li>
+            </ul>
+          </div>
+          <div class="mt-4 pt-3 border-t border-[var(--border)] text-xs">
+            <span class="font-bold text-emerald-500">Entrada Rápida (Dispensa):</span><br>
+            Setup R$ 18k + 3 meses (R$ 38,7k) = <strong>R$ 56.700</strong> (Direto via Art. 75, II)
+          </div>
+        </div>
+
+        <!-- Plano 3: Porte II -->
+        <div class="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4 flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-bold uppercase text-amber-500">Prefeituras Porte II</div>
+            <h3 class="text-base font-extrabold mt-1">60 mil a 150 mil hab.</h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1">Orçamento R$ 250M–R$ 800M (Ex.: Sabará, Nova Lima, Itabira, Ouro Preto)</p>
+            <div class="my-4 pb-3 border-b border-[var(--border)]">
+              <div class="text-2xl font-extrabold text-[var(--foreground)]">R$ 18.900<span class="text-xs font-normal text-[var(--muted-foreground)]">/mês</span></div>
+              <div class="text-xs text-[var(--muted-foreground)] mt-0.5">+ Setup &amp; Saneamento: <strong>R$ 25.000</strong></div>
+            </div>
+            <ul class="space-y-2 text-xs">
+              <li>✅ <strong>Franquia: 30.000 consultas/mês</strong></li>
+              <li>✅ Até 40 Usuários Internos (Secretarias)</li>
+              <li>✅ WhatsApp Cidadão Ilimitado (Texto+Voz)</li>
+              <li>✅ Auditoria Contínua de Contratos &amp; Obras</li>
+              <li>✅ SLA Prioritário + Treinamento Presencial</li>
+            </ul>
+          </div>
+          <div class="mt-4 pt-3 border-t border-[var(--border)] text-xs">
+            <span class="font-bold text-amber-500">Modalidade Recomendada:</span><br>
+            Piloto Inicial via Dispensa (R$ 57,6k) ou <strong>CPSI Startups (LC 182/2021)</strong>
+          </div>
+        </div>
+
+        <!-- Plano 4: Porte III -->
+        <div class="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4 flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-bold uppercase text-purple-400">Prefeituras Porte III</div>
+            <h3 class="text-base font-extrabold mt-1">Acima de 150 mil hab.</h3>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1">Orçamento &gt; R$ 800M (Ex.: Santa Luzia, Sete Lagoas, Betim, Contagem)</p>
+            <div class="my-4 pb-3 border-b border-[var(--border)]">
+              <div class="text-2xl font-extrabold text-[var(--foreground)]">R$ 26.900<span class="text-xs font-normal text-[var(--muted-foreground)]">/mês</span></div>
+              <div class="text-xs text-[var(--muted-foreground)] mt-0.5">+ Setup &amp; Saneamento: <strong>R$ 38.000</strong></div>
+            </div>
+            <ul class="space-y-2 text-xs">
+              <li>✅ <strong>Franquia: 60.000 consultas/mês</strong></li>
+              <li>✅ Usuários Ilimitados por Secretaria</li>
+              <li>✅ Instância Dedicada + SSO Governamental</li>
+              <li>✅ Integração c/ Ouvidoria e-SIC / Fala.BR</li>
+              <li>✅ Relatórios Trimestrais p/ Controle Interno</li>
+            </ul>
+          </div>
+          <div class="mt-4 pt-3 border-t border-[var(--border)] text-xs">
+            <span class="font-bold text-purple-400">Modalidade Recomendada:</span><br>
+            Adesão a Ata de Consórcio (ICISMEP / AMM) ou CPSI (até R$ 1,6M)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 3: SIMULADOR DE ESCALA DA SUA EMPRESA (MRR & ARR) -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-5">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] pb-4">
+        <div>
+          <h2 class="text-lg font-extrabold text-[var(--foreground)]">
+            3. Simulador de Escala da Sua GovTech (Quanto você fatura e lucra com 1 a 15 clientes)
+          </h2>
+          <p class="text-xs text-[var(--muted-foreground)] mt-0.5">
+            Ajuste o número de Câmaras e Prefeituras nos controles abaixo para projetar sua Receita Recorrente (MRR / ARR)
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-2">
+          <div class="flex justify-between text-xs font-bold">
+            <span>🏛️ Câmaras Municipais (R$ 8,9k/mês)</span>
+            <span id="scale-cam-lbl" class="text-sky-500">2 Câmaras</span>
+          </div>
+          <input id="scale-cam" type="range" min="0" max="15" value="2" oninput="recalcScale()" class="w-full accent-sky-500 cursor-pointer">
+        </div>
+
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-2">
+          <div class="flex justify-between text-xs font-bold">
+            <span>🏙️ Prefeituras Porte I (R$ 12,9k/mês)</span>
+            <span id="scale-p1-lbl" class="text-emerald-500">2 Prefeituras</span>
+          </div>
+          <input id="scale-p1" type="range" min="0" max="15" value="2" oninput="recalcScale()" class="w-full accent-emerald-500 cursor-pointer">
+        </div>
+
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-2">
+          <div class="flex justify-between text-xs font-bold">
+            <span>🌆 Prefeituras Porte II (R$ 18,9k/mês)</span>
+            <span id="scale-p2-lbl" class="text-amber-500">1 Prefeitura</span>
+          </div>
+          <input id="scale-p2" type="range" min="0" max="10" value="1" oninput="recalcScale()" class="w-full accent-amber-500 cursor-pointer">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+          <div class="text-xs text-[var(--muted-foreground)]">Receita Mensal Recorrente (MRR)</div>
+          <div id="scale-mrr" class="text-xl font-extrabold text-emerald-500 mt-1">R$ 62.500 / mês</div>
+        </div>
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+          <div class="text-xs text-[var(--muted-foreground)]">Taxas de Setup no Ano 1</div>
+          <div id="scale-setup" class="text-xl font-extrabold text-sky-500 mt-1">R$ 85.000</div>
+        </div>
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+          <div class="text-xs text-[var(--muted-foreground)]">Seu Custo Total (Tokens + Cloud)</div>
+          <div id="scale-cost" class="text-xl font-extrabold text-rose-500 mt-1">R$ 740 / mês</div>
+        </div>
+        <div class="p-4 rounded-xl bg-[var(--background)] border border-emerald-500/40">
+          <div class="text-xs text-[var(--muted-foreground)]">Faturamento Total Ano 1 (ARR+Setup)</div>
+          <div id="scale-arr" class="text-xl font-extrabold text-[var(--foreground)] mt-1">R$ 835.000 / ano</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 4: CLÁUSULA CONTRATUAL PRONTA PARA O TERMO DE REFERÊNCIA -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-3">
+      <h2 class="text-base font-extrabold text-[var(--foreground)]">
+        4. Cláusula Pronta para o seu Contrato / Termo de Referência (Proteção de Tokens &amp; Previsibilidade Orçamentária)
+      </h2>
+      <p class="text-xs text-[var(--muted-foreground)]">
+        Copie e cole esta redação na sua Proposta Comercial para deixar o Controlador Interno e o Setor de Contabilidade 100% tranquilos quanto ao empenho fixo:
+      </p>
+      <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] font-mono text-xs leading-relaxed text-[var(--foreground)]">
+        "CLÁUSULA X — DA FRANQUIA MENSAL DE PROCESSAMENTO COGNITIVO E PREVISIBILIDADE ORÇAMENTÁRIA:<br>
+        X.1. O valor mensal fixo do licenciamento inclui franquia integral de até <strong>15.000 (quinze mil) requisições analíticas mensais</strong> (compreendendo consultas em linguagem natural via texto, transcrições de mensagens de voz no WhatsApp e geração de notas técnicas em PDF), sem qualquer custo variável adicional para a CONTRATANTE.<br>
+        X.2. Consultas recorrentes atendidas pela camada de cache analítico determinístico da plataforma e verificações automáticas do Motor Proativo de Controladoria não descontam da franquia mensal.<br>
+        X.3. Para proteção contra uso automatizado indevido (bots), o canal público do WhatsApp Cidadão contará com limite de segurança parametrizável (padrão de 20 consultas diárias por número telefônico).<br>
+        X.4. Caso o Município ultrapasse a franquia mensal em razão de campanhas extraordinárias, o sistema notificará o Gestor do Contrato ao atingir 85% do consumo, podendo a Administração, a seu exclusivo critério e mediante prévio empenho, adquirir lotes adicionais pré-fixados de 10.000 (dez mil) requisições pelo valor tabelado de R$ 1.500,00 (mil e quinhentos reais) por lote."
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function recalcScale() {
+      const c = parseInt(document.getElementById('scale-cam').value, 10);
+      const p1 = parseInt(document.getElementById('scale-p1').value, 10);
+      const p2 = parseInt(document.getElementById('scale-p2').value, 10);
+
+      document.getElementById('scale-cam-lbl').textContent = c + (c === 1 ? ' Câmara' : ' Câmaras');
+      document.getElementById('scale-p1-lbl').textContent = p1 + (p1 === 1 ? ' Prefeitura' : ' Prefeituras');
+      document.getElementById('scale-p2-lbl').textContent = p2 + (p2 === 1 ? ' Prefeitura' : ' Prefeituras');
+
+      const mrr = (c * 8900) + (p1 * 12900) + (p2 * 18900);
+      const setup = (c * 12000) + (p1 * 18000) + (p2 * 25000);
+      const totalClients = c + p1 + p2;
+      // Custo médio generoso (assumindo todas power users batendo a franquia + VPS compartilhada/dedicada)
+      const cost = totalClients === 0 ? 0 : (180 + (c * 55) + (p1 * 85) + (p2 * 145));
+      const arrPlusSetup = (mrr * 12) + setup;
+
+      document.getElementById('scale-mrr').textContent = 'R$ ' + mrr.toLocaleString('pt-BR') + ' / mês';
+      document.getElementById('scale-setup').textContent = 'R$ ' + setup.toLocaleString('pt-BR');
+      document.getElementById('scale-cost').textContent = 'R$ ' + cost.toLocaleString('pt-BR') + ' / mês';
+      document.getElementById('scale-arr').textContent = 'R$ ' + arrPlusSetup.toLocaleString('pt-BR') + ' / ano';
+    }
+    recalcScale();
+  </script>
+</body>
+</html>
