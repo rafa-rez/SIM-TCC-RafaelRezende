@@ -1,0 +1,95 @@
+{
+  "tenant_id": "sabara_mg_3156700",
+  "municipality_name": "Sabará",
+  "state_uf": "MG",
+  "ibge_code": "3156700",
+  "plan_code": "porte_2",
+  "plan_name": "Prefeitura Porte II — Controladoria, Ouvidoria & Gestão 360º (30k a 100k hab.)",
+  "monthly_quota_requests": 30000,
+  "hospital_referencia": "HOSPITAL MUNICIPAL / SANTA CASA DE SABARÁ",
+  "diario_oficial": {
+    "tipo": "pdf_diario_eletronico",
+    "veiculo": "Diário Oficial Eletrônico de Sabará",
+    "chunker": "ActBoundaryChunker"
+  },
+  "orgaos_map": {
+    "01": "CÂMARA MUNICIPAL DE SABARÁ",
+    "02": "PREFEITURA MUNICIPAL DE SABARÁ",
+    "03": "FUNDO MUNICIPAL DE SAÚDE DE SABARÁ"
+  },
+  "local_aliases": {
+    "hospital": "SANTA CASA DE SABARÁ"
+  },
+  "ibge_series": [
+    {
+      "ano": 2022,
+      "populacao": 40000,
+      "fonte_pop": "Censo / Estimativa Oficial IBGE",
+      "pib_mil": 1200000.0,
+      "pib_per_capita": 30000.0,
+      "idhm": 0.73,
+      "idhm_edu": 0.67,
+      "idhm_long": 0.84,
+      "area_km2": 400.0,
+      "densidade": 100.0
+    },
+    {
+      "ano": 2023,
+      "populacao": 40000,
+      "fonte_pop": "Censo / Estimativa Oficial IBGE",
+      "pib_mil": 1200000.0,
+      "pib_per_capita": 30000.0,
+      "idhm": 0.73,
+      "idhm_edu": 0.67,
+      "idhm_long": 0.84,
+      "area_km2": 400.0,
+      "densidade": 100.0
+    },
+    {
+      "ano": 2024,
+      "populacao": 40000,
+      "fonte_pop": "Censo / Estimativa Oficial IBGE",
+      "pib_mil": 1200000.0,
+      "pib_per_capita": 30000.0,
+      "idhm": 0.73,
+      "idhm_edu": 0.67,
+      "idhm_long": 0.84,
+      "area_km2": 400.0,
+      "densidade": 100.0
+    },
+    {
+      "ano": 2025,
+      "populacao": 40000,
+      "fonte_pop": "Censo / Estimativa Oficial IBGE",
+      "pib_mil": 1200000.0,
+      "pib_per_capita": 30000.0,
+      "idhm": 0.73,
+      "idhm_edu": 0.67,
+      "idhm_long": 0.84,
+      "area_km2": 400.0,
+      "densidade": 100.0
+    }
+  ],
+  "ideb_series": [
+    {
+      "ano": 2021,
+      "rede": "Pública Municipal",
+      "anos_iniciais": 6.2,
+      "anos_finais": 5.2,
+      "meta_iniciais": 6.1,
+      "escolas": 18,
+      "matriculas": 4444,
+      "taxa_aprovacao": 96.5
+    },
+    {
+      "ano": 2023,
+      "rede": "Pública Municipal",
+      "anos_iniciais": 6.4,
+      "anos_finais": 5.4,
+      "meta_iniciais": 6.2,
+      "escolas": 18,
+      "matriculas": 4444,
+      "taxa_aprovacao": 97.4
+    }
+  ]
+}

@@ -22,7 +22,7 @@ services:
     environment:
       WHATSAPP_HOOK_URL: http://sim-api:8000/webhook/waha
       WHATSAPP_DEFAULT_ENGINE: GOWS
-      WHATSAPP_HOOK_EVENTS: message.any
+      WHATSAPP_HOOK_EVENTS: message,message.any,message.ack,message.reaction,session.status
       WAHA_NO_API_KEY: "true"
       WAHA_DASHBOARD_NO_PASSWORD: "true"
       WHATSAPP_SWAGGER_NO_PASSWORD: "true"

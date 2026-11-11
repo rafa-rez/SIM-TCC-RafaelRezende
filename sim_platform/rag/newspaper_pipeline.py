@@ -51,7 +51,8 @@ RE_ACT_BOUNDARY = re.compile(
     r"RESOLU[CÇ][AÃ]O|EXTRATO\s+DE\s+(?:CONTRATO|TERMO\s+ADITIVO|DISPENSA|INEXIGIBILIDADE|CHAMAMENTO)|"
     r"AVISO\s+DE\s+(?:LICITA[CÇ][AÃ]O|DISPENSA|PREG[AÃ]O|INEXIGIBILIDADE)|"
     r"TERMO\s+(?:ADITIVO|DE\s+FOMENTO|DE\s+COLABORA[CÇ][AÃ]O|DE\s+ADITAMENTO)|"
-    r"DISPENSA\s+DE\s+LICITA[CÇ][AÃ]O|INEXIGIBILIDADE\s+DE\s+LICITA[CÇ][AÃ]O)\s+"
+    r"(?:RATIFICA[CÇ][AÃ]O\s+DE\s+|PROCESSO\s+DE\s+)?DISPENSA(?:\s+DE\s+LICITA[CÇ][AÃ]O)?|"
+    r"INEXIGIBILIDADE(?:\s+DE\s+LICITA[CÇ][AÃ]O)?)\s+"
     r"(?:MUNICIPAL\s+)?(?:N[ºO°\.]?\s*\.?\s*\d{1,5}|\d{1,5}/\d{2,4}))",
     re.IGNORECASE,
 )
@@ -62,7 +63,8 @@ RE_ACT_HEADER = re.compile(
     r"RESOLU[CÇ][AÃ]O|EXTRATO\s+DE\s+(?:CONTRATO|TERMO\s+ADITIVO|DISPENSA|INEXIGIBILIDADE|CHAMAMENTO)|"
     r"AVISO\s+DE\s+(?:LICITA[CÇ][AÃ]O|DISPENSA|PREG[AÃ]O)|"
     r"TERMO\s+(?:ADITIVO|DE\s+FOMENTO|DE\s+COLABORA[CÇ][AÃ]O|DE\s+ADITAMENTO)|"
-    r"DISPENSA\s+DE\s+LICITA[CÇ][AÃ]O|INEXIGIBILIDADE\s+DE\s+LICITA[CÇ][AÃ]O)\s+(?:MUNICIPAL\s+)?"
+    r"(?:RATIFICA[CÇ][AÃ]O\s+DE\s+|PROCESSO\s+DE\s+)?DISPENSA(?:\s+DE\s+LICITA[CÇ][AÃ]O)?|"
+    r"INEXIGIBILIDADE(?:\s+DE\s+LICITA[CÇ][AÃ]O)?)\s+(?:MUNICIPAL\s+)?"
     r"(?:N[ºO°\.]?\s*\.?\s*)?(\d{1,5}(?:\.\d{3})*)\s*(?:/|\s+DE\s+|\s*-\s*)(\d{2,4})\b",
     re.IGNORECASE,
 )
@@ -155,7 +157,9 @@ def extract_canonical_act_info(text: str) -> Dict[str, Any]:
             tipo_canon = "LEI"
         elif "PORTARIA" in raw_tipo:
             tipo_canon = "PORTARIA"
-        elif "DISPENSA" in raw_tipo or "INEXIGIBILIDADE" in raw_tipo or "EDITAL" in raw_tipo or "AVISO" in raw_tipo:
+        elif "DISPENSA" in raw_tipo:
+            tipo_canon = "DISPENSA"
+        elif "INEXIGIBILIDADE" in raw_tipo or "EDITAL" in raw_tipo or "AVISO" in raw_tipo:
             tipo_canon = "EDITAL / LICITAÇÃO"
         elif "ADITIVO" in raw_tipo or "ADITAMENTO" in raw_tipo:
             tipo_canon = "TERMO ADITIVO"
@@ -203,6 +207,42 @@ def extract_canonical_act_info(text: str) -> Dict[str, Any]:
     }
 
 
+def build_act_contextual_header(
+    act_text: str,
+    tipo_ato: str,
+    numero_ato: Optional[str],
+    ano_edicao: Optional[int],
+    source_pdf: str,
+) -> str:
+    """
+    Eixo 6.1 (Contextual Retrieval): Constrói cabeçalho contextual estruturado por ato normativo
+    com município, fonte, ano, número do ato e órgãos/siglas identificados no corpo do ato.
+    """
+    up = (act_text or "").upper()
+    orgaos: List[str] = []
+    if "SEDESMA" in up or "MEIO AMBIENTE" in up:
+        orgaos.append("SEDESMA / Secretaria de Meio Ambiente")
+    if "SEMAS" in up or "ASSISTENCIA SOCIAL" in up or "ASSISTÊNCIA SOCIAL" in up:
+        orgaos.append("SEMAS / Assistência Social")
+    if "EDUCACAO" in up or "EDUCAÇÃO" in up:
+        orgaos.append("Secretaria de Educação")
+    if "SAUDE" in up or "SAÚDE" in up:
+        orgaos.append("Secretaria de Saúde")
+    if "SAAE" in up or "AGUA E ESGOTO" in up or "ÁGUA E ESGOTO" in up:
+        orgaos.append("SAAE")
+    if "CONTROLADOR" in up:
+        orgaos.append("Controladoria Geral")
+    if "PROCURADOR" in up:
+        orgaos.append("Procuradoria Geral")
+    org_str = ", ".join(orgaos) if orgaos else "Administração Pública Municipal"
+    ato_lbl = f"{tipo_ato} Nº {numero_ato}" if numero_ato else tipo_ato
+    ano_str = str(ano_edicao) if ano_edicao else "2023-2025"
+    return (
+        f"[Município: Caeté/MG | Fonte: Diário Oficial ({source_pdf}) | "
+        f"Ano: {ano_str} | Tipo de Ato: {ato_lbl} | Órgãos/Cargos: {org_str}]"
+    )
+
+
 @dataclass
 class NewspaperChunk:
     chunk_id: str
@@ -212,6 +252,7 @@ class NewspaperChunk:
     ano_edicao: Optional[int]
     source: str
     page_content: str
+    contextual_header: str = ""
     part_index: int = 1
     total_parts: int = 1
     cnpjs_mencionados: List[str] = field(default_factory=list)
@@ -227,6 +268,7 @@ class NewspaperChunk:
             "ano_edicao": self.ano_edicao,
             "source": self.source,
             "page_content": self.page_content,
+            "contextual_header": self.contextual_header,
             "part": f"{self.part_index}/{self.total_parts}",
             "cnpjs_Mencionados": self.cnpjs_mencionados,
             "valores_mencionados": self.valores_mencionados,
@@ -286,6 +328,13 @@ class ActBoundaryChunker:
                 else info["tipo_ato"]
             )
             ano = info["ano_ato"] or default_year
+            ctx_hdr = build_act_contextual_header(
+                act_text=act_text,
+                tipo_ato=info["tipo_ato"],
+                numero_ato=info["numero_ato"],
+                ano_edicao=ano,
+                source_pdf=source_pdf,
+            )
 
             if len(act_text) <= self.max_chunk_chars:
                 cid = self._make_id(source_pdf, info["act_key"] or "", act_text, 1)
@@ -298,6 +347,7 @@ class ActBoundaryChunker:
                         ano_edicao=ano,
                         source=source_pdf,
                         page_content=act_text,
+                        contextual_header=ctx_hdr,
                         part_index=1,
                         total_parts=1,
                         cnpjs_mencionados=info["cnpjs_mencionados"],
@@ -340,6 +390,7 @@ class ActBoundaryChunker:
                             ano_edicao=ano,
                             source=source_pdf,
                             page_content=contextual_content,
+                            contextual_header=ctx_hdr,
                             part_index=idx,
                             total_parts=total_p,
                             cnpjs_mencionados=info["cnpjs_mencionados"],
@@ -362,12 +413,13 @@ def build_clean_individual_collection(
     workspace_root: Path = DEFAULT_WORKSPACE_ROOT,
     persist_json: bool = True,
     include_golden_benchmark: bool = False,
+    tenant_id: str = "caete_mg_3110004",
 ) -> Dict[str, Any]:
     """
-    Varre as fontes reais de atos do Diário Oficial no repositório (`checkpoint_rag.jsonl` e `reference_chunks/*.json`,
-    sem injetar o gabarito `golden_rag_v1.*.csv` por padrão para evitar data leakage), aplica limpeza tipográfica
-    (`clean_newspaper_pdf_text`), executa `ActBoundaryChunker` para separar atos múltiplos colados num mesmo chunk,
-    e deduplica 100% por ato individual (`act_key` ou fingerprint canônico).
+    Varre as fontes reais de atos do Diário Oficial no repositório (`checkpoint_rag.jsonl`, `reference_chunks/*.json`
+    e `inventario_atos_diario_oficial.csv`, sem injetar o gabarito `golden_rag_v1.*.csv` por padrão para evitar data leakage),
+    aplica limpeza tipográfica (`clean_newspaper_pdf_text`), executa `ActBoundaryChunker` para separar atos múltiplos
+    colados num mesmo chunk, e deduplica 100% por ato individual (`act_key` ou fingerprint canônico).
     """
     raw_candidates: List[Dict[str, Any]] = []
     total_ligatures_repaired = 0
@@ -456,6 +508,54 @@ def build_clean_individual_collection(
                 except Exception:
                     continue
 
+    # 3b. Carregar inventário estruturado do Diário Oficial (extraído dos PDFs reais do jornal, sem gabarito de perguntas)
+    inv_csv = workspace_root / "avaliacao" / "dados" / "cruzamento" / "inventario_atos_diario_oficial.csv"
+    if inv_csv.exists() and tenant_id == "caete_mg_3110004":
+        try:
+            with open(inv_csv, encoding="utf-8-sig") as f:
+                for row in csv.DictReader(f, delimiter=";"):
+                    trecho = (row.get("trecho_texto") or "").strip()
+                    ementa = (row.get("ementa_resumo") or "").strip()
+                    partes = (row.get("partes_citadas") or "").strip()
+                    valores = (row.get("valores_reais") or "").strip()
+                    secretaria = (row.get("secretaria_orgao") or "").strip()
+                    tipo_inv = (row.get("tipo_ato") or "GERAL / OUTROS").strip().upper()
+                    num_inv = (row.get("numero_ato") or "").strip()
+                    if not trecho and not ementa:
+                        continue
+                    combined_parts = []
+                    if num_inv and tipo_inv not in ("TEXTO_GERAL", "GERAL / OUTROS"):
+                        combined_parts.append(f"{tipo_inv} Nº {num_inv}")
+                    if ementa and ementa not in trecho:
+                        combined_parts.append(ementa)
+                    if partes and partes not in trecho:
+                        combined_parts.append(f"Partes/Interessados: {partes}.")
+                    if secretaria and secretaria not in trecho:
+                        combined_parts.append(f"Órgão/Secretaria: {secretaria}.")
+                    if valores and valores not in trecho:
+                        combined_parts.append(f"Valores: {valores}.")
+                    if trecho:
+                        combined_parts.append(trecho)
+                    full_inv_text = " — ".join(combined_parts)
+                    cleaned_t, st = clean_newspaper_pdf_text(full_inv_text)
+                    total_ligatures_repaired += st["ligatures_fixed"]
+                    total_hyphenations_repaired += st["hyphenations_fixed"]
+                    raw_candidates.append(
+                        {
+                            "source": (row.get("arquivo_origem") or "Jornal_Oficial_Caete.pdf").strip(),
+                            "tipo_ato": "DISPENSA" if "DISPENSA" in tipo_inv else tipo_inv,
+                            "ano_edicao": int(row["ano_ato"]) if (row.get("ano_ato") or "").isdigit() else None,
+                            "numero_edicao": (row.get("edicao_jornal") or "").strip() or None,
+                            "cnpjs_Mencionados": [
+                                c.strip() for c in (row.get("cnpjs_citados") or "").split(",") if c.strip()
+                            ],
+                            "page_content": cleaned_t,
+                            "origin": "inventario_atos_diario_oficial.csv",
+                        }
+                    )
+        except Exception:
+            pass
+
     # 4. Aplicar ActBoundaryChunker para separar chunks com múltiplos atos colados (ex: Portaria 42 + 43 + 196)
     atomic_candidates: List[Dict[str, Any]] = []
     for cand in raw_candidates:
@@ -512,15 +612,41 @@ def build_clean_individual_collection(
                 f"{unique_key}::{hashlib.sha256(fp.encode('utf-8')).hexdigest()}",
             )
         )
+        eff_tipo = info["tipo_ato"] if info["tipo_ato"] != "GERAL / OUTROS" else cand.get("tipo_ato", "GERAL / OUTROS")
+        eff_ano = info["ano_ato"] or cand.get("ano_edicao") or "2024/2025"
+        eff_src = cand.get("source") or "Jornal_Oficial_Caete.pdf"
+        orgaos_detected: List[str] = []
+        for pat_org, lbl_org in (
+            (r"\bSEDESMA\b|MEIO AMBIENTE", "SEDESMA / Secretaria de Meio Ambiente"),
+            (r"\bSEMAS\b|ASSIST[EÊ]NCIA SOCIAL", "SEMAS / Secretaria de Assistência Social"),
+            (r"EDUCA[CÇ][AÃ]O", "Secretaria Municipal de Educação"),
+            (r"SA[UÚ]DE", "Secretaria Municipal de Saúde"),
+            (r"OBRAS", "Secretaria Municipal de Obras"),
+            (r"ADMINISTRA[CÇ][AÃ]O", "Secretaria Municipal de Administração"),
+            (r"FAZENDA|FINAN[CÇ]AS", "Secretaria Municipal de Fazenda"),
+            (r"\bSAAE\b|[AÁ]GUA E ESGOTO", "SAAE Caeté"),
+            (r"PREFEITO|GABINETE", "Gabinete do Prefeito"),
+            (r"FISCALIZA[CÇ][AÃ]O|COMISS[AÃ]O", "Comissão de Fiscalização / Licitação"),
+        ):
+            if re.search(pat_org, content, re.IGNORECASE):
+                orgaos_detected.append(lbl_org)
+        orgaos_str = ", ".join(orgaos_detected[:3]) if orgaos_detected else "Administração Direta Municipal"
+        num_str = f" Nº {info['numero_ato']}" if info.get("numero_ato") else ""
+        contextual_header = (
+            f"[Município: Caeté/MG | Fonte: Jornal Oficial ({eff_src}) | "
+            f"Ano: {eff_ano} | Tipo de Ato: {eff_tipo}{num_str} | Órgãos/Cargos: {orgaos_str}]"
+        )
         by_unique_key[unique_key] = {
             "id": cid,
             "unique_key": unique_key,
             "act_key": info["act_key"],
-            "tipo_ato": info["tipo_ato"] if info["tipo_ato"] != "GERAL / OUTROS" else cand.get("tipo_ato", "GERAL / OUTROS"),
+            "tipo_ato": eff_tipo,
             "numero_ato": info["numero_ato"],
             "ano_edicao": info["ano_ato"] or cand.get("ano_edicao"),
             "numero_edicao": cand.get("numero_edicao"),
-            "source": cand.get("source") or "Jornal_Oficial_Caete.pdf",
+            "source": eff_src,
+            "orgaos_extraidos": orgaos_detected,
+            "contextual_header": contextual_header,
             "cnpjs_Mencionados": sorted(set((cand.get("cnpjs_Mencionados") or []) + info["cnpjs_mencionados"])),
             "valores_mencionados": info["valores_mencionados"],
             "quality_flags": list(dict.fromkeys(flags)),
@@ -562,7 +688,7 @@ def build_clean_individual_collection(
         audit_summary["acts_by_type"][t] = audit_summary["acts_by_type"].get(t, 0) + 1
 
     if persist_json:
-        out_dir = workspace_root / "avaliacao" / "dados" / "parquet" / "caete_mg_3110004"
+        out_dir = workspace_root / "avaliacao" / "dados" / "parquet" / tenant_id
         out_dir.mkdir(parents=True, exist_ok=True)
         (out_dir / "rag_jornais_individuais.json").write_text(
             json.dumps(individual_collection, ensure_ascii=False, indent=2),

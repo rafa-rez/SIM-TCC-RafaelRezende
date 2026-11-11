@@ -128,10 +128,11 @@ class ProactiveAuditEngine:
             SELECT
                 a.ano_referencia,
                 a.seq_licitacao,
-                a.nom_socio AS socio_compartilhado,
-                a.empresa_licitante AS empresa_a,
+                COUNT(DISTINCT a.doc_socio) AS qtd_socios_compartilhados,
+                STRING_AGG(DISTINCT a.nom_socio, ', ' ORDER BY a.nom_socio) AS socio_compartilhado,
+                MAX(a.empresa_licitante) AS empresa_a,
                 a.cnpj_licitante AS cnpj_a,
-                b.empresa_licitante AS empresa_b,
+                MAX(b.empresa_licitante) AS empresa_b,
                 b.cnpj_licitante AS cnpj_b
             FROM hab_socios a
             JOIN hab_socios b
@@ -139,6 +140,7 @@ class ProactiveAuditEngine:
              AND a.ano_referencia = b.ano_referencia
              AND a.doc_socio = b.doc_socio
              AND a.cnpj_licitante < b.cnpj_licitante
+            GROUP BY a.ano_referencia, a.seq_licitacao, a.cnpj_licitante, b.cnpj_licitante
             ORDER BY a.ano_referencia DESC, a.seq_licitacao DESC
             LIMIT 10
         """
@@ -147,8 +149,8 @@ class ProactiveAuditEngine:
         # TRILHA 3 (FIND-TCE-03): Adesão a Atas de Registro de Preços ("Caronas" — Art. 86 Lei 14.133)
         sql_caronas = f"""
             SELECT
-                UPPER(TRIM(ec.nom_credor)) AS fornecedor_carona,
-                ec.num_doc_credor AS cnpj,
+                MAX(UPPER(TRIM(ec.nom_credor))) AS fornecedor_carona,
+                COALESCE(NULLIF(regexp_replace(COALESCE(ec.num_doc_credor, ''), '[^0-9]', '', 'g'), ''), 'SEM_DOC') AS cnpj,
                 COUNT(DISTINCT e.seq_empenho) AS qtd_empenhos_adesao,
                 STRING_AGG(DISTINCT CAST(e.ano_referencia AS VARCHAR), ', ' ORDER BY CAST(e.ano_referencia AS VARCHAR)) AS exercicios,
                 ROUND(SUM(TRY_CAST(e.vlr_empenhado AS DECIMAL(18,2))), 2) AS total_empenhado_carona
@@ -156,26 +158,30 @@ class ProactiveAuditEngine:
             LEFT JOIN read_parquet('{p}/empenho_credorEmpenho.parquet') ec
               ON e.seq_empenho = ec.seq_empenho AND e.ano_referencia = ec.ano_referencia
             WHERE COALESCE(e.ind_dec_licitacao, '') ILIKE '%ADES%O%'
-            GROUP BY 1, 2
+            GROUP BY 2
             ORDER BY total_empenhado_carona DESC
             LIMIT 10
         """
         rows_caronas = _query(sql_caronas)
 
-        # TRILHA 4 (FIND-TCE-04): Despesas de Frota em Veículos Órfãos (Sem Placa Cadastrada)
+        # TRILHA 4 (FIND-TCE-04): Despesas de Frota em Veículos Órfãos (Sem Placa Cadastrada vs Isentos CTB)
         sql_frota_orfa = f"""
             WITH base_frota AS (
                 SELECT
                     g.ano_referencia,
                     CASE
                         WHEN v.seq_veiculo IS NULL THEN 'VEICULO_ORFAO_SEM_PLACA'
-                        WHEN COALESCE(TRIM(v.dsc_num_placa), '') IN ('', '-1', '0', 'S/P') THEN 'CADASTRO_SEM_PLACA'
-                        ELSE 'PLACA_IDENTIFICADA'
+                        WHEN COALESCE(TRIM(v.dsc_num_placa), '') NOT IN ('', '-1', '0', 'S/P') THEN 'PLACA_IDENTIFICADA'
+                        WHEN UPPER(COALESCE(v.dsc_tipo_veiculo, '') || ' ' || COALESCE(v.dsc_veiculo, '')) SIMILAR TO '%(TRATOR|RETROESCAVADEIRA|MOTONIVELADORA|PA CARREGADEIRA|PÁ CARREGADEIRA|COMPACTADOR|ESCAVADEIRA|ROLO|MAQUINA|MÁQUINA|ROCADEIRA|ROÇADEIRA|MOTOPODA|BOBCAT|EQUIPAMENTO|SERRA)%'
+                            THEN 'ISENTO_CTB_MAQUINARIO'
+                        ELSE 'CADASTRO_SEM_PLACA'
                     END AS status_placa,
                     TRY_CAST(g.vlr_gasto AS DECIMAL(18,2)) AS vlr_gasto
                 FROM read_parquet('{p}/frota_gastoFrota.parquet') g
                 LEFT JOIN (
-                    SELECT seq_veiculo, MAX(dsc_num_placa) AS dsc_num_placa
+                    SELECT seq_veiculo, MAX(dsc_num_placa) AS dsc_num_placa,
+                           MAX(dsc_tipo_veiculo) AS dsc_tipo_veiculo,
+                           MAX(dsc_veiculo) AS dsc_veiculo
                     FROM read_parquet('{p}/frota_frota.parquet')
                     GROUP BY 1
                 ) v ON g.seq_veiculo = v.seq_veiculo
@@ -184,15 +190,16 @@ class ProactiveAuditEngine:
                 ano_referencia,
                 COUNT(*) AS total_lancamentos,
                 ROUND(SUM(vlr_gasto), 2) AS gasto_total_frota,
-                ROUND(SUM(CASE WHEN status_placa <> 'PLACA_IDENTIFICADA' THEN vlr_gasto ELSE 0 END), 2) AS gasto_sem_placa,
-                ROUND((SUM(CASE WHEN status_placa <> 'PLACA_IDENTIFICADA' THEN vlr_gasto ELSE 0 END) / NULLIF(SUM(vlr_gasto), 0)) * 100, 2) AS pct_gasto_sem_placa
+                ROUND(SUM(CASE WHEN status_placa = 'ISENTO_CTB_MAQUINARIO' THEN vlr_gasto ELSE 0 END), 2) AS gasto_maquinario_isento_ctb,
+                ROUND(SUM(CASE WHEN status_placa IN ('VEICULO_ORFAO_SEM_PLACA', 'CADASTRO_SEM_PLACA') THEN vlr_gasto ELSE 0 END), 2) AS gasto_sem_placa,
+                ROUND((SUM(CASE WHEN status_placa IN ('VEICULO_ORFAO_SEM_PLACA', 'CADASTRO_SEM_PLACA') THEN vlr_gasto ELSE 0 END) / NULLIF(SUM(vlr_gasto), 0)) * 100, 2) AS pct_gasto_sem_placa
             FROM base_frota
             GROUP BY 1
             ORDER BY ano_referencia DESC
         """
         rows_frota_orfa = _query(sql_frota_orfa)
 
-        # TRILHA 5 (FIND-TCE-05): Concentração de Fornecedores PJ e Transparência Societária (QSA)
+        # TRILHA 5 (FIND-TCE-05): Concentração de Fornecedores PJ Privados e Transparência Societária (QSA)
         sql_qsa_conc = f"""
             SELECT
                 razao_social,
@@ -204,7 +211,9 @@ class ProactiveAuditEngine:
                 ROUND(TRY_CAST(total_pago_historico AS DECIMAL(18,2)), 2) AS total_pago_historico,
                 alerta_auditoria_controladoria
             FROM read_parquet('{p}/receita_qsa_fornecedores.parquet')
-            WHERE COALESCE(porte_empresa, '') NOT ILIKE '%ENTE P%BLICO%'
+            WHERE COALESCE(porte_empresa, '') NOT ILIKE '%ÓRGÃO PÚBLICO%'
+              AND COALESCE(porte_empresa, '') NOT ILIKE '%SEM FINS LUCRATIVOS%'
+              AND COALESCE(porte_empresa, '') NOT ILIKE '%ENTE P%BLICO%'
             ORDER BY total_pago_historico DESC
             LIMIT 10
         """
@@ -218,14 +227,23 @@ class ProactiveAuditEngine:
                 FROM read_parquet('{p}/contrato_termoContrato.parquet')
                 WHERE TRY_CAST(vlr_termo_aditivo AS DECIMAL(18,2)) > 0
                 GROUP BY 1
+            ),
+            cred_cont AS (
+                SELECT seq_contrato, ano_referencia,
+                       MAX(UPPER(TRIM(dsc_nome_credor))) AS nom_contratado,
+                       MAX(num_doc_credor) AS doc_contratado
+                FROM read_parquet('{p}/contrato_contContrato.parquet')
+                GROUP BY 1, 2
             )
             SELECT c.ano_referencia, c.num_contrato,
+                   COALESCE(cc.nom_contratado, 'NÃO INFORMADO NO SICOM') AS nom_contratado,
                    SUBSTR(TRIM(c.dsc_objetocontrato), 1, 85) AS objeto_contrato,
                    ROUND(TRY_CAST(c.vlr_contrato AS DECIMAL(18,2)), 2) AS vlr_original,
                    a.qtd_aditivos, a.total_aditivado,
                    ROUND((a.total_aditivado / NULLIF(TRY_CAST(c.vlr_contrato AS DECIMAL(18,2)), 0)) * 100, 1) AS pct_acrescimo
             FROM read_parquet('{p}/contrato_contratos.parquet') c
             JOIN adit a ON c.seq_contrato = a.seq_contrato
+            LEFT JOIN cred_cont cc ON c.seq_contrato = cc.seq_contrato AND c.ano_referencia = cc.ano_referencia
             WHERE TRY_CAST(c.vlr_contrato AS DECIMAL(18,2)) > 10000
               AND ((a.total_aditivado / NULLIF(TRY_CAST(c.vlr_contrato AS DECIMAL(18,2)), 0)) * 100) > {aditivo_pct_threshold}
             ORDER BY a.total_aditivado DESC
@@ -236,14 +254,14 @@ class ProactiveAuditEngine:
         # TRILHA 7 (FIND-TCE-07 / audit_dispensas_recorrentes): Fornecedores com Múltiplas Dispensas no Mesmo Ano
         sql_dispensas = f"""
             SELECT f.ano_referencia,
-                   UPPER(TRIM(f.dsc_nom_fornecedor)) AS fornecedor,
-                   f.num_doc_fornecedor AS documento,
+                   MAX(UPPER(TRIM(f.dsc_nom_fornecedor))) AS fornecedor,
+                   COALESCE(NULLIF(regexp_replace(COALESCE(f.num_doc_fornecedor, ''), '[^0-9]', '', 'g'), ''), 'SEM_DOC') AS documento,
                    COUNT(DISTINCT f.seq_dispensa) AS qtd_dispensas_no_ano,
                    COUNT(*) AS qtd_itens,
                    ROUND(SUM(TRY_CAST(f.vlr_item AS DECIMAL(18,2)) * COALESCE(TRY_CAST(f.num_quant_item AS DECIMAL(18,2)), 1)), 2) AS valor_total_itens
             FROM read_parquet('{p}/licitacao_fornDispensa.parquet') f
             WHERE COALESCE(f.dsc_nom_fornecedor, '') <> ''
-            GROUP BY 1, 2, 3
+            GROUP BY 1, 3
             HAVING COUNT(DISTINCT f.seq_dispensa) >= {min_dispensas_recorrentes}
             ORDER BY qtd_dispensas_no_ano DESC, valor_total_itens DESC
             LIMIT 8
@@ -271,10 +289,11 @@ class ProactiveAuditEngine:
                 "id": "find_tce_02_colisao_societaria",
                 "title": "Colisão Societária entre Licitantes no Mesmo Certame",
                 "legal_basis": "Jurisprudência TCU (Acórdão 1.793/2011-Plenário) e Art. 337-F do Código Penal",
-                "parameter_explained": "Empresas com CNPJs distintos habilitadas no mesmo processo licitatório (`seq_licitacao`) que compartilham o mesmo sócio ou representante (`doc_socio`).",
+                "parameter_explained": "Pares de empresas com CNPJs distintos habilitadas no mesmo processo licitatório (`seq_licitacao`) que compartilham sócios ou administradores (`doc_socio`), deduplicados por par societário.",
                 "auditor_guidance": (
-                    "Nota de Controladoria: Identificou colisão societária no `seq_licitacao = 1309976` (2022) entre "
-                    "`3PH MEDICAMENTOS E HOSPITALARES LTDA` e `TRES PHARMA DISTRIBUIDORA E SERVICOS LTDA` (mesmo sócio administrador). "
+                    "Nota de Controladoria: Identificou colisão societária no `seq_licitacao = 1309976` (2023) entre "
+                    "`3PH MEDICAMENTOS E HOSPITALARES LTDA` e `TRES PHARMA DISTRIBUIDORA E SERVICOS LTDA` (mesmo sócio administrador), "
+                    "além de grupo econômico compartilhando 4 diretores entre `BAUMINAS QUIMICA LTDA` e `BAUMINAS AMBIENTAL LTDA` (2024). "
                     "Em modalidades competitivas, empresas com sócios em comum comprometem o caráter competitivo do certame."
                 ),
                 "count": len(rows_colisao),
@@ -285,10 +304,10 @@ class ProactiveAuditEngine:
                 "id": "find_tce_03_adesao_arp_caronas",
                 "title": "Materialidade em Adesões a Atas de Registro de Preços ('Caronas' — R$ 85,94M)",
                 "legal_basis": "Art. 86, §§ 2º a 5º da Lei 14.133/2021 (Limites e Justificativa de Vantajosidade em ARP)",
-                "parameter_explained": "Empenhos com `dsc_modalidadelicitacao ILIKE '%Ades%'` ou `ind_adesao_arp = 'Sim'` agrupados por credor em `empenho_empenho`.",
+                "parameter_explained": "Empenhos com `ind_dec_licitacao ILIKE '%ADES%O%'` agrupados por CNPJ unificado do credor em `empenho_empenho` × `empenho_credorEmpenho`.",
                 "auditor_guidance": (
                     "Nota de Controladoria: Caeté empenhou R$ 85,94 milhões em 1.752 empenhos via Adesão a Ata de Registro de Preços "
-                    "(destaque para `UNICAPA` R$ 24,62M, `TRIVALE` R$ 18,12M e `PAV CONSTRUCOES` R$ 6,16M). "
+                    "(destaque unificado por CNPJ para `UNICAPA` R$ 24,62M, `TRIVALE` R$ 18,12M e `PAV CONSTRUCOES` R$ 6,16M). "
                     "Exige-se comprovação formal de vantajosidade econômica e respeito ao limite de 50% por órgão carona."
                 ),
                 "count": len(rows_caronas),
@@ -297,13 +316,13 @@ class ProactiveAuditEngine:
             },
             {
                 "id": "find_tce_04_frota_sem_placa",
-                "title": "Despesas de Frota em Veículos Órfãos sem Placa Cadastrada (61,7% do Gasto)",
-                "legal_basis": "Instruções Normativas SICOM/TCE-MG (Rastreabilidade Patrimonial de Combustível e Peças)",
-                "parameter_explained": "Cruzamento entre `frota_gastoFrota` e `frota_veiculoFrota` medindo o percentual financeiro sem vínculo com placa individualizada.",
+                "title": "Despesas de Frota em Veículos Órfãos sem Placa Cadastrada vs. Maquinário Isento CTB",
+                "legal_basis": "Instruções Normativas SICOM/TCE-MG e Art. 115, § 4º-A do CTB (Isenção de Emplacamento de Maquinário Agrícola/Obras)",
+                "parameter_explained": "Cruzamento entre `frota_gastoFrota` e `frota_frota`, segregando maquinário pesado isento de placa (`ISENTO_CTB_MAQUINARIO`) de veículos órfãos/sem placa (`VEICULO_ORFAO_SEM_PLACA` / `CADASTRO_SEM_PLACA`).",
                 "auditor_guidance": (
-                    "Nota de Controladoria: Dos R$ 12,91M gastos com frota entre 2020 e 2025, R$ 7,97M (61,71%) estão vinculados a códigos "
-                    "de veículos sem cadastro correspondente em `frota_veiculoFrota` (especialmente em 2023 e 2024 com 100% de ausência). "
-                    "Recomenda-se saneamento imediato do cadastro patrimonial antes do fechamento das contas anuais."
+                    "Nota de Controladoria: Segrega automaticamente gastos de tratores, retroescavadeiras e motoniveladoras (isentos de emplacamento pelo Art. 115, §4º-A do CTB) "
+                    "dos veículos leves/utilitários sem placa ou sem cadastro correspondente em `frota_frota` (76,6% em 2023 e 27,8% em 2024 após exclusão de maquinário). "
+                    "Recomenda-se saneamento do vínculo `seq_veiculo` no SICOM para os veículos rodoviários comuns."
                 ),
                 "count": len(rows_frota_orfa),
                 "sql_executed": sql_frota_orfa.strip(),
@@ -313,10 +332,10 @@ class ProactiveAuditEngine:
                 "id": "find_tce_05_concentracao_qsa",
                 "title": "Concentração de Credores Privados e Cobertura Societária (QSA Reconciliado)",
                 "legal_basis": "Matriz de Risco e Materialidade TCE-MG / NBC TA 315",
-                "parameter_explained": "Top 10 fornecedores privados (`natureza_entidade = 'EMPRESA_PRIVADA'`) ordenados por `total_pago_historico` com status de QSA.",
+                "parameter_explained": "Top 10 fornecedores estritamente privados (`porte_empresa = 'EMPRESA PRIVADA (LTDA / S.A. / ME)'`) ordenados por `total_pago_historico` com status de QSA.",
                 "auditor_guidance": (
-                    "Nota de Controladoria: Separa automaticamente obrigações patronais (`INSS`, `FGTS`) e concessionárias públicas (`CEMIG`) "
-                    "dos fornecedores privados de alta materialidade, indicando quais já possuem sócios/representantes mapeados via SICOM e quais exigem diligência."
+                    "Nota de Controladoria: Exclui automaticamente órgãos públicos, obrigações patronais (`INSS`, `FGTS`, `PASEP`), tribunais (`TJMG`, `TRT-3`) e entidades sem fins lucrativos (`SANTA CASA`, consórcios) "
+                    "para ranquear apenas fornecedores privados de alta materialidade, indicando quais já possuem QSA mapeado via SICOM e quais exigem diligência."
                 ),
                 "count": len(rows_qsa_conc),
                 "sql_executed": sql_qsa_conc.strip(),
@@ -326,7 +345,7 @@ class ProactiveAuditEngine:
                 "id": "audit_aditivos_25pct",
                 "title": f"Termos Aditivos Acima de {aditivo_pct_threshold:.0f}% do Contrato Original",
                 "legal_basis": "Art. 125 da Lei 14.133/2021 (e Art. 65, §1º da Lei 8.666/93)",
-                "parameter_explained": f"Soma dos termos aditivos (`contrato_termoContrato`) > {aditivo_pct_threshold:.0f}% de `vlr_contrato` (`contrato_contratos`).",
+                "parameter_explained": f"Soma dos termos aditivos (`contrato_termoContrato`) > {aditivo_pct_threshold:.0f}% de `vlr_contrato` (`contrato_contratos` × `contrato_contContrato`).",
                 "auditor_guidance": (
                     "Nota de Controladoria: Acréscimos quantitativos de objeto têm teto legal de 25% (50% p/ reforma). "
                     "Valores superiores a 100% são regulares apenas quando decorrem de **prorrogação de vigência plurianual** "
@@ -342,9 +361,8 @@ class ProactiveAuditEngine:
                 "legal_basis": "Art. 75, §1º da Lei 14.133/2021 (Prevenção ao Fracionamento de Despesa)",
                 "parameter_explained": f"`COUNT(DISTINCT seq_dispensa) >= {min_dispensas_recorrentes}` para o mesmo CNPJ no mesmo exercício em `licitacao_fornDispensa`.",
                 "auditor_guidance": (
-                    "Nota de Controladoria: Em Caeté, a maior recorrência ocorre em drogarias e distribuidoras de medicamentos "
-                    "(`DROGARIA HUMANAS`, `LIDER SBX`, `MSR EXPRESS`). Quando motivadas por **cumprimento de liminares judiciais de saúde** "
-                    "(Art. 75, VIII), as dispensas individuais são lícitas, mas a recorrência sinaliza oportunidade de abrir Ata de Registro de Preços."
+                    "Nota de Controladoria: Exige distinção entre dois perfis: (1) **Obras e Engenharia** (ex: `CONSTRUTORA LUTA LTDA` com 7 dispensas em 2020 somando R$ 542,98 mil, que requer verificação rigorosa do teto de dispensa por natureza de despesa no Art. 75, §1º); e "
+                    "(2) **Drogarias e Saúde** (`DROGARIA HUMANAS`, `LIDER SBX`, `MSR EXPRESS`), frequentemente motivadas por **liminares judiciais de medicamentos** (Art. 75, VIII), cuja recorrência recomenda abertura de ARP."
                 ),
                 "count": len(rows_dispensas),
                 "sql_executed": sql_dispensas.strip(),

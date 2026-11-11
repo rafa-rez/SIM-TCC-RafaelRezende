@@ -32,6 +32,7 @@ class ColumnMetadata:
     semantic_type: str
     needs_numeric_cast: bool = False
     description: str = ""
+    sample_values: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -44,6 +45,9 @@ class TableMetadata:
     description: str
     update_frequency: str
     access_level: str  # "public", "internal", "restricted"
+    grain_type: str = "ANNUAL_FLOW"
+    counting_rule: str = ""
+    is_gold_view: bool = False
     years_available: List[int] = field(default_factory=list)
     source_files: List[str] = field(default_factory=list)
     join_keys: List[str] = field(default_factory=list)
@@ -61,6 +65,9 @@ class TableMetadata:
             "description": self.description,
             "update_frequency": self.update_frequency,
             "access_level": self.access_level,
+            "grain_type": self.grain_type,
+            "counting_rule": self.counting_rule,
+            "is_gold_view": self.is_gold_view,
             "years_available": self.years_available,
             "source_files_count": len(self.source_files),
             "join_keys": self.join_keys,
@@ -72,6 +79,7 @@ class TableMetadata:
                     "physical_type": c.physical_type,
                     "semantic_type": c.semantic_type,
                     "needs_numeric_cast": c.needs_numeric_cast,
+                    "sample_values": c.sample_values,
                 }
                 for c in self.columns
             ],
@@ -137,29 +145,34 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
             "valor pago", "maiores pagamentos", "favorecido",
         ],
         "rules": [
-            "Para pagamentos por credor/órgão/função, use `despesa_pagamento` (p), `empenho_empenho` (e) unido a `empenho_credorEmpenho` (ce) por `e.seq_empenho = ce.seq_empenho AND e.ano_referencia = ce.ano_referencia`, ou a view pré-unificada `vw_gold_execucao_despesa_credor`.",
+            "DISTINÇÃO ESSENCIAL FUNÇÃO TEMÁTICA vs. CREDOR: Para gastos por função temática (Saúde `'10 - SAÚDE'`, Educação `'12 - EDUCAÇÃO'`, Assistência Social `'08 - ASSISTÊNCIA SOCIAL'`, Urbanismo `'15 - URBANISMO'`, Gestão Ambiental `'18 - GESTÃO AMBIENTAL'`, etc.), use SEMPRE `despesa_despesa` filtrando `dsc_funcao` (ex.: `WHERE dsc_funcao ILIKE '%SAÚDE%'` ou `dsc_funcao = '10 - SAÚDE'`), pois `vw_gold_execucao_despesa_credor` NÃO possui `dsc_funcao`!",
+            "Para pagamentos/empenhos consolidados por credor/fornecedor/órgão, caronas (`total_empenhado_carona > 0`) ou dispensa/inexigibilidade agregada por credor (`total_empenhado_dispensa_inexigibilidade > 0`), use `vw_gold_execucao_despesa_credor`. Já para listar notas de empenho individuais (`num_empenho`, `dat_empenho`, `dsc_empenho`, `ind_dec_licitacao`), use `empenho_empenho` (e) unido a `empenho_credorEmpenho` (ce) por `e.seq_empenho = ce.seq_empenho AND e.ano_referencia = ce.ano_referencia`.",
             "Colunas `vlr_*` em `VIEW`s não tipadas podem ser VARCHAR: use `CAST(vlr_... AS DECIMAL(18,2))` ou `TRY_CAST(vlr_... AS DECIMAL(18,2))` em somas.",
-            "Para filtrar credores reais em rankings, exclua sentinelas: `COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(num_doc_credor, '') NOT IN ('-1', '0')`.",
+            "Para filtrar credores reais em rankings, exclua sentinelas: `COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' AND COALESCE(num_doc_credor, '') NOT IN ('-1', '0', 'SEM_DOC_CREDOR')`.",
         ],
     },
     "orcamento_planejamento": {
-        "title": "Receita Orçamentária, Leis, Decretos e Alterações Orçamentárias",
+        "title": "Orçamento Municipal (LOA Prevista vs. Realizada), Receitas, Leis e Alterações Orçamentárias",
         "origin": "SICOM / TCE-MG",
         "source_family": "SICOM",
         "tables": [
+            "vw_gold_orcamento_previsto_vs_realizado",
             "receita_receita",
             "despesa_altOrcamentaria",
             "despesa_decretos",
             "despesa_leisDecretos",
         ],
         "keywords": [
+            "orcamento", "orcamentario", "orcamentaria", "orcado", "dotacao", "projetado",
             "receita", "arrecadacao", "arrecadado", "previsto", "previsao", "imposto",
             "iptu", "iss", "itbi", "icms", "fpm", "tributo", "decreto", "suplementacao",
             "alteracao orcamentaria", "credito adicional", "loa", "lei orcamentaria",
             "isf-m", "isf", "saude financeira", "receita corrente", "superavit", "deficit",
         ],
         "rules": [
-            "Em `receita_receita`, receita realizada acumulada no exercício usa `vlr_realizadoateperiodo`; receita orçada usa `vlr_previsaoatualizada` ou `vlr_previsaoinicial`.",
+            "PRIORIDADE MÁXIMA PARA ORÇAMENTO ANUAL: Para consultar o orçamento do município (LOA prevista vs. receita arrecadada e despesa empenhada/liquidada/paga por ano de 2020 a 2025), use `vw_gold_orcamento_previsto_vs_realizado`! NUNCA confunda `receita_arrecadada_realizada` parcial de 2025 com `orcamento_previsto_loa` / `orcamento_atualizado_loa`.",
+            "Para anos futuros ainda não publicados no SICOM (ex.: 2026 ou 2027), NUNCA gere `SELECT 'texto'` sem `FROM` nem filtre apenas `WHERE ano_referencia = 2027` (que retornaria 0 linhas): consulte `SELECT * FROM vw_gold_orcamento_previsto_vs_realizado ORDER BY ano_referencia` (2020 a 2025) para apresentar a série histórica oficial aprovada até 2025 como referência.",
+            "Em `receita_receita` (detalhe por rubrica/tributo), receita realizada acumulada usa `vlr_realizadoateperiodo`; receita prevista na LOA usa `vlr_previsaoatualizada` ou `vlr_previsaoinicial`.",
             "Para o Índice de Saúde Financeira Municipal (ISF-M), divida a Receita Corrente (`receita_receita` onde `dsc_cateconomica ILIKE '%Corrente%'`) pela Despesa Corrente Liquidada (`despesa_despesa` onde `dsc_naturezadespesa LIKE '3%'`).",
         ],
     },
@@ -265,14 +278,19 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
             "pessoa_municipio",
         ],
         "keywords": [
-            "servidor", "servidores", "salario", "salarios", "remuneracao", "folha",
-            "contracheque", "vencimento", "bruto", "liquido", "desconto", "cargo",
-            "lotacao", "professor", "medico", "prefeito", "secretario", "funcionalismo",
-            "pessoal", "despesa com pessoal", "cpf", "pessoa", "cadastro",
+            "servidor", "servidores", "funcionario", "funcionarios", "salario", "salarios",
+            "remuneracao", "folha", "contracheque", "vencimento", "bruto", "liquido",
+            "desconto", "cargo", "cargos", "lotacao", "professor", "medico", "prefeito",
+            "vice-prefeito", "secretario", "secretaria", "vereador", "funcionalismo",
+            "pessoal", "despesa com pessoal", "concursado", "concursados", "efetivo",
+            "efetivos", "comissionado", "comissionados", "temporario", "temporarios",
+            "estagiario", "vinculo", "sedesma", "semas", "cpf", "pessoa",
         ],
         "rules": [
-            "LACUNA DE TRANSPARÊNCIA 2020-2022: `remuneracao_municipio` possui dados apenas para 2023, 2024 e 2025. Nunca retorne R$ 0,00 para 2020-2022 sem explicitar a lacuna de publicação do TCE-MG.",
-            "Em `remuneracao_municipio` (r), `vlr_rmn_bruta` é o salário bruto e `vlr_rmn_liquida` é o líquido. Para nome e documento do servidor sem duplicação cartesiana, una SEMPRE com `pessoa_municipio` (p) por `r.seq_dim_pessoa = p.seq_dim_pessoa AND r.ano_referencia = p.ano_referencia`, ou consulte diretamente `vw_gold_folha_servidores`.",
+            "PRIORIDADE MÁXIMA PARA FOLHA E SERVIDORES: Use SEMPRE `vw_gold_folha_servidores` em vez de `remuneracao_municipio` bruta! Ela já traz `nom_servidor`, `num_cpf`, `dsc_cargo`, `dsc_lotacao`, `dsc_situacao` e `tipo_vinculo` desduplicados e higienizados.",
+            "GRANULARIDADE MENSAL (`MONTHLY_PAYROLL_SNAPSHOT`): 1 linha em `vw_gold_folha_servidores` = 1 pagamento mensal (`seq_dat_pagamento` formato YYYYMMDD, ex.: 20250801). PROIBIDO usar `COUNT(*)` para contar pessoas! Para contar servidores únicos no ano use `COUNT(DISTINCT num_cpf)` (ou `COUNT(DISTINCT seq_dim_pessoa)`); para fotografia atual do último mês (salário atual do prefeito/secretários ou quadro ativo vigente), filtre `seq_dat_pagamento = (SELECT MAX(seq_dat_pagamento) FROM vw_gold_folha_servidores WHERE ano_referencia = 2025)`.",
+            "VÍNCULOS REAIS EM `vw_gold_folha_servidores`: em `tipo_vinculo` os valores são `'Efetivo'`, `'Emprego público'`, `'Servidor temporário'`, `'Comissionado de recrutamento amplo'`, `'Estagiário/Aluno aprendiz/Bolsista'`, `'Agente político'`, `'Agente Honorífico'`. Em `dsc_situacao`, `'Efetivo (Concursado)'` + `'Emprego Público (Concursado / Seleção Pública)'` representam os concursados/seleção pública, `'Contratado / Servidor Temporário'` os contratados temporários, e `'Comissionado (Recrutamento Amplo)'` os comissionados.",
+            "LACUNA DE TRANSPARÊNCIA 2020-2022: `remuneracao_municipio` e `vw_gold_folha_servidores` possuem dados apenas para 2023, 2024 e 2025.",
         ],
     },
     "frota_veiculos": {
@@ -288,10 +306,11 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
         "keywords": [
             "frota", "veiculo", "veiculos", "placa", "combustivel", "gasolina",
             "diesel", "etanol", "abastecimento", "manutencao de veiculo", "carro",
-            "caminhao", "onibus", "ambulancia", "quilometragem", "pecas",
+            "carros", "caminhao", "onibus", "ambulancia", "quilometragem", "pecas", "maquinario",
         ],
         "rules": [
-            "Cadastro de veículos está em `frota_frota` (`seq_veiculo`, `dsc_num_placa`, `dsc_veiculo`); despesas de abastecimento e manutenção estão em `frota_gastoFrota`. Faça JOIN entre `frota_gastoFrota` e `frota_frota` APENAS por `seq_veiculo` (desduplicando `frota_frota` por `seq_veiculo`), ou consulte diretamente `vw_gold_frota_consolidada`.",
+            "PRIORIDADE MÁXIMA PARA FROTA (`CONSOLIDATED_ENTITY_VIEW`): Consulte SEMPRE `vw_gold_frota_consolidada` ISOLADAMENTE! Ela JÁ UNE `frota_frota` + `frota_gastoFrota` (`vlr_gasto`, `dsc_tipo_gasto`): PROIBIDO fazer `JOIN` de `vw_gold_frota_consolidada` com `frota_gastoFrota` ou `frota_frota` (causaria produto cartesiano e multiplicaria `vlr_gasto`!).",
+            "Para contar quantos veículos a Prefeitura possui no total, use `COUNT(DISTINCT seq_veiculo)` em `vw_gold_frota_consolidada` SEM filtrar `ano_referencia = 2025`! Filtre `ano_referencia = YYYY` APENAS para somar `SUM(vlr_gasto)` anual. Para filtrar apenas veículos emplacados (excluindo maquinário pesado isento e sem placa), use `status_cadastro_frota = 'CADASTRADO'`.",
         ],
     },
     "educacao_saude": {
@@ -408,7 +427,123 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
     },
 }
 
-# Tabelas-ponte essenciais incluídas quando a fonte SICOM está permitida
+# Semântica declarativa de granularidade temporal e regra de contagem (Semantic Layer Pattern)
+TABLE_GRAIN_SPEC: Dict[str, tuple[str, str]] = {
+    "vw_gold_orcamento_previsto_vs_realizado": (
+        "ANNUAL_SUMMARY_VIEW",
+        "1 linha = 1 exercício anual (2020-2025). USE ESTA GOLD VIEW COMO PRIORIDADE MÁXIMA para orçamento municipal, LOA prevista vs. receita arrecadada e despesa executada! Para anos futuros (2026, 2027), consulte a série 2020-2025 desta view sem filtrar o ano inexistente.",
+    ),
+    "vw_gold_folha_servidores": (
+        "MONTHLY_PAYROLL_SNAPSHOT",
+        "1 linha = 1 vínculo/contracheque mensal (`seq_dat_pagamento` formato YYYYMMDD). PROIBIDO `COUNT(*)` para contar servidores! Use `COUNT(DISTINCT num_cpf)` no ano ou filtre o último mês `seq_dat_pagamento = (SELECT MAX(seq_dat_pagamento) FROM vw_gold_folha_servidores WHERE ano_referencia = 2025)`. Consulte `dsc_situacao` / `tipo_vinculo` para separar concursados, temporários e comissionados.",
+    ),
+    "remuneracao_municipio": (
+        "MONTHLY_PAYROLL_SNAPSHOT",
+        "1 linha = 1 contracheque mensal bruto (2023-2025). EVITE consultar diretamente: prefira SEMPRE `vw_gold_folha_servidores`, pois na tabela bruta `dsc_sit_serv_pens` e `dsc_situacao` possuem lacunas e siglas não higienizadas.",
+    ),
+    "vw_gold_frota_consolidada": (
+        "CONSOLIDATED_ENTITY_VIEW",
+        "View já pré-unificada (`frota_frota` + `frota_gastoFrota` com `vlr_gasto`, `dsc_tipo_gasto`, `status_cadastro_frota`). PROIBIDO fazer JOIN desta view com `frota_gastoFrota`! Para contar a frota geral da Prefeitura (`qual a frota` / `quantos veículos`), use `SELECT status_cadastro_frota, COUNT(DISTINCT seq_veiculo) AS qtd_veiculos FROM vw_gold_frota_consolidada GROUP BY status_cadastro_frota` SEM filtrar `ano_referencia` (mostrando emplacados, maquinário pesado isento e pré-2020 ativos). Filtre `status_cadastro_frota = 'CADASTRADO'` apenas quando a pergunta pedir especificamente veículos emplacados, e filtre `ano_referencia = YYYY` apenas para gastos anuais.",
+    ),
+    "frota_frota": (
+        "INCREMENTAL_CADASTRE_LOG",
+        "Tabela bruta de tombamento incremental (`ano_referencia` indica apenas o ano de registro inicial no SICOM). PROIBIDO filtrar `ano_referencia = 2025` para contar a frota total! Prefira SEMPRE `vw_gold_frota_consolidada` com `COUNT(DISTINCT seq_veiculo)`.",
+    ),
+    "vw_gold_fornecedores_qsa_360": (
+        "CONSOLIDATED_ENTITY_VIEW",
+        "1 linha = 1 fornecedor único consolidado por `num_doc_credor` (CNPJ/CPF), com `total_pago_historico` (2020-2025) e `nom_socio`. Não possui coluna `ano_referencia` (use `primeiro_ano_pagamento` / `ultimo_ano_pagamento`).",
+    ),
+    "receita_qsa_fornecedores": (
+        "CONSOLIDATED_ENTITY_VIEW",
+        "1 linha = 1 empresa fornecedora PJ consolidada por `num_cnpj` com porte, CNAE e QSA.",
+    ),
+    "vw_gold_execucao_despesa_credor": (
+        "ANNUAL_FLOW",
+        "1 linha = 1 credor agregado por `(ano_referencia, seq_orgao, num_doc_credor)` com `total_empenhado`, `total_liquidado`, `total_pago`, `total_empenhado_carona` e `total_empenhado_dispensa_inexigibilidade`. ATENÇÃO: NÃO possui `dsc_funcao` nem `ind_dec_licitacao`! Para gastos por função temática (Saúde, Educação, Assistência Social, etc.), use `despesa_despesa` (`dsc_funcao`). Para empenhos individuais (`num_empenho`, `ind_dec_licitacao`), use `empenho_empenho` unido a `empenho_credorEmpenho`.",
+    ),
+    "vw_gold_contratos_vigencia_aditivos": (
+        "ANNUAL_FLOW",
+        "1 linha = 1 contrato administrativo com `seq_contrato`, `num_contrato`, `num_ano_contrato`, `seq_orgao`, `cod_orgao`, `nom_orgao`, `nom_contratado`, `num_doc_credor`, `dsc_objetocontrato`, `vlr_original_contrato`, `qtd_aditivos`, `vlr_total_aditivos`, `vlr_global_atualizado` e `pct_acrescimo_aditivos`. Use `COUNT(DISTINCT seq_contrato)` para contagem.",
+    ),
+    "vw_gold_conflito_interesses_licitacao": (
+        "CONSOLIDATED_ENTITY_VIEW",
+        "1 linha = 1 vínculo societário entre servidor público municipal e empresa fornecedora/licitante.",
+    ),
+}
+
+# Colunas categóricas prioritárias para Auto-Profiling de valores reais no startup (CHESS Value Profiling)
+PROFILED_CATEGORICAL_COLUMNS: Set[str] = {
+    "dsc_situacao",
+    "tipo_vinculo",
+    "situacao_funcional",
+    "cargo_politico",
+    "dsc_sgl_cargo",
+    "dsc_regime",
+    "status_cadastro_frota",
+    "dsc_situacaoveiculo",
+    "dsc_tipo_veiculo",
+    "dsc_tipo_gasto",
+    "status_exercicio",
+    "dsc_modalidade_licitacao",
+    "dsc_modalidade",
+    "ind_dec_licitacao",
+    "dsc_cateconomica",
+    "dsc_origem",
+    "dsc_funcao",
+    "nom_orgao",
+    "tipo_orgao",
+    "dsc_tipo_resp",
+    "porte_empresa",
+    "situacao_fiscal_lrf",
+    "nota_capag_estimada",
+    "rede",
+    "etapa_ensino",
+    "dsc_lotacao",
+    "dsc_cargo",
+}
+
+PROFILED_TABLES_PRIORITY: Set[str] = {
+    "vw_gold_orcamento_previsto_vs_realizado",
+    "vw_gold_folha_servidores",
+    "vw_gold_frota_consolidada",
+    "vw_gold_execucao_despesa_credor",
+    "vw_gold_contratos_vigencia_aditivos",
+    "vw_gold_fornecedores_qsa_360",
+    "vw_gold_conflito_interesses_licitacao",
+    "remuneracao_municipio",
+    "frota_frota",
+    "frota_gastofrota",
+    "despesa_despesa",
+    "receita_receita",
+    "empenho_empenho",
+    "licitacao_licitacao",
+    "licitacao_dispensa",
+    "orgao_orgao",
+    "orgao_orgaoresp",
+    "receita_qsa_fornecedores",
+    "siconfi_finbra_indicadores",
+    "inep_ideb_educacao",
+    "datasus_siops_saude",
+}
+
+
+def _infer_grain_and_rule(table_low: str, source_family: str) -> tuple[str, str]:
+    if table_low in TABLE_GRAIN_SPEC:
+        return TABLE_GRAIN_SPEC[table_low]
+    if source_family in ("IBGE", "SICONFI", "INEP", "DATASUS"):
+        return (
+            "ANNUAL_INDICATOR_SERIES",
+            "1 linha = 1 indicador anual oficial (ou por rede/etapa no IDEB). Filtre ou agrupe por `ano_referencia`.",
+        )
+    if table_low in ("pessoa_municipio", "orgao_orgao", "orgao_orgaounidade", "orgao_orgaoresp"):
+        return (
+            "ANNUAL_CADASTRE_SNAPSHOT",
+            "Cadastro replicado por exercício/remessa: sempre use `DISTINCT` pela chave natural (`seq_orgao`, `seq_unidade`, `num_documento`) antes de contar ou fazer JOIN.",
+        )
+    return (
+        "ANNUAL_FLOW",
+        " Fluxo transacional anualizado: filtre `ano_referencia` ou agrupe com `GROUP BY ano_referencia`. Em 2025 reflete execução parcial acumulada.",
+    )
 CORE_BRIDGE_TABLES: List[str] = [
     "empenho_empenho",
     "despesa_despesa",
@@ -436,6 +571,10 @@ class DataCatalog:
         self.conn = conn
         self.tenant_id = tenant_id
         self.tables: Dict[str, TableMetadata] = {}
+        self.min_data_year: int = 2020
+        self.max_data_year: int = 2025
+        self.latest_remittance_month: int = 8
+        self.latest_remittance_human: str = "agosto de 2025 (última remessa consolidada no SICOM/TCE-MG)"
         self._build_catalog()
 
     def _build_catalog(self) -> None:
@@ -530,6 +669,8 @@ class DataCatalog:
                     for c in cols
                     if c.name.lower().startswith(("seq_", "id_", "cod_", "num_doc", "num_cnpj", "ano_referencia"))
                 ]
+                grain_type, counting_rule = _infer_grain_and_rule(t_low, source_fam)
+                is_gold = t_low.startswith("vw_gold_")
                 self.tables[t_low] = TableMetadata(
                     table_name=real_name,
                     friendly_name=f"[{source_fam}] {seg_info['title']} — {real_name}",
@@ -539,6 +680,9 @@ class DataCatalog:
                     description=f"Tabela oficial '{real_name}' da fonte '{source_fam}' ({seg_info['title']}).",
                     update_frequency="Mensal / Anual",
                     access_level="public",
+                    grain_type=grain_type,
+                    counting_rule=counting_rule.strip(),
+                    is_gold_view=is_gold,
                     years_available=yrs,
                     source_files=files,
                     join_keys=join_keys[:8],
@@ -546,6 +690,116 @@ class DataCatalog:
                     business_rules=seg_info["rules"],
                     columns=cols,
                 )
+
+        if self.conn is not None:
+            self._profile_categorical_columns()
+            self._profile_temporal_freshness()
+
+    def _profile_temporal_freshness(self) -> None:
+        """
+        Inspeciona no startup o teto real de atualização das remessas carregadas no DuckDB
+        para que o agente diferencie sempre a data civil de hoje (`date.today()`) da última
+        competência efetivamente publicada nos dados abertos.
+        """
+        if self.conn is None:
+            return
+        months_pt = {
+            1: "janeiro", 2: "fevereiro", 3: "março", 4: "abril",
+            5: "maio", 6: "junho", 7: "julho", 8: "agosto",
+            9: "setembro", 10: "outubro", 11: "novembro", 12: "dezembro",
+        }
+        cur = self.conn.cursor()
+        sicom_years: Set[int] = set()
+        for meta in self.tables.values():
+            if meta.source_family == "SICOM":
+                sicom_years.update(y for y in meta.years_available if 1990 <= y <= 2100)
+        if sicom_years:
+            self.min_data_year = min(sicom_years)
+            self.max_data_year = max(sicom_years)
+
+        best_month: Optional[int] = None
+        if "vw_gold_orcamento_previsto_vs_realizado" in self.tables:
+            try:
+                row = cur.execute(
+                    "SELECT ano_referencia, GREATEST(COALESCE(ultimo_mes_despesa, 0), COALESCE(ultimo_mes_receita, 0)) "
+                    "FROM vw_gold_orcamento_previsto_vs_realizado "
+                    "WHERE COALESCE(despesa_empenhada, 0) > 0 OR COALESCE(receita_arrecadada_realizada, 0) > 0 "
+                    "ORDER BY ano_referencia DESC LIMIT 1"
+                ).fetchone()
+                if row and row[0]:
+                    self.max_data_year = int(row[0])
+                    if row[1] and 1 <= int(row[1]) <= 12:
+                        best_month = int(row[1])
+            except Exception:
+                pass
+
+        if "vw_gold_folha_servidores" in self.tables:
+            try:
+                prow = cur.execute(
+                    "SELECT MAX(CAST(seq_dat_pagamento AS VARCHAR)) FROM vw_gold_folha_servidores"
+                ).fetchone()
+                if prow and prow[0] and len(str(prow[0])) >= 6 and str(prow[0])[:6].isdigit():
+                    p_yr = int(str(prow[0])[:4])
+                    p_mo = int(str(prow[0])[4:6])
+                    if p_yr >= self.max_data_year and 1 <= p_mo <= 12:
+                        self.max_data_year = p_yr
+                        best_month = max(best_month or 0, p_mo)
+            except Exception:
+                pass
+
+        if best_month and 1 <= best_month <= 12:
+            self.latest_remittance_month = best_month
+            m_name = months_pt[best_month]
+            suffix = (
+                f"exercício {self.max_data_year} em remessa parcial acumulada no SICOM/TCE-MG"
+                if best_month < 12
+                else f"exercício {self.max_data_year} encerrado (12 meses) no SICOM/TCE-MG"
+            )
+            self.latest_remittance_human = f"{m_name} de {self.max_data_year} ({suffix})"
+        else:
+            self.latest_remittance_human = f"exercício {self.max_data_year} (última remessa consolidada no SICOM/TCE-MG)"
+
+    def _profile_categorical_columns(self) -> None:
+        """
+        Auto-Profiling de valores categóricos reais no startup (inspirado em CHESS, Stanford 2024).
+        Inspeciona colunas VARCHAR categóricas de baixa/média cardinalidade nas Gold Views e tabelas-chave
+        para injetar valores distintos reais diretamente no DDL dinâmico enviado à LLM.
+        """
+        if self.conn is None:
+            return
+        cur = self.conn.cursor()
+        for t_low in sorted(PROFILED_TABLES_PRIORITY):
+            meta = self.tables.get(t_low)
+            if not meta:
+                continue
+            for col in meta.columns:
+                c_low = col.name.lower()
+                if c_low not in PROFILED_CATEGORICAL_COLUMNS:
+                    continue
+                if "VARCHAR" not in col.physical_type.upper():
+                    continue
+                col_ident = f'"{col.name}"'
+                limit_n = 10 if meta.is_gold_view else 7
+                try:
+                    rows = cur.execute(
+                        f"SELECT TRIM(CAST({col_ident} AS VARCHAR)) AS val, COUNT(*) AS cnt "
+                        f"FROM {meta.table_name} "
+                        f"WHERE {col_ident} IS NOT NULL "
+                        f"AND TRIM(CAST({col_ident} AS VARCHAR)) NOT IN ('', '-1', '0', 'NULL') "
+                        f"GROUP BY 1 ORDER BY cnt DESC LIMIT {limit_n}"
+                    ).fetchall()
+                    samples: List[str] = []
+                    for val, _cnt in rows:
+                        if not val:
+                            continue
+                        s_val = str(val).strip()
+                        if len(s_val) > 64:
+                            s_val = s_val[:61] + "..."
+                        samples.append(s_val)
+                    if samples:
+                        col.sample_values = samples
+                except Exception:
+                    continue
 
     def get_allowed_table_names(
         self,
@@ -734,23 +988,55 @@ class DataCatalog:
             allowed_sources=norm_sources,
         )
 
-    def build_dynamic_ddl(self, table_names: List[str]) -> str:
+    def build_dynamic_ddl(self, table_names: List[str], role: Optional[str] = None) -> str:
         """
-        Gera representação compacta e fiel aos tipos reais e semânticos do DuckDB apenas para as tabelas selecionadas.
+        Gera representação compacta, semântica e fiel aos tipos e valores categóricos reais do DuckDB.
+        Ordena Gold Views (`vw_gold_*`) primeiro como Camada Semântica Primária recomendada,
+        explicitando `grain_type`, `counting_rule` e `sample_values` auto-perfilados.
         """
+        gold_tables = [t for t in table_names if t.lower().startswith("vw_gold_")]
+        base_tables = [t for t in table_names if not t.lower().startswith("vw_gold_")]
+        prioritized = gold_tables + base_tables
+
         lines: List[str] = []
-        for tname in table_names:
+        if gold_tables:
+            lines.append(
+                "-- === CAMADA SEMÂNTICA PRIMÁRIA (GOLD VIEWS PRÉ-DESDUPLICADAS — USE PREFERENCIALMENTE!) ==="
+            )
+
+        emitted_base_header = False
+        for tname in prioritized:
             meta = self.tables.get(tname.lower())
             if not meta:
                 continue
-            yrs_str = f"{min(meta.years_available)}-{max(meta.years_available)}" if meta.years_available else "2020-2025"
+            if not meta.is_gold_view and gold_tables and not emitted_base_header:
+                lines.append("-- === TABELAS BASE DETALHADAS (USE QUANDO PRECISAR DE GRANULARIDADE EXTRA) ===")
+                emitted_base_header = True
+
+            yrs_str = (
+                f"{min(meta.years_available)}-{max(meta.years_available)}"
+                if meta.years_available
+                else "2020-2025"
+            )
+            priority_tag = " | PRIORIDADE MÁXIMA (GOLD VIEW)" if meta.is_gold_view else ""
             col_strs = []
             for c in meta.columns:
                 cname_fmt = f'"{c.name}"' if (" " in c.name or "-" in c.name) else c.name
-                col_strs.append(f"{cname_fmt} ({c.semantic_type})")
+                if c.sample_values:
+                    vals_preview = ", ".join(f"'{v}'" for v in c.sample_values[:6])
+                    col_strs.append(f"{cname_fmt} ({c.semantic_type} | valores reais: [{vals_preview}])")
+                else:
+                    col_strs.append(f"{cname_fmt} ({c.semantic_type})")
+
             if col_strs:
-                lines.append(f"-- [Fonte: {meta.source_family} | Segmento: {meta.segment} | Cobertura: {yrs_str}]")
+                lines.append(
+                    f"-- [Fonte: {meta.source_family} | Segmento: {meta.segment} | Cobertura: {yrs_str} | Grão: {meta.grain_type}{priority_tag}]"
+                )
+                if meta.counting_rule:
+                    lines.append(f"-- Regra de Grão/Contagem ({meta.table_name}): {meta.counting_rule}")
                 lines.append(f"TABLE {meta.table_name}: {', '.join(col_strs)};")
             else:
-                lines.append(f"TABLE {meta.table_name} -- [Fonte: {meta.source_family} | Cobertura: {yrs_str}];")
+                lines.append(
+                    f"TABLE {meta.table_name} -- [Fonte: {meta.source_family} | Cobertura: {yrs_str} | Grão: {meta.grain_type}];"
+                )
         return "\n".join(lines)

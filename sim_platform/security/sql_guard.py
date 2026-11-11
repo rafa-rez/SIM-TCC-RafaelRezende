@@ -336,6 +336,28 @@ class SQLGuard:
                 error_message="A consulta deve referenciar pelo menos uma tabela do catálogo de dados públicos.",
             )
 
+        # 7B. Proteção Semântica Anti-Fan-Out: impedir JOIN redundante entre Gold View pré-unificada e sua tabela-fato bruta
+        gold_view_raw_children = {
+            "vw_gold_frota_consolidada": {"frota_gastofrota", "frota_frota"},
+            "vw_gold_folha_servidores": {"remuneracao_municipio"},
+            "vw_gold_contratos_vigencia_aditivos": {"contrato_termocontrato", "contrato_contcontrato"},
+        }
+        base_set = set(base_tables)
+        for gv_name, raw_set in gold_view_raw_children.items():
+            overlap = base_set.intersection(raw_set)
+            if gv_name in base_set and overlap:
+                bad_raw = ", ".join(sorted(overlap))
+                return SQLValidationResult(
+                    is_valid=False,
+                    error_code="REDUNDANT_GOLD_VIEW_JOIN",
+                    error_message=(
+                        f"ERRO SEMÂNTICO DE FAN-OUT (PRODUTO CARTESIANO): A Gold View '{gv_name}' JÁ INCORPORA "
+                        f"os registros e colunas de ({bad_raw})! Fazer JOIN entre '{gv_name}' e ({bad_raw}) "
+                        f"multiplica as somas indevidamente. Reescreva a query consultando APENAS '{gv_name}' "
+                        f"(em frota, use `vlr_gasto`, `dsc_tipo_gasto` e `status_cadastro_frota = 'CADASTRADO'` diretamente nela)."
+                    ),
+                )
+
         # 8. Aplicar LIMIT máximo de proteção em SELECT, UNION, INTERSECT, EXCEPT e GROUP BY
         limit_applied = False
         if enforce_limit and self.max_limit > 0 and isinstance(root, (exp.Select, exp.Union, exp.Intersect, exp.Except)):
@@ -631,6 +653,16 @@ def mask_sensitive_rows(
         out_rows.append(new_row)
 
     return out_rows, masked_count
+
+
+def mask_text_cpfs(text: str) -> str:
+    """
+    Mascara qualquer CPF de 11 dígitos presente em texto corrido (`institutional_response` / `answer_text`)
+    quando a requisição não possui token SSO/Admin autenticado, preservando CNPJs (14 dígitos) e anos.
+    """
+    if not text:
+        return ""
+    return _EMBEDDED_CPF_RE.sub(r"***. \2.\3-**".replace(" ", ""), text)
 
 
 @dataclass

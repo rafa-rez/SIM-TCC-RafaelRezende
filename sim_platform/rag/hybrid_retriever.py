@@ -39,10 +39,66 @@ ATO_TYPE_KEYWORDS: List[Tuple[str, List[str]]] = [
     ("PORTARIA", ["portaria"]),
     ("DECRETO", ["decreto"]),
     ("LEI", ["lei complementar", "lei municipal", "lei n", "lei nº", "projeto de lei"]),
+    ("DISPENSA", ["dispensa"]),
     ("TERMO ADITIVO", ["termo aditivo", "aditivo contratual", "aditamento"]),
     ("EXTRATO CONTRATUAL", ["extrato de contrato", "extrato contratual", "termo de fomento", "termo de colaboracao"]),
-    ("EDITAL / LICITAÇÃO", ["edital", "aviso de licitacao", "pregao", "concorrencia", "dispensa", "inexigibilidade"]),
+    ("EDITAL / LICITAÇÃO", ["edital", "aviso de licitacao", "pregao", "concorrencia", "inexigibilidade"]),
 ]
+
+# Eixo 6.2: Expansão de Sinônimos Institucionais Municipais (Contextual BM25 Query Expansion)
+INSTITUTIONAL_SYNONYMS: List[Tuple[Tuple[str, ...], List[str]]] = [
+    (("meio ambiente", "sedesma", "sustentavel", "ambiental"), ["sedesma", "desenvolvimento", "sustentavel", "meio", "ambiente"]),
+    (("assistencia social", "semas", "cras", "creas"), ["semas", "assistencia", "social"]),
+    (("saae", "agua e esgoto", "saneamento"), ["saae", "autonomo", "agua", "esgoto"]),
+    (("carona", "adesao a ata", "registro de precos", "adesao"), ["adesao", "registro", "precos", "ata", "14133", "decreto", "licitacao"]),
+    (("secretario", "secretaria municipal", "titular da pasta"), ["secretario", "nomeia", "designa", "portaria", "cargo", "comissionado"]),
+    (("prefeito", "gabinete"), ["prefeito", "executivo", "decreto", "portaria"]),
+    (("orcamento", "suplementacao", "loa", "credito adicional"), ["orcamento", "credito", "suplementar", "lei", "decreto"]),
+]
+
+
+def build_chunk_contextual_header(raw: Dict[str, Any]) -> str:
+    """
+    Eixo 6.1 (Anthropic Contextual Retrieval, 2024): Garante que todo chunk possua um cabeçalho
+    contextual estruturado indexado tanto no BM25 quanto disponível para síntese.
+    """
+    existing = (raw.get("contextual_header") or "").strip()
+    if existing:
+        return existing
+    content = raw.get("page_content") or ""
+    src = raw.get("source") or "Jornal Oficial de Caeté"
+    ano = raw.get("ano_edicao") or "2023-2025"
+    tipo = (raw.get("tipo_ato") or "GERAL / OUTROS").upper()
+    orgaos: List[str] = []
+    norm_c = content.upper()
+    if "SEDESMA" in norm_c or "MEIO AMBIENTE" in norm_c:
+        orgaos.append("SEDESMA / Secretaria de Meio Ambiente")
+    if "SEMAS" in norm_c or "ASSISTENCIA SOCIAL" in norm_c or "ASSISTÊNCIA SOCIAL" in norm_c:
+        orgaos.append("SEMAS / Assistência Social")
+    if "EDUCACAO" in norm_c or "EDUCAÇÃO" in norm_c:
+        orgaos.append("Secretaria de Educação")
+    if "SAUDE" in norm_c or "SAÚDE" in norm_c:
+        orgaos.append("Secretaria de Saúde")
+    if "LIMPEZA URBANA" in norm_c or "OBRAS" in norm_c:
+        orgaos.append("Obras / Serviços Urbanos")
+    if "14.133" in norm_c or "LICITA" in norm_c:
+        orgaos.append("Licitações e Contratos (Lei 14.133/2021)")
+    org_str = ", ".join(orgaos) if orgaos else "Administração Pública Municipal"
+    return f"[Município: Caeté/MG | Fonte: Jornal Oficial ({src}) | Ano: {ano} | Tipo de Ato: {tipo} | Órgãos/Cargos: {org_str}]"
+
+
+def expand_query_with_institutional_synonyms(query: str) -> Tuple[List[str], List[str]]:
+    base_tokens = tokenize_bm25(query)
+    q_norm = normalize_text_for_dedup(query)
+    expanded = list(base_tokens)
+    expansions_applied: List[str] = []
+    for triggers, syn_tokens in INSTITUTIONAL_SYNONYMS:
+        if any(tr in q_norm for tr in triggers):
+            for st in syn_tokens:
+                if st not in expanded and st not in PT_STOPWORDS:
+                    expanded.append(st)
+                    expansions_applied.append(st)
+    return expanded, expansions_applied
 
 RE_ACT_NUMBER = re.compile(
     r"(?:n[º°o\.]\s*|(?:lei|decreto|portaria|edital|resolu[cç][aã]o|aditivo|contrato|dispensa|inexigibilidade)\s+(?:municipal\s+)?(?:n[º°o\.]?\s*)?)(\d{1,5}(?:\.\d{3})*(?:/\d{2,4})?)",
@@ -52,7 +108,7 @@ RE_ACT_NUMBER = re.compile(
 RE_CNPJ = re.compile(r"\b\d{2}\.?\d{3}\.?\d{3}/\d{4}-\d{2}\b")
 
 RE_ACT_HEADER_CANON = re.compile(
-    r"\b(DECRETO|LEI COMPLEMENTAR|LEI|PORTARIA|EDITAL|RESOLU[CÇ][AÃ]O|EXTRATO DE CONTRATO|TERMO ADITIVO)\s+(?:MUNICIPAL\s+)?"
+    r"\b(DECRETO|LEI COMPLEMENTAR|LEI|PORTARIA|EDITAL|RESOLU[CÇ][AÃ]O|EXTRATO DE CONTRATO|TERMO ADITIVO|DISPENSA(?:\s+DE\s+LICITA[CÇ][AÃ]O)?)\s+(?:MUNICIPAL\s+)?"
     r"(?:N[ºO°\.]?\s*\.?\s*)?(\d{1,5}(?:\.\d{3})*)\s*/\s*(\d{2,4})",
     re.IGNORECASE,
 )
@@ -134,12 +190,19 @@ class RetrievedChunk:
     numero_edicao: Optional[str] = None
     cnpjs_mencionados: List[str] = field(default_factory=list)
     match_stage: str = "bm25_hybrid"  # "lexical_exact" | "bm25_filtered" | "bm25_hybrid"
+    contextual_header: str = ""
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "chunk_id": self.chunk_id,
             "score": round(self.score, 4),
             "page_content": self.page_content,
+            "contextual_header": self.contextual_header,
+            "contextualized_content": (
+                f"{self.contextual_header} {self.page_content}".strip()
+                if self.contextual_header
+                else self.page_content
+            ),
             "source": self.source,
             "tipo_ato": self.tipo_ato,
             "ano_edicao": self.ano_edicao,
@@ -174,12 +237,16 @@ class HybridRAGRetriever:
         self._doc_lens.clear()
         self._doc_tfs.clear()
         self._doc_norms.clear()
+        self._ctx_headers: List[str] = []
 
         for raw in self.corpus_chunks:
             content = raw.get("page_content") or ""
-            norm = normalize_text_for_dedup(content)
+            ctx_hdr = build_chunk_contextual_header(raw)
+            self._ctx_headers.append(ctx_hdr)
+            indexed_text = f"{ctx_hdr} {content}"
+            norm = normalize_text_for_dedup(indexed_text)
             self._doc_norms.append(norm)
-            tokens = tokenize_bm25(content)
+            tokens = tokenize_bm25(indexed_text)
             tf = Counter(tokens)
             self._doc_tfs.append(tf)
             self._doc_lens.append(len(tokens))
@@ -276,13 +343,15 @@ class HybridRAGRetriever:
         target_tipo = signals["tipo_ato"]
         act_nums = signals["act_numbers"]
         cnpjs = signals["cnpjs"]
-        q_tokens = tokenize_bm25(query)
+        q_tokens, synonyms_added = expand_query_with_institutional_synonyms(query)
+        signals["synonyms_expanded"] = synonyms_added
 
         lexical_hits: List[RetrievedChunk] = []
         dense_hits: List[RetrievedChunk] = []
 
         for idx, raw in enumerate(self.corpus_chunks):
             content = raw.get("page_content") or ""
+            ctx_hdr = self._ctx_headers[idx] if idx < len(self._ctx_headers) else build_chunk_contextual_header(raw)
             source = raw.get("source") or "Jornal Opinião (Diário Oficial de Caeté)"
             tipo_ato = (raw.get("tipo_ato") or "GERAL / OUTROS").upper()
             cnpjs_list = raw.get("cnpjs_Mencionados") or raw.get("cnpjs_mencionados") or []
@@ -298,22 +367,32 @@ class HybridRAGRetriever:
             base_score = float(raw.get("score", bm25_val)) if "score" in raw else bm25_val
 
             matched_act = False
+            raw_num_ato = str(raw.get("numero_ato") or "").lower().lstrip("0")
             for num in act_nums:
-                num_norm = num.lower()
+                num_norm = num.lower().lstrip("0") or "0"
+                if raw_num_ato and (raw_num_ato == num_norm or raw_num_ato.startswith(f"{num_norm}/")):
+                    matched_act = True
+                    break
                 if re.search(rf"(?:\b|n[º°o])0*{re.escape(num_norm)}\b", norm_content):
                     matched_act = True
                     break
 
+            type_match = bool(target_tipo and target_tipo in tipo_ato)
+            total_score = base_score + (1.2 if matched_act else 0.0) + (0.45 if (matched_act and type_match) else (0.25 if type_match else 0.0))
+            if total_score <= 0.01 and not cnpjs:
+                continue
+
             chunk_obj = RetrievedChunk(
                 chunk_id=raw.get("id") or deterministic_chunk_id(source, content),
-                score=base_score + (1.0 if matched_act else 0.0) + (0.25 if (target_tipo and target_tipo in tipo_ato) else 0.0),
+                score=total_score,
                 page_content=content,
                 source=source,
                 tipo_ato=tipo_ato,
                 ano_edicao=raw.get("ano_edicao"),
                 numero_edicao=raw.get("numero_edicao"),
                 cnpjs_mencionados=cnpjs_list,
-                match_stage="lexical_exact" if matched_act else ("bm25_filtered" if (target_tipo and target_tipo in tipo_ato) else "bm25_hybrid"),
+                match_stage="lexical_exact" if matched_act else ("bm25_filtered" if type_match else "bm25_hybrid"),
+                contextual_header=ctx_hdr,
             )
 
             if matched_act:
@@ -327,6 +406,7 @@ class HybridRAGRetriever:
         combined = lexical_hits + dense_hits
         final_chunks = self.deduplicate_chunks(combined, top_k=top_k) if deduplicate else combined[:top_k]
         sources = sorted({c.source for c in final_chunks if c.source})
+        max_score = round(max((c.score for c in final_chunks), default=0.0), 4)
 
         return {
             "status": "sucesso",
@@ -336,6 +416,7 @@ class HybridRAGRetriever:
             "corpus_size": len(self.corpus_chunks),
             "total_candidates": len(combined),
             "returned_count": len(final_chunks),
+            "max_relevance_score": max_score,
             "chunks": [c.to_dict() for c in final_chunks],
             "fontes_utilizadas": sources,
         }
