@@ -18,7 +18,8 @@ import unicodedata
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from datetime import date
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 from sim_platform.security.sql_guard import PromptSafetyResult, check_prompt_safety
 
@@ -185,6 +186,106 @@ class SemanticIntentGuardrail:
         self.gazette_name = gazette_name or f"Diário Oficial de {municipality_name}/{state_uf}"
         self._cache_ttl_seconds: float = 3600.0
         self._decision_cache: OrderedDict[str, Tuple[float, SemanticGuardrailDecision]] = OrderedDict()
+        self.official_districts: List[str] = self._load_official_districts()
+
+    def _load_official_districts(self) -> List[str]:
+        ws_root = Path(__file__).resolve().parents[2]
+        tenants_dir = ws_root / "tenants"
+        if tenants_dir.exists():
+            for tf in tenants_dir.glob("*.json"):
+                if tf.name.startswith("_"):
+                    continue
+                try:
+                    td = json.loads(tf.read_text(encoding="utf-8"))
+                    if str(td.get("ibge_code") or "").strip() == str(self.ibge_code).strip():
+                        dists = [str(d).strip() for d in (td.get("official_districts") or []) if d]
+                        if dists:
+                            return dists
+                except Exception:
+                    continue
+        return [self.municipality_name]
+
+    @staticmethod
+    def _get_ibge_municipalities_norm() -> Set[str]:
+        cache_attr = "_IBGE_MUNS_CACHE"
+        cached_set = getattr(SemanticIntentGuardrail, cache_attr, None)
+        if cached_set is not None:
+            return cached_set
+        ws_root = Path(__file__).resolve().parents[2]
+        ibge_file = ws_root / "avaliacao" / "dados" / "ibge_municipios_br_norm.json"
+        muns: Set[str] = set()
+        if ibge_file.exists():
+            try:
+                muns = {str(x).strip() for x in json.loads(ibge_file.read_text(encoding="utf-8")) if x}
+            except Exception:
+                muns = set()
+        setattr(SemanticIntentGuardrail, cache_attr, muns)
+        return muns
+
+    def _mentions_real_other_municipality(self, question: str) -> bool:
+        """
+        Validação determinística contra os 5.571 municípios oficiais do IBGE:
+        Impede que bairros urbanos (ex.: José Brandão), distritos locais, ruas, córregos ou escolas
+        sejam classificados falsamente como `out_of_scope_municipality`.
+        """
+        q_norm = re.sub(r"[^a-z0-9\s]", " ", _norm_ascii(question))
+        q_padded = f" {q_norm} "
+        own_names = {_norm_ascii(self.municipality_name)}
+        m_parts = _norm_ascii(self.municipality_name).split()
+        if len(m_parts) >= 2 and len(m_parts[0]) >= 4:
+            own_names.add(m_parts[0])
+        for d in self.official_districts:
+            own_names.add(_norm_ascii(d))
+        # Se a própria cidade ou distrito oficial está explícito e nenhuma outra cidade real aparece, é local
+        muns_br = self._get_ibge_municipalities_norm()
+        if not muns_br:
+            return True
+
+        # Palavras comuns da língua portuguesa que coincidem com nomes de municípios brasileiros
+        ambiguous_common_words = {
+            "saude", "luz", "obra", "obras", "bandeira", "passos", "liberdade", "uniao",
+            "divino", "cristais", "moema", "pains", "congonhas", "campanha", "prata",
+            "lagoa", "registro", "socorro", "reforma", "gloria", "vitoria", "conquista",
+            "esperanca", "alegria", "fortuna", "alianca", "amparo", "apoio", "auxilio",
+        }
+        words = q_norm.split()
+        # Marca posições pertencentes ao nome do próprio município ou aos seus distritos oficiais
+        # (evita que "Martins" ou "Guimarães" dentro do distrito "Martins Guimarães" case com município de outro estado!)
+        protected_indices: Set[int] = set()
+        for own_phrase in own_names:
+            own_toks = own_phrase.split()
+            if not own_toks:
+                continue
+            k_len = len(own_toks)
+            for idx_w in range(0, len(words) - k_len + 1):
+                if words[idx_w : idx_w + k_len] == own_toks:
+                    protected_indices.update(range(idx_w, idx_w + k_len))
+
+        # Verifica n-gramas de 4 até 1 palavras
+        for n in (4, 3, 2, 1):
+            for i in range(0, len(words) - n + 1):
+                if any(pos in protected_indices for pos in range(i, i + n)):
+                    continue
+                cand = " ".join(words[i : i + n])
+                if len(cand) < 3 or cand in own_names:
+                    continue
+                if cand in muns_br:
+                    if n == 1 and cand in ambiguous_common_words:
+                        prev_ctx = " ".join(words[max(0, i - 3) : i])
+                        if not re.search(r"\b(prefeitura de|municipio de|cidade de|em|cidades como)\b$", prev_ctx):
+                            continue
+                    # Se veio precedido de indicador de logradouro/equipamento local ("bairro", "praia", "parque", "jardim", etc.), é local!
+                    prev_word = words[i - 1] if i > 0 else ""
+                    prev_two = " ".join(words[max(0, i - 2) : i])
+                    if (
+                        prev_word in ("bairro", "vila", "povoado", "rua", "avenida", "praca", "escola", "ubs", "cras", "ponte", "corrego", "praia", "parque", "jardim", "residencial", "condominio", "hospital")
+                        or prev_two.endswith(("no bairro", "do bairro", "na vila", "praia das", "praia dos", "parque das", "jardim das"))
+                    ):
+                        continue
+                    return True
+        if re.search(r"\b(outro estado|sao paulo|rio de janeiro|distrito federal|governo do estado|estados unidos)\b", q_padded):
+            return True
+        return False
 
     def _cache_key(
         self,
@@ -522,10 +623,13 @@ class SemanticIntentGuardrail:
                 c_txt = str(m.get("content") or "")[:420].replace("\n", " ")
                 sql_prev = str(m.get("sql_executed") or "").strip()
                 rc_prev = m.get("row_count")
+                rows_prev = str(m.get("top_items_preview") or "").strip()
                 line = f"- {r_label}: {c_txt}"
                 if sql_prev:
                     rc_tag = f" ({rc_prev} linha(s))" if rc_prev is not None else ""
                     line += f" | [SQL Executado{rc_tag}: {sql_prev[:260]}]"
+                if rows_prev:
+                    line += f" | [Itens Retornados na Ordem: {rows_prev[:320]}]"
                 turns.append(line)
             history_snippet = "\n".join(turns)
 
@@ -553,13 +657,14 @@ class SemanticIntentGuardrail:
             f"5. `conversational_followup`: pedido para resumir/simplificar a resposta anterior, OU pedido de gráfico/tabela (`wants_chart: true` ou `wants_table: true`, `requires_sql: false`) EXCLUSIVAMENTE quando os dados multi-linhas (`>= 2` linhas) JÁ foram consultados no turno imediatamente anterior.\n"
             f"6. `conceptual_doubt`: dúvida puramente conceitual sobre contabilidade pública (ex.: 'O que significa empenho, liquidação e restos a pagar?') sem pedir dados nem julgar valores do turno anterior.\n"
             f"7. `clarification_needed`: mensagem incompreensível (ex.: 'teste 123') ou pedido vago sem contexto anterior na sessão.\n"
-            f"8. `out_of_scope_municipality`: pergunta pedindo dados de outro município que não seja {self.municipality_name}.\n"
+            f"8. `out_of_scope_municipality`: pergunta pedindo dados de OUTRA CIDADE/MUNICÍPIO que não seja {self.municipality_name} (ATENÇÃO: NUNCA marque `out_of_scope_municipality` para bairros urbanos, vilas, ruas, escolas ou distritos locais de {self.municipality_name} como {', '.join(self.official_districts)}!).\n"
             f"9. `out_of_scope_general`: assunto sem relação com gestão pública (receita de bolo, previsão do tempo, futebol).\n\n"
             f"REGRAS CRÍTICAS:\n"
             f"- NUNCA use emojis e NUNCA exponha jargões internos de engenharia (como 'CRAG', 'roteador', 'SQL', 'RAG') em `direct_response`.\n"
             f"- CONCILIAÇÃO TEMPORAL ('HOJE / ATUAL' vs. TETO DA BASE): Hoje é {today_pt}, mas os dados oficiais vão até {self.latest_remittance_human}. Se o usuário pedir estoque acumulado ('qual a frota atual', 'quantos veículos a prefeitura tem'), NÃO adicione 'em {self.max_data_year}' na `standalone_question` (reescreva como 'Qual é a frota consolidada total de veículos da Prefeitura de {self.municipality_name} segundo a base oficial mais recente disponível?'). Se mudar de assunto em relação ao turno anterior, marque `is_contextual_followup: false` e NÃO herde filtros de ano do assunto antigo!\n"
             f"- JANELAS RELATIVAS DE ANOS: Quando o usuário pedir 'últimos N anos' (ex.: 'últimos 4 anos'), ancorar até o teto disponível na base ({self.max_data_year}), isto é, de {max(2020, self.max_data_year - 3)} a {self.max_data_year} para 4 anos.\n"
-            f"- Preencha SEMPRE `standalone_question`: reescreva a pergunta de forma 100% explícita, completa e autônoma resolvendo pronomes/anáforas quando `is_contextual_followup` for `true`.\n"
+            f"- ÂNCORA ESTRITA NO ÚLTIMO TURNO E REFERÊNCIAS ORDINAIS: Quando o usuário enviar um follow-up curto ('mostre em gráfico por ano', 'e em 2025?', 'detalhe o segundo item', 'quem são os sócios da primeira empresa?'), ancore `standalone_question` EXCLUSIVAMENTE no tema do **último par Usuário/SIM** do histórico (JAMAIS ressuscite assuntos de 2 ou 3 turnos atrás se o tópico já mudou no turno imediatamente anterior!). Se o usuário pedir 'o 1º/2º/3º item/empresa', substitua pelo NOME EXATO correspondente listado em `[Itens Retornados na Ordem: #1 ..., #2 ...]` do último turno!\n"
+            f"- Preencha SEMPRE `standalone_question`: reescreva a pergunta de forma 100% explícita, completa e autônoma resolvendo pronomes/anáforas quando `is_contextual_followup` for `true` (JAMAIS troque o tema pedido pelo usuário — ex.: dispensa de licitação NUNCA deve ser trocada por pregão/ata).\n"
             f"- Preencha `wants_chart: true` se o usuário pedir gráfico/visualização e `wants_table: true` se o usuário pedir tabela/quadro/planilha/colunas.\n"
             f"- Preencha `requires_sql` (bool), `requires_rag` (bool) e `sub_questions` (lista de sub-perguntas caso haja 2+ perguntas na mesma mensagem).\n"
             f"- Deixe `direct_response` vazio (\"\") para `conversational_identity`, `sql_analytics`, `rag_diario_oficial`, `hybrid_sql_rag` ou quando `wants_chart` ou `wants_table` for `true`.\n\n"
@@ -722,6 +827,11 @@ class SemanticIntentGuardrail:
                 intent = "conversational_followup"
 
         city_str = f"{self.municipality_name}/{self.state_uf}"
+        if intent == "out_of_scope_municipality" and not self._mentions_real_other_municipality(original_question):
+            # Falso positivo sobre bairro/vila/logradouro local (não existe nos 5.571 municípios do IBGE) -> reencaminha ao motor!
+            intent = "sql_analytics"
+            requires_sql = True
+            direct_resp = ""
         if intent == "out_of_scope_municipality" and not direct_resp:
             direct_resp = (
                 f"Esta instância do SIM atende exclusivamente aos dados públicos do município de "

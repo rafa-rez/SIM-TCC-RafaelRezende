@@ -1216,6 +1216,7 @@ class SIMOrchestrator:
         except Exception:
             pass
 
+        table_max_years: Dict[str, int] = {}
         diag_cur = self.db_manager.conn.cursor()
         try:
             for tname in ref_tables[:4]:
@@ -1229,6 +1230,11 @@ class SIMOrchestrator:
                         cnt, min_y, max_y = diag_cur.execute(
                             f'SELECT COUNT(*), MIN("{yr_col}"), MAX("{yr_col}") FROM "{tname}"'
                         ).fetchone()
+                        if max_y is not None:
+                            try:
+                                table_max_years[tname] = int(max_y)
+                            except Exception:
+                                pass
                         lines.append(
                             f"- Tabela `{tname}`: {cnt} registros totais | `ano_referencia` disponível: {min_y} a {max_y} "
                             f"| Grão: {tmeta.grain_type} ({tmeta.counting_rule})"
@@ -1270,6 +1276,22 @@ class SIMOrchestrator:
 
         q_norm = normalize_text_for_dedup(effective_question)
         max_cat_yr = int(getattr(self.db_manager.catalog, "max_data_year", 2026) or 2026)
+        sql_yrs_used = sorted({int(y) for y in re.findall(r"\b(20\d{2})\b", candidate_sql)})
+        for tname_lag, max_y_tbl in table_max_years.items():
+            lag_yrs = [y for y in sql_yrs_used if y > max_y_tbl]
+            if lag_yrs:
+                alt_hint = ""
+                if any(w in q_norm for w in ("empresa", "fornecedor", "contrat", "recebeu", "credor")) and "vw_gold_contratos_vigencia_aditivos" in self.db_manager.catalog.tables:
+                    alt_hint = (
+                        f" Se a pergunta tratar de contratos/empresas contratadas em {lag_yrs[0]}, você pode consultar "
+                        f"`vw_gold_contratos_vigencia_aditivos` (que possui contratos de {lag_yrs[0]}) OU "
+                    )
+                lines.append(
+                    f"- DEFASAGEM TEMPORAL ESPECÍFICA DA TABELA `{tname_lag}`: Você filtrou `ano_referencia` = {lag_yrs}, "
+                    f"mas `{tname_lag}` possui remessas consolidadas apenas até `{max_y_tbl}`!{alt_hint} "
+                    f"Altere OBRIGATORIAMENTE o filtro de ano para `ano_referencia = {max_y_tbl}` (último exercício disponível nesta tabela) "
+                    f"para retornar os dados oficiais mais recentes e nunca devolver 0 linhas!"
+                )
         fut_yrs_diag = [int(y) for y in re.findall(r"\b(20\d{2})\b", q_norm) if int(y) > max_cat_yr]
         if fut_yrs_diag:
             lines.append(
@@ -3145,6 +3167,145 @@ class SIMOrchestrator:
 
         return self._compile_native_sql(q_raw, q_norm, allowed_src)
 
+    def _normalize_sql_ast_resilience(self, sql_text: str) -> str:
+        """
+        Passe AST resiliente pós-LLM (SIM v4.6 — Zero Whack-a-Mole):
+        1. Torna comparações textuais (`=`, `IN`, `ILIKE`) em colunas categóricas não-PII insensíveis
+           a acentos e maiúsculas/minúsculas via `strip_accents(UPPER(...))` (Invariante F2.4).
+        2. Corrige precedência booleana `WHERE ano_referencia = X AND a OR b` -> `WHERE ano_referencia = X AND (a OR b)`
+           quando o ramo direito do `OR` não menciona `ano_referencia`.
+        3. Deduplica automaticamente `JOIN orgao_orgao` quando `ano_referencia` não participa do `ON` (Invariante F10.1).
+        4. Reescreve `LEFT(num_doc_credor, 8)` / `SUBSTR(num_doc_credor, 1, 8)` para `doc_credor_raiz` nas views que já expõem a coluna.
+        """
+        if not sql_text or not sql_text.strip():
+            return sql_text
+        try:
+            tree = sqlglot.parse_one(sql_text, read="duckdb")
+        except Exception:
+            return sql_text
+
+        try:
+            cte_names = {(c.alias_or_name or "").lower() for c in tree.find_all(exp.CTE)}
+            base_tables_low = {
+                (tb.name or "").lower()
+                for tb in tree.find_all(exp.Table)
+                if (tb.name or "").lower() not in cte_names
+            }
+            has_doc_raiz_view = bool(
+                base_tables_low.intersection({"vw_gold_execucao_despesa_credor", "vw_gold_fornecedores_qsa_360"})
+            )
+
+            # 4. LEFT/SUBSTR(num_doc_credor, 8) -> doc_credor_raiz quando disponível na view
+            if has_doc_raiz_view:
+                for fn in list(tree.find_all(exp.Func)):
+                    fn_name = (fn.name if isinstance(fn, exp.Anonymous) else fn.sql_name() or "").lower()
+                    if fn_name in ("left", "substr", "substring"):
+                        cols_in_fn = list(fn.find_all(exp.Column))
+                        lits_in_fn = [str(l.this) for l in fn.find_all(exp.Literal) if not l.is_string]
+                        if (
+                            len(cols_in_fn) == 1
+                            and (cols_in_fn[0].name or "").lower() == "num_doc_credor"
+                            and "8" in lits_in_fn
+                        ):
+                            tbl_qual = cols_in_fn[0].table
+                            repl_col = exp.column("doc_credor_raiz", table=tbl_qual) if tbl_qual else exp.column("doc_credor_raiz")
+                            fn.replace(repl_col)
+
+            # 3. Anti-Fan-Out automático em JOIN orgao_orgao sem ano_referencia no ON
+            for join_node in list(tree.find_all(exp.Join)):
+                j_tbl = join_node.this
+                if isinstance(j_tbl, exp.Table) and (j_tbl.name or "").lower() == "orgao_orgao" and "orgao_orgao" not in cte_names:
+                    on_sql = (join_node.args.get("on").sql("duckdb") if join_node.args.get("on") else "").lower()
+                    if "ano_referencia" not in on_sql:
+                        alias_name = j_tbl.alias_or_name or "orgao_orgao"
+                        dedup_sub = sqlglot.parse_one(
+                            f"(SELECT * EXCLUDE (_rn_org_dedup) FROM ("
+                            f"SELECT *, ROW_NUMBER() OVER (PARTITION BY seq_orgao ORDER BY TRY_CAST(ano_referencia AS INTEGER) DESC NULLS LAST) AS _rn_org_dedup "
+                            f"FROM orgao_orgao) _t_org WHERE _rn_org_dedup = 1) AS {alias_name}",
+                            read="duckdb",
+                        )
+                        join_node.set("this", dedup_sub)
+
+            # 2. Precedência booleana: WHERE (ano_referencia = X AND condA) OR condB -> WHERE ano_referencia = X AND (condA OR condB)
+            for where_node in list(tree.find_all(exp.Where)):
+                top = where_node.this
+                if isinstance(top, exp.Or) and isinstance(top.this, exp.And):
+                    right_cols = {(c.name or "").lower() for c in top.expression.find_all(exp.Column)}
+                    if "ano_referencia" not in right_cols:
+                        and_parts: List[exp.Expression] = []
+                        cur_a: exp.Expression = top.this
+                        while isinstance(cur_a, exp.And):
+                            and_parts.append(cur_a.expression)
+                            cur_a = cur_a.this
+                        and_parts.append(cur_a)
+                        and_parts.reverse()
+                        yr_preds = [
+                            p for p in and_parts
+                            if any((c.name or "").lower() == "ano_referencia" for c in p.find_all(exp.Column))
+                        ]
+                        other_preds = [p for p in and_parts if p not in yr_preds]
+                        if yr_preds and other_preds:
+                            rest_left = other_preds[0]
+                            for p in other_preds[1:]:
+                                rest_left = exp.and_(rest_left, p)
+                            grouped_or = exp.Paren(this=exp.or_(rest_left, top.expression))
+                            new_where = yr_preds[0]
+                            for yp in yr_preds[1:]:
+                                new_where = exp.and_(new_where, yp)
+                            new_where = exp.and_(new_where, grouped_or)
+                            where_node.set("this", new_where)
+
+            # 1. Comparações textuais sem acento/case em colunas não-sensíveis
+            _pii_skip = {"num_cpf", "cpf", "num_documento", "num_doc_credor", "nis", "nis favorecido", "cpf favorecido"}
+
+            def _wrap_strip_upper(node_expr: exp.Expression) -> exp.Expression:
+                s_sql = node_expr.sql("duckdb")
+                if "strip_accents" in s_sql.lower():
+                    return node_expr
+                return sqlglot.parse_one(f"strip_accents(UPPER(TRIM(CAST({s_sql} AS VARCHAR))))", read="duckdb")
+
+            for ilike_node in list(tree.find_all(exp.ILike)):
+                if isinstance(ilike_node.this, exp.Column) and isinstance(ilike_node.expression, exp.Literal) and ilike_node.expression.is_string:
+                    cname = (ilike_node.this.name or "").lower()
+                    if cname not in _pii_skip:
+                        pat_sql = ilike_node.expression.sql("duckdb")
+                        lh = sqlglot.parse_one(f"strip_accents(UPPER(CAST({ilike_node.this.sql('duckdb')} AS VARCHAR)))", read="duckdb")
+                        rh = sqlglot.parse_one(f"strip_accents(UPPER({pat_sql}))", read="duckdb")
+                        ilike_node.replace(exp.Like(this=lh, expression=rh))
+
+            _cat_text_cols = {
+                "tipo_vinculo", "dsc_cargo", "cargo_politico", "dsc_lotacao", "dsc_situacao", "situacao_funcional",
+                "dsc_funcao", "dsc_subfuncao", "dsc_origem", "dsc_cateconomica", "dsc_rubrica", "dsc_alinea",
+                "nom_orgao", "dsc_unidade", "dsc_modalidade", "modalidade", "dsc_tipo_gasto", "esfera_poder",
+            }
+            for eq_node in list(tree.find_all(exp.EQ)):
+                if isinstance(eq_node.expression, exp.Literal) and eq_node.expression.is_string:
+                    lit_v = str(eq_node.expression.this or "")
+                    lhs_sql = eq_node.this.sql("duckdb").lower()
+                    if "strip_accents" in lhs_sql and any(ord(ch) > 127 or ch.islower() for ch in lit_v):
+                        eq_node.set("expression", _wrap_strip_upper(eq_node.expression))
+                        eq_node.set("this", sqlglot.parse_one(f"UPPER({eq_node.this.sql('duckdb')})", read="duckdb"))
+                    elif isinstance(eq_node.this, exp.Column):
+                        cname = (eq_node.this.name or "").lower()
+                        if cname in _cat_text_cols and cname not in _pii_skip and any(ch.isalpha() for ch in lit_v):
+                            eq_node.set("this", _wrap_strip_upper(eq_node.this))
+                            eq_node.set("expression", _wrap_strip_upper(eq_node.expression))
+
+            for in_node in list(tree.find_all(exp.In)):
+                if isinstance(in_node.this, exp.Column) and in_node.expressions:
+                    cname = (in_node.this.name or "").lower()
+                    if (
+                        cname in _cat_text_cols
+                        and cname not in _pii_skip
+                        and all(isinstance(x, exp.Literal) and x.is_string for x in in_node.expressions)
+                    ):
+                        in_node.set("this", _wrap_strip_upper(in_node.this))
+                        in_node.set("expressions", [_wrap_strip_upper(x) for x in in_node.expressions])
+
+            return tree.sql("duckdb")
+        except Exception:
+            return sql_text
+
     def _run_sql_pipeline(
         self,
         *,
@@ -3243,7 +3404,8 @@ class SIMOrchestrator:
                 intent=intent,
             )
             est_tokens = prompt_pkg.estimated_tokens
-            candidate_sql = sql_override if (sql_override and attempt == 1) else self.sql_generator_fn(prompt_pkg, attempt, last_err)
+            raw_cand_sql = sql_override if (sql_override and attempt == 1) else self.sql_generator_fn(prompt_pkg, attempt, last_err)
+            candidate_sql = raw_cand_sql if sql_override else self._normalize_sql_ast_resilience(raw_cand_sql)
             steps.append(
                 {
                     "step": len(steps) + 1,
@@ -4423,29 +4585,43 @@ class SIMOrchestrator:
                         exec_ms=round((time.perf_counter() - t0) * 1000.0, 2),
                     )
                 if sql_out.get("blocked_error"):
-                    return OrchestrationResult(
-                        status="bloqueado_seguranca",
-                        intent=intent,
-                        tenant_id=self.db_manager.tenant.tenant_id,
-                        role=role,
-                        question=question,
-                        effective_question=effective_question,
-                        standalone_question=effective_question,
-                        answer_text=f"A consulta foi bloqueada pelo guardião de segurança e escopo: {sql_out['blocked_error']}",
-                        sql_executed=sql_out.get("candidate_sql"),
-                        selected_segments=sql_out.get("selected_segments", []),
-                        selected_tables=sql_out.get("selected_tables", []),
-                        allowed_sources=list(allowed_sources or []),
-                        schema_reduction_pct=sql_out.get("reduction_pct", 0.0),
-                        sql_attempts=sql_out.get("attempts", 1),
-                        prompt_tokens_estimated=sql_out.get("est_tokens", 0),
-                        prompt_tokens_real=self._turn_prompt_tokens_real,
-                        completion_tokens_real=self._turn_completion_tokens_real,
-                        llm_engine_used=self._last_llm_engine_used,
-                        asr_corrections=asr_corrections,
-                        pipeline_steps=steps,
-                        exec_ms=round((time.perf_counter() - t0) * 1000.0, 2),
+                    if sql_override is not None:
+                        return OrchestrationResult(
+                            status="bloqueado_seguranca",
+                            intent=intent,
+                            tenant_id=self.db_manager.tenant.tenant_id,
+                            role=role,
+                            question=question,
+                            effective_question=effective_question,
+                            standalone_question=effective_question,
+                            answer_text=f"A consulta foi bloqueada pelo guardião de segurança e escopo: {sql_out['blocked_error']}",
+                            sql_executed=sql_out.get("candidate_sql"),
+                            selected_segments=sql_out.get("selected_segments", []),
+                            selected_tables=sql_out.get("selected_tables", []),
+                            allowed_sources=list(allowed_sources or []),
+                            schema_reduction_pct=sql_out.get("reduction_pct", 0.0),
+                            sql_attempts=sql_out.get("attempts", 1),
+                            prompt_tokens_estimated=sql_out.get("est_tokens", 0),
+                            prompt_tokens_real=self._turn_prompt_tokens_real,
+                            completion_tokens_real=self._turn_completion_tokens_real,
+                            llm_engine_used=self._last_llm_engine_used,
+                            asr_corrections=asr_corrections,
+                            pipeline_steps=steps,
+                            exec_ms=round((time.perf_counter() - t0) * 1000.0, 2),
+                        )
+                    # Quando sql_override=None (pergunta natural legítima cujo SQL gerado pelo LLM esbarrou no SQLGuard),
+                    # tenta fallback seguro pelo compilador nativo sem expor mensagem técnica de bloqueio ao cidadão!
+                    fb_sql = self._compile_native_sql(
+                        effective_question,
+                        normalize_text_for_dedup(effective_question),
+                        {s.upper() for s in (allowed_sources or []) if s.upper() != "DIARIO_OFICIAL"},
                     )
+                    fb_res = self.db_manager.execute_safe_query(fb_sql, role=role)
+                    if fb_res.get("status") == "sucesso":
+                        sql_out["sql_executed"] = fb_res.get("query_executada")
+                        sql_out["sql_rows"] = fb_res.get("dados") or []
+                        sql_out["fontes"] = fb_res.get("fontes_utilizadas") or []
+                        sql_out["pii_masked"] = fb_res.get("pii_masked_count", 0)
 
                 sql_executed = sql_out.get("sql_executed")
                 sql_rows = sql_out.get("sql_rows") or []
@@ -4620,6 +4796,12 @@ class SIMOrchestrator:
             table_totals: Optional[Dict[str, str]] = None
             table_art: Optional[TableArtifact] = None
             limit_trunc_turn = bool(locals().get("limit_applied_turn", False))
+            if not limit_trunc_turn and sql_executed and sql_rows:
+                m_lim = re.search(r"\bLIMIT\s+(\d+)\b", sql_executed, flags=re.IGNORECASE)
+                if m_lim:
+                    lim_n = int(m_lim.group(1))
+                    if 1 < lim_n <= 100 and len(sql_rows) == lim_n:
+                        limit_trunc_turn = True
             if wants_table and sql_rows and self.table_renderer.can_render(sql_rows):
                 tb_t0 = time.perf_counter()
                 table_art = self.table_renderer.render(
@@ -4695,6 +4877,14 @@ class SIMOrchestrator:
                     table_cap = refined_tbl.caption
                     table_html = refined_tbl.html
 
+            def _clean_dotted_years(txt: str) -> str:
+                if not txt:
+                    return txt
+                return re.sub(r"(?<!R\$\s)(?<!R\$)(?<!\d)2\.0(1[89]|2\d|3[0-5])\b(?!,\d{2})", r"20\1", txt)
+
+            dual_synth["answer_text"] = _clean_dotted_years(dual_synth.get("answer_text") or "")
+            dual_synth["citizen_response"] = _clean_dotted_years(dual_synth.get("citizen_response") or "")
+            dual_synth["institutional_response"] = _clean_dotted_years(dual_synth.get("institutional_response") or "")
             final_answer = dual_synth["answer_text"]
             synth_engine = dual_synth["synth_engine"]
             steps.append(
@@ -4710,6 +4900,14 @@ class SIMOrchestrator:
                 }
             )
 
+            # Gera preview compacto numerado (#1..#5) para resolução multi-turno de referências ordinais ("2º item", "primeira empresa")
+            top_preview_parts: List[str] = []
+            for r_idx, r_item in enumerate(sql_rows[:5], start=1):
+                if isinstance(r_item, dict) and r_item:
+                    kv_mini = ", ".join(f"{k}={v}" for k, v in list(r_item.items())[:3] if v is not None)
+                    top_preview_parts.append(f"#{r_idx}({kv_mini})")
+            top_items_preview_str = "; ".join(top_preview_parts)[:320]
+
             # Atualizar memória conversacional Multi-Turno com `sql_executed`, `row_count` e cache de linhas da sessão
             with self._mem_lock:
                 if session_id not in self.conversation_history:
@@ -4723,6 +4921,7 @@ class SIMOrchestrator:
                         "content": (dual_synth["citizen_response"] or final_answer)[:600],
                         "sql_executed": sql_executed or "",
                         "row_count": len(sql_rows),
+                        "top_items_preview": top_items_preview_str,
                     }
                 )
             self._prune_session_maps()
@@ -4776,8 +4975,19 @@ class SIMOrchestrator:
             )
 
             # Eixo 7 & Eixo 8: Higiene Estrita do Cache SQLite + Telemetria Real de Tokens (sem dupla contagem)
+            # NUNCA grava em cache respostas de contingência offline quando há chave LLM configurada (evita cache poisoning em oscilações 429/rede)
+            from sim_platform import get_configured_openai_key
+            has_ext_key = bool(get_configured_openai_key() or os.environ.get("GEMINI_API_KEY", "").strip())
+            is_degraded_fallback = has_ext_key and ("Native NL2SQL Compiler" in str(self._last_llm_engine_used))
             already_debited = (self._turn_prompt_tokens_real + self._turn_completion_tokens_real) > 0
-            if not sql_override and not explicit_tables and not explicit_segments and not wants_chart and not wants_table:
+            if (
+                not is_degraded_fallback
+                and not sql_override
+                and not explicit_tables
+                and not explicit_segments
+                and not wants_chart
+                and not wants_table
+            ):
                 self.quota_manager.store_response_and_record_usage(
                     question=effective_question,
                     role=role,

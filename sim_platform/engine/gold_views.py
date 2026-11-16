@@ -597,11 +597,14 @@ GOLD_VIEWS_DDL: Dict[str, str] = {
         LEFT JOIN orgao_dedup o
           ON COALESCE(e.seq_orgao, l.seq_orgao, p.seq_orgao) = o.seq_orgao;
     """,
-    "vw_gold_frota_consolidada": """
+    "vw_gold_frota_consolidada": f"""
         CREATE OR REPLACE VIEW vw_gold_frota_consolidada AS
-        WITH veiculo_unico AS (
+        WITH {_CTE_DIM_ORGAO_CANONICO},
+        veiculo_unico AS (
             SELECT
                 seq_veiculo,
+                MAX(seq_orgao) AS seq_orgao_veic,
+                MAX(cod_orgao) AS cod_orgao_veic,
                 MAX(dsc_num_placa) AS dsc_num_placa,
                 MAX(dsc_veiculo) AS dsc_veiculo,
                 MAX(dsc_tipo_veiculo) AS dsc_tipo_veiculo,
@@ -616,6 +619,10 @@ GOLD_VIEWS_DDL: Dict[str, str] = {
         SELECT
             COALESCE(g.ano_referencia, v.ano_cadastro_veiculo) AS ano_referencia,
             g.num_mes_referencia,
+            COALESCE(g.seq_orgao, v.seq_orgao_veic, dim.seq_orgao) AS seq_orgao,
+            COALESCE(dim.cod_orgao_norm, CAST(g.cod_orgao AS VARCHAR), CAST(v.cod_orgao_veic AS VARCHAR)) AS cod_orgao,
+            COALESCE(dim.nom_orgao_oficial, 'ADMINISTRAÇÃO MUNICIPAL') AS nom_orgao,
+            COALESCE(dim.esfera_poder, 'EXECUTIVO') AS esfera_poder,
             COALESCE(g.seq_veiculo, v.seq_veiculo) AS seq_veiculo,
             CASE
                 WHEN v.dsc_num_placa IS NOT NULL AND TRIM(v.dsc_num_placa) NOT IN ('', '-1', '0', 'S/P')
@@ -660,7 +667,9 @@ GOLD_VIEWS_DDL: Dict[str, str] = {
             COALESCE(TRY_CAST(g.vlr_gasto AS DECIMAL(18,2)), 0.00) AS vlr_gasto
         FROM frota_gastoFrota g
         FULL OUTER JOIN veiculo_unico v
-          ON g.seq_veiculo = v.seq_veiculo;
+          ON g.seq_veiculo = v.seq_veiculo
+        LEFT JOIN dim_orgao_canonico dim
+          ON {_norm_cod_orgao_key_sql("COALESCE(g.cod_orgao, v.cod_orgao_veic)")} = dim.cod_orgao_key;
     """,
     "vw_gold_contratos_vigencia_aditivos": f"""
         CREATE OR REPLACE VIEW vw_gold_contratos_vigencia_aditivos AS
@@ -1118,7 +1127,7 @@ def register_gold_views(
             "despesa_pagamento",
             "orgao_orgao",
         },
-        "vw_gold_frota_consolidada": {"frota_frota", "frota_gastofrota"},
+        "vw_gold_frota_consolidada": {"frota_frota", "frota_gastofrota", "orgao_orgao"},
         "vw_gold_contratos_vigencia_aditivos": {
             "contrato_contratos",
             "contrato_contcontrato",
@@ -1200,5 +1209,74 @@ def register_gold_views(
                     except Exception:
                         pass
                 logger.warning("Falha ao criar Gold View %s: %s", view_name, exc)
+
+    # 9ª Gold View Adaptativa Multi-Modelo: unifica microdados nominais CSV (Caeté) e resumo mensal API REST (Lagoa da Prata / novos municípios)
+    cgu_union_parts: List[str] = []
+    for cgu_tbl, prog_label in (
+        ("cgu_novo_bolsa_familia", "NOVO BOLSA FAMÍLIA"),
+        ("cgu_bpc", "BPC (BENEFÍCIO DE PRESTAÇÃO CONTINUADA)"),
+        ("cgu_auxilio_brasil", "AUXÍLIO BRASIL"),
+    ):
+        if cgu_tbl.lower() not in existing:
+            continue
+        try:
+            c_rows = con.execute(f"DESCRIBE {cgu_tbl}").fetchall()
+            col_names = {str(r[0]).strip() for r in c_rows}
+            col_low_map = {c.lower(): c for c in col_names}
+            if "ano_referencia" not in col_low_map or "valor parcela" not in col_low_map:
+                continue
+            val_col = f'"{col_low_map["valor parcela"]}"'
+            mes_col = f'"{col_low_map["mês referência"]}"' if "mês referência" in col_low_map else (
+                f'"{col_low_map["mes referencia"]}"' if "mes referencia" in col_low_map else "CAST(NULL AS VARCHAR)"
+            )
+            safe_val_expr = (
+                f"CASE WHEN CONTAINS(CAST({val_col} AS VARCHAR), ',') "
+                f"THEN TRY_CAST(REPLACE(REPLACE(CAST({val_col} AS VARCHAR), '.', ''), ',', '.') AS DECIMAL(18,2)) "
+                f"ELSE TRY_CAST({val_col} AS DECIMAL(18,2)) END"
+            )
+            if "qtd_beneficiados" in col_low_map:
+                # Modelo API REST Agregado Municipal (1 linha = 1 mês da cidade inteira; VALOR PARCELA já é o total mensal!)
+                q_col = f'"{col_low_map["qtd_beneficiados"]}"'
+                cgu_union_parts.append(
+                    f"SELECT TRY_CAST(ano_referencia AS INTEGER) AS ano_referencia, "
+                    f"CAST({mes_col} AS VARCHAR) AS mes_referencia, "
+                    f"'{prog_label}' AS programa_social, "
+                    f"MAX(TRY_CAST({q_col} AS BIGINT)) AS beneficiarios_no_mes, "
+                    f"ROUND(SUM(COALESCE({safe_val_expr}, 0.00)), 2) AS vlr_total_pago_mes "
+                    f"FROM {cgu_tbl} WHERE TRY_CAST({q_col} AS BIGINT) > 0 OR COALESCE({safe_val_expr}, 0) > 0 "
+                    f"GROUP BY 1, 2"
+                )
+            else:
+                # Modelo CSV Microdados Individuais (1 linha = 1 parcela individual paga ao cidadão)
+                nis_col = (
+                    f'"{col_low_map["nis favorecido"]}"'
+                    if "nis favorecido" in col_low_map
+                    else (f'"{col_low_map["nis beneficiário"]}"' if "nis beneficiário" in col_low_map else None)
+                )
+                cnt_expr = f"COUNT(DISTINCT {nis_col})" if nis_col else "COUNT(*)"
+                cgu_union_parts.append(
+                    f"SELECT TRY_CAST(ano_referencia AS INTEGER) AS ano_referencia, "
+                    f"CAST({mes_col} AS VARCHAR) AS mes_referencia, "
+                    f"'{prog_label}' AS programa_social, "
+                    f"{cnt_expr} AS beneficiarios_no_mes, "
+                    f"ROUND(SUM(COALESCE({safe_val_expr}, 0.00)), 2) AS vlr_total_pago_mes "
+                    f"FROM {cgu_tbl} WHERE COALESCE({safe_val_expr}, 0) > 0 "
+                    f"GROUP BY 1, 2"
+                )
+        except Exception:
+            continue
+
+    if cgu_union_parts:
+        try:
+            union_sql = "\n            UNION ALL\n            ".join(cgu_union_parts)
+            con.execute(
+                f"CREATE OR REPLACE VIEW vw_gold_beneficios_sociais_cgu AS\n"
+                f"SELECT * FROM (\n            {union_sql}\n) sub_cgu\n"
+                f"WHERE beneficiarios_no_mes > 0 OR vlr_total_pago_mes > 0\n"
+                f"ORDER BY ano_referencia, mes_referencia, programa_social;"
+            )
+            registered.add("vw_gold_beneficios_sociais_cgu")
+        except Exception as exc:
+            logger.warning("Falha ao criar vw_gold_beneficios_sociais_cgu: %s", exc)
 
     return registered

@@ -225,10 +225,10 @@ class TestDataEngineering:
         res = app_client.get("/catalog")
         assert res.status_code == 200
         data = res.json()
-        assert data["total_tables"] == 87
+        assert data["total_tables"] == 88
         assert len(data["segments"]) >= 12
         assert data["source_families"]["SICOM"] == 72  # 65 físicas + 7 Gold Views SICOM
-        assert data["source_families"]["CGU"] == 9
+        assert data["source_families"]["CGU"] == 10  # 9 físicas + 1 Gold View CGU (vw_gold_beneficios_sociais_cgu)
         assert data["source_families"]["SICONFI"] == 1
         assert data["source_families"]["IBGE"] == 1
         assert data["source_families"]["INEP"] == 1
@@ -2403,7 +2403,7 @@ class TestV43SemanticTablesAndRefresh:
         ).json()
         assert meta_res["status"] == "sucesso"
         assert "SICOM" in meta_res["citizen_response"]
-        assert "87" in meta_res["citizen_response"]
+        assert "88" in meta_res["citizen_response"]
 
     def test_v43_immutable_release_upload_hotswap_and_zip_slip_guard(self, tmp_path: Path) -> None:
         import io

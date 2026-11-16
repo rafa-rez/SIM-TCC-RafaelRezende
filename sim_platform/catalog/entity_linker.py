@@ -433,6 +433,8 @@ class EntityLinker:
         self.orgaos: List[Tuple[str, str, Set[str]]] = []
         self.unidades: List[Tuple[str, str, Set[str]]] = []
         self.funcoes: List[Tuple[str, Set[str]]] = []
+        self.subfuncoes: List[Tuple[str, str, Set[str]]] = []
+        self.vinculos_reais: List[str] = []
         self.cargos: List[Tuple[str, Set[str]]] = []
         self.lotacoes: List[Tuple[str, Set[str]]] = []
         self.few_shots: List[Dict[str, Any]] = []
@@ -504,7 +506,7 @@ class EntityLinker:
         except Exception:
             pass
 
-        # 3. Funções Orçamentárias de despesa_despesa
+        # 3. Funções e Subfunções Orçamentárias de despesa_despesa
         try:
             rows = cur.execute(
                 "SELECT DISTINCT dsc_funcao FROM despesa_despesa WHERE dsc_funcao IS NOT NULL LIMIT 50"
@@ -513,6 +515,28 @@ class EntityLinker:
                 toks = _tokens(str(fn), self.city_stop_tokens)
                 if toks:
                     self.funcoes.append((str(fn).strip(), toks))
+        except Exception:
+            pass
+
+        try:
+            rows_sf = cur.execute(
+                "SELECT DISTINCT TRIM(CAST(dsc_funcao AS VARCHAR)), TRIM(CAST(dsc_subfuncao AS VARCHAR)) "
+                "FROM despesa_despesa WHERE dsc_subfuncao IS NOT NULL AND TRIM(CAST(dsc_subfuncao AS VARCHAR)) <> '' LIMIT 150"
+            ).fetchall()
+            for fn_s, sfn_s in rows_sf:
+                toks = _tokens(f"{fn_s or ''} {sfn_s or ''}", self.city_stop_tokens)
+                if toks:
+                    self.subfuncoes.append((str(fn_s or "").strip(), str(sfn_s or "").strip(), toks))
+        except Exception:
+            pass
+
+        # 3b. Vínculos reais existentes no ERP do município ativo (evita hardcode entre SICOM, Betha, Cidade360, Memory)
+        try:
+            rows_v = cur.execute(
+                "SELECT DISTINCT TRIM(CAST(tipo_vinculo AS VARCHAR)) FROM vw_gold_folha_servidores "
+                "WHERE tipo_vinculo IS NOT NULL AND TRIM(CAST(tipo_vinculo AS VARCHAR)) <> '' ORDER BY 1 LIMIT 25"
+            ).fetchall()
+            self.vinculos_reais = [str(v[0]).strip() for v in rows_v if v and v[0]]
         except Exception:
             pass
 
@@ -663,10 +687,50 @@ class EntityLinker:
                 bindings.append(
                     "Cargo de Secretário Municipal em `vw_gold_folha_servidores`: filtre `dsc_cargo ILIKE '%SECRETARIO MUNICIPAL%'` (NÃO use apenas `ILIKE '%SECRETARI%'`, pois isso inclui `SECRETARIA ESCOLAR`!)"
                 )
-        if any(w in q_norm for w in ("concursado", "concursados", "efetivo", "efetivos", "comissionado", "comissionados", "temporario", "contratado", "contratados")):
+        if any(w in q_norm for w in ("concursado", "concursados", "efetivo", "efetivos", "comissionado", "comissionados", "temporario", "contratado", "contratados", "vinculo", "agente politico", "agentes politicos")):
+            if self.vinculos_reais:
+                v_list = ", ".join(f"`'{v}'`" for v in self.vinculos_reais)
+                bindings.append(
+                    f"Valores REAIS de `tipo_vinculo` em `vw_gold_folha_servidores` neste município: {v_list} (use SEMPRE estes rótulos exatos da base ativa!)."
+                )
+            else:
+                bindings.append(
+                    "Vínculos na folha (`vw_gold_folha_servidores`): consulte `SELECT DISTINCT tipo_vinculo` ou agrupe por `tipo_vinculo`."
+                )
+
+        # Padrão Contábil Nacional Obrigatório STN/PCASP (Portaria Conjunta STN/SOF & Portaria MOG nº 42/1999)
+        # Funciona de forma 100% agnóstica em qualquer ERP do Brasil (com ou sem pontos no código, com ou sem sigla na rubrica)
+        _stn_receita_map = [
+            (("iptu", "predial", "territorial urbana"), "IPTU", "111250", "PROPRIEDADE PREDIAL"),
+            (("iss", "issqn", "imposto sobre servico"), "ISS/ISSQN", "111451", "SERVICOS DE QUALQUER NATUREZA"),
+            (("itbi", "inter vivos"), "ITBI", "111253", "INTER VIVOS"),
+            (("fpm", "fundo de participacao"), "FPM", "171151", "FUNDO DE PARTICIPACAO DOS MUNICIPIOS"),
+            (("icms",), "Cota-Parte ICMS", "172150", "ICMS"),
+            (("ipva",), "Cota-Parte IPVA", "172151", "VEICULOS AUTOMOTORES"),
+            (("cosip", "cip"), "COSIP (Contribuição Iluminação Pública)", "1241", "ILUMINACAO PUBLICA"),
+        ]
+        for kw_tup, label_tax, pcasp_prefix, text_fallback in _stn_receita_map:
+            if any(re.search(rf"\b{re.escape(k)}\b", q_norm) for k in kw_tup):
+                bindings.append(
+                    f"Receita `{label_tax}` em `receita_receita` (Padrão Nacional PCASP/STN): filtre "
+                    f"`(REGEXP_REPLACE(COALESCE(dsc_rubrica, '') || COALESCE(dsc_alinea, '') || COALESCE(dsc_origem, ''), '[^0-9]', '', 'g') LIKE '{pcasp_prefix}%' "
+                    f"OR strip_accents(UPPER(COALESCE(dsc_alinea, '') || ' ' || COALESCE(dsc_rubrica, ''))) LIKE '%{text_fallback}%')` "
+                    f"(muitos ERPs não escrevem a sigla `{label_tax.split('/')[0]}` por extenso na rubrica!)."
+                )
+
+        if "iluminacao" in q_norm:
             bindings.append(
-                "Vínculos na folha (`vw_gold_folha_servidores`): use `dsc_situacao` / `tipo_vinculo` — `'Efetivo (Concursado)'` e `'Emprego Público (Concursado / Seleção Pública)'` = concursados/seleção pública; `'Contratado / Servidor Temporário'` = contratados temporários; `'Comissionado (Recrutamento Amplo)'` = comissionados; `'Agente Político (Prefeito, Vice, Secretários e Vereadores)'` = agentes políticos."
+                "Classificação Nacional (Portaria MOG 42/1999): Despesa com Iluminação Pública fica na Função `'15 - URBANISMO'` (`dsc_subfuncao ILIKE '%SERVICOS URBANOS%'` em `despesa_despesa`, NUNCA em Segurança Pública `06`!); já a arrecadação da taxa/contribuição (COSIP) fica em `receita_receita` código PCASP `'1241%'`."
             )
+        if "transporte escolar" in q_norm or "merenda" in q_norm:
+            bindings.append(
+                "Classificação Nacional (Portaria MOG 42/1999): Transporte Escolar e Merenda Escolar pertencem à Função `'12 - EDUCAÇÃO'` em `despesa_despesa` (ou filtre `dsc_objeto` em `vw_gold_contratos_vigencia_aditivos` / `licitacao_licitacao` para contratos específicos)."
+            )
+        if any(w in q_norm for w in ("bolsa familia", "bpc", "prestacao continuada", "beneficio social", "beneficios sociais")):
+            if "vw_gold_beneficios_sociais_cgu" in self.available_tables:
+                bindings.append(
+                    "Benefícios Sociais Federais (Bolsa Família / BPC): consulte SEMPRE a Gold View padronizada `vw_gold_beneficios_sociais_cgu` (`SUM(vlr_total_pago_mes)` para valor anual e `ROUND(AVG(beneficiarios_no_mes))` para média mensal de famílias atendidas; NUNCA multiplique `beneficiarios_no_mes * vlr_total_pago_mes`!)."
+                )
         if any(w in q_norm for w in ("carona", "adesao", "ata de registro")):
             bindings.append(
                 "Adesão à Ata de Registro de Preços (Carona): em `vw_gold_execucao_despesa_credor`, use a coluna já pré-calculada `WHERE total_empenhado_carona > 0` (`SUM(total_empenhado_carona)`); ou na tabela bruta `empenho_empenho` filtre `ind_dec_licitacao ILIKE '%ADES%'`"

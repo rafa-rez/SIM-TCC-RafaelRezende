@@ -374,6 +374,7 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
         "origin": "CGU — Portal da Transparência Federal",
         "source_family": "CGU",
         "tables": [
+            "vw_gold_beneficios_sociais_cgu",
             "cgu_auxilio_brasil",
             "cgu_auxilio_emergencial",
             "cgu_bolsa_familia_pagamentos",
@@ -393,7 +394,8 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
             "convenio", "convenios", "emenda", "emendas", "parlamentar", "emenda pix",
         ],
         "rules": [
-            "Nas tabelas `cgu_*`, colunas com espaços no nome devem estar entre aspas duplas (ex: `\"VALOR PARCELA\"`, `\"VALOR TRANSFERIDO\"`). Para valores monetários, NUNCA remova `.` cegamente se a coluna já for numérica ou usar ponto decimal: utilize `CASE WHEN CONTAINS(CAST(coluna AS VARCHAR), ',') THEN TRY_CAST(REPLACE(REPLACE(CAST(coluna AS VARCHAR), '.', ''), ',', '.') AS DECIMAL(18,2)) ELSE TRY_CAST(coluna AS DECIMAL(18,2)) END`.",
+            "PRIORIDADE MÁXIMA PARA BOLSA FAMÍLIA E BPC: Use SEMPRE a Gold View padronizada `vw_gold_beneficios_sociais_cgu` (`ano_referencia`, `mes_referencia`, `programa_social`, `beneficiarios_no_mes`, `vlr_total_pago_mes`)! Ela já unifica microdados e resumos mensais da CGU: para o valor total anual use `SUM(vlr_total_pago_mes)` e para famílias/beneficiários atendidos no ano use `ROUND(AVG(beneficiarios_no_mes))` ou `MAX(beneficiarios_no_mes)` (JAMAIS multiplique `beneficiarios_no_mes * vlr_total_pago_mes` e JAMAIS some `beneficiarios_no_mes` entre meses/anos!).",
+            "Nas tabelas brutas `cgu_*`, colunas com espaços no nome devem estar entre aspas duplas (ex: `\"VALOR PARCELA\"`, `\"VALOR TRANSFERIDO\"`). Para valores monetários, NUNCA remova `.` cegamente se a coluna já for numérica ou usar ponto decimal: utilize `CASE WHEN CONTAINS(CAST(coluna AS VARCHAR), ',') THEN TRY_CAST(REPLACE(REPLACE(CAST(coluna AS VARCHAR), '.', ''), ',', '.') AS DECIMAL(18,2)) ELSE TRY_CAST(coluna AS DECIMAL(18,2)) END`.",
             "Série histórica de benefícios: `cgu_bolsa_familia_pagamentos` (2020-2021), `cgu_auxilio_emergencial` (2020-2021), `cgu_auxilio_brasil` (2021-2022) e `cgu_novo_bolsa_familia` (2023-2025). Verifique no DDL se a tabela contém `qtd_beneficiados` (resumo mensal municipal: use `MAX(qtd_beneficiados)` no ano/mês) ou `\"NIS FAVORECIDO\"` (microdados nominais: use `COUNT(DISTINCT \"NIS FAVORECIDO\")`).",
             "Convênios federais com o município estão em `cgu_convenios` e emendas parlamentares destinadas ao município estão em `cgu_emendas`.",
         ],
@@ -557,6 +559,7 @@ PROFILED_TABLES_PRIORITY: Set[str] = {
     "vw_gold_contratos_vigencia_aditivos",
     "vw_gold_fornecedores_qsa_360",
     "vw_gold_conflito_interesses_licitacao",
+    "vw_gold_beneficios_sociais_cgu",
     "remuneracao_municipio",
     "frota_frota",
     "frota_gastofrota",

@@ -554,7 +554,31 @@ def _is_year_or_skip_numeric_col(col_name: str, rows: Sequence[Dict[str, Any]]) 
 
 def _is_monetary_col(col_name: str) -> bool:
     cl = col_name.lower()
-    if cl.startswith(("qtd_", "pct_", "razao_", "nota_", "ideb_")):
+    if cl.startswith(
+        (
+            "qtd_",
+            "pct_",
+            "razao_",
+            "nota_",
+            "ideb_",
+            "registros_",
+            "num_",
+            "nro_",
+            "numero_",
+            "count",
+            "total_serv",
+            "total_func",
+            "total_veic",
+            "total_reg",
+            "total_lic",
+            "total_emp",
+            "total_cont",
+            "populac",
+            "habitant",
+        )
+    ):
+        return False
+    if re.search(r"(_qtd$|_count$|registros|qtd_|veiculos|servidores|socios|familias|habitantes|populacao|matriculas)", cl):
         return False
     return any(h in cl for h in _MONETARY_HINTS)
 
@@ -757,15 +781,39 @@ class InstitutionalChartGenerator:
         if not numeric_cols:
             return None
 
-        want_count = any(w in q_norm for w in ("quantos", "quantidade", "numero", "veiculo", "concursad", "funcionari", "servidor", "modalidade", "licitac", "beneficiari"))
+        asks_money = any(
+            w in q_norm
+            for w in (
+                "quanto gast",
+                "gasto",
+                "gastou",
+                "despesa",
+                "valor",
+                "custo",
+                "pago",
+                "recebeu",
+                "arrecad",
+                "remunerac",
+                "salario",
+                "per capita",
+                "por habitante",
+                "por aluno",
+                "r$",
+            )
+        )
+        explicit_how_many = any(w in q_norm for w in ("quantos ", "quantas ", "quantidade de ", "numero de ", "qtd "))
+        want_count = explicit_how_many or (
+            not asks_money
+            and any(w in q_norm for w in ("quantos", "quantidade", "numero", "veiculo", "concursad", "funcionari", "servidor", "modalidade", "licitac", "beneficiari"))
+        )
 
         def _pick_primary_metric(cands: Sequence[str]) -> str:
-            if any(w in q_norm for w in ("populac", "habitante", "demograf")):
-                m_hit = next((c for c in cands if "populac" in c.lower() or "habitante" in c.lower()), None)
+            if any(w in q_norm for w in ("per capita", "por habitante", "por aluno")):
+                m_hit = next((c for c in cands if "per_capita" in c.lower() or "por_hab" in c.lower() or "por_aluno" in c.lower()), None)
                 if m_hit:
                     return m_hit
-            if any(w in q_norm for w in ("per capita", "por habitante")):
-                m_hit = next((c for c in cands if "per_capita" in c.lower()), None)
+            if not asks_money and any(w in q_norm for w in ("populac", "habitante", "demograf")):
+                m_hit = next((c for c in cands if "populac" in c.lower() or "habitante" in c.lower()), None)
                 if m_hit:
                     return m_hit
             if "idhm" in q_norm or "idh" in q_norm:
@@ -922,16 +970,18 @@ class InstitutionalChartGenerator:
                     labels.append(yr_str)
 
             # Par comparativo clássico (LOA vs Arrecadado/Executado) OU par genérico de mesma unidade e ordem de grandeza compatível
-            loa_col = next((c for c in numeric_cols if "orcamento_previsto" in c.lower() or "previsaoatualizada" in c.lower()), None)
+            loa_col = next((c for c in numeric_cols if "orcamento_previsto" in c.lower() or "previsaoatualizada" in c.lower() or "dotacao" in c.lower()), None)
             real_col = next(
                 (
                     c for c in numeric_cols
                     if c != loa_col and (
-                        "arrecadada" in c.lower()
+                        "liquidada" in c.lower()
+                        or "liquidado" in c.lower()
+                        or "arrecadada" in c.lower()
                         or "realizado" in c.lower()
                         or "despesa_empenhada" in c.lower()
+                        or "empenhado" in c.lower()
                         or "despesa_paga" in c.lower()
-                        or "orcamento_atualizado" in c.lower()
                     )
                 ),
                 None,
@@ -969,7 +1019,16 @@ class InstitutionalChartGenerator:
                 }
 
             primary_col = _pick_primary_metric(numeric_cols)
-            vals = [float(_to_float(r.get(primary_col)) or 0.0) for r in sorted_rows]
+            valid_ts_pairs = [
+                (lbl, float(_to_float(r.get(primary_col))))
+                for lbl, r in zip(labels, sorted_rows)
+                if r.get(primary_col) is not None and _to_float(r.get(primary_col)) is not None
+            ]
+            if len(valid_ts_pairs) >= 2:
+                labels = [p[0] for p in valid_ts_pairs]
+                vals = [p[1] for p in valid_ts_pairs]
+            else:
+                vals = [float(_to_float(r.get(primary_col)) or 0.0) for r in sorted_rows]
             if max([abs(v) for v in vals] + [0.0]) <= 0:
                 return None
             ctype_out = "line" if (wants_line and len(labels) >= 3) else "vertical_bar"
@@ -981,8 +1040,60 @@ class InstitutionalChartGenerator:
                 "is_pct": _is_pct_col(primary_col),
             }
 
-        # Caso 4: Ranking ou distribuição categórica -> Horizontal Bar Chart
+        # Caso 3b: Série Mensal/Competência + Categoria (ex.: Gasolina vs Diesel mês a mês, ou Comissionados vs Efetivos de Jan a Out)
         primary_col = _pick_primary_metric(numeric_cols)
+        month_col = next(
+            (
+                c for c in cols
+                if c != primary_col and re.search(r"(^mes$|^mes_|_mes$|num_mes|competencia|seq_dat_pagamento)", c.lower())
+            ),
+            None,
+        )
+        if month_col and month_col != primary_col and label_candidates:
+            cat_m_col = label_candidates[0]
+            def _fmt_month_tok(raw_m: Any) -> str:
+                s = str(raw_m or "").strip()
+                if re.fullmatch(r"\d{8}", s):
+                    return f"{s[4:6]}/{s[2:4]}"
+                if re.fullmatch(r"\d{6}", s):
+                    return f"{s[4:6]}/{s[2:4]}"
+                mf = _to_float(raw_m)
+                if mf is not None and 1 <= int(round(mf)) <= 12:
+                    return f"Mês {int(round(mf)):02d}"
+                return s[:10]
+
+            m_order: List[str] = []
+            by_m_cat: Dict[Tuple[str, str], float] = {}
+            cats_seen: Dict[str, float] = {}
+            for r in clean_rows:
+                mtok = _fmt_month_tok(r.get(month_col))
+                ctok = str(r.get(cat_m_col) or "N/I").strip()
+                mv = float(_to_float(r.get(primary_col)) or 0.0)
+                if not mtok:
+                    continue
+                if mtok not in m_order:
+                    m_order.append(mtok)
+                by_m_cat[(mtok, ctok)] = by_m_cat.get((mtok, ctok), 0.0) + mv
+                cats_seen[ctok] = cats_seen.get(ctok, 0.0) + abs(mv)
+
+            ranked_m_cats = [k for k, v in sorted(cats_seen.items(), key=lambda kv: kv[1], reverse=True) if v > 0]
+            if len(m_order) >= 2 and 1 <= len(ranked_m_cats) <= 2:
+                m_slice = m_order[:12]
+                return {
+                    "chart_type": "line" if (wants_line and len(m_slice) >= 3) else ("grouped_vertical_bar" if len(ranked_m_cats) == 2 else "vertical_bar"),
+                    "labels": m_slice,
+                    "series": [
+                        {
+                            "name": _smart_shorten_gov_label(cn, 24),
+                            "values": [by_m_cat.get((m_lbl, cn), 0.0) for m_lbl in m_slice],
+                        }
+                        for cn in ranked_m_cats
+                    ],
+                    "is_monetary": _is_monetary_col(primary_col),
+                    "is_pct": _is_pct_col(primary_col),
+                }
+
+        # Caso 4: Ranking ou distribuição categórica -> Horizontal Bar Chart
         lbl_col = label_candidates[0] if label_candidates else (year_col if year_col and year_col != primary_col else None)
         if not lbl_col or lbl_col == primary_col:
             other_cols = [c for c in cols if c != primary_col]
@@ -991,7 +1102,14 @@ class InstitutionalChartGenerator:
             lbl_col = other_cols[0]
 
         top_rows = clean_rows[:10]
-        labels = [_smart_shorten_gov_label(str(r.get(lbl_col) or "N/I"), 26) for r in top_rows]
+        raw_labels = [str(r.get(lbl_col) or "N/I").strip() for r in top_rows]
+        if month_col and len(set(raw_labels)) < len(raw_labels):
+            labels = [
+                _smart_shorten_gov_label(f"{r.get(month_col)} · {lbl_v}", 26)
+                for r, lbl_v in zip(top_rows, raw_labels)
+            ]
+        else:
+            labels = [_smart_shorten_gov_label(lbl_v, 26) for lbl_v in raw_labels]
         values = [float(_to_float(r.get(primary_col)) or 0.0) for r in top_rows]
         if max([abs(v) for v in values] + [0.0]) <= 0:
             return None
@@ -1354,13 +1472,13 @@ class InstitutionalChartGenerator:
                             y_anchors.append(zero_y - (max(2, bh) if val > 0 else 0))
                         else:
                             y_anchors.append(min(plot_y1, zero_y + max(2, bh)))
-                    close_bars = abs(y_anchors[0] - y_anchors[1]) < 18
+                    close_bars = abs(y_anchors[0] - y_anchors[1]) < 24
                     for s_i in range(2):
                         val = series[s_i]["values"][i]
-                        bx0 = (group_cx - bw - 3) if s_i == 0 else (group_cx + 3)
+                        bx0 = (group_cx - bw - 4) if s_i == 0 else (group_cx + 4)
                         bh = int((abs(val) / span_v) * plot_h)
                         v_txt = _format_value_compact(val, is_mon, is_pct)
-                        stagger = (s_i * 16) if close_bars else 0
+                        stagger = (s_i * 18) if close_bars else 0
                         if val >= 0:
                             by0 = zero_y - (max(2, bh) if val > 0 else 0)
                             canvas.fill_rect(bx0, by0, bx0 + bw, zero_y, self.PALETTE_RGB[s_i])

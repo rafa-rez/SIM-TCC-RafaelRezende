@@ -31,23 +31,27 @@ _PERCENTAGE_COL_RE = re.compile(
 )
 
 _NON_ADDITIVE_COL_RE = re.compile(
-    r"(^ano|ano_|_ano$|num_ano|exercicio|competencia|ultima_competencia|^mes|mes_|seq_|^cod_|_cod$|^id_|^id$|"
-    r"cpf|cnpj|doc_credor|documento|nis|"
+    r"(^ano|ano_|_ano$|num_ano|exercicio|competencia|ultima_competencia|^mes$|^mes_|_mes$|seq_|^cod_|_cod$|^id_|^id$|_id$|"
+    r"quadrimestre|trimestre|bimestre|semestre|edicao|ordem|ranking|posicao|"
+    r"cpf|cnpj|doc_credor|documento|nis|socios|qtd_socios|"
     r"placa|pct_|percent|proporc|taxa|aliquota|media|medio|avg|mediana|per_capita|por_aluno|por_hab|"
     r"densidade|area_territorial|km2|ideb|idhm|idh|isf_m|indice|nota_capag|limite_|minimo_|"
-    r"telefone|cep|numero_ato|num_contrato|nro_contrato|num_empenho|num_licitacao|num_processo)",
+    r"telefone|cep|^num_|^nro_|^numero_|_numero$|convenio|edital|portaria|decreto|protocolo|processo|contrato_id)",
     re.IGNORECASE,
 )
 
 _YEAR_OR_CODE_COL_RE = re.compile(
-    r"(^ano|ano_|_ano$|num_ano|exercicio|competencia|ultima_competencia|^mes|mes_|seq_dat_pagamento|"
-    r"^id$|^id_|^cod_|_cod$|^seq_|num_contrato|nro_contrato|num_licitacao|num_processo|num_empenho|numero_ato)",
+    r"(^ano|ano_|_ano$|num_ano|exercicio|competencia|ultima_competencia|^mes$|^mes_|_mes$|seq_dat_pagamento|"
+    r"quadrimestre|trimestre|bimestre|semestre|edicao|ordem|ranking|posicao|"
+    r"^id$|^id_|_id$|^cod_|_cod$|^seq_|^num_|^nro_|^numero_|_numero$|"
+    r"num_contrato|nro_contrato|numero_contrato|num_convenio|numero_convenio|num_licitacao|num_processo|num_empenho|numero_ato|protocolo)",
     re.IGNORECASE,
 )
 
 _MULTI_YEAR_STOCK_COL_RE = re.compile(
     r"(populacao|habitantes|qtd_escolas|qtd_leitos|qtd_ubs|qtd_estabelecimentos|"
-    r"total_servidores|qtd_servidores|qtd_beneficiados|beneficiarios_mes|total_matriculas|qtd_veiculos|total_veiculos)",
+    r"total_servidores|qtd_servidores|qtd_beneficiados|beneficiarios|familias|pessoas|socios|"
+    r"total_matriculas|qtd_veiculos|total_veiculos)",
     re.IGNORECASE,
 )
 
@@ -58,8 +62,8 @@ _MONETARY_COL_RE = re.compile(
 )
 
 _COUNT_COL_RE = re.compile(
-    r"(^qtd_|_qtd|quantidade|total_servidores|total_contratos|total_empenhos|total_veiculos|"
-    r"matriculas|escolas|leitos|populacao|beneficiarios|contratos|empenhos|pagamentos|socios)",
+    r"(^qtd_|_qtd|quantidade|registros_|total_servidores|total_contratos|total_empenhos|total_veiculos|"
+    r"matriculas|escolas|leitos|populacao|beneficiarios|familias|contratos|empenhos|pagamentos)",
     re.IGNORECASE,
 )
 
@@ -454,10 +458,12 @@ class InstitutionalTableRenderer:
                     distinct_years_in_rows.add(str(yv).strip().split(".")[0])
         has_multiple_years = len(distinct_years_in_rows) > 1
 
-        # Soma determinística Decimal sobre o conjunto retornado (apenas quando não cortado visualmente/pelo limite, ou soma das linhas exibidas identificada)
+        # Soma determinística Decimal: se houve corte visual (was_visually_sliced) ou limite de query (truncated_by_security_limit),
+        # soma estritamente vis_rows e rotula como TOTAL PARCIAL (EXIBIDO) (Invariante F5.3)
+        is_partial_slice = bool(truncated_by_security_limit or was_visually_sliced)
         totals_formatted: Dict[str, str] = {}
         if include_totals and len(vis_rows) >= 2 and not has_multi_month_payroll:
-            sum_scope = rows if not truncated_by_security_limit else vis_rows
+            sum_scope = vis_rows if is_partial_slice else rows
             for c in sel_cols:
                 kind = col_kinds[c]
                 if has_multiple_years and _MULTI_YEAR_STOCK_COL_RE.search(c.lower()):
@@ -496,16 +502,16 @@ class InstitutionalTableRenderer:
             footer_parts.append(
                 f"Exibindo os {len(vis_rows)} primeiros registros de {total_rows_count} apurados"
             )
-            if totals_formatted and not truncated_by_security_limit:
-                footer_parts.append(f"Total Geral calculado sobre os {total_rows_count} registros")
+            if totals_formatted:
+                footer_parts.append(f"Total Parcial referente aos {len(vis_rows)} registros exibidos")
         else:
             footer_parts.append(f"{total_rows_count} registro(s)")
         footer_text = " · ".join(footer_parts)
 
         totals_label = (
             "TOTAL PARCIAL (EXIBIDO)"
-            if truncated_by_security_limit
-            else (f"TOTAL GERAL ({total_rows_count} ITENS)" if was_visually_sliced else "TOTAL GERAL")
+            if is_partial_slice
+            else "TOTAL GERAL"
         )
 
         png_bytes = self._render_png_bytes(

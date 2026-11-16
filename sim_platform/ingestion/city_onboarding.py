@@ -431,11 +431,24 @@ class CityOnboardingManager:
                 }
             ]
 
+        official_districts: List[str] = [municipality_name.strip()]
+        try:
+            import urllib.request
+            d_url = f"https://servicodados.ibge.gov.br/api/v1/localidades/municipios/{ibge}/distritos"
+            with urllib.request.urlopen(d_url, timeout=6.0) as resp_d:
+                d_json = json.loads(resp_d.read().decode("utf-8"))
+                fetched_dists = [str(x.get("nome") or "").strip() for x in d_json if x.get("nome")]
+                if fetched_dists:
+                    official_districts = fetched_dists
+        except Exception:
+            pass
+
         manifest = {
             "tenant_id": tenant_id,
             "municipality_name": municipality_name.strip(),
             "state_uf": uf,
             "ibge_code": ibge,
+            "official_districts": official_districts,
             "plan_code": plan_meta["plan_code"],
             "plan_name": plan_meta["plan_name"],
             "monthly_quota_requests": plan_meta["monthly_quota_requests"],
