@@ -173,19 +173,29 @@ def _tokens(text: str, extra_stop: Optional[Set[str]] = None) -> Set[str]:
     return out
 
 
-def _bm25_tokens_list(text: str) -> List[str]:
+def _bm25_tokens_list(text: str, extra_stop: Optional[Set[str]] = None) -> List[str]:
     raw = re.findall(r"[a-z0-9]{2,}", _norm(text))
+    bm25_stop = {
+        "de", "da", "do", "das", "dos", "em", "na", "no", "nas", "nos", "os", "as",
+        "um", "uma", "por", "com", "que", "para", "caete", "municipio", "prefeitura",
+        "municipal", "qual", "quais", "quanto", "quantos", "como", "onde", "quem",
+        "foi", "foram", "tem", "hoje", "atual", "atualmente", "total", "valor",
+        "grafico", "gerar", "fazer", "consegue", "pode", "ano", "anos", "ultimos",
+    }
+    if extra_stop:
+        bm25_stop = bm25_stop.union(extra_stop)
     res: List[str] = []
     for t in raw:
-        if t in ("de", "da", "do", "em", "na", "no", "os", "as", "um", "uma", "por", "com", "que", "para", "caete", "municipio", "prefeitura"):
+        st = _stem_pt(t)
+        if t in bm25_stop or st in bm25_stop:
             continue
-        res.append(_stem_pt(t))
+        res.append(st)
     return res
 
 
 CANONICAL_GOLD_FEW_SHOTS: List[Dict[str, str]] = [
     {
-        "question": "Qual o orçamento previsto na LOA e a receita arrecadada de Caeté nos anos de 2024, 2025 e 2026/2027?",
+        "question": "Qual o orçamento previsto na LOA e a receita arrecadada nos anos de 2024, 2025 e 2026/2027?",
         "sql": (
             "SELECT ano_referencia, orcamento_previsto_loa, orcamento_atualizado_loa, "
             "despesa_dotacao_atualizada, receita_arrecadada_realizada, despesa_empenhada, "
@@ -199,14 +209,29 @@ CANONICAL_GOLD_FEW_SHOTS: List[Dict[str, str]] = [
         "question": "Quantos funcionários e servidores a Prefeitura tem hoje no quadro ativo?",
         "sql": (
             "SELECT ano_referencia, MAX(seq_dat_pagamento) AS ultima_competencia, "
-            "COUNT(DISTINCT num_cpf) AS qtd_servidores_ultimo_mes, "
-            "(SELECT COUNT(DISTINCT num_cpf) FROM vw_gold_folha_servidores WHERE ano_referencia = 2025) AS qtd_servidores_distintos_no_ano, "
+            "COUNT(DISTINCT seq_dim_pessoa) AS qtd_servidores_ultimo_mes, "
+            "(SELECT COUNT(DISTINCT seq_dim_pessoa) FROM vw_gold_folha_servidores WHERE ano_referencia = (SELECT MAX(ano_referencia) FROM vw_gold_folha_servidores)) AS qtd_servidores_distintos_no_ano, "
             "ROUND(SUM(vlr_rmn_bruta), 2) AS folha_bruta_mensal, "
             "ROUND(AVG(vlr_rmn_bruta), 2) AS media_bruta_mensal "
             "FROM vw_gold_folha_servidores "
-            "WHERE ano_referencia = 2025 "
-            "AND seq_dat_pagamento = (SELECT MAX(seq_dat_pagamento) FROM vw_gold_folha_servidores WHERE ano_referencia = 2025) "
+            "WHERE seq_dat_pagamento = (SELECT MAX(seq_dat_pagamento) FROM vw_gold_folha_servidores) "
+            "AND COALESCE(dsc_tipo_pag, 'Mensal') = 'Mensal' "
             "GROUP BY ano_referencia"
+        ),
+        "tables": "vw_gold_folha_servidores",
+    },
+    {
+        "question": "Qual a evolução da quantidade de funcionários e servidores da Prefeitura por ano (concursados vs contratados)?",
+        "sql": (
+            "SELECT ano_referencia, "
+            "CASE WHEN dsc_situacao ILIKE '%Concursado%' THEN 'Concursados / Efetivos' "
+            "     WHEN dsc_situacao ILIKE '%Tempor%' OR dsc_situacao ILIKE '%Comissionado%' THEN 'Contratados / Comissionados' "
+            "     ELSE 'Outros Vínculos' END AS categoria_vinculo, "
+            "COUNT(DISTINCT seq_dim_pessoa) AS qtd_servidores "
+            "FROM vw_gold_folha_servidores "
+            "WHERE COALESCE(dsc_tipo_pag, 'Mensal') = 'Mensal' "
+            "GROUP BY 1, 2 "
+            "ORDER BY 1, 3 DESC"
         ),
         "tables": "vw_gold_folha_servidores",
     },
@@ -214,12 +239,12 @@ CANONICAL_GOLD_FEW_SHOTS: List[Dict[str, str]] = [
         "question": "Deste total de funcionários, quantos são concursados (efetivos), comissionados e contratados temporários?",
         "sql": (
             "SELECT dsc_situacao, tipo_vinculo, "
-            "COUNT(DISTINCT num_cpf) AS qtd_servidores_ativos_mes, "
+            "COUNT(DISTINCT seq_dim_pessoa) AS qtd_servidores_ativos_mes, "
             "ROUND(AVG(vlr_rmn_bruta), 2) AS media_salarial_bruta, "
             "ROUND(SUM(vlr_rmn_bruta), 2) AS total_folha_bruta_mes "
             "FROM vw_gold_folha_servidores "
-            "WHERE ano_referencia = 2025 "
-            "AND seq_dat_pagamento = (SELECT MAX(seq_dat_pagamento) FROM vw_gold_folha_servidores WHERE ano_referencia = 2025) "
+            "WHERE seq_dat_pagamento = (SELECT MAX(seq_dat_pagamento) FROM vw_gold_folha_servidores) "
+            "AND COALESCE(dsc_tipo_pag, 'Mensal') = 'Mensal' "
             "GROUP BY dsc_situacao, tipo_vinculo "
             "ORDER BY qtd_servidores_ativos_mes DESC"
         ),
@@ -229,39 +254,61 @@ CANONICAL_GOLD_FEW_SHOTS: List[Dict[str, str]] = [
         "question": "Qual o salário mensal do Prefeito e ele está acima da média salarial dos servidores da Prefeitura?",
         "sql": (
             "WITH ultimo_mes AS ("
-            "  SELECT MAX(seq_dat_pagamento) AS competencia FROM vw_gold_folha_servidores WHERE ano_referencia = 2025"
+            "  SELECT MAX(seq_dat_pagamento) AS competencia FROM vw_gold_folha_servidores"
             "), media_geral AS ("
             "  SELECT ROUND(AVG(vlr_rmn_bruta), 2) AS media_bruta_municipio, "
             "         ROUND(MEDIAN(vlr_rmn_bruta), 2) AS mediana_bruta_municipio "
             "  FROM vw_gold_folha_servidores, ultimo_mes "
-            "  WHERE ano_referencia = 2025 AND seq_dat_pagamento = ultimo_mes.competencia"
+            "  WHERE seq_dat_pagamento = ultimo_mes.competencia AND COALESCE(dsc_tipo_pag, 'Mensal') = 'Mensal'"
             ") "
             "SELECT f.seq_dat_pagamento, f.nom_servidor, f.dsc_cargo, f.vlr_rmn_bruta, f.vlr_rmn_liquida, "
             "m.media_bruta_municipio, m.mediana_bruta_municipio, "
             "ROUND(f.vlr_rmn_bruta / NULLIF(m.media_bruta_municipio, 0), 2) AS razao_sobre_media "
             "FROM vw_gold_folha_servidores f CROSS JOIN media_geral m JOIN ultimo_mes u ON f.seq_dat_pagamento = u.competencia "
-            "WHERE f.ano_referencia = 2025 AND f.dsc_cargo ILIKE '%PREFEITO%' "
+            "WHERE COALESCE(f.dsc_tipo_pag, 'Mensal') = 'Mensal' AND f.dsc_cargo ILIKE '%PREFEITO%' "
             "ORDER BY f.vlr_rmn_bruta DESC"
         ),
         "tables": "vw_gold_folha_servidores",
     },
     {
-        "question": "Quem é o atual Secretário Municipal de Meio Ambiente (SEDESMA) ou quem são os secretários municipais ativos?",
+        "question": "Quem são os secretários municipais ativos na Prefeitura?",
         "sql": (
             "SELECT seq_dat_pagamento, nom_servidor, dsc_cargo, dsc_lotacao, vlr_rmn_bruta "
             "FROM vw_gold_folha_servidores "
-            "WHERE ano_referencia = 2025 "
-            "AND seq_dat_pagamento = (SELECT MAX(seq_dat_pagamento) FROM vw_gold_folha_servidores WHERE ano_referencia = 2025) "
+            "WHERE seq_dat_pagamento = (SELECT MAX(seq_dat_pagamento) FROM vw_gold_folha_servidores) "
+            "AND COALESCE(dsc_tipo_pag, 'Mensal') = 'Mensal' "
             "AND (dsc_cargo ILIKE '%SECRETARIO MUNICIPAL%' OR dsc_cargo ILIKE '%PROCURADOR GERAL%' OR dsc_cargo ILIKE '%CONTROLADOR GERAL%') "
             "ORDER BY dsc_lotacao, nom_servidor"
         ),
         "tables": "vw_gold_folha_servidores",
     },
     {
+        "question": "Quais as modalidades de licitação mais utilizadas nos últimos 4 anos?",
+        "sql": (
+            "SELECT ano_referencia, COALESCE(dsc_modalidade, 'NÃO INFORMADA') AS dsc_modalidade, "
+            "COUNT(DISTINCT seq_licitacao) AS qtd_licitacoes "
+            "FROM licitacao_licitacao "
+            "WHERE ano_referencia >= (SELECT MAX(ano_referencia) - 3 FROM licitacao_licitacao) "
+            "GROUP BY 1, 2 "
+            "ORDER BY 1, 3 DESC"
+        ),
+        "tables": "licitacao_licitacao",
+    },
+    {
+        "question": "Existem servidores municipais que também são sócios de empresas contratadas ou licitantes (conflito de interesses)?",
+        "sql": (
+            "SELECT nom_pessoa, dsc_cargo, dsc_lotacao, nom_empresa, cnpj_empresa, "
+            "dsc_tipo_participacao, total_pago_empresa, primeiro_ano_folha, ultimo_ano_folha "
+            "FROM vw_gold_conflito_interesses_licitacao "
+            "ORDER BY total_pago_empresa DESC"
+        ),
+        "tables": "vw_gold_conflito_interesses_licitacao",
+    },
+    {
         "question": "Qual a quantidade total de veículos que a Prefeitura tem na frota e como se dividem por tipo ou situação?",
         "sql": (
             "SELECT status_cadastro_frota, COALESCE(dsc_tipo_veiculo, 'NÃO ESPECIFICADO NO CADASTRO') AS tipo_veiculo, "
-            "COUNT(DISTINCT seq_veiculo) AS qtd_veiculos, "
+            "COUNT(DISTINCT CASE WHEN TRY_CAST(seq_veiculo AS BIGINT) > 0 THEN seq_veiculo END) AS qtd_veiculos, "
             "ROUND(SUM(vlr_gasto), 2) AS gasto_acumulado_combustivel_manutencao "
             "FROM vw_gold_frota_consolidada "
             "GROUP BY 1, 2 "
@@ -282,18 +329,12 @@ CANONICAL_GOLD_FEW_SHOTS: List[Dict[str, str]] = [
         "tables": "vw_gold_frota_consolidada",
     },
     {
-        "question": "Quais os maiores fornecedores externos da Prefeitura de Caeté?",
+        "question": "Quais os maiores fornecedores privados externos da Prefeitura?",
         "sql": (
             "SELECT nom_credor, num_doc_credor, qtd_pagamentos, total_pago_historico, "
             "primeiro_ano_pagamento, ultimo_ano_pagamento, nom_socio "
             "FROM vw_gold_fornecedores_qsa_360 "
-            "WHERE nom_credor NOT ILIKE '%PREFEITURA%' "
-            "AND nom_credor NOT ILIKE '%INSTITUTO NACIONAL DO SEGURO SOCIAL%' "
-            "AND nom_credor NOT ILIKE '%INSS%' "
-            "AND nom_credor NOT ILIKE '%FGTS%' "
-            "AND nom_credor NOT ILIKE '%PASEP%' "
-            "AND nom_credor NOT ILIKE '%TRIBUNAL DE JUSTICA%' "
-            "AND nom_credor NOT ILIKE '%FOLHA DE PAGAMENTO%' "
+            "WHERE natureza_credor = 'EMPRESA_PRIVADA' "
             "ORDER BY total_pago_historico DESC LIMIT 15"
         ),
         "tables": "vw_gold_fornecedores_qsa_360",
@@ -318,12 +359,45 @@ CANONICAL_GOLD_FEW_SHOTS: List[Dict[str, str]] = [
     {
         "question": "Como estão os indicadores fiscais da LRF, despesa com pessoal sobre RCL, mínimos de saúde e educação e nota CAPAG?",
         "sql": (
-            "SELECT ano_referencia, receita_corrente_liquida_rcl, pct_despesa_pessoal_rcl, "
-            "situacao_fiscal_lrf, nota_capag_estimada, pct_aplicacao_saude, pct_aplicacao_educacao_mde "
+            "SELECT ano_referencia, vlr_receita_corrente_liquida, pct_despesa_pessoal_rcl, "
+            "situacao_fiscal_lrf, nota_capag_tesouro, pct_aplicacao_saude_siops, pct_aplicacao_educacao_mde "
             "FROM siconfi_finbra_indicadores "
             "ORDER BY ano_referencia"
         ),
         "tables": "siconfi_finbra_indicadores",
+    },
+    {
+        "question": "Qual a população, o PIB, o PIB per capita, a área territorial e a densidade demográfica do município segundo o IBGE?",
+        "sql": (
+            "SELECT ano_referencia, populacao_residente, fonte_populacao, "
+            "pib_municipal_mil_reais, pib_per_capita_reais, idhm_geral, area_territorial_km2, densidade_demografica_hab_km2 "
+            "FROM ibge_indicadores_municipais "
+            "ORDER BY ano_referencia DESC"
+        ),
+        "tables": "ibge_indicadores_municipais",
+    },
+    {
+        "question": "Quanto o município aplicou em saúde pública segundo o SIOPS e DATASUS?",
+        "sql": (
+            "SELECT ano_referencia, pct_recursos_proprios_saude_siops, minimo_constitucional_saude_pct, "
+            "vlr_despesa_total_saude, vlr_despesa_saude_per_capita, hospital_referencia "
+            "FROM datasus_siops_saude "
+            "ORDER BY ano_referencia DESC"
+        ),
+        "tables": "datasus_siops_saude",
+    },
+    {
+        "question": "Quantos beneficiários e qual o valor pago pelo Novo Bolsa Família no município segundo a CGU?",
+        "sql": (
+            "SELECT ano_referencia, MAX(\"MÊS REFERÊNCIA\") AS ultima_competencia, "
+            "SUM(CASE WHEN CONTAINS(CAST(\"VALOR PARCELA\" AS VARCHAR), ',') "
+            "THEN TRY_CAST(REPLACE(REPLACE(CAST(\"VALOR PARCELA\" AS VARCHAR), '.', ''), ',', '.') AS DECIMAL(18,2)) "
+            "ELSE TRY_CAST(\"VALOR PARCELA\" AS DECIMAL(18,2)) END) AS valor_total_parcelas, "
+            "COUNT(*) AS registros_apurados "
+            "FROM cgu_novo_bolsa_familia "
+            "GROUP BY ano_referencia ORDER BY ano_referencia DESC"
+        ),
+        "tables": "cgu_novo_bolsa_familia",
     },
 ]
 
@@ -340,12 +414,21 @@ class EntityLinker:
         conn: Optional[duckdb.DuckDBPyConnection] = None,
         workspace_root: Optional[Path] = None,
         city_name: str = "Caeté",
+        tenant_id: str = "caete_mg_3110004",
     ) -> None:
         self.workspace_root = workspace_root or Path(__file__).resolve().parents[2]
         self.city_name = city_name
+        self.tenant_id = (tenant_id or "caete_mg_3110004").strip()
         self.city_stop_tokens: Set[str] = {
             t for t in re.findall(r"[a-z0-9]{3,}", _norm(city_name))
         }
+        self.city_bm25_stop_tokens: Set[str] = {
+            t for t in re.findall(r"[a-z0-9]{2,}", _norm(city_name))
+        } | {
+            _stem_pt(t) for t in re.findall(r"[a-z0-9]{2,}", _norm(city_name))
+        }
+        self.has_live_conn: bool = conn is not None
+        self.available_tables: Set[str] = set()
         self.creditors: List[Tuple[str, str, Set[str]]] = []
         self.orgaos: List[Tuple[str, str, Set[str]]] = []
         self.unidades: List[Tuple[str, str, Set[str]]] = []
@@ -357,6 +440,13 @@ class EntityLinker:
         self._bm25_avgdl: float = 1.0
 
         if conn is not None:
+            try:
+                t_rows = conn.execute(
+                    "SELECT LOWER(table_name) FROM information_schema.tables WHERE table_schema = 'main'"
+                ).fetchall()
+                self.available_tables = {str(r[0]) for r in t_rows if r and r[0]}
+            except Exception:
+                self.available_tables = set()
             self._index_db_entities(conn)
         self._load_golden_few_shots()
         self._build_bm25_index()
@@ -465,20 +555,23 @@ class EntityLinker:
         # 1. Exemplos canônicos das Gold Views (prioridade semântica v4.0)
         for item in CANONICAL_GOLD_FEW_SHOTS:
             q = item["question"]
-            bm_toks = _bm25_tokens_list(q)
+            bm_toks = _bm25_tokens_list(q, self.city_bm25_stop_tokens)
             self.few_shots.append(
                 {
                     "question": q,
                     "sql": item["sql"],
                     "tables": item["tables"],
-                    "tokens": _tokens(q),
+                    "tokens": _tokens(q, self.city_stop_tokens),
                     "bm25_tf": Counter(bm_toks),
                     "bm25_len": len(bm_toks),
                     "is_gold_canonical": True,
                 }
             )
 
-        # 2. Exemplos oficiais validados do golden_dataset_v1.0.csv (somente leitura!)
+        # 2. Exemplos oficiais validados do golden_dataset_v1.0.csv (estritamente para Caeté, evitando poluir outras cidades com nomes/órgãos locais)
+        is_caete = self.tenant_id in ("caete_mg_3110004", "caete-mg") and _norm(self.city_name) in ("caete", "caetemg")
+        if not is_caete:
+            return
         golden_csv = self.workspace_root / "avaliacao" / "dados" / "golden" / "golden_dataset_v1.0.csv"
         if not golden_csv.exists():
             return
@@ -488,19 +581,26 @@ class EntityLinker:
                     q = (row.get("input_usuario") or "").strip()
                     sql = (row.get("query_referencia") or "").strip()
                     tbls = (row.get("tabelas_esperadas") or "").strip()
-                    if q and sql:
-                        bm_toks = _bm25_tokens_list(q)
-                        self.few_shots.append(
-                            {
-                                "question": q,
-                                "sql": sql,
-                                "tables": tbls,
-                                "tokens": _tokens(q),
-                                "bm25_tf": Counter(bm_toks),
-                                "bm25_len": len(bm_toks),
-                                "is_gold_canonical": False,
-                            }
-                        )
+                    if not (q and sql):
+                        continue
+                    sql_low = sql.lower()
+                    # Evitar envenenar few-shots com contagem bruta de frota filtrando ano_referencia ou folha sem DISTINCT
+                    if "frota_frota" in sql_low and "ano_referencia" in sql_low and "gastofrota" not in sql_low:
+                        continue
+                    if "remuneracao_municipio" in sql_low and "count(*)" in sql_low and "distinct" not in sql_low:
+                        continue
+                    bm_toks = _bm25_tokens_list(q, self.city_bm25_stop_tokens)
+                    self.few_shots.append(
+                        {
+                            "question": q,
+                            "sql": sql,
+                            "tables": tbls,
+                            "tokens": _tokens(q, self.city_stop_tokens),
+                            "bm25_tf": Counter(bm_toks),
+                            "bm25_len": len(bm_toks),
+                            "is_gold_canonical": False,
+                        }
+                    )
         except Exception:
             pass
 
@@ -532,26 +632,31 @@ class EntityLinker:
 
         bindings: List[str] = []
 
-        # Bindings semânticos institucionais de Caeté/MG
-        if "santa casa" in q_norm or "hospital" in q_norm:
+        is_caete = self.city_name.lower() in ("caeté", "caete")
+        # Bindings semânticos institucionais
+        if is_caete and ("santa casa" in q_norm or "hospital" in q_norm):
             bindings.append(
                 "Entidade 'Santa Casa / Hospital': em `despesa_pagamento` / `vw_gold_execucao_despesa_credor` use `(nom_credor ILIKE '%SANTA CASA%' OR nom_credor ILIKE '%BENEFICENCIA%')`"
             )
+        elif "hospital" in q_norm:
+            bindings.append(
+                "Entidade hospitalar: em `datasus_siops_saude` consulte `hospital_referencia`; em `vw_gold_execucao_despesa_credor` filtre `nom_credor ILIKE '%HOSPITAL%' OR nom_credor ILIKE '%SANTA CASA%' OR nom_credor ILIKE '%FUNDACAO%'`"
+            )
         if "camara" in q_norm or "vereador" in q_norm or "legislativo" in q_norm:
             bindings.append(
-                "Órgão 'Câmara Municipal': filtre `CAST(cod_orgao AS INTEGER) = 1` ou `nom_orgao ILIKE '%CAMARA%'` (em `vw_gold_folha_servidores`, `dsc_lotacao ILIKE '%CORPO LEGISLATIVO%'` ou `dsc_cargo ILIKE '%VEREADOR%'`)"
+                "Órgão 'Câmara Municipal': filtre `esfera_poder = 'LEGISLATIVO'` ou `nom_orgao ILIKE '%CAMARA%'` (em `vw_gold_folha_servidores`, também `dsc_lotacao ILIKE '%CORPO LEGISLATIVO%'` ou `dsc_cargo ILIKE '%VEREADOR%'`)"
             )
-        if "meio ambiente" in q_norm or "sedesma" in q_norm or "sustentavel" in q_norm:
+        if is_caete and ("meio ambiente" in q_norm or "sedesma" in q_norm or "sustentavel" in q_norm):
             bindings.append(
                 "Secretaria de Meio Ambiente em Caeté denomina-se `SEDESMA` (Secretaria Municipal de Desenvolvimento Sustentável e Meio Ambiente): em `vw_gold_folha_servidores` filtre `dsc_lotacao ILIKE '%SEDESMA%'` (Secretário(a): `dsc_cargo ILIKE '%SECRETARIO MUNICIPAL%'`); em `orgao_orgaoUnidade` filtre `dsc_unidade ILIKE '%SEDESMA%' OR dsc_unidade ILIKE '%MEIO AMBIENTE%'`"
             )
-        if "assistencia social" in q_norm or "semas" in q_norm:
+        if is_caete and ("assistencia social" in q_norm or "semas" in q_norm):
             bindings.append(
                 "Secretaria de Assistência Social em Caeté denomina-se `SEMAS`: em `vw_gold_folha_servidores` filtre `dsc_lotacao ILIKE '%SEMAS%'`"
             )
         if "prefeito" in q_norm:
             bindings.append(
-                "Cargo do Prefeito em `vw_gold_folha_servidores`: `dsc_cargo = 'PREFEITO MUNICIPAL'` (e Vice-Prefeito: `dsc_cargo = 'VICE-PREFEITO'`), sempre filtrando o último mês `seq_dat_pagamento = (SELECT MAX(seq_dat_pagamento) FROM vw_gold_folha_servidores WHERE ano_referencia = 2025)`"
+                "Cargo do Prefeito em `vw_gold_folha_servidores`: `dsc_cargo ILIKE 'PREFEITO%'` (e Vice-Prefeito: `dsc_cargo ILIKE '%VICE%PREFEITO%'`), sempre filtrando o último mês `seq_dat_pagamento = (SELECT MAX(seq_dat_pagamento) FROM vw_gold_folha_servidores) AND COALESCE(dsc_tipo_pag, 'Mensal') = 'Mensal'`"
             )
         if "secretario" in q_norm or "secretarios" in q_norm or "secretaria" in q_norm:
             if any(w in q_norm for w in ("quem", "secretario", "secretarios", "atual", "ocupante", "cargo", "salario")):
@@ -617,7 +722,7 @@ class EntityLinker:
         Recupera até `top_k` exemplos SQL validados via Okapi BM25 ($k_1=1.5, b=0.75$)
         combinado com bônus leve para exemplos que usam a Camada Semântica Gold (`vw_gold_*`).
         """
-        q_terms = _bm25_tokens_list(question)
+        q_terms = _bm25_tokens_list(question, self.city_bm25_stop_tokens)
         if not q_terms or not self.few_shots:
             return []
 
@@ -626,7 +731,18 @@ class EntityLinker:
         scored: List[Tuple[float, Dict[str, Any]]] = []
         q_set = set(q_terms)
 
+        if self.has_live_conn and not self.available_tables:
+            return []
+
         for item in self.few_shots:
+            if self.available_tables:
+                req_tbls = [
+                    t.strip().lower()
+                    for t in re.split(r"[,;\s]+", str(item.get("tables") or ""))
+                    if t.strip()
+                ]
+                if req_tbls and any(rt not in self.available_tables for rt in req_tbls):
+                    continue
             tf_map: Counter[str] = item["bm25_tf"]
             dl = max(1, item["bm25_len"])
             if not tf_map:

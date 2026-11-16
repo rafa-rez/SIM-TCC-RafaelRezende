@@ -107,13 +107,208 @@ _GLYPHS_5X7: Dict[str, Tuple[int, ...]] = {
     "Z": (0x1F, 0x01, 0x02, 0x04, 0x08, 0x10, 0x1F),
     "_": (0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1F),
     "|": (0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04),
+    "[": (0x0E, 0x08, 0x08, 0x08, 0x08, 0x08, 0x0E),
+    "]": (0x0E, 0x02, 0x02, 0x02, 0x02, 0x02, 0x0E),
+    "<": (0x02, 0x04, 0x08, 0x10, 0x08, 0x04, 0x02),
+    ">": (0x08, 0x04, 0x02, 0x01, 0x02, 0x04, 0x08),
+    "°": (0x06, 0x09, 0x09, 0x06, 0x00, 0x00, 0x00),
 }
+
+_PUNCT_TRANSLATE = str.maketrans({
+    "\u2014": "-",  # em-dash —
+    "\u2013": "-",  # en-dash –
+    "\u2212": "-",  # minus −
+    "\u201c": '"',
+    "\u201d": '"',
+    "\u2018": "'",
+    "\u2019": "'",
+    "\u2022": "*",
+    "\u00ba": "°",  # º
+    "\u00aa": "°",  # ª
+    "\u00b0": "°",  # °
+})
+
+_CHART_REQUEST_PREFIX_RE = re.compile(
+    r"^(?:oi\s*,?\s*|ola\s*,?\s*|bom\s+dia\s*,?\s*|boa\s+tarde\s*,?\s*|boa\s+noite\s*,?\s*)?"
+    r"(?:voce\s+|vc\s+)?"
+    r"(?:consegue\s+|pode\s+|poderia\s+|quero\s+|gostaria\s+de\s+|teria\s+como\s+|tem\s+como\s+)?"
+    r"(?:me\s+|nos\s+)?"
+    r"(?:gerar|gere|fazer|faca|criar|crie|montar|monte|mostrar|mostre|plotar|plote|trazer|traga|enviar|envie|mandar|mande)\s+"
+    r"(?:agora\s+|tambem\s+|entao\s+)?"
+    r"(?:um\s+|uma\s+|o\s+)?"
+    r"(?:grafico|visualizacao|imagem|quadro\s+visual)"
+    r"(?:\s+de\s+(?:barras?|linhas?|colunas?|pizza|evolucao|comparacao))?"
+    r"(?:\s+(?:sobre|de|da|do|das|dos|com|para|referente\s+a|acerca\s+de))?\s*",
+    flags=re.IGNORECASE,
+)
 
 
 def _ascii_clean_upper(text: str) -> str:
-    nfkd = unicodedata.normalize("NFKD", str(text or ""))
+    raw = str(text or "").translate(_PUNCT_TRANSLATE)
+    # Preservar símbolo de grau antes da decomposição NFKD
+    raw = raw.replace("°", "\x01")
+    nfkd = unicodedata.normalize("NFKD", raw)
     no_acc = "".join(c for c in nfkd if not unicodedata.combining(c))
-    return no_acc.upper()
+    return no_acc.replace("\x01", "°").upper()
+
+
+def _truncate_words(text: str, max_chars: int) -> str:
+    s = re.sub(r"\s+", " ", str(text or "")).strip()
+    if len(s) <= max_chars:
+        return s
+    if max_chars <= 4:
+        return s[:max_chars]
+    cut = s[: max_chars - 3].rstrip()
+    if " " in cut and len(cut.rsplit(" ", 1)[0]) >= max(6, (max_chars - 3) // 2):
+        cut = cut.rsplit(" ", 1)[0].rstrip(" ,;:-/")
+    return f"{cut}..."
+
+
+_GOV_PREFIX_ABBREVS: Tuple[Tuple[re.Pattern[str], str, str], ...] = (
+    (
+        re.compile(r"\bSERVI[CÇ]O\s+AUT[OÔ]NOMO\s+DE\s+[AÁ]GUA\s+E\s+ESGOTO\b", re.IGNORECASE),
+        "SAAE",
+        "SAAE",
+    ),
+    (
+        re.compile(r"^SECRETARIA\s+MUNICIPAL\s+D[EAO]S?\s+", re.IGNORECASE),
+        "SEC. MUN. ",
+        "Sec. Mun. ",
+    ),
+    (
+        re.compile(r"^SECRETARIA\s+MUNICIPAL\s+", re.IGNORECASE),
+        "SEC. MUN. ",
+        "Sec. Mun. ",
+    ),
+    (
+        re.compile(r"^FUNDO\s+MUNICIPAL\s+D[EAO]S?\s+", re.IGNORECASE),
+        "FUNDO MUN. ",
+        "Fundo Mun. ",
+    ),
+    (
+        re.compile(r"^FUNDO\s+MUNICIPAL\s+", re.IGNORECASE),
+        "FUNDO MUN. ",
+        "Fundo Mun. ",
+    ),
+    (
+        re.compile(r"^PREFEITURA\s+MUNICIPAL\s+D[EAO]S?\s+", re.IGNORECASE),
+        "PREF. ",
+        "Pref. ",
+    ),
+    (
+        re.compile(r"^PREFEITURA\s+MUNICIPAL\s+", re.IGNORECASE),
+        "PREF. ",
+        "Pref. ",
+    ),
+    (
+        re.compile(r"^FUNDA[CÇ][AÃ]O\s+MUNICIPAL\s+D[EAO]S?\s+", re.IGNORECASE),
+        "FUND. MUN. ",
+        "Fund. Mun. ",
+    ),
+    (
+        re.compile(r"^FUNDA[CÇ][AÃ]O\s+", re.IGNORECASE),
+        "FUND. ",
+        "Fund. ",
+    ),
+    (
+        re.compile(r"^C[AÂ]MARA\s+MUNICIPAL\s+D[EAO]S?\s+", re.IGNORECASE),
+        "CÂMARA MUN. ",
+        "Câmara Mun. ",
+    ),
+)
+
+
+def _smart_shorten_gov_label(lbl: str, max_len: int = 26) -> str:
+    s = re.sub(r"\s+", " ", str(lbl or "")).strip()
+    if not s:
+        return "N/I"
+    is_upper = s == s.upper()
+    for pat, repl_up, repl_tc in _GOV_PREFIX_ABBREVS:
+        s = pat.sub(repl_up if is_upper else repl_tc, s)
+    s = re.sub(r"\s+", " ", s).strip()
+    return _truncate_words(s, max_len)
+
+
+def _extract_starred_years(labels: Sequence[str], series: Optional[Sequence[Dict[str, Any]]] = None) -> Tuple[bool, List[str]]:
+    starred_years: List[str] = []
+    has_star = False
+    pool: List[str] = [str(lbl or "") for lbl in labels]
+    if series:
+        pool.extend(str(s.get("name") or "") for s in series if isinstance(s, dict))
+    for txt in pool:
+        if "*" in txt:
+            has_star = True
+            for m_yr in re.finditer(r"\b(19\d{2}|20\d{2}|2100)\*", txt):
+                yr_tok = m_yr.group(1)
+                if yr_tok not in starred_years:
+                    starred_years.append(yr_tok)
+    return has_star, starred_years
+
+
+def _build_partial_footer_tag(labels: Sequence[str], series: Optional[Sequence[Dict[str, Any]]] = None) -> Optional[str]:
+    has_star, starred_years = _extract_starred_years(labels, series)
+    if not has_star:
+        return None
+    if len(starred_years) == 1:
+        return f"*{starred_years[0]} EM EXECUCAO PARCIAL"
+    if len(starred_years) >= 2:
+        return f"*{'/'.join(starred_years)} EM EXECUCAO PARCIAL"
+    return "*EXERCICIO EM EXECUCAO PARCIAL"
+
+
+def _wrap_words(text: str, max_chars_per_line: int = 72, max_lines: int = 2) -> List[str]:
+    s = re.sub(r"\s+", " ", str(text or "")).strip()
+    if not s:
+        return []
+    words = s.split(" ")
+    lines: List[str] = []
+    cur = ""
+    idx = 0
+    while idx < len(words):
+        w = words[idx]
+        cand = f"{cur} {w}".strip() if cur else w
+        if len(cand) <= max_chars_per_line:
+            cur = cand
+            idx += 1
+        else:
+            if not cur:
+                lines.append(w[:max_chars_per_line])
+                idx += 1
+            else:
+                lines.append(cur)
+                cur = ""
+            if len(lines) == max_lines - 1:
+                rem = " ".join(words[idx:])
+                lines.append(_truncate_words(rem, max_chars_per_line))
+                return [ln for ln in lines if ln]
+    if cur:
+        lines.append(cur)
+    return lines[:max_lines]
+
+
+def _derive_editorial_title(question: str, explicit_title: str, series_names: Sequence[str], city_tag: str) -> str:
+    if explicit_title and explicit_title.strip():
+        return _truncate_words(explicit_title.strip(), 72)
+    q_raw = re.sub(r"\s+", " ", (question or "")).strip().rstrip("?!.")
+    if q_raw:
+        q_norm = unicodedata.normalize("NFKD", q_raw)
+        q_ascii = "".join(c for c in q_norm if not unicodedata.combining(c))
+        m = _CHART_REQUEST_PREFIX_RE.match(q_ascii)
+        cleaned = q_raw[m.end() :].strip(" :,-?!") if m else q_raw
+        generic_refs = {
+            "", "dessa informacao", "desta informacao", "disso", "disto",
+            "dessa resposta", "dos dados", "desses dados", "para mim", "pra mim",
+        }
+        cleaned_key = "".join(c for c in unicodedata.normalize("NFKD", cleaned.lower()) if not unicodedata.combining(c))
+        if cleaned and cleaned_key not in generic_refs and len(cleaned) >= 5:
+            titled = cleaned[0].upper() + cleaned[1:]
+            if city_tag.split("/")[0].lower() not in titled.lower() and len(titled) <= 52:
+                titled = f"{titled} - {city_tag}"
+            return _truncate_words(titled, 72)
+    if series_names:
+        joined = " vs. ".join(series_names[:2])
+        return _truncate_words(f"{joined} - {city_tag}", 72)
+    return f"Painel Analitico Oficial - {city_tag}"
 
 
 class _NativePNGCanvas:
@@ -141,6 +336,35 @@ class _NativePNGCanvas:
         for y in range(cy0, cy1):
             off = y * stride
             buf[off + s0 : off + s1] = span
+
+    def draw_line(
+        self,
+        x0: int,
+        y0: int,
+        x1: int,
+        y1: int,
+        rgb: Tuple[int, int, int],
+        thickness: int = 3,
+    ) -> None:
+        """Rasterização pixelada de linha inteira (algoritmo de Bresenham) sem anti-aliasing borrado."""
+        ix0, iy0, ix1, iy1 = int(x0), int(y0), int(x1), int(y1)
+        dx = abs(ix1 - ix0)
+        dy = -abs(iy1 - iy0)
+        sx = 1 if ix0 < ix1 else -1
+        sy = 1 if iy0 < iy1 else -1
+        err = dx + dy
+        half = max(1, thickness // 2)
+        while True:
+            self.fill_rect(ix0 - half, iy0 - half, ix0 - half + thickness, iy0 - half + thickness, rgb)
+            if ix0 == ix1 and iy0 == iy1:
+                break
+            e2 = 2 * err
+            if e2 >= dy:
+                err += dy
+                ix0 += sx
+            if e2 <= dx:
+                err += dx
+                iy0 += sy
 
     def draw_text(
         self,
@@ -205,7 +429,17 @@ _ID_OR_SKIP_NUMERIC = {
     "ano_referencia",
     "ano",
     "ano_exercicio",
+    "exercicio",
+    "num_exercicio",
     "num_anoexercicio",
+    "num_ano_licitacao",
+    "ano_folha",
+    "ano_licitacao",
+    "ano_contrato",
+    "ano_edicao",
+    "ano_empenho",
+    "ano_processo",
+    "num_ano",
     "num_mesexercicio",
     "num_mes_referencia",
     "mes_referencia",
@@ -231,10 +465,39 @@ _ID_OR_SKIP_NUMERIC = {
     "seq_dim_pessoa",
 }
 
+_YEAR_COL_CANDIDATES = (
+    "ano_referencia",
+    "ano",
+    "ano_exercicio",
+    "exercicio",
+    "num_exercicio",
+    "num_anoexercicio",
+    "num_ano_licitacao",
+    "ano_folha",
+    "ano_licitacao",
+    "ano_contrato",
+    "ano_edicao",
+)
+
+_YEAR_OR_ID_COL_RE = re.compile(
+    r"(^ano|ano_|_ano$|num_ano|exercicio|competencia|ultima_competencia|"
+    r"^mes$|mes_|_mes$|num_mes|seq_dat_pagamento|"
+    r"^id$|^id_|_id$|^cod_|_cod$|^seq_|_seq$|"
+    r"num_contrato|nro_contrato|num_licitacao|num_processo|num_empenho|numero_ato)",
+    re.IGNORECASE,
+)
+
 _MONETARY_HINTS = (
     "vlr", "valor", "total_pago", "orcamento", "receita", "despesa",
     "dotacao", "empenhad", "liquidad", "arrecadad", "folha", "media_salarial",
     "media_bruta", "mediana_bruta", "gasto", "remuneracao", "pib", "rcl",
+    "resultado", "saldo", "superavit", "deficit",
+)
+
+_NON_ADDITIVE_STOCK_HINTS = (
+    "servidor", "funcionari", "veiculo", "frota", "matricula", "escola",
+    "leito", "populacao", "habitante", "ubs", "cnes", "media_", "mediana_",
+    "ideb", "idhm", "nota_", "isf_", "taxa_", "ies_", "ieq_",
 )
 
 _HUMAN_COLUMN_LABELS: Dict[str, str] = {
@@ -246,7 +509,7 @@ _HUMAN_COLUMN_LABELS: Dict[str, str] = {
     "despesa_liquidada": "Despesa Liquidada",
     "despesa_paga": "Despesa Paga",
     "total_pago_saude": "Total Pago Saude",
-    "total_pago_historico": "Total Pago (2020-2025)",
+    "total_pago_historico": "Total Pago Histórico",
     "total_pago_carona": "Total Pago via Carona",
     "total_empenhado_carona": "Total Empenhado Carona",
     "qtd_servidores_ativos_mes": "Servidores Ativos",
@@ -277,6 +540,18 @@ def _to_float(val: Any) -> Optional[float]:
     return None
 
 
+def _is_year_or_skip_numeric_col(col_name: str, rows: Sequence[Dict[str, Any]]) -> bool:
+    cl = col_name.lower().strip()
+    if cl in _ID_OR_SKIP_NUMERIC or _YEAR_OR_ID_COL_RE.search(cl):
+        return True
+    non_null = [r.get(col_name) for r in rows if r.get(col_name) is not None and str(r.get(col_name)).strip() != ""]
+    if non_null and re.search(r"(ano|exerc|perio)", cl):
+        fvals = [_to_float(v) for v in non_null]
+        if all(fv is not None and abs(fv - round(fv)) < 1e-6 and 1990 <= int(round(fv)) <= 2100 for fv in fvals):
+            return True
+    return False
+
+
 def _is_monetary_col(col_name: str) -> bool:
     cl = col_name.lower()
     if cl.startswith(("qtd_", "pct_", "razao_", "nota_", "ideb_")):
@@ -287,6 +562,13 @@ def _is_monetary_col(col_name: str) -> bool:
 def _is_pct_col(col_name: str) -> bool:
     cl = col_name.lower()
     return cl.startswith("pct_") or "percentual" in cl
+
+
+def _is_stock_or_non_additive_col(col_name: str) -> bool:
+    cl = col_name.lower()
+    if _is_pct_col(cl):
+        return True
+    return any(h in cl for h in _NON_ADDITIVE_STOCK_HINTS)
 
 
 def _format_value_compact(val: float, is_monetary: bool = False, is_pct: bool = False) -> str:
@@ -327,15 +609,44 @@ class InstitutionalChartGenerator:
         (217, 119, 6),   # #D97706 Amber Highlight
     )
 
-    def __init__(self, municipality_name: str = "Caeté", state_uf: str = "MG") -> None:
+    def __init__(
+        self,
+        municipality_name: str = "Caeté",
+        state_uf: str = "MG",
+        prefer_native_renderer: bool = True,
+        max_partial_year: Optional[int] = None,
+    ) -> None:
         self.municipality_name = municipality_name
         self.state_uf = state_uf
+        self.prefer_native_renderer = prefer_native_renderer
+        self.max_partial_year = max_partial_year
         self.default_municipality_label = f"Prefeitura Municipal de {municipality_name}/{state_uf}"
+
+    def _is_partial_year_row(
+        self,
+        row: Dict[str, Any],
+        yr_int: int,
+        distinct_years: Sequence[int],
+        is_stock_metric: bool,
+    ) -> bool:
+        st_ex = str(row.get("status_exercicio") or row.get("situacao_exercicio") or "").lower()
+        if "parcial" in st_ex or "em aberto" in st_ex or "em execucao" in st_ex or "em execução" in st_ex:
+            return True
+        if is_stock_metric:
+            return False
+        max_yr = max(distinct_years) if distinct_years else 0
+        if self.max_partial_year is not None:
+            eff_partial = max_yr if (max_yr > self.max_partial_year and max_yr >= 2026) else self.max_partial_year
+            return yr_int == eff_partial
+        if max_yr >= 2026 and yr_int == max_yr:
+            return True
+        return False
 
     def extract_chart_series(
         self,
         rows: Sequence[Dict[str, Any]],
         question: str = "",
+        chart_spec: Optional[Dict[str, Any]] = None,
     ) -> Optional[Dict[str, Any]]:
         if not rows:
             return None
@@ -344,9 +655,15 @@ class InstitutionalChartGenerator:
             return None
 
         cols = list(clean_rows[0].keys())
-        q_low = (question or "").lower()
+        q_norm = _ascii_clean_upper(question).lower()
+        requested_type = str((chart_spec or {}).get("chart_type") or "").strip().lower()
+        wants_line = (
+            requested_type == "line"
+            or any(w in q_norm for w in ("grafico de linha", "grafico em linha", "em linhas", "linha do tempo"))
+        )
 
-        # Caso especial 1: apenas 1 linha com múltiplas métricas comparáveis -> pivota colunas como categorias!
+        # Caso especial 1: apenas 1 linha -> SÓ plota se houver >= 2 métricas comparáveis na mesma unidade!
+        # Escalar único (1x1, ex: [{"qtd_servidores": 1496}]) retorna None para o orquestrador expandir em série anual.
         if len(clean_rows) == 1:
             r0 = clean_rows[0]
             pivoted_labels: List[str] = []
@@ -354,29 +671,30 @@ class InstitutionalChartGenerator:
             monetary_flags: List[bool] = []
             for c in cols:
                 cl = c.lower()
-                if cl in _ID_OR_SKIP_NUMERIC or cl.startswith("pct_") or cl.startswith("razao_"):
+                if _is_year_or_skip_numeric_col(c, clean_rows) or cl.startswith("pct_") or cl.startswith("razao_"):
                     continue
                 fv = _to_float(r0.get(c))
-                if fv is not None and fv > 0:
+                if fv is not None and fv != 0:
                     pivoted_labels.append(_pretty_col_name(c))
                     pivoted_vals.append(fv)
                     monetary_flags.append(_is_monetary_col(c))
             if len(pivoted_vals) >= 2:
-                # Evitar misturar quantidades (ex: 1496 servidores) com milhões em R$ no mesmo eixo
                 has_mon = any(monetary_flags)
                 has_non_mon = any(not m for m in monetary_flags)
                 if has_mon and has_non_mon:
-                    want_qty = any(w in q_low for w in ("quantos", "quantidade", "numero", "total de funcion", "veiculo"))
+                    want_qty = any(w in q_norm for w in ("quantos", "quantidade", "numero", "total de funcion", "veiculo"))
                     keep_mon = not want_qty
                     filtered = [
                         (lbl, val)
                         for lbl, val, is_m in zip(pivoted_labels, pivoted_vals, monetary_flags)
                         if is_m == keep_mon
                     ]
-                    if len(filtered) >= 1:
+                    if len(filtered) >= 2:
                         pivoted_labels = [x[0] for x in filtered]
                         pivoted_vals = [x[1] for x in filtered]
                         monetary_flags = [keep_mon] * len(filtered)
+                    else:
+                        return None
 
                 return {
                     "chart_type": "horizontal_bar" if len(pivoted_labels) > 4 else "vertical_bar",
@@ -385,23 +703,52 @@ class InstitutionalChartGenerator:
                     "is_monetary": any(monetary_flags),
                     "is_pct": False,
                 }
+            return None
 
-        # Identificar eixo X (ano_referencia ou dimensão categórica)
-        year_col = next((c for c in cols if c.lower() in ("ano_referencia", "ano", "ano_exercicio")), None)
+        # Identificar eixo X (ano_referencia / exercicio / variantes de ano ou dimensão categórica)
+        year_col = next((c for c in cols if c.lower() in _YEAR_COL_CANDIDATES), None)
+        if year_col is None:
+            for c in cols:
+                cl = c.lower()
+                if cl.startswith(("primeiro_", "ultimo_", "de_", "ate_")):
+                    continue
+                if re.search(r"(^ano_|_ano$|^exercicio|exercicio_|num_ano)", cl):
+                    non_null_v = [_to_float(r.get(c)) for r in clean_rows if r.get(c) is not None and str(r.get(c)).strip() != ""]
+                    if non_null_v and all(fv is not None and abs(fv - round(fv)) < 1e-6 and 1990 <= int(round(fv)) <= 2100 for fv in non_null_v):
+                        year_col = c
+                        break
+
+        _META_TEXT_SKIP = {
+            "status_exercicio",
+            "situacao_exercicio",
+            "nom_municipio",
+            "municipio",
+            "uf",
+            "cod_ibge",
+            "fonte_populacao",
+            "fonte_dados",
+            "situacao_fiscal_lrf",
+            "hospital_referencia",
+            "nota_capag_tesouro",
+            "icf_ranking_qualidade_info",
+        }
         label_candidates = [
             c
             for c in cols
             if c != year_col
-            and c.lower() not in _ID_OR_SKIP_NUMERIC
-            and not c.lower().startswith(("num_doc", "num_cpf", "cpf_", "cnpj_"))
+            and not _is_year_or_skip_numeric_col(c, clean_rows)
+            and c.lower() not in _META_TEXT_SKIP
+            and not c.lower().startswith(("num_doc", "num_cpf", "cpf_", "cnpj_", "fonte_", "status_"))
             and any(isinstance(r.get(c), str) and str(r.get(c)).strip() for r in clean_rows[:5])
-            and c.lower() != "status_exercicio"
+            and (
+                not year_col
+                or len({str(r.get(c)).strip() for r in clean_rows if r.get(c) is not None and str(r.get(c)).strip()}) > 1
+            )
         ]
 
         numeric_cols: List[str] = []
         for c in cols:
-            cl = c.lower()
-            if cl in _ID_OR_SKIP_NUMERIC or c == year_col or c in label_candidates:
+            if c == year_col or c in label_candidates or _is_year_or_skip_numeric_col(c, clean_rows):
                 continue
             vals = [_to_float(r.get(c)) for r in clean_rows]
             if any(v is not None for v in vals):
@@ -410,80 +757,246 @@ class InstitutionalChartGenerator:
         if not numeric_cols:
             return None
 
-        # Se existe coluna de ano e as linhas são anos distintos -> Série Temporal Vertical!
-        distinct_years = {r.get(year_col) for r in clean_rows if year_col and r.get(year_col) is not None}
-        is_time_series = bool(year_col and len(distinct_years) >= 2 and not label_candidates)
+        want_count = any(w in q_norm for w in ("quantos", "quantidade", "numero", "veiculo", "concursad", "funcionari", "servidor", "modalidade", "licitac", "beneficiari"))
 
+        def _pick_primary_metric(cands: Sequence[str]) -> str:
+            if any(w in q_norm for w in ("populac", "habitante", "demograf")):
+                m_hit = next((c for c in cands if "populac" in c.lower() or "habitante" in c.lower()), None)
+                if m_hit:
+                    return m_hit
+            if any(w in q_norm for w in ("per capita", "por habitante")):
+                m_hit = next((c for c in cands if "per_capita" in c.lower()), None)
+                if m_hit:
+                    return m_hit
+            if "idhm" in q_norm or "idh" in q_norm:
+                m_hit = next((c for c in cands if "idhm" in c.lower()), None)
+                if m_hit:
+                    return m_hit
+            if "ideb" in q_norm:
+                m_hit = next((c for c in cands if "ideb" in c.lower()), None)
+                if m_hit:
+                    return m_hit
+            if "pib" in q_norm:
+                m_hit = next((c for c in cands if "pib_municipal" in c.lower() or "pib" in c.lower()), None)
+                if m_hit:
+                    return m_hit
+            if any(w in q_norm for w in ("rcl", "receita corrente")):
+                m_hit = next((c for c in cands if "receita_corrente_liquida" in c.lower() or "rcl" in c.lower()), None)
+                if m_hit:
+                    return m_hit
+            if "pessoal" in q_norm:
+                prefer_pct = "%" in q_norm or "percentual" in q_norm or "indice" in q_norm or "limite" in q_norm
+                if prefer_pct:
+                    m_hit = next((c for c in cands if "pct_despesa_pessoal" in c.lower()), None)
+                    if m_hit:
+                        return m_hit
+                m_hit = next((c for c in cands if "despesa_pessoal" in c.lower()), None)
+                if m_hit:
+                    return m_hit
+            if "saude" in q_norm or "siops" in q_norm:
+                prefer_pct = "%" in q_norm or "percentual" in q_norm or "indice" in q_norm or "minimo" in q_norm
+                if prefer_pct:
+                    m_hit = next((c for c in cands if "pct_" in c.lower() and "saude" in c.lower()), None)
+                    if m_hit:
+                        return m_hit
+                m_hit = next((c for c in cands if "saude" in c.lower()), None)
+                if m_hit:
+                    return m_hit
+            if "educac" in q_norm or "mde" in q_norm:
+                m_hit = next((c for c in cands if "educac" in c.lower() or "mde" in c.lower()), None)
+                if m_hit:
+                    return m_hit
+            if want_count:
+                cnt_c = next((c for c in cands if c.lower().startswith(("qtd_", "beneficiarios", "total_serv", "total_reg", "total_lic", "total_func", "count"))), None)
+                if cnt_c:
+                    return cnt_c
+            mon_c = next((c for c in cands if _is_monetary_col(c) and not _is_pct_col(c)), None)
+            return mon_c or cands[0]
+
+        distinct_years = sorted(
+            {int(_to_float(r.get(year_col)) or 0) for r in clean_rows if year_col and _to_float(r.get(year_col)) is not None}
+        )
+
+        # Caso especial 2: Tabela longa com (ano_referencia + categoria + métrica), ex: modalidades por ano
+        if year_col and len(distinct_years) >= 2 and label_candidates:
+            cat_col = label_candidates[0]
+            prim_col = _pick_primary_metric(numeric_cols)
+            is_stock_cat = _is_stock_or_non_additive_col(prim_col)
+            cat_totals: Dict[str, float] = {}
+            by_year_cat: Dict[Tuple[int, str], float] = {}
+            partial_years: set[int] = set()
+            for r in clean_rows:
+                yv_f = _to_float(r.get(year_col))
+                if yv_f is None:
+                    continue
+                yv = int(yv_f)
+                cat_v = str(r.get(cat_col) or "N/I").strip()
+                mv = float(_to_float(r.get(prim_col)) or 0.0)
+                cat_totals[cat_v] = cat_totals.get(cat_v, 0.0) + mv
+                by_year_cat[(yv, cat_v)] = by_year_cat.get((yv, cat_v), 0.0) + mv
+                if self._is_partial_year_row(r, yv, distinct_years, is_stock_cat):
+                    partial_years.add(yv)
+
+            ranked_cats = [k for k, v in sorted(cat_totals.items(), key=lambda kv: abs(kv[1]), reverse=True) if v != 0]
+            if not ranked_cats:
+                return None
+
+            # Se há exatamente 2 categorias (ex: Concursados vs Contratados por ano), gera barras agrupadas anuais!
+            if len(ranked_cats) == 2:
+                yr_labels = [f"{y}*" if y in partial_years else str(y) for y in distinct_years[:10]]
+                s_list = [
+                    {
+                        "name": _smart_shorten_gov_label(cat_name, 26),
+                        "values": [by_year_cat.get((y, cat_name), 0.0) for y in distinct_years[:10]],
+                    }
+                    for cat_name in ranked_cats[:2]
+                ]
+                return {
+                    "chart_type": "line" if (wants_line and len(yr_labels) >= 3) else "grouped_vertical_bar",
+                    "labels": yr_labels,
+                    "series": s_list,
+                    "is_monetary": _is_monetary_col(prim_col),
+                    "is_pct": _is_pct_col(prim_col),
+                }
+
+            # Se há >= 3 categorias repetidas em múltiplos anos:
+            # - Para métricas de ESTOQUE/MÉDIA/PERCENTUAL (não-aditivas no tempo), usa o corte do último ano (`max_yr`), NUNCA somando anos!
+            # - Para métricas de FLUXO (pagamentos, despesas, licitações), consolida a soma acumulada do período.
+            if len(ranked_cats) >= 3 and len(clean_rows) > len(ranked_cats):
+                if is_stock_cat:
+                    max_yr = distinct_years[-1]
+                    latest_slice = {
+                        c_name: by_year_cat.get((max_yr, c_name), 0.0)
+                        for c_name in cat_totals
+                        if by_year_cat.get((max_yr, c_name), 0.0) != 0
+                    }
+                    if latest_slice:
+                        top_cats = [
+                            k for k, _ in sorted(latest_slice.items(), key=lambda kv: abs(kv[1]), reverse=True)
+                        ][:10]
+                        yr_tag = f"{max_yr}*" if max_yr in partial_years else str(max_yr)
+                        return {
+                            "chart_type": "horizontal_bar",
+                            "labels": [_smart_shorten_gov_label(c_name, 26) for c_name in top_cats],
+                            "series": [
+                                {
+                                    "name": f"{_pretty_col_name(prim_col)} ({yr_tag})",
+                                    "values": [latest_slice[c_name] for c_name in top_cats],
+                                }
+                            ],
+                            "is_monetary": _is_monetary_col(prim_col),
+                            "is_pct": _is_pct_col(prim_col),
+                        }
+
+                yr_span = f"{distinct_years[0]}-{distinct_years[-1]}"
+                top_cats = ranked_cats[:10]
+                return {
+                    "chart_type": "horizontal_bar",
+                    "labels": [_smart_shorten_gov_label(c_name, 26) for c_name in top_cats],
+                    "series": [
+                        {
+                            "name": f"{_pretty_col_name(prim_col)} ({yr_span})",
+                            "values": [cat_totals[c_name] for c_name in top_cats],
+                        }
+                    ],
+                    "is_monetary": _is_monetary_col(prim_col),
+                    "is_pct": _is_pct_col(prim_col),
+                }
+
+        # Caso 3: Série Temporal Vertical / Linha (1 linha por ano)
+        is_time_series = bool(year_col and len(distinct_years) >= 2 and not label_candidates)
         if is_time_series and year_col:
             sorted_rows = sorted(clean_rows, key=lambda r: int(_to_float(r.get(year_col)) or 0))[:12]
+            primary_col_preview = _pick_primary_metric(numeric_cols)
+            is_stock_metric = _is_stock_or_non_additive_col(primary_col_preview) or any(
+                tok in primary_col_preview.lower() for tok in ("populac", "idhm", "ideb", "per_capita", "pct_", "densidade", "area_")
+            )
             labels = []
             for r in sorted_rows:
-                yr_str = str(r.get(year_col))
-                st_ex = str(r.get("status_exercicio") or "")
-                if yr_str == "2025" or "parcial" in st_ex.lower():
+                yr_f = _to_float(r.get(year_col))
+                yr_int = int(round(yr_f)) if yr_f is not None else 0
+                yr_str = str(yr_int) if yr_f is not None and abs(yr_f - yr_int) < 1e-6 else str(r.get(year_col))
+                if self._is_partial_year_row(r, yr_int, distinct_years, is_stock_metric):
                     labels.append(f"{yr_str}*")
                 else:
                     labels.append(yr_str)
 
-            # Verificar se há par comparativo clássico (ex: Orçamento LOA vs Receita Realizada / Despesa)
+            # Par comparativo clássico (LOA vs Arrecadado/Executado) OU par genérico de mesma unidade e ordem de grandeza compatível
             loa_col = next((c for c in numeric_cols if "orcamento_previsto" in c.lower() or "previsaoatualizada" in c.lower()), None)
-            real_col = next((c for c in numeric_cols if "arrecadada" in c.lower() or "realizado" in c.lower() or "despesa_empenhada" in c.lower() or "despesa_paga" in c.lower()), None)
+            real_col = next(
+                (
+                    c for c in numeric_cols
+                    if c != loa_col and (
+                        "arrecadada" in c.lower()
+                        or "realizado" in c.lower()
+                        or "despesa_empenhada" in c.lower()
+                        or "despesa_paga" in c.lower()
+                        or "orcamento_atualizado" in c.lower()
+                    )
+                ),
+                None,
+            )
 
+            pair_cols: Optional[Tuple[str, str]] = None
             if loa_col and real_col and loa_col != real_col:
+                pair_cols = (loa_col, real_col)
+            elif len(numeric_cols) >= 2 and requested_type != "vertical_bar":
+                non_pct = [c for c in numeric_cols if not _is_pct_col(c)]
+                if len(non_pct) >= 2:
+                    c1, c2 = non_pct[0], non_pct[1]
+                    if _is_monetary_col(c1) == _is_monetary_col(c2):
+                        m1 = max([abs(float(_to_float(r.get(c1)) or 0.0)) for r in sorted_rows] + [0.0])
+                        m2 = max([abs(float(_to_float(r.get(c2)) or 0.0)) for r in sorted_rows] + [0.0])
+                        if m1 > 0 and m2 > 0 and (0.25 <= (m1 / m2) <= 4.0):
+                            pair_cols = (c1, c2)
+
+            if pair_cols and not (requested_type == "vertical_bar"):
+                c1, c2 = pair_cols
+                v1 = [float(_to_float(r.get(c1)) or 0.0) for r in sorted_rows]
+                v2 = [float(_to_float(r.get(c2)) or 0.0) for r in sorted_rows]
+                if max([abs(x) for x in (v1 + v2)] + [0.0]) <= 0:
+                    return None
+                ctype_out = "line" if (wants_line and len(labels) >= 3) else "grouped_vertical_bar"
                 return {
-                    "chart_type": "grouped_vertical_bar",
+                    "chart_type": ctype_out,
                     "labels": labels,
                     "series": [
-                        {
-                            "name": _pretty_col_name(loa_col),
-                            "values": [float(_to_float(r.get(loa_col)) or 0.0) for r in sorted_rows],
-                        },
-                        {
-                            "name": _pretty_col_name(real_col),
-                            "values": [float(_to_float(r.get(real_col)) or 0.0) for r in sorted_rows],
-                        },
+                        {"name": _pretty_col_name(c1), "values": v1},
+                        {"name": _pretty_col_name(c2), "values": v2},
                     ],
-                    "is_monetary": True,
-                    "is_pct": False,
+                    "is_monetary": _is_monetary_col(c1),
+                    "is_pct": _is_pct_col(c1),
                 }
 
-            primary_col = numeric_cols[0]
-            for c in numeric_cols:
-                if _is_monetary_col(c) and not _is_pct_col(c):
-                    primary_col = c
-                    break
+            primary_col = _pick_primary_metric(numeric_cols)
+            vals = [float(_to_float(r.get(primary_col)) or 0.0) for r in sorted_rows]
+            if max([abs(v) for v in vals] + [0.0]) <= 0:
+                return None
+            ctype_out = "line" if (wants_line and len(labels) >= 3) else "vertical_bar"
             return {
-                "chart_type": "vertical_bar",
+                "chart_type": ctype_out,
                 "labels": labels,
-                "series": [
-                    {
-                        "name": _pretty_col_name(primary_col),
-                        "values": [float(_to_float(r.get(primary_col)) or 0.0) for r in sorted_rows],
-                    }
-                ],
+                "series": [{"name": _pretty_col_name(primary_col), "values": vals}],
                 "is_monetary": _is_monetary_col(primary_col),
                 "is_pct": _is_pct_col(primary_col),
             }
 
-        # Ranking ou distribuição categórica -> Horizontal Bar Chart
-        lbl_col = label_candidates[0] if label_candidates else (year_col or cols[0])
-        # Escolher métrica principal coerente com a pergunta
-        want_count = any(w in q_low for w in ("quantos", "quantidade", "numero", "veiculo", "concursad", "funcionari", "servidor"))
-        primary_col = numeric_cols[0]
-        if want_count:
-            cnt_col = next((c for c in numeric_cols if c.lower().startswith(("qtd_", "total_serv", "total_reg", "count"))), None)
-            if cnt_col:
-                primary_col = cnt_col
-        else:
-            mon_col = next((c for c in numeric_cols if _is_monetary_col(c)), None)
-            if mon_col:
-                primary_col = mon_col
+        # Caso 4: Ranking ou distribuição categórica -> Horizontal Bar Chart
+        primary_col = _pick_primary_metric(numeric_cols)
+        lbl_col = label_candidates[0] if label_candidates else (year_col if year_col and year_col != primary_col else None)
+        if not lbl_col or lbl_col == primary_col:
+            other_cols = [c for c in cols if c != primary_col]
+            if not other_cols:
+                return None
+            lbl_col = other_cols[0]
 
         top_rows = clean_rows[:10]
-        labels = [str(r.get(lbl_col) or "N/I")[:34] for r in top_rows]
+        labels = [_smart_shorten_gov_label(str(r.get(lbl_col) or "N/I"), 26) for r in top_rows]
         values = [float(_to_float(r.get(primary_col)) or 0.0) for r in top_rows]
+        if max([abs(v) for v in values] + [0.0]) <= 0:
+            return None
         return {
-            "chart_type": "horizontal_bar",
+            "chart_type": "vertical_bar" if (requested_type == "vertical_bar" and len(labels) <= 6) else "horizontal_bar",
             "labels": labels,
             "series": [{"name": _pretty_col_name(primary_col), "values": values}],
             "is_monetary": _is_monetary_col(primary_col),
@@ -494,22 +1007,28 @@ class InstitutionalChartGenerator:
         self,
         rows: Sequence[Dict[str, Any]],
         title: str = "",
-        subtitle: str = "Dados auditados SICOM/TCE-MG e Fontes Federais",
+        subtitle: str = "Dados públicos oficiais auditados",
         municipality: str = "",
         question: str = "",
-        prefer_native_renderer: bool = False,
+        prefer_native_renderer: bool = True,
+        chart_spec: Optional[Dict[str, Any]] = None,
     ) -> Optional[ChartArtifact]:
-        spec = self.extract_chart_series(rows, question=question)
+        spec = self.extract_chart_series(rows, question=question, chart_spec=chart_spec)
         if not spec or not spec.get("labels") or not spec.get("series"):
             return None
 
         eff_muni = (municipality or getattr(self, "default_municipality_label", "Prefeitura Municipal de Caeté/MG")).strip()
         city_tag = f"{getattr(self, 'municipality_name', 'Caeté')}/{getattr(self, 'state_uf', 'MG')}"
-        derived_title = title.strip() if title and title.strip() else (
-            question.strip().rstrip("?") if question and len(question.strip()) >= 8 else f"Painel Analítico Oficial — {city_tag}"
+        spec_title = str((chart_spec or {}).get("title") or (chart_spec or {}).get("chart_title") or "").strip()
+        s_names = [s["name"] for s in spec["series"]]
+        clean_title = _derive_editorial_title(
+            question=question,
+            explicit_title=spec_title or title,
+            series_names=s_names,
+            city_tag=city_tag,
         )
-        clean_title = derived_title[:68]
-        clean_sub = (subtitle or f"Fonte: Base Auditada SIM ({city_tag})").strip()[:86]
+        spec_sub = str((chart_spec or {}).get("subtitle") or "").strip()
+        clean_sub = _truncate_words(spec_sub or subtitle or f"Fonte: Base Auditada SIM ({city_tag})", 76)
         municipality = eff_muni
 
         png_bytes: Optional[bytes] = None
@@ -525,19 +1044,24 @@ class InstitutionalChartGenerator:
             engine_used = "sim_native_png_govbr"
 
         b64 = base64.b64encode(png_bytes).decode("ascii")
-        s_names = [s["name"] for s in spec["series"]]
-        has_2025_star = any("2025*" in str(lbl) for lbl in spec["labels"])
-        partial_note = " (*2025 em execucao parcial Jan-Ago no SICOM/TCE-MG)." if has_2025_star else "."
+        has_partial_star, starred_years = _extract_starred_years(spec["labels"], spec["series"])
+        if starred_years:
+            partial_note = f" (*{'/'.join(starred_years)}: exercicio em execucao parcial acumulada)."
+        elif has_partial_star:
+            partial_note = " (*exercicio em execucao parcial acumulada)."
+        else:
+            partial_note = "."
         caption = (
-            f"Grafico institucional gerado pelo SIM ({municipality}): {clean_title} — "
+            f"Grafico institucional gerado pelo SIM ({municipality}): {clean_title} - "
             f"Metrica(s): {', '.join(s_names)}{partial_note}"
         )
+        slug_city = re.sub(r"[^a-z0-9]+", "_", _ascii_clean_upper(str(getattr(self, "municipality_name", "sim"))).lower()).strip("_") or "sim"
 
         return ChartArtifact(
             png_bytes=png_bytes,
             base64_png=b64,
             mime_type="image/png",
-            filename="grafico_sim_caete.png",
+            filename=f"grafico_sim_{slug_city}.png",
             title=clean_title,
             subtitle=clean_sub,
             caption=caption,
@@ -614,9 +1138,9 @@ class InstitutionalChartGenerator:
                         )
                 ax.set_xticks(x_idx)
                 ax.set_xticklabels(labels, fontsize=9.5, color="#0F172A")
-                ax.set_ylim(0, max_v * 1.24 if max_v > 0 else 1.0)
+                ax.set_ylim(0, max_v * 1.34 if max_v > 0 else 1.0)
                 ax.grid(axis="y", linestyle="--", alpha=0.35, color="#CBD5E1")
-                ax.legend(frameon=False, fontsize=9, loc="upper left")
+                ax.legend(frameon=False, fontsize=9, loc="upper left", ncol=2)
             else:
                 x_idx = list(range(len(labels)))
                 vals = series[0]["values"]
@@ -624,7 +1148,7 @@ class InstitutionalChartGenerator:
                 bars = ax.bar(x_idx, vals, width=0.55, color=colors[0])
                 ax.set_xticks(x_idx)
                 ax.set_xticklabels(labels, fontsize=9, rotation=12 if len(labels) > 5 else 0, color="#0F172A")
-                ax.set_ylim(0, max_v * 1.22 if max_v > 0 else 1.0)
+                ax.set_ylim(0, max_v * 1.24 if max_v > 0 else 1.0)
                 ax.grid(axis="y", linestyle="--", alpha=0.35, color="#CBD5E1")
                 for bar, v in zip(bars, vals):
                     ax.text(
@@ -645,10 +1169,15 @@ class InstitutionalChartGenerator:
 
             fig.suptitle(title, fontsize=13, fontweight="bold", color="#0F172A", x=0.04, ha="left", y=0.96)
             ax.set_title(subtitle, fontsize=9.5, color="#475569", loc="left", pad=12)
+            partial_footer_tag = _build_partial_footer_tag(labels, series)
+            footer_txt = (
+                f"SIM - Sistema de Inteligencia Municipal | {municipality}"
+                + (f" | {partial_footer_tag}" if partial_footer_tag else "")
+            )
             fig.text(
                 0.04,
                 0.015,
-                f"SIM - Sistema de Inteligencia Municipal | {municipality} | *2025 = execucao parcial acumulada",
+                footer_txt,
                 fontsize=8,
                 color="#64748B",
             )
@@ -671,14 +1200,22 @@ class InstitutionalChartGenerator:
         width, height = 960, 580
         canvas = _NativePNGCanvas(width, height, bg_rgb=(241, 245, 249))
 
-        # Cabeçalho institucional gov.br azul-marinho escuro (#0F172A)
-        canvas.fill_rect(0, 0, width, 86, (15, 23, 42))
-        canvas.fill_rect(0, 86, width, 90, (2, 132, 199))
-        canvas.draw_text(28, 20, title[:62], (255, 255, 255), scale=2, align="left")
-        canvas.draw_text(28, 52, subtitle[:76], (186, 230, 253), scale=2, align="left")
+        # Cabeçalho institucional gov.br azul-marinho escuro (#0F172A) com quebra limpa em até 2 linhas
+        title_lines = _wrap_words(title, max_chars_per_line=72, max_lines=2)
+        header_h = 98 if len(title_lines) >= 2 else 86
+        canvas.fill_rect(0, 0, width, header_h, (15, 23, 42))
+        canvas.fill_rect(0, header_h, width, header_h + 4, (2, 132, 199))
+        if len(title_lines) >= 2:
+            canvas.draw_text(28, 14, title_lines[0], (255, 255, 255), scale=2, align="left")
+            canvas.draw_text(28, 36, title_lines[1], (255, 255, 255), scale=2, align="left")
+            canvas.draw_text(28, 64, _truncate_words(subtitle, 74), (186, 230, 253), scale=2, align="left")
+        else:
+            t_single = title_lines[0] if title_lines else "PAINEL ANALITICO OFICIAL"
+            canvas.draw_text(28, 20, t_single, (255, 255, 255), scale=2, align="left")
+            canvas.draw_text(28, 52, _truncate_words(subtitle, 74), (186, 230, 253), scale=2, align="left")
 
         # Card branco central
-        card_x0, card_y0, card_x1, card_y1 = 24, 106, width - 24, height - 44
+        card_x0, card_y0, card_x1, card_y1 = 24, header_h + 18, width - 24, height - 42
         canvas.fill_rect(card_x0, card_y0, card_x1, card_y1, (255, 255, 255))
 
         labels: List[str] = spec["labels"]
@@ -692,83 +1229,175 @@ class InstitutionalChartGenerator:
         for s_idx, s_obj in enumerate(series[:2]):
             col_rgb = self.PALETTE_RGB[s_idx % len(self.PALETTE_RGB)]
             canvas.fill_rect(leg_x, card_y0 + 14, leg_x + 18, card_y0 + 28, col_rgb)
-            s_label = str(s_obj["name"])[:28]
+            s_label = _smart_shorten_gov_label(str(s_obj["name"]), 30)
             canvas.draw_text(leg_x + 26, card_y0 + 14, s_label, (30, 41, 59), scale=2, align="left")
             leg_x += 26 + len(s_label) * 12 + 28
 
         if ctype == "horizontal_bar":
             n = max(1, len(labels))
             vals = series[0]["values"]
-            max_v = max([abs(v) for v in vals] + [1.0])
-            plot_x0 = card_x0 + 285
-            plot_x1 = card_x1 - 150
+            min_raw = min([0.0] + list(vals))
+            max_raw = max([0.0] + list(vals))
+            span_v = (max_raw - min_raw) if (max_raw - min_raw) > 0 else 1.0
+            plot_x0 = card_x0 + 308
+            plot_x1 = card_x1 - 176
             plot_y0 = card_y0 + 50
-            plot_y1 = card_y1 - 24
+            plot_y1 = card_y1 - 22
             avail_h = max(60, plot_y1 - plot_y0)
+            plot_w = max(80, plot_x1 - plot_x0)
+            zero_x = plot_x0 + int((abs(min_raw) / span_v) * plot_w) if min_raw < 0 else plot_x0
             slot_h = avail_h // n
             bar_h = max(14, min(32, int(slot_h * 0.64)))
 
-            # Linhas de grade verticais
             for g in range(5):
-                gx = plot_x0 + int((plot_x1 - plot_x0) * (g / 4.0))
+                gx = plot_x0 + int(plot_w * (g / 4.0))
                 canvas.fill_rect(gx, plot_y0, gx + 1, plot_y1, (226, 232, 240))
+            if min_raw < 0:
+                canvas.fill_rect(zero_x, plot_y0, zero_x + 2, plot_y1, (148, 163, 184))
 
             for idx, (lbl, val) in enumerate(zip(labels, vals)):
                 cy = plot_y0 + idx * slot_h + (slot_h - bar_h) // 2
-                short_lbl = str(lbl)[:22]
+                short_lbl = _smart_shorten_gov_label(str(lbl), 24)
                 canvas.draw_text(plot_x0 - 12, cy + max(0, (bar_h - 14) // 2), short_lbl, (15, 23, 42), scale=2, align="right")
-                bw = int((max(0.0, val) / max_v) * (plot_x1 - plot_x0))
-                bw = max(3, bw) if val > 0 else 0
-                canvas.fill_rect(plot_x0, cy, plot_x0 + bw, cy + bar_h, self.PALETTE_RGB[0])
+                bw = int((abs(val) / span_v) * plot_w)
                 v_txt = _format_value_compact(val, is_mon, is_pct)
-                canvas.draw_text(plot_x0 + bw + 10, cy + max(0, (bar_h - 14) // 2), v_txt, (30, 58, 138), scale=2, align="left")
-        else:
+                v_scale = 2 if len(v_txt) <= 13 else 1
+                v_y = cy + max(0, (bar_h - (7 * v_scale)) // 2)
+                if val >= 0:
+                    bw = max(3, bw) if val > 0 else 0
+                    canvas.fill_rect(zero_x, cy, zero_x + bw, cy + bar_h, self.PALETTE_RGB[0])
+                    canvas.draw_text(zero_x + bw + 10, v_y, v_txt, (30, 58, 138), scale=v_scale, align="left")
+                else:
+                    bw = max(3, bw)
+                    canvas.fill_rect(zero_x - bw, cy, zero_x, cy + bar_h, (220, 38, 38))
+                    canvas.draw_text(zero_x + 10, v_y, v_txt, (185, 28, 28), scale=v_scale, align="left")
+        elif ctype == "line":
             n = max(1, len(labels))
             n_series = min(2, len(series))
-            all_vals = [abs(v) for s in series[:n_series] for v in s["values"]]
-            max_v = max(all_vals + [1.0])
+            raw_vals = [v for s in series[:n_series] for v in s["values"]]
+            min_raw = min([0.0] + raw_vals)
+            max_raw = max([0.0] + raw_vals)
+            span_v = (max_raw - min_raw) if (max_raw - min_raw) > 0 else 1.0
             plot_x0 = card_x0 + 125
-            plot_x1 = card_x1 - 36
-            plot_y0 = card_y0 + 62
+            plot_x1 = card_x1 - 42
+            plot_y0 = card_y0 + 70
             plot_y1 = card_y1 - 48
             plot_h = max(80, plot_y1 - plot_y0)
             plot_w = max(120, plot_x1 - plot_x0)
 
-            # Grade horizontal + rótulos do eixo Y
             for g in range(5):
                 frac = g / 4.0
                 gy = plot_y1 - int(plot_h * frac)
                 canvas.fill_rect(plot_x0, gy, plot_x1, gy + 1, (203, 213, 225) if g == 0 else (226, 232, 240))
-                yv = max_v * frac
+                yv = min_raw + span_v * frac
                 canvas.draw_text(plot_x0 - 10, gy - 7, _format_value_compact(yv, is_mon, is_pct), (100, 116, 139), scale=1, align="right")
+            if min_raw < 0 < max_raw:
+                zero_y = plot_y1 - int(((0.0 - min_raw) / span_v) * plot_h)
+                canvas.fill_rect(plot_x0, zero_y, plot_x1, zero_y + 2, (148, 163, 184))
+
+            slot_w = plot_w // n
+            xs = [plot_x0 + i * slot_w + slot_w // 2 for i in range(n)]
+            for s_i in range(n_series):
+                col_rgb = self.PALETTE_RGB[s_i % len(self.PALETTE_RGB)]
+                vals_s = series[s_i]["values"]
+                ys = [plot_y1 - int(((v - min_raw) / span_v) * plot_h) for v in vals_s]
+                for i in range(len(xs) - 1):
+                    canvas.draw_line(xs[i], ys[i], xs[i + 1], ys[i + 1], col_rgb, thickness=3)
+                for i, (px, py, val) in enumerate(zip(xs, ys, vals_s)):
+                    pt_rgb = (220, 38, 38) if (n_series == 1 and val < 0) else col_rgb
+                    canvas.fill_rect(px - 5, py - 5, px + 5, py + 5, pt_rgb)
+                    canvas.fill_rect(px - 2, py - 2, px + 2, py + 2, (255, 255, 255))
+                    v_txt = _format_value_compact(val, is_mon, is_pct)
+                    v_scale = 2 if (n_series == 1 and slot_w >= len(v_txt) * 12 + 12) else 1
+                    off_y = -20 if s_i == 0 else 10
+                    if py + off_y < card_y0 + 42:
+                        off_y = 10
+                    canvas.draw_text(px, py + off_y, v_txt, pt_rgb, scale=v_scale, align="center")
+
+            for i, lbl in enumerate(labels):
+                short_lbl = _smart_shorten_gov_label(str(lbl), 11)
+                canvas.draw_text(xs[i], plot_y1 + 12, short_lbl, (15, 23, 42), scale=2 if n <= 8 else 1, align="center")
+        else:
+            n = max(1, len(labels))
+            n_series = min(2, len(series))
+            raw_vals = [v for s in series[:n_series] for v in s["values"]]
+            min_raw = min([0.0] + raw_vals)
+            max_raw = max([0.0] + raw_vals)
+            span_v = (max_raw - min_raw) if (max_raw - min_raw) > 0 else 1.0
+            plot_x0 = card_x0 + 125
+            plot_x1 = card_x1 - 36
+            plot_y0 = card_y0 + (80 if n_series == 2 else 70)
+            plot_y1 = card_y1 - 48
+            plot_h = max(80, plot_y1 - plot_y0)
+            plot_w = max(120, plot_x1 - plot_x0)
+            zero_y = plot_y1 - int(((0.0 - min_raw) / span_v) * plot_h)
+
+            for g in range(5):
+                frac = g / 4.0
+                gy = plot_y1 - int(plot_h * frac)
+                canvas.fill_rect(plot_x0, gy, plot_x1, gy + 1, (203, 213, 225) if g == 0 else (226, 232, 240))
+                yv = min_raw + span_v * frac
+                canvas.draw_text(plot_x0 - 10, gy - 7, _format_value_compact(yv, is_mon, is_pct), (100, 116, 139), scale=1, align="right")
+            if min_raw < 0:
+                canvas.fill_rect(plot_x0, zero_y, plot_x1, zero_y + 2, (148, 163, 184))
 
             slot_w = plot_w // n
             for i, lbl in enumerate(labels):
                 group_cx = plot_x0 + i * slot_w + slot_w // 2
                 if n_series == 2:
                     bw = max(14, min(42, int(slot_w * 0.34)))
+                    y_anchors: List[int] = []
                     for s_i in range(2):
                         val = series[s_i]["values"][i]
-                        bh = int((max(0.0, val) / max_v) * plot_h)
+                        bh = int((abs(val) / span_v) * plot_h)
+                        if val >= 0:
+                            y_anchors.append(zero_y - (max(2, bh) if val > 0 else 0))
+                        else:
+                            y_anchors.append(min(plot_y1, zero_y + max(2, bh)))
+                    close_bars = abs(y_anchors[0] - y_anchors[1]) < 18
+                    for s_i in range(2):
+                        val = series[s_i]["values"][i]
                         bx0 = (group_cx - bw - 3) if s_i == 0 else (group_cx + 3)
-                        by0 = plot_y1 - max(2, bh) if val > 0 else plot_y1
-                        canvas.fill_rect(bx0, by0, bx0 + bw, plot_y1, self.PALETTE_RGB[s_i])
+                        bh = int((abs(val) / span_v) * plot_h)
                         v_txt = _format_value_compact(val, is_mon, is_pct)
-                        canvas.draw_text(bx0 + bw // 2, by0 - 14 - (s_i * 11), v_txt, self.PALETTE_RGB[s_i], scale=1, align="center")
+                        stagger = (s_i * 16) if close_bars else 0
+                        if val >= 0:
+                            by0 = zero_y - (max(2, bh) if val > 0 else 0)
+                            canvas.fill_rect(bx0, by0, bx0 + bw, zero_y, self.PALETTE_RGB[s_i])
+                            lbl_y = max(card_y0 + 46, by0 - 12 - stagger)
+                            canvas.draw_text(bx0 + bw // 2, lbl_y, v_txt, self.PALETTE_RGB[s_i], scale=1, align="center")
+                        else:
+                            by1 = min(plot_y1, zero_y + max(2, bh))
+                            canvas.fill_rect(bx0, zero_y, bx0 + bw, by1, (220, 38, 38))
+                            lbl_y = min(plot_y1 - 8, by1 + 4 + stagger)
+                            canvas.draw_text(bx0 + bw // 2, lbl_y, v_txt, (185, 28, 28), scale=1, align="center")
                 else:
                     bw = max(18, min(64, int(slot_w * 0.56)))
                     val = series[0]["values"][i]
-                    bh = int((max(0.0, val) / max_v) * plot_h)
+                    bh = int((abs(val) / span_v) * plot_h)
                     bx0 = group_cx - bw // 2
-                    by0 = plot_y1 - max(2, bh) if val > 0 else plot_y1
-                    canvas.fill_rect(bx0, by0, bx0 + bw, plot_y1, self.PALETTE_RGB[0])
                     v_txt = _format_value_compact(val, is_mon, is_pct)
-                    canvas.draw_text(group_cx, by0 - 18, v_txt, (30, 58, 138), scale=2 if n <= 7 else 1, align="center")
+                    v_scale = 2 if (n <= 7 and slot_w >= len(v_txt) * 12 + 10) else 1
+                    v_off = 18 if v_scale == 2 else 11
+                    if val >= 0:
+                        by0 = zero_y - (max(2, bh) if val > 0 else 0)
+                        canvas.fill_rect(bx0, by0, bx0 + bw, zero_y, self.PALETTE_RGB[0])
+                        canvas.draw_text(group_cx, max(card_y0 + 42, by0 - v_off), v_txt, (30, 58, 138), scale=v_scale, align="center")
+                    else:
+                        by1 = min(plot_y1, zero_y + max(2, bh))
+                        canvas.fill_rect(bx0, zero_y, bx0 + bw, by1, (220, 38, 38))
+                        lbl_y = by1 + 5 if (by1 + 18) <= plot_y1 else max(card_y0 + 42, zero_y - v_off)
+                        canvas.draw_text(group_cx, lbl_y, v_txt, (185, 28, 28), scale=v_scale, align="center")
 
-                short_lbl = str(lbl)[:11]
+                short_lbl = _smart_shorten_gov_label(str(lbl), 11 if n <= 8 else 9)
                 canvas.draw_text(group_cx, plot_y1 + 12, short_lbl, (15, 23, 42), scale=2 if n <= 8 else 1, align="center")
 
-        # Rodapé institucional
-        footer = f"SIM - TRANSPARENCIA PUBLICA | {municipality} | *2025 EM EXECUCAO PARCIAL"
-        canvas.draw_text(28, height - 26, footer[:78], (71, 85, 105), scale=1, align="left")
+        # Rodapé institucional dinâmico: extrai os anos reais marcados com '*' (ex: *2026 ou *2025/2026)
+        partial_footer_tag = _build_partial_footer_tag(labels, series)
+        footer = (
+            f"SIM - TRANSPARENCIA PUBLICA | {municipality} | {partial_footer_tag}"
+            if partial_footer_tag
+            else f"SIM - TRANSPARENCIA PUBLICA | {municipality} | BASE OFICIAL AUDITADA"
+        )
+        canvas.draw_text(28, height - 24, _truncate_words(footer, 145), (71, 85, 105), scale=1, align="left")
         return canvas.to_png_bytes()

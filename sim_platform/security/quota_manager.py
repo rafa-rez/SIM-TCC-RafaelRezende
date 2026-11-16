@@ -81,6 +81,8 @@ def _normalize_cache_key(
     role: str = "citizen",
     allowed_sources: Optional[List[str]] = None,
     explicit_tables: Optional[List[str]] = None,
+    dataset_version: str = "v1",
+    tenant_id: str = "caete_mg_3110004",
 ) -> str:
     nfkd = unicodedata.normalize("NFKD", (question or "").strip().lower())
     clean_q = re.sub(r"\s+", " ", "".join(c for c in nfkd if not unicodedata.combining(c)))
@@ -93,7 +95,8 @@ def _normalize_cache_key(
         role_bucket = "institutional_masked"
     srcs = ",".join(sorted(s.upper().strip() for s in (allowed_sources or [])))
     tbls = ",".join(sorted(t.lower().strip() for t in (explicit_tables or [])))
-    raw = f"{role_bucket}::{srcs}::{tbls}::{clean_q}"
+    t_clean = (tenant_id or "caete_mg_3110004").strip().lower()
+    raw = f"{t_clean}::{dataset_version}::{role_bucket}::{srcs}::{tbls}::{clean_q}"
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
@@ -116,6 +119,7 @@ class TenantQuotaManager:
         cost_per_audio_call_brl: float = 0.0174,
         sqlite_path: Optional[Path] = None,
         db_path: Optional[Path] = None,
+        max_daily_users_ram: int = 10_000,
     ) -> None:
         if sqlite_path is None and db_path is not None:
             sqlite_path = db_path
@@ -134,11 +138,12 @@ class TenantQuotaManager:
         self.cost_per_1k_input_brl = cost_per_1k_input_brl
         self.cost_per_1k_output_brl = cost_per_1k_output_brl
         self.cost_per_audio_call_brl = cost_per_audio_call_brl
+        self.max_daily_users_ram = max(64, int(max_daily_users_ram))
 
         self._lock = threading.Lock()
         self._cache: OrderedDict[str, Tuple[float, Dict[str, Any]]] = OrderedDict()
-        # (today_str, count, notified_friendly_msg)
-        self._daily_user_counts: Dict[str, Tuple[str, int, bool]] = {}
+        # (today_str, count, notified_friendly_msg) — limitado em RAM a max_daily_users_ram (10.000 chaves/dia)
+        self._daily_user_counts: OrderedDict[str, Tuple[str, int, bool]] = OrderedDict()
 
         self.current_month = datetime.now().strftime("%Y-%m")
         self.total_requests = 0
@@ -157,9 +162,48 @@ class TenantQuotaManager:
             / "parquet"
             / f"quota_ledger_{self.tenant_id}.sqlite"
         )
+        self.parquet_dir = (
+            Path(__file__).resolve().parents[2]
+            / "avaliacao"
+            / "dados"
+            / "parquet"
+            / self.tenant_id
+        )
+        self.dataset_version = self._compute_dataset_version()
         self.sqlite_path = sqlite_path if sqlite_path is not None else default_db
         if self.sqlite_path is not None:
             self._init_sqlite()
+
+    def _compute_dataset_version(self) -> str:
+        try:
+            if not self.parquet_dir.exists():
+                return f"{self.tenant_id}:empty"
+            files = sorted(self.parquet_dir.rglob("*.parquet"))
+            if not files:
+                return f"{self.tenant_id}:empty"
+            max_mtime = max(int(f.stat().st_mtime) for f in files)
+            total_sz = sum(int(f.stat().st_size) for f in files)
+            return f"{self.tenant_id}:{len(files)}:{max_mtime}:{total_sz}"
+        except Exception:
+            return f"{self.tenant_id}:v1"
+
+    def invalidate_cache(self) -> int:
+        """
+        Invalida integralmente o cache L1 (RAM) e L2 (SQLite `query_cache`) deste tenant,
+        atualizando `dataset_version` após novas sincronizações ETL/Parquet.
+        """
+        with self._lock:
+            cleared = len(self._cache)
+            self._cache.clear()
+            self.dataset_version = f"{self._compute_dataset_version()}:{int(time.time() * 1000)}"
+            if self.sqlite_path is not None:
+                try:
+                    with sqlite3.connect(str(self.sqlite_path), timeout=3.0) as con:
+                        cur = con.execute("DELETE FROM query_cache")
+                        cleared += max(0, int(cur.rowcount or 0))
+                except Exception:
+                    pass
+            return cleared
 
     def _init_sqlite(self) -> None:
         if self.sqlite_path is None:
@@ -306,6 +350,10 @@ class TenantQuotaManager:
         today = datetime.now().strftime("%Y-%m-%d")
         with self._lock:
             self._reset_month_if_needed()
+            if len(self._daily_user_counts) > 256:
+                stale_users = [u for u, (d_ref, _, _) in self._daily_user_counts.items() if d_ref != today]
+                for u in stale_users:
+                    self._daily_user_counts.pop(u, None)
             day_str, count, notified = self._daily_user_counts.get(user_identifier, (today, 0, False))
             if day_str != today:
                 count = 0
@@ -342,6 +390,9 @@ class TenantQuotaManager:
                 friendly_msg = None
 
             self._daily_user_counts[user_identifier] = (today, new_count, new_notified)
+            self._daily_user_counts.move_to_end(user_identifier)
+            while len(self._daily_user_counts) > self.max_daily_users_ram:
+                self._daily_user_counts.popitem(last=False)
             if self.sqlite_path is not None:
                 try:
                     with sqlite3.connect(str(self.sqlite_path), timeout=2.0) as con:
@@ -402,7 +453,14 @@ class TenantQuotaManager:
         Trava 1 (Cláusula X.2): Retorna resposta em cache (< 2ms) a custo R$ 0,00 de IA,
         validando a higiene estrita do payload armazenado.
         """
-        key = _normalize_cache_key(question, role, allowed_sources, explicit_tables)
+        key = _normalize_cache_key(
+            question,
+            role,
+            allowed_sources,
+            explicit_tables,
+            dataset_version=self.dataset_version,
+            tenant_id=self.tenant_id,
+        )
         now = time.time()
         with self._lock:
             self._reset_month_if_needed()
@@ -485,7 +543,17 @@ class TenantQuotaManager:
         eff_in = int(input_tokens or prompt_tokens or 0)
         eff_out = int(output_tokens or completion_tokens or 0)
         eff_ext = used_external_llm or (eff_in > 0) or (eff_out > 0)
-        key = _normalize_cache_key(question, role, allowed_sources, explicit_tables)
+        key = _normalize_cache_key(
+            question,
+            role,
+            allowed_sources,
+            explicit_tables,
+            dataset_version=self.dataset_version,
+            tenant_id=self.tenant_id,
+        )
+        is_unmasked_role = (role or "citizen").lower().strip() in (
+            "auditor", "admin", "controller", "controladoria",
+        )
         now = time.time()
         with self._lock:
             self._reset_month_if_needed()
@@ -506,7 +574,9 @@ class TenantQuotaManager:
                 self._cache.move_to_end(key)
                 while len(self._cache) > self.cache_max_entries:
                     self._cache.popitem(last=False)
-                if self.sqlite_path is not None:
+                # LGPD (P2-05): Respostas privilegiadas com PII desmascarado ficam apenas em RAM (L1),
+                # jamais persistidas em texto claro no SQLite em disco.
+                if self.sqlite_path is not None and not is_unmasked_role:
                     try:
                         with sqlite3.connect(str(self.sqlite_path), timeout=2.0) as con:
                             con.execute(

@@ -20,6 +20,7 @@ __pycache__/
 *.fdb_latexmk
 
 # Ambiente e caches
+.venv/
 node_modules/
 .cursor/*
 !.cursor/rules/
@@ -84,3 +85,18 @@ avaliacao/experimentos/data_quality_report.json
 avaliacao/dados/database_fix2023/
 n8n_workflows_export/
 backups/
+
+# Estado efêmero de execução Multi-Cidade / Verificador / Cloud Staging
+tenants/_active_tenant.json
+avaliacao/dados/_fleet_verifier_state.json
+avaliacao/dados/inbox/
+avaliacao/dados/cloud_outbox/
+avaliacao/dados/_staging/
+**/_interactions_history.json
+**/_sync_state.json
+**/_catalog_profile_v1.json
+**/_sync.lock
+**/_fleet.lock
+**/quota_ledger_*.sqlite*
+**/semantic_cache_*.sqlite*
+avaliacao/dados/governance/

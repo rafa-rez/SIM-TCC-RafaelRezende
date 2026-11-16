@@ -8,6 +8,15 @@
     "ano_edicao": 2022,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [
+      "SEDESMA / Secretaria de Meio Ambiente",
+      "Secretaria Municipal de Saúde",
+      "Secretaria Municipal de Obras",
+      "SAAE Caeté",
+      "Gabinete do Prefeito",
+      "Comissão de Fiscalização / Licitação"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2022 | Tipo de Ato: DECRETO Nº 295/2022 | Órgãos/Cargos: SEDESMA / Secretaria de Meio Ambiente, Secretaria Municipal de Saúde, Secretaria Municipal de Obras]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -15,23 +24,6 @@
       "multi_part_with_header"
     ],
     "page_content": "DECRETO Nº 295/2022 NOMEIA MEMBROS PARA COMPOR O CONSELHO MUNICIPAL DE SANEAMENTO BÁSICO – COMUSB O PREFEITO MUNICIPAL DE CAETÉ, MINAS GERAIS, no uso das atribuições que lhe são conferidas pelo art. 98, X, da Lei Orgânica Municipal e considerando o disposto na Lei 2.519/08, DECRETA Art.1º Ficam nomeados para compor o CONSELHO MUNICIPAL DE SANEAMENTO BÁSICO – COMUSB os seguintes membros: • Sr. Alisson Vitor Marques, presidente do COMUSB e representante da Secretaria Municipal de Saúde; • Sr. Marcelo Garabini, representante da Secretaria Municipal de Desenvolvimento Sustentável e Meio Ambiente em substituição ao Sr. Thomaz Henrique Moreira de Castro; • Sr. Melques de Pádua Brito, representante da Secretaria Municipal de Obras em substituição ao Sr. Júlio César Batista Silva; • Sr.Eloy Monteiro, representando a ACIAC – Associação Comercial e Industrial de Caeté em substituição ao Sr. Wilson Teixeira dos Santos Júnior; • Sr.Hamilton Martins, representante da Comunidade; • Fernando José da Silva, representante do Serviço Autônomo de Água e Esgoto – SAAE em substituição ao Sr. René Henrique Cardoso Renault; Art.2º Este Decreto entra em vigor na data de sua assinatura. Caeté, 22 de novembro de 2022. LUCAS COELHO FERREIRA Prefeito Municipal de Caeté CONSTITUIÇÃO DA COMISSÃO DE TOMADA DE CONTAS ESPECIAL O PREFEITO MUNICIPAL DE CAETÉ, no uso das atribuições que lhe são conferidas pelo artigo 98, inciso VII da Lei Orgânica Municipal, e O Procurador Geral do Município de Caeté, no uso das suas atribuições e conforme Instrução Normativa TCEMG nº03, de 27 de fevereiro de 2013, RESOLVEM Art. 1º Constituir Comissão Permanente de Tomada de Contas Especial, no âmbito da Procuradoria Geral do Município, para instaurar as Tomadas de Contas Especiais, em desfavor da Sociedade Galdina Protetora dos Animais e da Natureza (SGPAN), a fim de apurar suposta responsabilidade que poderá resultar em eventual dano aos cofres municipais por uma, considerando possível irregularidade na utilização de recurso oriundo de Subvenção Municipal."
-  },
-  {
-    "id": "4ace4ab4-577f-5ee4-89ce-6800896da7f7",
-    "unique_key": "DECRETO::295/2022::1/2",
-    "act_key": "DECRETO::295/2022",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "295/2022",
-    "ano_edicao": 2022,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_23-24_C.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
-    ],
-    "page_content": "DECRETO Nº 295/2022 [TIPO: DECRETO] [PARTE 1/2]\n..."
   },
   {
     "id": "7adb0ede-b020-5875-ba37-354dc1f44574",
@@ -42,6 +34,10 @@
     "ano_edicao": 2022,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [
+      "Comissão de Fiscalização / Licitação"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2022 | Tipo de Ato: DECRETO Nº 295/2022 | Órgãos/Cargos: Comissão de Fiscalização / Licitação]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -59,6 +55,8 @@
     "ano_edicao": 2022,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_B.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_B.pdf) | Ano: 2022 | Tipo de Ato: LEI Nº 3414/2022 | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [
       "R$ 6.950,00",
@@ -73,7 +71,7 @@
     "page_content": "Lei Municipal nº 3.414/2022; DECRETA Art. 1º Fica aberto crédito suplementar no orçamento de 2023 na Fundação Casa de Cultura de Caeté, no valor total de R$ 6.950,00 (Seis mil novecentos e cinquenta reais), na seguinte dotação orçamentária: PROGRAMA DE TRABALHO CATEGORIA ECONOMICA DESCRIÇÃO FONTE VALOR 05.01.000.131220069.2.00136 4.4.90.52.00.00.00 Equipamento e Material Permanente - 2103 R$ 6.950,00 Art. 2º Para fazer frente ao disposto no artigo anterior, fica reduzido, no orçamento de 2023 da Fundação Casa de Cultura de Caeté, o valor total de R$ 6.950,00 (Seis mil novecentos e cinquenta reais), na seguinte dotação orçamentária: PROGRAMA DE TRABALHO CATEGORIA ECONOMICA DESCRIÇÃO FONTE VALOR 05.01.000.131220061.2.00093 3.3.90.39.00.00.00 Outros Serv. Terceiros Pessoa Jurídica - 2085 1500 R$ 6.950,00 Art. 3º Este Decreto entra em vigor na data de sua publicação. Caeté, 27 de abril de 2023."
   },
   {
-    "id": "77599f4b-4c3d-5f6a-9e76-7a7b098a8255",
+    "id": "27e15478-e0a3-57d1-ac9d-bf3d2e48865d",
     "unique_key": "LEI::3416/2022",
     "act_key": "LEI::3416/2022",
     "tipo_ato": "LEI",
@@ -81,27 +79,8 @@
     "ano_edicao": 2022,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [
-      "R$700,00",
-      "R$600,00",
-      "R$500,00"
-    ],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
-    ],
-    "page_content": "Lei Municipal nº 3.416/2022, de 29 de dezembro de 2022, bem como do Decreto Municipal nº 064, de 31 de março de 2023, operacionalizado pelo Conselho Municipal de Desportos. 5.2. O processo de seleção contará com as seguintes fases: 1º Fase: Análise documental; 2º Fase: Análise de mérito: enquadramento conforme item 6. 6. DA CATEGORIA, VALORES, CRITÉRIOS TÉCNICOS E CRITÉRIOS DE DESEMPATE 6.1. Para fins de concessão deste benefício, os atletas serão subdivididos nas seguintes categorias: I. Internacional; Il. Nacional; III. Estadual ou regional; 6.2. A Bolsa Atleta será concedida: I. Categoria Internacional: para atleta de destaque Pan-Americano, Sul-americano, Olimpíadas e Mundial – 01 (um) auxílio mensal de R$700,00 (setecentos reais); II. Categoria Nacional: para atleta com destaque nacional – 3 (três) auxílios no valor de R$600,00 (seiscentos reais) cada; III. Categoria Estadual ou regional: para atleta com destaque estadual ou regional, desde que chancelado por órgão ou entidade a nível de federação – 5 (cinco) auxílios no valor de R$500,00 (quinhentos reais) mensais cada, adicionalmente, há a possibilidade da concessão de mais 5 (cinco) auxílios nesta mesma categoria, condicionados à disponibilidade orçamentária; 6.3. Após a classificação dos 9 (nove) beneficiários, aqueles não classificados ficarão como suplentes e, na possibilidade de concessão de novas bolsas, serão convocados observada a ordem classificatória, até o limite legal. 6.4. O valor da Bolsa Atleta funciona como um incentivo e destina-se a cobrir, dentre outras, as despesas decorrentes de sua manutenção pessoal e esportiva. 6.5. A distribuição dos recursos orçamentários, bem como o procedimento de seleção e a concessão da Bolsa Atleta observarão a seguinte ordem de preferência das categorias: BOLSA ATLETA MUNICIPAL -"
-  },
-  {
-    "id": "77abcaca-2192-50d5-8f3d-24d40e8284fa",
-    "unique_key": "LEI::3416/2022::1/1",
-    "act_key": "LEI::3416/2022",
-    "tipo_ato": "LEI",
-    "numero_ato": "3416/2022",
-    "ano_edicao": 2022,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2022 | Tipo de Ato: LEI Nº 3416/2022 | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [
       "R$700,00",
@@ -123,6 +102,10 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_B.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_B.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 104/2023 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [
       "R$300.000,00",
@@ -143,6 +126,12 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_B.pdf",
+    "orgaos_extraidos": [
+      "SEMAS / Secretaria de Assistência Social",
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_B.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 109/2023 | Órgãos/Cargos: SEMAS / Secretaria de Assistência Social, Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -160,6 +149,11 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_B.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_B.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 113/2023 | Órgãos/Cargos: Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -177,6 +171,12 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_A.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Obras",
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_A.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 116/2023 | Órgãos/Cargos: Secretaria Municipal de Obras, Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -194,6 +194,11 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_B.pdf",
+    "orgaos_extraidos": [
+      "SEMAS / Secretaria de Assistência Social",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_B.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 141/2023 | Órgãos/Cargos: SEMAS / Secretaria de Assistência Social, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -211,6 +216,10 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 184/2023 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -228,6 +237,11 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Obras",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 189/2023 | Órgãos/Cargos: Secretaria Municipal de Obras, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -245,6 +259,11 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Educação",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 2/2023 | Órgãos/Cargos: Secretaria Municipal de Educação, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -262,6 +281,11 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Educação",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 2/2023 | Órgãos/Cargos: Secretaria Municipal de Educação, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -279,6 +303,10 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 200/2023 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -296,6 +324,12 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_A.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Saúde",
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_A.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 228/2023 | Órgãos/Cargos: Secretaria Municipal de Saúde, Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -313,6 +347,12 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_A.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Obras",
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_A.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 229/2023 | Órgãos/Cargos: Secretaria Municipal de Obras, Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -330,6 +370,11 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Saúde",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 249/2023 | Órgãos/Cargos: Secretaria Municipal de Saúde, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -347,6 +392,10 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 266/2023 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -364,6 +413,11 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [
+      "SAAE Caeté",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 271/2023 | Órgãos/Cargos: SAAE Caeté, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [
       "R$35.000,00",
@@ -387,6 +441,10 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 282/2023 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -394,23 +452,6 @@
       "multi_part_with_header"
     ],
     "page_content": "DECRETO Nº 282/2023 “DISPÕE SOBRE A PERMISSÃO DE USO DE BEM PÚBLICO MUNICIPAL QUE MENCIONA PELA ASSOCIAÇÃO COMUNITÁRIA EDUCACIONAL DE CAETÉ, A TÍTULO PRECÁRIO E DÁ OUTRAS PROVIDÊNCIAS”. O PREFEITO MUNICIPAL DE CAETÉ, no uso das atribuições que lhes são conferidas pelo parágrafo 3º, do artigo 16, da Lei Orgânica Municipal; Considerando a existência de área pública remanescente não utilizada situada na Rua Padre José Saturnino de Freitas, s/n°, Bairro José Brandão, Município de Caeté/MG, com área de 786,20 m² (setecentos e oitenta e seis metros e vinte decímetros quadrados) e perímetro de 121,89 m (cento e vinte e um metros e oitenta e nove centímetros) – matrícula n.º 8939, fazendo frente com a rua Padre José Saturnino de Freitas, medindo 16,60 m (dezesseis metros e sessenta) e 20,62m (vinte metros e sessenta e dois centímetros) com terreno da Policlínica Municipal de Caeté; lateral direita medindo 23,52m (vinte e três metros e cinquenta e dois centímetros) com terreno pertencente à COMJOB; lateral esquerda medindo 25,60 (vinte e cinco metros e sessenta centímetros) com a propriedade do Sr. Marcio Salvador da Silva; e pelo fundo medindo 35,55 m (trinta e cinco metros e cinquenta e cinco centímetros) com terreno de propriedade da Associação Comunitária Educacional de Caeté – ACEC; Considerando que a ACEC/NUCEC (Núcleo Comunitário Educacional de Caeté) é uma escola comunitária, constituída por uma associação privada sem fins lucrativos, que cumpre seu papel educacional na cidade de Caeté, inclusive, com oferta de bolsas de estudos a alunos carentes, que se destacam por meio de suas notas escolares; Considerando que a rua Jenner Procópio de Alvarenga onde se localiza a escola é sem saída, e com o aumento no número de estudantes verificou-se a intensificação do fluxo do trânsito de pessoas e veículos nos horários de início e de fi - nal das aulas, ocasionando congestionamentos na Avenida Carlos Cruz, com iminente risco de acidentes, principalmente com crianças, adultos e idosos que transitam naquelas proximidades para irem até à agência do INSS e ao posto de vacinação; Considerando a necessidade de melhorar o fluxo do trânsito e organização do embarque e desembarque seguro dos estudantes através de abertura de acesso à Escola por meio da Rua Padre José Saturnino de Freitas, com a utilização da área objeto da permissão; Considerando estar a área pleiteada identificada pelos documentos apresentados ao Município, assim como a planta, memorial descritivo e Escritura Pública individualizando o bem imóvel e sua respectiva área a ser utilizada; Considerando a ciência da Permissionária de que qualquer benfeitoria ali realizada deverá ser autorizada e incorporar-se-á ao imóvel, não criando direito a retenção ou indenização de qualquer natureza, sendo-lhe precário o título e a qualquer momento podendo ser rescindido por ato unilateral do Município; Considerando ser de interesse público, uma vez que propiciará o exercício da função"
-  },
-  {
-    "id": "6100bca7-4b1f-5be0-8c87-c53297c4e986",
-    "unique_key": "DECRETO::282/2023::1/3",
-    "act_key": "DECRETO::282/2023",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "282/2023",
-    "ano_edicao": 2023,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_23-24_C.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
-    ],
-    "page_content": "DECRETO Nº 282/2023 [TIPO: DECRETO] [PARTE 1/3]\n..."
   },
   {
     "id": "9488b52f-8fa3-5366-8c2f-3c3470fd3c06",
@@ -421,6 +462,8 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 282/2023 | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [
       "06.330.538/0001-40"
     ],
@@ -432,42 +475,6 @@
     "page_content": "[DECRETO Nº 282/2023 | PARTE 2/2] Art. 3º. É obrigação da Permissionária construir um muro na testada da área com a finalidade de propiciar segurança à Policlínica e à própria escola. I – Toda e qualquer benfeitoria no espaço, devidamente autorizada pelo Município, realizada pela Permissionária, incorporará ao imóvel quando de sua restituição ao Poder Público Mu- i i l di i l i d i ã Art. 4 A permissão de que trata o presente De creto é intransferível a qualquer título. Art. 5º - Fica estabelecido que, caso o Município necessite fazer o uso deste espaço, objeto do presente Decreto, a Permissionária desocupará e restituirá, no prazo máximo de 30 (trinta) dias, bastando, para tanto, simples notificação administrativa. Art. 6º - O desvirtuamento da finalidade ou não cumprimento de quaisquer das condições expressa neste Decreto, será a razão jurídica para a nulidade de pleno direito deste instrumento, independente de notificaçã"
   },
   {
-    "id": "4c0a0a81-a13e-5299-8012-1abfed4d438e",
-    "unique_key": "DECRETO::282/2023::2/3",
-    "act_key": "DECRETO::282/2023",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "282/2023",
-    "ano_edicao": 2023,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_23-24_C.pdf",
-    "cnpjs_Mencionados": [
-      "06.330.538/0001-40"
-    ],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "multi_part_with_header"
-    ],
-    "page_content": "DECRETO Nº 282/2023 [TIPO: DECRETO] [PARTE 2/3]\n...\n social da propriedade e o melhor fluxo do trânsito na região trazendo segurança aos alunos, familiares e transeuntes da região; D E C R E T A: Art. 1º Fica permitido, a título precário, a contar da data de publicação deste Decreto, o uso de cuja posse direta e propriedade pertencem a este Município, por prazo indeterminado à ASSOCIAÇÃO COMUNITÁRIA EDUCACIONAL DE CAETÉ - ACEC, inscrita no CNPJ nº. 06.330.538/0001-40, situada na Rua Professor Jenner Procópio de Alvarenga, s/nº, Bairro José Brandão, Município de Caeté/MG, CEP 34800-000, por meio da sua representante legal, CLAUDINEIA CORRÊA MARTINS DA COSTA, abaixo transcrito: “área de 244,94 (duzentos e quarenta e quatro metros quadrados e noventa e quatro centímetros quadrados) para parada de transporte escolar e 53,20 (cinquenta e três metros quadrados e vinte centímetros quadrados) para passagem de pedestre, dentro de um área de 786,20 m² (setecentos e oitenta e seis metros quadrados e vinte centímetros quadrados) situada na Rua Padre José Saturnino de Freitas, s/n°, Bairro José Brandão, Município de Caeté/MG, com perímetro de 121,89 m (cento e vinte e um metros e oitenta e nove centímetros) - matrícula n.º 8939, - fazendo frente com a rua Padre José Saturnino de Freitas, medindo 16,60 m (dezesseis metros e sessenta) e 20,62m (vinte metros e sessenta e dois centímetros) com terreno da Policlínica Municipal de Caeté; lateral direita medindo 23,52m (vinte e três metros e cinquenta e dois centímetros) com terreno pertencente à COMJOB; lateral esquerda medindo 25,60 (vinte e cinco metros e sessenta centímetros) com a propriedade do Sr. Marcio Salvador da Silva; e pelo fundo medindo 35,55 m (trinta e cinco metros e cinquenta e cinco centímetros) com terreno de propriedade da Associação Comunitária Educacional de Caeté – ACEC”. Art. 2º - A Permissionária utilizará a área para criar um acesso à Escola por meio da Rua Padre José Saturnino de Freitas, com o objetivo de parada e retorno das vans escolares visando: I - o embarque e desembarque seguro dos alunos II - passagem de pedestre,"
-  },
-  {
-    "id": "0c26e034-2c06-56aa-93e5-bdcd35413d63",
-    "unique_key": "DECRETO::282/2023::3/3",
-    "act_key": "DECRETO::282/2023",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "282/2023",
-    "ano_edicao": 2023,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_23-24_C.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
-    ],
-    "page_content": "DECRETO Nº 282/2023 [TIPO: DECRETO] [PARTE 3/3]\n...\no. Art. 7º - Este Decreto entrará em vigor na data de sua publicação. Caeté, 12 de dezembro de 2023. LUCAS COELHO FERREIRA Prefeito Municipal LOURIVAL FELIX DE MATOS SÁ Procurador Geral do Município"
-  },
-  {
     "id": "2934479b-5609-5b64-93cf-a8f3fe3604c7",
     "unique_key": "DECRETO::300/2023",
     "act_key": "DECRETO::300/2023",
@@ -476,6 +483,11 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Obras",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 300/2023 | Órgãos/Cargos: Secretaria Municipal de Obras, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -493,6 +505,11 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Obras",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 300/2023 | Órgãos/Cargos: Secretaria Municipal de Obras, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -510,6 +527,11 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 36/2023 | Órgãos/Cargos: Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -527,6 +549,11 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_B.pdf",
+    "orgaos_extraidos": [
+      "SEMAS / Secretaria de Assistência Social",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_B.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 51/2023 | Órgãos/Cargos: SEMAS / Secretaria de Assistência Social, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -544,6 +571,10 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 56/2023 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [
       "40.432.544/0001-47"
     ],
@@ -563,6 +594,13 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "SEMAS / Secretaria de Assistência Social",
+      "Secretaria Municipal de Educação",
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 58/2023 | Órgãos/Cargos: SEMAS / Secretaria de Assistência Social, Secretaria Municipal de Educação, Secretaria Municipal de Administração]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -572,7 +610,7 @@
     "page_content": "DECRETO Nº058/2023 “EXONERA GERENTE DE PROJETOS E NOMEIA CHEFE DE DIVISÃO”. O PREFEITO MUNICIPAL DE CAETÉ, MINAS GERAIS, no uso das atribuições que lhe são conferidas pelo art. 98, incisos I e X, da Lei Orgânica Municipal, e Considerando o disposto na Lei 2.475/06, que “ALTERA A ORGANIZAÇÃO, A ESTRUTURA ORGÂNICA E OS PROCEDIMENTOS DA ADMINISTRAÇÃO DO MUNICÍPIO DE CAETÉ”, D E C R E T A: Art.1º Fica exonerado do exercício das funções do cargo comissionado de Gerente de Projetos, com lotação na Secretaria Municipal de Educação, o Sr. Harrison Patrik Lucas, a partir de 06 de março de 2023. Art.2º Fica nomeado o Sr. Harrison Patrik Lucas para o exercício das funções do cargo comissionado de Chefe de Divisão, com lotação na Secretaria Municipal de Educação, a partir de 07 de março de 2023. Art.3º Este Decreto entra em vigor na data de sua publicação. Caeté, 06 de março de 2023. LUCAS COELHO FERREIRA Prefeito Municipal ROXANE EPIFANIA FERNANDES DOS REIS VIEIRA Procuradora Geral do Município O PREFEITO MUNICIPAL DE CAETÉ, MINAS GERAIS, no uso das atribuições que lhe são conferidas pelo art. 98, incisos I e X, da Lei Orgânica Municipal, e Considerando o disposto na Lei 2.475/06, que “ALTERA A ORGANIZAÇÃO, A ESTRUTURA ORGÂNICA E OS PROCEDIMENTOS DA ADMINISTRAÇÃO DO MUNICÍPIO DE CAETÉ”, D E C R E T A: Art.1º Fica nomeado o Sr. Jean Kleyton Rodrigo da Silva para o exercício das funções do cargo comissionado de Gerente de Projetos, com lotação na Secretaria Municipal de Assistência Social, a partir de 07 de março de 2023. Art.2º Este Decreto entra em vigor na data de sua publicação. Caeté, 06 de março de 2023. LUCAS COELHO FERREIRA Prefeito Municipal ROXANE EPIFANIA FERNANDES DOS REIS VIEIRA Procuradora Geral do Município"
   },
   {
-    "id": "4c301423-2acb-51b1-a933-031682e7384f",
+    "id": "cfdec171-08ee-5e4b-91cb-8e952a0b5cfb",
     "unique_key": "DECRETO::64/2023",
     "act_key": "DECRETO::64/2023",
     "tipo_ato": "DECRETO",
@@ -580,23 +618,10 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Administração"
     ],
-    "page_content": "Decreto 064/2023 I. Estadual ou regional II N i l pontuação: a) Categoria: Internacional b) Categoria: Nacional c) Categoria: Estadual o atleta ou seu procurador legal de, para a ob tenção ou renovação do benefício, obedecerem a todos os procedimentos, inclusive os de inscrição junto à Secretaria Municipal de Esporte e Lazer, bem como de cumprir os prazos estabelecidos pela mesma secretaria, de enviar documentos, de apresentar a respectiva prestação de contas e de atualizar os dados cadastrais; 6.8. Havendo empate na classificação, terá preferência o atleta habilitado ou o melhor colocado na seguinte ordem: BOLSA ATLETA MUNICIPAL -"
-  },
-  {
-    "id": "89d259bc-e923-5410-ba38-d831139af42a",
-    "unique_key": "DECRETO::64/2023::1/1",
-    "act_key": "DECRETO::64/2023",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "64/2023",
-    "ano_edicao": 2023,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 64/2023 | Órgãos/Cargos: Secretaria Municipal de Administração]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -604,57 +629,6 @@
       "multi_part_with_header"
     ],
     "page_content": "[DECRETO Nº 64/2023 | PARTE 1/1] Decreto 064/2023 Edital De Inscrição Programa Bolsa Atleta Dispõe Sobre O Processo De Inscrição E Seleção Para A Concessão Do Benefício Bolsa Atleta, No Âmbito Do Poder Executivo Do Município De Caeté/Mg. O Município De Caeté, Por Intermédio Da Secretaria Municipal De Esporte E Lazer De Caeté, No Exercício De Suas Atribuições Legais, Faz Saber: Encontram-se abertas as inscrições para o “Programa Bolsa Atleta” nos termos da Lei Municipal nº 3.416/2022, de 29 de dezembro de 2022, bem como do Decreto Municipal nº 64/2023, operacionalizado pelo Conselho Municipal de Desportos de Caeté, com o objetivo de valorizar e apoiar atletas do esporte amador a desenvolverem, por intermédio de projetos específicos, a prática do esporte como meio de promoção social, nas condições e prazos abaixo estabelecidos. 1. DAS DISPOSIÇÕES GERAIS 1.1. O presente EDITAL tem por objetivo a concessão da “Bolsa Atleta”, que visa o apoio financeiro aos atletas e para atletas do esporte amador, nascidos ou residentes no Município de Caeté, praticantes de modalidades esportivas constantes dos programas da Secretaria Municipal de Esporte e Lazer de Caeté, bem como aquelas praticadas em eventos oficiais de âmbito municipal, estadual, nacional e internacional. 1.2. Para os efeitos deste Edital, considera-se: I - Categoria Internacional: para atleta de destaque Pan-Americano, Sul-americano, Olimpíadas e Mundial filiados à entidade estadual, nacional ou internacional de administração do desporto da respectiva modalidade, representando o Brasil, tendo obtido até a 5ª colocação em competições referendadas pela confederação da respectiva modalidade de esporte, no ano do benefício ou nos dois anos imediatamente anteriores, em provas individuais de modalidades individuais, ou integrantes de equipe que tenha obtido uma destas colocações em modalidades coletivas, e/ ou que figurem até a 10ª colocação no ranking internacional da modalidade e que continuem a treinar para futuras competições internacionais. II - Categoria Nacional: para atleta com destaque nacional filiados à entidade estadual, nacional ou internacional de administração do desporto da respectiva modalidade, que tenham obtido até a 5ª colocação no evento máximo promovido pela entidade nacional de administração do desporto no ano do benefício ou nos dois anos imediatamente anteriores, em provas individuais de modalidades individuais, ou integrantes de equipe BOLSA ATLETA MUNICIPAL -"
-  },
-  {
-    "id": "45c6eecc-ec10-5104-b917-628a9eba57b0",
-    "unique_key": "DECRETO::64/2023::1/2",
-    "act_key": "DECRETO::64/2023",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "64/2023",
-    "ano_edicao": 2023,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_23-24_B.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "multi_part_with_header"
-    ],
-    "page_content": "[DECRETO Nº 64/2023 | PARTE 1/2] DECRETO Nº 064/2023 [TIPO: DECRETO] [PARTE 2/4]\n...\nos previstos nos incisos I, II e III deste artigo também estão elegíveis ao benefício. § 2°. As categoriais dos incisos I, II e III, para efeito de concessão da Bolsa Atleta, serão subdivididas nas três subcategorias etárias principal, infantil. Art. 3º A efetiva concessão da Bolsa Atleta em anos consecutivos não desobriga o atleta ou seu procurador legal de obedecerem a todos os procedimentos, inclusive os de inscrição junto à Secretaria Municipal de Esportes e Lazer, bem como de cumprir os prazos estabelecidos pela mesma secretaria, de enviar documentos, de apresentar a respectiva prestação de contas e de atualizar os dados cadastrais. §1° O atleta não contemplado em razão de insuficiente disponibilidade orçamentária da Secretaria Municipal de Esporte, Lazer e Juventude, deverá ser incluído em lista de espera, cuja ordem de preferência deve observar os mesmos critérios deste Decreto. § 2°. No caso de abertura de vaga por desistência, substituição por penalidade e/ou aumento de disponibilidade orçamentária, com consequente convocação de atleta da lista de espera que trata o parágrafo anterior, o atleta receberá os valores da categoria proporcionais aos meses restantes do ano fiscal. Art. 4º Havendo empate na classificação, terá preferência o atleta habilitado ou o melhor colocado na seguinte ordem: I - em provas individuais em modalidades individuais; II - em provas coletivas· em modalidades individuais; III - em modalidades coletivas; IV - na categoria principal; V - na categoria intermediária; VI - na categoria iniciante; VII - na competição que os habilitou ao pleito; VIII - no ranking internacional de cada modalidade; IX - no ranking nacional de cada modalidade e, X - no ranking estadual/regional de cada modalidade."
-  },
-  {
-    "id": "3181fc33-072a-5f87-bbe8-f2f9b6e6df58",
-    "unique_key": "DECRETO::64/2023::1/3",
-    "act_key": "DECRETO::64/2023",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "64/2023",
-    "ano_edicao": 2023,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_23-24_B.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "multi_part_with_header"
-    ],
-    "page_content": "[DECRETO Nº 64/2023 | PARTE 1/3] DECRETO Nº 064/2023 [TIPO: DECRETO] [PARTE 3/4]\n...\nreto."
-  },
-  {
-    "id": "1e31dd2d-7d83-5bb1-a7a6-00ba35584ef8",
-    "unique_key": "DECRETO::64/2023::1/4",
-    "act_key": "DECRETO::64/2023",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "64/2023",
-    "ano_edicao": 2023,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_23-24_B.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
-    ],
-    "page_content": "DECRETO Nº 064/2023 [TIPO: DECRETO] [PARTE 1/4]\n..."
   },
   {
     "id": "ce1812c8-906d-5dcd-93d7-ae616e4288c5",
@@ -665,6 +639,10 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_B.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Administração"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_B.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 64/2023 | Órgãos/Cargos: Secretaria Municipal de Administração]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -682,6 +660,10 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_B.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Administração"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_B.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 64/2023 | Órgãos/Cargos: Secretaria Municipal de Administração]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -699,6 +681,10 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_B.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Administração"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_B.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 64/2023 | Órgãos/Cargos: Secretaria Municipal de Administração]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -706,23 +692,6 @@
       "multi_part_with_header"
     ],
     "page_content": "[DECRETO Nº 64/2023 | PARTE 3/3] Art. 7º Para fins do disposto neste decreto, o evento máximo da temporada, para a Bolsa Atleta nacional e internacional, em todas as subcategorias etárias e em cada modalidade é aquele fixado anualmente pela respectiva Entidade Nacional de Administração do Desporto. § 1º. Para os eventos internacionais, compreendidos os mundiais, pan-americanos e sulamericanos, só serão aceitas as competições reconhecidas pelas Entidades Internacionais de Administração do Desporto, na qual a Entidade Nacional esteja formalmente vinculada ou filiada, e homologadas pelo Comitê Olímpico Brasileiro (COB) ou Comitê Paraolímpico Brasileiro (CPB). § 2º. Serão considerados eventos desportivos nacionais aqu"
-  },
-  {
-    "id": "c8093c35-91e6-53ef-b1a0-7c8320a8d4ab",
-    "unique_key": "DECRETO::64/2023::4/4",
-    "act_key": "DECRETO::64/2023",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "64/2023",
-    "ano_edicao": 2023,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_23-24_B.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
-    ],
-    "page_content": "DECRETO Nº 064/2023 [TIPO: DECRETO] [PARTE 4/4]\n...\neles reconhecidos pela Entidade Nacional de Administração de cada modalidade e compostos por equipes e/ou atletas de, no mínimo, metade dos Estados-membros, mais um, salvo os casos de modalidades que comprovadamente não possuam o número mínimo de Estados representantes. §3º. Para quaisquer eventos e modalidades esportivas, as competições e/ou provas serão válidas, para efeito de concessão da Bolsa Atleta, somente se apresentarem no mínimo 3 (três) equipes e/ou competidores, conforme o caso de modalidade individual ou coletiva. Art. 8º Deferida a concessão da Bolsa Atleta, a S i M i i l d E L J presso, assinado, rubricado e preenchido com os dados bancários (conta, agência e operação) após abertura de conta bancária específica para o benefício junto ao Agente Financeiro do Programa. §1º. A concessão da Bolsa-Atleta só irá gerar efeitos financeiros após o encaminhamento do"
   },
   {
     "id": "d2a4a014-6c89-5a71-b8b6-07ab5aa74f98",
@@ -733,6 +702,10 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_B.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_B.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 81/2023 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -750,6 +723,11 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_B.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_B.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 83/2023 | Órgãos/Cargos: Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -767,6 +745,10 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_B.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_B.pdf) | Ano: 2023 | Tipo de Ato: DECRETO Nº 99/2023 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -784,6 +766,8 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2023 | Tipo de Ato: LEI Nº 3451/2023 | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -801,6 +785,11 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [
+      "SAAE Caeté",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2023 | Tipo de Ato: LEI Nº 3467/2023 | Órgãos/Cargos: SAAE Caeté, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [
       "R$1.127.210,46"
@@ -820,6 +809,12 @@
     "ano_edicao": 2023,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "SEDESMA / Secretaria de Meio Ambiente",
+      "Gabinete do Prefeito",
+      "Comissão de Fiscalização / Licitação"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2023 | Tipo de Ato: LEI Nº 3479/2023 | Órgãos/Cargos: SEDESMA / Secretaria de Meio Ambiente, Gabinete do Prefeito, Comissão de Fiscalização / Licitação]",
     "cnpjs_Mencionados": [
       "13.724.015/0001-44"
     ],
@@ -842,6 +837,12 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Educação",
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 101/2024 | Órgãos/Cargos: Secretaria Municipal de Educação, Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -859,6 +860,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 101/2024 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [
       "R$ 173.408,84"
@@ -878,6 +883,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_A.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_A.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 105/2024 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -895,6 +904,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 11/2024 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [
       "R$1.095.000,00"
@@ -914,6 +927,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_D.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_D.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 112/2024 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -921,40 +938,6 @@
       "complete_individual_act"
     ],
     "page_content": "DECRETO Nº 112/2024 “ABRE CRÉDITO ADICIONAL DE CARÁTER ESPECIAL NO ORÇAMENTO DE 2024 DO MUNICÍPIO DE CAETÉ E AUTORIZA ALTERAÇÕES NO PPA E LDO VIGENTES”. O PREFEITO MUNICIPAL DE CAETÉ, no uso das atribuições que lhes são conferidas pelo artigo 98, inciso VII, da Lei Orgânica Municipal; Considerando a"
-  },
-  {
-    "id": "ec3c3b3b-785f-50ad-959f-3e367b38c0e3",
-    "unique_key": "DECRETO::112/2024::1/2",
-    "act_key": "DECRETO::112/2024",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "112/2024",
-    "ano_edicao": 2024,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_23-24_D.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
-    ],
-    "page_content": "DECRETO Nº 112/2024 [TIPO: DECRETO] [PARTE 1/2]\n..."
-  },
-  {
-    "id": "e8eef5d6-6f23-525a-ba4f-c2ea2c579422",
-    "unique_key": "DECRETO::112/2024::2/2",
-    "act_key": "DECRETO::112/2024",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "112/2024",
-    "ano_edicao": 2024,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_23-24_D.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
-    ],
-    "page_content": "DECRETO Nº 112/2024 [TIPO: DECRETO] [PARTE 2/2]\n...\n4”. Art. 4º - Este Decreto entra em vigor na data de sua publicação. Caeté, 05 de junho de 2024. LUCAS COELHO FERREIRA Prefeito Municipal Órgão Oficial de Divulgação dos Poderes Públicos Municipais"
   },
   {
     "id": "b18a91bd-1394-5bc4-9b91-7414e4d0b519",
@@ -965,6 +948,11 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_D.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_D.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 142/2024 | Órgãos/Cargos: Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -982,6 +970,12 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_D.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Educação",
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_D.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 148/2024 | Órgãos/Cargos: Secretaria Municipal de Educação, Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -999,6 +993,11 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_D.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_D.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 149/2024 | Órgãos/Cargos: Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1016,6 +1015,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 15/2024 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1033,6 +1036,13 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_D.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Educação",
+      "Secretaria Municipal de Saúde",
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_D.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 183/2024 | Órgãos/Cargos: Secretaria Municipal de Educação, Secretaria Municipal de Saúde, Secretaria Municipal de Administração]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1050,6 +1060,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_A.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_A.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 197/2024 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1067,6 +1081,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 204/2024 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1084,6 +1102,8 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 204/2024 | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [
       "R$ 2.832,37",
@@ -1107,6 +1127,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 205/2024 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1114,23 +1138,6 @@
       "complete_individual_act"
     ],
     "page_content": "DECRETO Nº 205/2024 ABRE CRÉDITO ADICIONAL DE CARÁTER E SUPLEMENTAR NO ORÇAMENTO DE 2024 DO MUNICÍPIO DE CAETÉ E AUTORIZA ALTERAÇÕES NO PPA E LDO VIGENTES O PREFEITO MUNICIPAL DE CAETÉ, no uso das atribuições que lhes são conferidas pelo artigo 98, inciso VII, da Lei Orgânica Municipal; Considerando a"
-  },
-  {
-    "id": "c9b41eab-b8fb-5888-b4a8-a27615e8789b",
-    "unique_key": "DECRETO::205/2024::1/2",
-    "act_key": "DECRETO::205/2024",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "205/2024",
-    "ano_edicao": 2024,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_23-24_E.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
-    ],
-    "page_content": "DECRETO Nº 205/2024 [TIPO: DECRETO] [PARTE 1/2]\n..."
   },
   {
     "id": "cc975f30-4dd1-5202-833b-e63074ed683c",
@@ -1141,6 +1148,12 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Saúde",
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 232/2024 | Órgãos/Cargos: Secretaria Municipal de Saúde, Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1158,6 +1171,13 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [
+      "SEDESMA / Secretaria de Meio Ambiente",
+      "Secretaria Municipal de Administração",
+      "SAAE Caeté",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 233/2024 | Órgãos/Cargos: SEDESMA / Secretaria de Meio Ambiente, Secretaria Municipal de Administração, SAAE Caeté]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1175,6 +1195,8 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 233/2024 | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1192,6 +1214,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 245/2024 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1209,6 +1235,12 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Saúde",
+      "Secretaria Municipal de Obras",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 246/2024 | Órgãos/Cargos: Secretaria Municipal de Saúde, Secretaria Municipal de Obras, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [
       "R$4.538.982,71"
@@ -1220,40 +1252,6 @@
     "page_content": "DECRETO Nº 246/2024 ABRE CRÉDITO ADICIONAL DE CARÁTER ESPECIAL NO ORÇAMENTO DE 2024 DO MUNICÍPIO DE CAETÉ E AUTORIZA ALTERAÇÕES NO PPA E LDO VIGENTES O PREFEITO MUNICIPAL DE CAETÉ, NO USO DAS ATRIBUIÇÕES QUE LHES SÃO CONFERIDAS PELO ARTIGO 98, INCISO VII, DA LEI ORGÂNICA MUNICIPAL DECRETA ART. 1º - FICA ABERTO CRÉDITO ADICIONAL DE CARÁTER ESPECIAL NO ORÇAMENTO DE 2024 DO MUNICÍPIO DE CAETÉ, NO VALOR TOTAL DE R$4.538.982,71 (QUATRO MILHÕES QUINHENTOS E TRINTA E OITO MIL NOVECENTOS E OITENTA E DOIS REAIS E SETENTA E UM CENTAVOS) NAS SEGUINTES DOTAÇÕES ORÇAMENTÁRIAS: 02.17 FUNDO MUNICIPAL DE SAÚDE 10.301.0029.2.063.000 MANUTENÇÃO DA ATENÇÃO BÁSICA 3.3.90.30.00.00.00 NRD 3323 – FONTE 2621 MATERIAL DE CONSUMO 200.000,00 3.3.90.32.00.00.00 NRD 3326 – FONTE 2621 MATERIAL DE DISTRIBUIÇÃO GRATUITA 100.000,00 3.3.90.39.00.00.00 NRD 3324 – FONTE 2621 OUTROS SERVIÇOS DE TERCEIROS - PESSOA JURÍDICA 608.982,71 4.4.90.52.00.00.00 NRD 3325 – FONTE 2621 EQUIPAMENTOS E MATERIAL PERMANENTE100.000,00 10.301.0029.1.071.000 CONSTRUÇÃO DE UNIDADE DE SAÚDE 4.4.90.51.00.00.00 NRD 3327 – FONTE 2621 OBRAS E INSTALAÇÕES 530.000,00 10.302.0113.2.394.000 MANUTENÇÃO DAS AÇÕES DO CONSÓRCIO 3.1.71.70.00.00.00 NRD 3328 – FONTE 2621 RATEIO PELA PARTICIPAÇÃO EM CONSÓRCIO P. 800.000,00 103020048.2.112000 MANUTENÇÃO DA URGÊNCIA E EMERGÊNCIA 3.3.50.43.00.00.00 NRD 3329 – FONTE 2621 SUBVENÇÕES SOCIAIS 2.200.000,00 TOTAL GERAL 4.538.982,71 ART. 2º - OS RECURSOS NECESSÁRIOS PARA ABERTURA DO CRÉDITO ESPECIAL, MENCIONADO NO ARTIGO ANTERIOR, SERÃO PROVENIENTES DE SUPERÁVIT, NA FORMA DO INCISO I DO ARTIGO 43 DA LEI 4.320/64. ART. 3° - FICAM AUTORIZADAS, NOS TERMOS DA LE MUNICIPAL Nº 3.510/2024, AS MODIFICAÇÕES DAS ESTRUTURAS ORÇAMENTÁRIAS CONSTANTES DA LEI Nº 3.329, DE 17 DE DEZEMBRO DE 2021, QUE “DISPÕE SOBRE O PLANO PLURIANUAL 2022/2025”, DA LEI N° 3.476, DE 21 DE DEZEMBRO DE 2023, QUE “DISPÕE SOBRE AS DIRETRIZES PARA A ELABORAÇÃO DA LEI ORÇAMENTÁRIA PARA O EXERCÍCIO DE 2024” E DO QUADRO DE DETALHAMENTO DE DESPESA – QDD, ANEXO DA LEI N° 3.479, DE 29 DE DEZEMBRO DE 2023, QUE “ESTIMA A RECEITA E FIXA A DESPESA DO MUNICÍPIO DE CAETÉ PARA O EXERCÍCIO FINANCEIRO DE 2024”. ART. 4º - ESTE DECRETO ENTRA EM VIGOR NA DATA DE SUA PUBLICAÇÃO. CAETÉ, 13 DE SETEMBRO DE 2024. LUCAS COELHO FERREIRA PREFEITO MUNICIPAL RESOLUÇÃO DE Nº 13/2024 “APROVA ADEQUAÇÃO DO PLANO DE TRABALHO - PROJETO 13º SUPERAÇÃO CHARNEAUX – “OUVIR, CUIDAR E ORIENTA” DA ASSOCIAÇÃO COMUNITÁRIA DO BAIRRO CHARNEAUX” • CONSIDERANDO O PRAZO PARA EXECUÇÃO DO PROJETO COM AS INSCRIÇÕES, COMPRA DE MATERIAIS, CONTRATAÇÃO DOS PROFISSIONAIS E SERVIÇOS, ORGANIZAÇÃO E DILIGENCIAMENTO ADMINISTRATIVO E OFICINAS, SENDO O INÍCIO EM AGOSTO E TERMINO EM DEZEMBRO DE 2024; • A DELIBERAÇÃO DE SUA PLENÁRIA EM 11/09/2024. RESOLVE: 1º. “APROVAR ADEQUAÇÃO DO PRAZO PARA EXECUÇÃO NO PLANO DE TRABALHO DO PROJETO 13º SUPERAÇÃO CHARNEAUX – “OUVIR, CUIDAR E ORIENTA” DA ASSOCIAÇÃO COMUNITÁRIA DO BAIRRO CHARNEAUX”, REFERENTE AO TERMO DE COLABORAÇÃ"
   },
   {
-    "id": "f6e68398-2d1a-5417-9c0f-21ac48646ea7",
-    "unique_key": "DECRETO::246/2024::1/2",
-    "act_key": "DECRETO::246/2024",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "246/2024",
-    "ano_edicao": 2024,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_23-24_E.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
-    ],
-    "page_content": "DECRETO Nº 246/2024 [TIPO: DECRETO] [PARTE 1/2]\n..."
-  },
-  {
-    "id": "af76637b-121f-5104-a82b-3e12a2dea492",
-    "unique_key": "DECRETO::246/2024::2/2",
-    "act_key": "DECRETO::246/2024",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "246/2024",
-    "ano_edicao": 2024,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_23-24_E.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
-    ],
-    "page_content": "DECRETO Nº 246/2024 [TIPO: DECRETO] [PARTE 2/2]\n...\nO 057/2024, CONFORME REUNIÃO ORDINÁRIA REALIZADA NO DIA ONZE DE SETEMBRO DE DOIS MIL E VINTE E QUATRO (11/09/2024) E REGISTRADA EM ATA DE NÚMERO TRÊS (07). ART. 2º - ESTA RESOLUÇÃO ENTRA EM VIGOR NA DATA DE SUA PUBLICAÇÃO. ART. 3º - REVOGA-SE AS DISPOSIÇÕES EM CONTRÁRIO. CAETÉ, 11 DE SETEMBRO DE 2024. LUCY FERREIRA GONÇALVES PRESIDENTE INTERINA DO CMDPI"
-  },
-  {
     "id": "7d020cd9-9b99-5fd1-b766-4ad3102fabb7",
     "unique_key": "DECRETO::247/2024",
     "act_key": "DECRETO::247/2024",
@@ -1262,6 +1260,13 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "SEDESMA / Secretaria de Meio Ambiente",
+      "Secretaria Municipal de Administração",
+      "SAAE Caeté",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 247/2024 | Órgãos/Cargos: SEDESMA / Secretaria de Meio Ambiente, Secretaria Municipal de Administração, SAAE Caeté]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1279,6 +1284,8 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 247/2024 | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1296,6 +1303,11 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 254/2024 | Órgãos/Cargos: Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1313,6 +1325,11 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 303/2024 | Órgãos/Cargos: Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1330,6 +1347,12 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Saúde",
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 311/2024 | Órgãos/Cargos: Secretaria Municipal de Saúde, Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1347,6 +1370,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 321/2024 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1354,40 +1381,6 @@
       "complete_individual_act"
     ],
     "page_content": "DECRETO Nº 321/2024 “ABRE CRÉDITO SUPLEMENTAR NO ORÇAMENTO DE 2024 DA FUNDAÇÃO EDUCACIONAL DE CAETÉ” O PREFEITO MUNICIPAL DE CAETÉ, no uso das atribuições que lhes são conferidas pelo artigo 98, inciso VII, e considerando a"
-  },
-  {
-    "id": "2c57e4a1-44b5-5a16-96c9-60982730b21f",
-    "unique_key": "DECRETO::321/2024::1/2",
-    "act_key": "DECRETO::321/2024",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "321/2024",
-    "ano_edicao": 2024,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_23-24_E.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
-    ],
-    "page_content": "DECRETO Nº 321/2024 [TIPO: DECRETO] [PARTE 1/2]\n..."
-  },
-  {
-    "id": "6f0eeb16-8d90-5d91-b6c5-a663ac4ffd24",
-    "unique_key": "DECRETO::321/2024::2/2",
-    "act_key": "DECRETO::321/2024",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "321/2024",
-    "ano_edicao": 2024,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_23-24_E.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
-    ],
-    "page_content": "DECRETO Nº 321/2024 [TIPO: DECRETO] [PARTE 2/2]\n...\nem vigor na data de sua publicação. Caeté, 27 de novembro de 2024. LUCAS COELHO FERREIRA Prefeito Municipal"
   },
   {
     "id": "f7663258-09ad-5b18-82db-b3cee3ba9cca",
@@ -1398,6 +1391,11 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "SEDESMA / Secretaria de Meio Ambiente",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 322/2024 | Órgãos/Cargos: SEDESMA / Secretaria de Meio Ambiente, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1415,6 +1413,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_A.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_A.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 337/2024 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1432,6 +1434,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 353/2024 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1449,6 +1455,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 38/2024 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1466,6 +1476,11 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_D.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_D.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 45/2024 | Órgãos/Cargos: Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1483,6 +1498,8 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_D.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_D.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 53/2024 | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1490,23 +1507,6 @@
       "multi_part_with_header"
     ],
     "page_content": "[DECRETO Nº 53/2024 | PARTE 1/2] DECRETO Nº053/2024 [TIPO: DECRETO] [PARTE 2/3]\n...\nprietário ou responsável pela edificação a execução das medidas de segurança contra incêndio e pânico conforme Regulamento de Segurança Contra Incêndio e Pânico, nos termos do Decreto Estadual nº 47.998 de 01 de julho de 2020. Art. 2° Para os fins deste decreto, considera-se: I - Auto de Vistoria do Corpo de Bombeiros – AVCB: documento emitido pelo Corpo de Bombeiros Militar do Estado de Minas Gerais que certifique possuir a edificação ou empreendimento as condições de segurança contra incêndio e pânico previstas na legislação pertinente; II - áreas ou empreendimentos destinados ao uso coletivo: áreas ou empreendimentos com a possibilidade da ocorrência de um sinistro, onde serão desenvolvidas as atividades previstas na Tabela constante do Anexo do Decreto Estadual nº 47.998 de 01 de julho de 2020. Art. 3º A emissão ou dispensa do AVCB pelo CBMMG não isenta o requerente a cumprir a Legislação Municipal. Art.4º Todas as edificações destinadas ao uso coletivo, cuja finalidade seja comercial, de serviço, industrial ou residencial multi¬familiar, deverão possuir laudo técnico, emitido por profissional legalmente habili¬tado junto ao Conselho Regional de Enge¬nharia, Arquitetura e Agronomia - CREA – ou Conselho de Arquitetura e Urbanismo – CAU-, e respectiva anotação de responsabilidade técnica - ART -, que ateste as condições de segurança, estabilidade e solidez da edificação, bem como as condições satisfatórias das instalações elétricas e hidráulicas. §1º Juntamente ao Laudo Técnico referido no caput, o interessado deverá apresentar a documentação listada no anexo a este Decreto. Art.5º Os profissionais que assumirem a responsabilidade pelo LAUDO deverão ser habilitados junto ao CREA ou CAU. Art. 6º O LAUDO TÉCNICO será elaborado de acordo com modelo de formulário constante do anexo a este Decreto, e deverá ter caráter conclusivo. § 1º - O LAUDO TÉCNICO deverá ser assinado pe- l fii i á i l i á § 2 O responsável técnico que assinar o LAU DO TÉCNICO responderá integralmente pelo mesmo."
-  },
-  {
-    "id": "e5b9c62a-d7f2-5baf-94bd-837d4bddc819",
-    "unique_key": "DECRETO::53/2024::1/3",
-    "act_key": "DECRETO::53/2024",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "53/2024",
-    "ano_edicao": 2024,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_23-24_D.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
-    ],
-    "page_content": "DECRETO Nº053/2024 [TIPO: DECRETO] [PARTE 1/3]\n..."
   },
   {
     "id": "9a2aeea0-376a-553a-8059-cdc65c5ecd61",
@@ -1517,6 +1517,8 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_D.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_D.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 53/2024 | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1534,6 +1536,8 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_D.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_D.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 53/2024 | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1551,6 +1555,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_D.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_D.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 55/2024 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1568,6 +1576,11 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_A.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_A.pdf) | Ano: 2024 | Tipo de Ato: DECRETO Nº 80/2024 | Órgãos/Cargos: Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1585,6 +1598,11 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_B.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_B.pdf) | Ano: 2024/2025 | Tipo de Ato: DECRETO | Órgãos/Cargos: Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1602,6 +1620,10 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_A.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_A.pdf) | Ano: 2024/2025 | Tipo de Ato: DECRETO | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1619,6 +1641,13 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_D.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Obras",
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito",
+      "Comissão de Fiscalização / Licitação"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_D.pdf) | Ano: 2024/2025 | Tipo de Ato: DECRETO | Órgãos/Cargos: Secretaria Municipal de Obras, Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1636,6 +1665,10 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024/2025 | Tipo de Ato: DECRETO | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1653,6 +1686,8 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_C.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_C.pdf) | Ano: 2024/2025 | Tipo de Ato: DECRETO | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1670,6 +1705,11 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_A.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Saúde",
+      "Comissão de Fiscalização / Licitação"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_A.pdf) | Ano: 2024/2025 | Tipo de Ato: DECRETO | Órgãos/Cargos: Secretaria Municipal de Saúde, Comissão de Fiscalização / Licitação]",
     "cnpjs_Mencionados": [
       "01.772.798/0002-33"
     ],
@@ -1691,6 +1731,11 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_D.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Saúde",
+      "Comissão de Fiscalização / Licitação"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_D.pdf) | Ano: 2024/2025 | Tipo de Ato: DECRETO | Órgãos/Cargos: Secretaria Municipal de Saúde, Comissão de Fiscalização / Licitação]",
     "cnpjs_Mencionados": [
       "29.099.568/0001-93"
     ],
@@ -1712,6 +1757,11 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_D.pdf",
+    "orgaos_extraidos": [
+      "SEMAS / Secretaria de Assistência Social",
+      "Comissão de Fiscalização / Licitação"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_D.pdf) | Ano: 2024/2025 | Tipo de Ato: DECRETO | Órgãos/Cargos: SEMAS / Secretaria de Assistência Social, Comissão de Fiscalização / Licitação]",
     "cnpjs_Mencionados": [
       "71.181.184/0001-81"
     ],
@@ -1733,6 +1783,11 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_A.pdf",
+    "orgaos_extraidos": [
+      "SEMAS / Secretaria de Assistência Social",
+      "Comissão de Fiscalização / Licitação"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_A.pdf) | Ano: 2024/2025 | Tipo de Ato: DECRETO | Órgãos/Cargos: SEMAS / Secretaria de Assistência Social, Comissão de Fiscalização / Licitação]",
     "cnpjs_Mencionados": [
       "71.181.184/0001-81"
     ],
@@ -1754,6 +1809,12 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_A.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Saúde",
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_A.pdf) | Ano: 2024/2025 | Tipo de Ato: DECRETO | Órgãos/Cargos: Secretaria Municipal de Saúde, Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1771,6 +1832,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_D.pdf",
+    "orgaos_extraidos": [
+      "Comissão de Fiscalização / Licitação"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_D.pdf) | Ano: 2024 | Tipo de Ato: EDITAL / LICITAÇÃO Nº 24/2024 | Órgãos/Cargos: Comissão de Fiscalização / Licitação]",
     "cnpjs_Mencionados": [
       "19.499.619/0001-10"
     ],
@@ -1792,6 +1857,8 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2024/2025 | Tipo de Ato: EDITAL / LICITAÇÃO | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1809,6 +1876,8 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2024/2025 | Tipo de Ato: EDITAL / LICITAÇÃO | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1826,6 +1895,8 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2024/2025 | Tipo de Ato: LEI | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1843,6 +1914,11 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Saúde",
+      "Secretaria Municipal de Obras"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2024/2025 | Tipo de Ato: LEI | Órgãos/Cargos: Secretaria Municipal de Saúde, Secretaria Municipal de Obras]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1860,6 +1936,11 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Saúde",
+      "Secretaria Municipal de Obras"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024/2025 | Tipo de Ato: LEI | Órgãos/Cargos: Secretaria Municipal de Saúde, Secretaria Municipal de Obras]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1877,6 +1958,8 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2024/2025 | Tipo de Ato: LEI | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1894,6 +1977,8 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_B.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_B.pdf) | Ano: 2024/2025 | Tipo de Ato: LEI | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1911,6 +1996,12 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Saúde",
+      "SAAE Caeté",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024/2025 | Tipo de Ato: LEI | Órgãos/Cargos: Secretaria Municipal de Saúde, SAAE Caeté, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1928,6 +2019,12 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Saúde",
+      "SAAE Caeté",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2024/2025 | Tipo de Ato: LEI | Órgãos/Cargos: Secretaria Municipal de Saúde, SAAE Caeté, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1945,6 +2042,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_D.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Saúde"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_D.pdf) | Ano: 2024 | Tipo de Ato: LEI Nº 3495/2024 | Órgãos/Cargos: Secretaria Municipal de Saúde]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [
       "R$ 1.000.000,00",
@@ -1965,6 +2066,8 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_D.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_D.pdf) | Ano: 2024 | Tipo de Ato: LEI Nº 3495/2024 | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -1982,6 +2085,12 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Educação",
+      "Secretaria Municipal de Obras",
+      "Secretaria Municipal de Administração"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: LEI Nº 3503/2024 | Órgãos/Cargos: Secretaria Municipal de Educação, Secretaria Municipal de Obras, Secretaria Municipal de Administração]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [
       "R$ 5.000.000,00"
@@ -2001,6 +2110,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: LEI Nº 3503/2024 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -2018,6 +2131,11 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Obras",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: LEI Nº 3508/2024 | Órgãos/Cargos: Secretaria Municipal de Obras, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [
       "R$3.682,85",
@@ -2038,6 +2156,11 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Saúde",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2024 | Tipo de Ato: LEI Nº 3510/2024 | Órgãos/Cargos: Secretaria Municipal de Saúde, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [
       "R$ 44.843,96",
@@ -2058,6 +2181,8 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: LEI Nº 3513/2024 | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [
       "R$410.000,00"
@@ -2077,6 +2202,10 @@
     "ano_edicao": 2024,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_23-24_E.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Obras"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_23-24_E.pdf) | Ano: 2024 | Tipo de Ato: LEI Nº 3513/2024 | Órgãos/Cargos: Secretaria Municipal de Obras]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [
       "R$410.000,00"
@@ -2096,6 +2225,8 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2024/2025 | Tipo de Ato: OUTROS | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -2113,6 +2244,8 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2024/2025 | Tipo de Ato: OUTROS | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -2130,6 +2263,10 @@
     "ano_edicao": null,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [
+      "Comissão de Fiscalização / Licitação"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2024/2025 | Tipo de Ato: PORTARIA | Órgãos/Cargos: Comissão de Fiscalização / Licitação]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -2147,6 +2284,10 @@
     "ano_edicao": 2025,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2025 | Tipo de Ato: DECRETO Nº 198/2025 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [
       "R$ 73.247,00",
@@ -2159,23 +2300,6 @@
     "page_content": "DECRETO Nº 198/2025 “ABRE CRÉDITO ADICIONAL DE CARÁTER SUPLEMENTAR NO ORÇAMENTO DE 2025 DO MUNICÍPIO DE CAETÉ.” O PREFEITO MUNICIPAL DE CAETÉ, MINAS GERAIS, no uso das atribuições que lhes são conferidas pelo artigo 98, inciso VII, e, considerando o disposto na Lei Municipal nº 3.519/2024 e os artigos 42 e 43 da Lei Federal nº 4.320/1964 DECRETA: Art.1º Fica aberto crédito adicional de caráter suplementar no orçamento de 2025 do Município de Caeté, no valor total R$ 73.247,00(setenta e três mil e duzentos e quarenta e sete reais),nas seguintes dotações orçamentárias: ÓRGÃO 01 CÂMARA MUNICIPAL DE CAETÉ UNIDADE ORÇAMENTÁRIA: 01.01 CÂMARA MUNICIPAL DE CAETÉ 3.3.90.14.00.00.00 Diárias Pessoal Civil 4.000,00 3.3.90.39.00.00.00 Outros Serviços de Terceiros – Pessoa Jurídica 22 20.000,00 01.031.0001.2.332.000 MANUTENÇÃO DOS SERVIÇOS ADMINISTRATIVOS 3.3.90.39.00.00.00 Outros Serviços de Terceiros – Pessoa Jurídica 43 49.247,00 TOTAL 73.247,00 Art.2º Para fazer frente ao crédito suplementar disposto no artigo 1º, fica reduzido no orçamento de 2.025 do Município de Caeté, o de valor total R$ 73.247,00(setenta e três mil e duzentos e quarenta e sete reais), nas seguintes dotações orçamentárias: DOTAÇÃO ORÇAMENTÁRIA A SER REDUZIDA CÓDIGO ESPECIFICAÇÃO NRD FONTE VALOR 01.031.0001.2.332.000 MANUTENÇÃO DOS SERVIÇOS ADMINISTRATIVOS 3.1.90.30.00.00.00 Material de Consumo 65.247,00 3.3.90.93.00.00.00 Indenizações e Restituições 8.000,00 TOTAL 73.247,00 Art. 3º Este Decreto entra em vigor na data de sua publicação. Caeté, 26 de agosto de 2025. Alberto Nazaré Pires Prefeito Municipal Júlio César Batista Silva Secretário Municipal de Panejamento e Desenvolvimento Econômico"
   },
   {
-    "id": "dadbfa7b-3d56-5e93-9f4b-86c5ea210992",
-    "unique_key": "DECRETO::198/2025::1/3",
-    "act_key": "DECRETO::198/2025",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "198/2025",
-    "ano_edicao": 2025,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
-    ],
-    "page_content": "DECRETO Nº 198/2025 [TIPO: DECRETO] [PARTE 1/3]\n..."
-  },
-  {
     "id": "9a33ff4a-baad-5872-939e-91359d32092c",
     "unique_key": "DECRETO::204/2025",
     "act_key": "DECRETO::204/2025",
@@ -2184,6 +2308,10 @@
     "ano_edicao": 2025,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2025 | Tipo de Ato: DECRETO Nº 204/2025 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -2201,6 +2329,10 @@
     "ano_edicao": 2025,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2025 | Tipo de Ato: DECRETO Nº 207/2025 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -2218,6 +2350,10 @@
     "ano_edicao": 2025,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2025 | Tipo de Ato: DECRETO Nº 216/2025 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -2235,6 +2371,12 @@
     "ano_edicao": 2025,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Saúde",
+      "Secretaria Municipal de Obras",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2025 | Tipo de Ato: DECRETO Nº 218/2025 | Órgãos/Cargos: Secretaria Municipal de Saúde, Secretaria Municipal de Obras, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -2244,24 +2386,7 @@
     "page_content": "DECRETO Nº 218/2025 DECLARA SITUAÇÃO DE EMERGÊNCIA EM SAÚDE PÚBLICA NO MUNICÍPIO DE CAETÉ, EM RAZÃO DA CONFIRMAÇÃO DE CASOS DE FEBRE MACULOSA O Prefeito Municipal de Caeté, no uso das atribuições que lhe conferem os artigos 98, VII, da Lei Orgânica Municipal, CONSIDERANDO o contido nos artigos 129 e 132, V da Lei Orgânica Municipal; CONSIDERANDO que este Município de Caeté encontra-se em área considerada endêmica para a ocorrência de febre maculosa e outros agravos; CONSIDERANDO que a febre maculosa é uma doença infecciosa grave de notificação obrigatória e que tem por vetor carrapatos do tipo amblyomma, conhecido como “carrapato estrela”; CONSIDERANDO o risco de disseminação da doença e a necessidade de adoção de medidas urgentes em vigilância epidemiológica, controle de vetores, mobilização comunitária e assistência à saúde; CONSIDERANDO a ocorrência confirmada de 02 (dois) óbitos confirmados de febre maculosa, bem como a existência de mais 06 (seis) casos em investigação; DECRETA: Art. 1º Fica declarada situação de emergência em saúde pública no Município de Caeté, em razão de casos confirmados de febre maculosa, causada esta por bactéria do gênero rickettsia, transmissível por carrapatos. Art. 2º Para enfrentamento da emergência de saúde pública decorrente da aplicação do presente decreto, poderão ser adotadas as seguintes medidas: I. determinação de realização compulsória de: a. exames médicos. b. testes laboratoriais. c. coleta de amostras clínicas. d. tratamentos médicos específicos. II. estudo ou investigação epidemiológica; III. requisição de bens e serviços de pessoas naturais e jurídicas, hipótese em que será garantido o pagamento posterior de justa indenização. Art. 3º Com fundamento na Lei 14.133/2021, sem prejuízo do contido na Lei de Responsabilidade Fiscal, ficam dispensadas de licitações as aquisições dos bens necessários ao atendimento da situação de emergência ora declarado, inclusive para as parcelas de obras e serviços que possam ser concluídos no prazo máximo de 1 (um) ano, contado da data de publicação deste decreto, vedada a recontratação de empresas e a prorrogação dos contratos."
   },
   {
-    "id": "cd1a73fa-7886-5e55-9019-937026dc060e",
-    "unique_key": "DECRETO::218/2025::1/2",
-    "act_key": "DECRETO::218/2025",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "218/2025",
-    "ano_edicao": 2025,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
-    ],
-    "page_content": "DECRETO Nº 218/2025 [TIPO: DECRETO] [PARTE 1/2]\n..."
-  },
-  {
-    "id": "1fe9e70b-6613-5828-bbf6-74598d3ff452",
+    "id": "c9685018-2753-5c22-9c21-7b49ae14b40c",
     "unique_key": "DECRETO::218/2025::2/2",
     "act_key": "DECRETO::218/2025",
     "tipo_ato": "DECRETO",
@@ -2269,13 +2394,18 @@
     "ano_edicao": 2025,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Saúde",
+      "Secretaria Municipal de Administração"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2025 | Tipo de Ato: DECRETO Nº 218/2025 | Órgãos/Cargos: Secretaria Municipal de Saúde, Secretaria Municipal de Administração]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
       "cleaned_pdf_text",
-      "complete_individual_act"
+      "multi_part_with_header"
     ],
-    "page_content": "DECRETO Nº 218/2025 [TIPO: DECRETO] [PARTE 2/2]\n...\ncaso de iminente perigo público, assegurada ao proprietário indenização ulterior, se houver dano. Art. 7º Fica criado o Grupo de Enfrentamento à febre maculosa, que será coordenado pela Secretaria Municipal de Saúde. Art. 8º Ficam proibidas todas e quaisquer atividades ou eventos, públicos ou privados, em zona rural ou urbana com características rurais, ainda que já haja sido concedido o respectivo alvará, que possibilitem ou facilitem a disseminação do agente causador da febre maculosa, em especial aqueles que impliquem aglomeração de animais capazes de disseminar o vetor da doença. Parágrafo único. Compete à Secretaria Municipal de Saúde e da Pessoa com Deficiência e à Secretaria Municipal de Defesa Civil e Mobilidade Urbana a fiscalização da execução do contido neste artigo. Art. 9º Este Decreto entra em vigor na data de sua publicação e vigorará por 180 (cento e oitenta) dias, podendo ser prorrogado mediante justificativa. Caeté, 19 de setembro de 2025. ALBERTO NAZARÉ PIRES Prefeito Municipal ISABEL BARBOSA DE OLIVEIRA GONÇALVES Procuradora Geral Do Município"
+    "page_content": "[DECRETO Nº 218/2025 | PARTE 2/2] Art. 4º A tramitação dos processos e procedimentos referentes a assuntos vinculados a este Decreto correrá em regime de urgência e prioridade em todos os órgãos e entes públicos do Município. Art. 5º Os dirigentes máximos dos órgãos e entes da administração pública direta e indireta municipal implementarão medidas que se fizerem necessárias e que forem recomendadas por órgãos de saúde pública, em especial, adotar medidas de profilaxia, assepsia, sanitárias e de informação em relação à febre maculosa. Art. 6º Consoante o disposto nos incisos XI e XXV do artigo 5º da Constituição Federal, autoriza- -se as autoridades administrativas e os agentes de defesa civil, diretamente responsáveis pelas I Penetrar nas casas, para prestar socorro ou para determinar a pronta evacuação; II - Usar de propriedade particular, no"
   },
   {
     "id": "90d18c0b-2252-5e87-aae7-88aa5f4cab14",
@@ -2286,6 +2416,12 @@
     "ano_edicao": 2025,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Educação",
+      "Gabinete do Prefeito",
+      "Comissão de Fiscalização / Licitação"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2025 | Tipo de Ato: DECRETO Nº 220/2025 | Órgãos/Cargos: Secretaria Municipal de Educação, Gabinete do Prefeito, Comissão de Fiscalização / Licitação]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [
       "R$ 708,30"
@@ -2305,6 +2441,12 @@
     "ano_edicao": 2025,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [
+      "SEMAS / Secretaria de Assistência Social",
+      "Secretaria Municipal de Administração",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2025 | Tipo de Ato: DECRETO Nº 230/2025 | Órgãos/Cargos: SEMAS / Secretaria de Assistência Social, Secretaria Municipal de Administração, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -2322,6 +2464,13 @@
     "ano_edicao": 2025,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [
+      "SEDESMA / Secretaria de Meio Ambiente",
+      "Secretaria Municipal de Administração",
+      "SAAE Caeté",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2025 | Tipo de Ato: DECRETO Nº 233/2025 | Órgãos/Cargos: SEDESMA / Secretaria de Meio Ambiente, Secretaria Municipal de Administração, SAAE Caeté]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -2331,24 +2480,7 @@
     "page_content": "DECRETO Nº 233/2025 DECLARA SITUAÇÃO DE EMERGÊNCIA NO MUNICÍPIO DE CAETÉ/MG EM RAZÃO DA SECA, ESTIAGEM PROLONGADA E FALTA DE ABASTECIMENTO DE O Prefeito Municipal de Caeté, Minas Gerais, no uso das atribuições que lhe são conferidas pelo inciso VII da Lei Orgânica Municipal e pela Lei Municipal nº 2.975, de 09 de setembro de 2015, Considerando que a crise hídrica pela qual têm passado vários municípios, inclusive o de Caeté; Considerando o agravamento da crise hídrica decorrente da longa estiagem, podendo ser considerada grave a situação, dado o desabastecimento de água potável em parcela considerável da população de Caeté, causando perdas e danos humanos, materiais, econômicos e ambientais que excedem a capacidade do Município em lidar com este problema usando apenas de meios próprios; Considerando a baixíssima precipitação pluviométrica dos últimos meses, aliada a elevadas temperaturas que vêm comprometendo o abastecimento de água à população, fenômeno que ocorre em diversas regiões do Brasil, nos últimos 03 (três) anos; Considerando que a estiagem prolongada leva à diminuição da vazão dos principais mananciais responsáveis pelo abastecimento de água potável neste município, reduzindo significativamente a vazão de captação de água bruta direcionada ao abastecimento público da cidade de Caeté, com o comprometimento do abastecimento público da cidade de Caeté; Considerando ainda que incêndios florestais têm afetado a captação de água no município, o que também prejudica sobremaneira o abastecimento municipal, DECRETA Art. 1º Fica declarada situação de emergência no Município de Caeté, em virtude da longa estiagem dos últimos meses. Art. 2º Fica autorizada a mobilização de todos os órgãos e entes municipais, da administração direta e indireta, especialmente o Serviço Autônomo de Água e Esgoto – SAAE, a Secretaria Municipal de Desenvolvimento Sustentável e Meio Ambiente, a Secretaria Municipal de Defesa Ci-"
   },
   {
-    "id": "7fc4d5c8-b35e-58e9-a50e-bbb9fde9b3e0",
-    "unique_key": "DECRETO::233/2025::1/2",
-    "act_key": "DECRETO::233/2025",
-    "tipo_ato": "DECRETO",
-    "numero_ato": "233/2025",
-    "ano_edicao": 2025,
-    "numero_edicao": null,
-    "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
-    "cnpjs_Mencionados": [],
-    "valores_mencionados": [],
-    "quality_flags": [
-      "cleaned_pdf_text",
-      "complete_individual_act"
-    ],
-    "page_content": "DECRETO Nº 233/2025 [TIPO: DECRETO] [PARTE 1/2]\n..."
-  },
-  {
-    "id": "6ddc24ab-8500-578e-857e-fa72c085a749",
+    "id": "c57fb64b-d71b-5e28-8aac-df773cd2bbd6",
     "unique_key": "DECRETO::233/2025::2/2",
     "act_key": "DECRETO::233/2025",
     "tipo_ato": "DECRETO",
@@ -2356,13 +2488,15 @@
     "ano_edicao": 2025,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2025 | Tipo de Ato: DECRETO Nº 233/2025 | Órgãos/Cargos: Administração Direta Municipal]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
       "cleaned_pdf_text",
       "multi_part_with_header"
     ],
-    "page_content": "DECRETO Nº 233/2025 [TIPO: DECRETO] [PARTE 2/2]\n...\nmergência’ de que trata este Decreto, além daquelas elencadas na Lei Municipal nº 2.957, de 09 de setembro de 2015, ficam proibidas as seguintes condutas dos usuários dos serviços públicos de abastecimento de água: I - Varrição de calçadas com uso contínuo de água tratada; II - Molhar ruas com água tratada; III - Manter torneiras, canos, conexões, válvulas, boias das caixas d’água, reservatórios, tubos ou mangueiras eliminando água continuamente; IV - Encher piscinas com água tratada; inclusive aquelas pertencentes a clubes e entidades recreativas e de lazer; V - Lavar veículos, garagens e quintais com uso contínuo de água tratada; VI – A captação de água na bacia hidrográfica do Ribeiro Bonito para fins de irrigação na agricultura, salvo no horário das 15 (quinze) às 17 (d ) h ili ã i este último sob pena de sua descaracterização. VII – ficam limitados à captação de água em poços tubulares e manuais para uso extremamente necessário aos fins residenciais ou estabelecimento de saúde; VIII - Outras situações que não se adequem ao uso racional da água para consumo humano que possam caracterizar desperdício ou uso excessivo. Art. 6º O Serviço Autônomo de Água e Esgoto – SAAE, poderá realizar sistema de rodízio no fornecimento de água aos munícipes, ou ainda, em sendo o caso, deliberar sobre eventual interrupção na distribuição de água por tal sistema, se necessário, devendo informar amplamente pelos meios de comunicação social, os dias e horários em que haverá a mencionada interrupção. § 1º No caso de rodízios, o Serviço Autônomo de Água e Esgoto – SAAE, garantirá o abastecimento de água potável às unidades de saúde, creches, escolas, presidio e prédios públicos, desde que servidos de reservatório adequados nas dependências dos aludidos estabelecimentos para o seu recebimento. § 2º Sendo necessário o racionamento, este ocorrerá em toda a área urbana do Município, com corte no fornecimento, diariamente, às 12 (doze) horas e retorno do abastecimento às 20 (vinte) horas. Art.7º Este Decreto tem validade pelo prazo de 90 (noventa) dias, podendo ser prorrogado, observada a legislação pertinente."
+    "page_content": "[DECRETO Nº 233/2025 | PARTE 2/2] Art. 8º Este Decreto entra em vigor na data da sua publicação. ALTERAÇÃO DA DATA DE ABERTURA DA SESSÃO PREGÃO ELETRÔNICO 013/2025- SRP 014 O Município De Caeté/Mg Torna Público, Para Conhecimento Dos Interessados, Que Devido A R ifi ã D Edi l Fi R d A D trônico, Objeto Registro De Preços Para Futura E Eventuais Aquisição De Kit Maternidade A Ser Distribuído Às Famílias Em Situação De Vulnerabilidade Social, Conforme Demanda Da Secretaria Municipal De Desenvolvimento Social E Direitos Humanos”, Pelo Período De 12 (Doze) Meses”, Para O Dia 23 De Outubro De 2025, As 09h00min, No Mesmo Endereço. Edital Retificado Encontra-Se À Disposição Na Íntegra Gratuitamente, Disponível Em: Www.licitardigital.com. br Ou Www.caete.mg.gov.br/Licitações Telefone (31) 3651-3264. Caeté, 07 De Outubro De 2025"
   },
   {
     "id": "e1be8a34-92d9-5f68-b19e-aa2de6df9fc2",
@@ -2373,6 +2507,12 @@
     "ano_edicao": 2025,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caeté_25.pdf",
+    "orgaos_extraidos": [
+      "SEMAS / Secretaria de Assistência Social",
+      "Secretaria Municipal de Saúde",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caeté_25.pdf) | Ano: 2025 | Tipo de Ato: DECRETO Nº 259/2025 | Órgãos/Cargos: SEMAS / Secretaria de Assistência Social, Secretaria Municipal de Saúde, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [
       "18.979.328/0001-67"
     ],
@@ -2392,6 +2532,10 @@
     "ano_edicao": 2025,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caeté_25.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caeté_25.pdf) | Ano: 2025 | Tipo de Ato: DECRETO Nº 259/2025 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [
       "18.979.328/0001-67"
     ],
@@ -2411,6 +2555,10 @@
     "ano_edicao": 2025,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caeté_25.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caeté_25.pdf) | Ano: 2025 | Tipo de Ato: DECRETO Nº 273/2025 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -2428,6 +2576,12 @@
     "ano_edicao": 2025,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [
+      "SEDESMA / Secretaria de Meio Ambiente",
+      "Secretaria Municipal de Saúde",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2025 | Tipo de Ato: PORTARIA Nº 48/2025 | Órgãos/Cargos: SEDESMA / Secretaria de Meio Ambiente, Secretaria Municipal de Saúde, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -2445,6 +2599,10 @@
     "ano_edicao": 2025,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caete_25-23nov25.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caete_25-23nov25.pdf) | Ano: 2025 | Tipo de Ato: PORTARIA Nº 48/2025 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -2462,6 +2620,12 @@
     "ano_edicao": 2026,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caeté_25.pdf",
+    "orgaos_extraidos": [
+      "Secretaria Municipal de Administração",
+      "Secretaria Municipal de Fazenda",
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caeté_25.pdf) | Ano: 2026 | Tipo de Ato: DECRETO Nº 2/2026 | Órgãos/Cargos: Secretaria Municipal de Administração, Secretaria Municipal de Fazenda, Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -2479,6 +2643,10 @@
     "ano_edicao": 2026,
     "numero_edicao": null,
     "source": "Jornal_Oficial_Caeté_25.pdf",
+    "orgaos_extraidos": [
+      "Gabinete do Prefeito"
+    ],
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (Jornal_Oficial_Caeté_25.pdf) | Ano: 2026 | Tipo de Ato: DECRETO Nº 2/2026 | Órgãos/Cargos: Gabinete do Prefeito]",
     "cnpjs_Mencionados": [],
     "valores_mencionados": [],
     "quality_flags": [
@@ -2486,5 +2654,483 @@
       "multi_part_with_header"
     ],
     "page_content": "[DECRETO Nº 2/2026 | PARTE 2/2] Art.2º Este Decreto entra em vigor na data de sua publicação, retroagindo seus efeitos a 05 de janeiro de 2026. Caeté, 06 de janeiro de 2026 ALBERTO NAZARÉ PIRES Prefeito Municipal ISABEL BARBOSA DE OLIVEIRA GONÇALVES Procuradora Geral do Município RESPOSTA AO RECURSO BOLSA ATLETA Em atenção ao recurso interposto pelo atleta Kaíque Álvaro, referente ao processo de seleção do Programa Bolsa Atleta, este Conselho Municipal de Esporte vem, por meio deste, apresentar o devido esclarecimento. O recurso foi analisado com atenção, observando-se criteriosamente os parâmetros estabelecidos no regulamento vigente do programa. Ressaltamos que a seleção dos contemplados ocorreu mediante análise comparativa dos currículos esportivos, sendo o processo conduzido de forma técnica, imparcial modalidade esportiva. Na modalidade de corrida de rua, houve a inscrição de cinco atletas concorrentes. Após análise detalhada dos currículos apresentados, verificou-se que três atletas obtiveram pontuação superior, apresentando histórico esportivo, resultados e desempenho mais compatíveis com os critérios de contemplação estabelecidos. Dessa forma, o atleta Kaíque Álvaro ficou classificado como primeiro suplente da referida modalidade, posição que reconhece seu mérito esportivo, porém não alcança, neste momento, o quantitativo de vagas disponíveis para contemplação. Destaca-se ainda que todos os esportes concorrid"
+  },
+  {
+    "id": "bb456ae2-f110-5978-bada-a8acf49983cb",
+    "chunk_id": "bb456ae2-f110-5978-bada-a8acf49983cb",
+    "act_id": "bb456ae2-f110-5978-bada-a8acf49983cb",
+    "act_key": null,
+    "tipo_ato": "GERAL / OUTROS",
+    "numero_ato": "",
+    "data_publicacao": "2026-11-05",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1654_2026-11-05.pdf (2026-11-05)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1654_2026-11-05.pdf (2026-11-05)) | Ano: 2026 | Tipo de Ato: GERAL / OUTROS | Órgãos/Cargos: Administração Pública Municipal]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "complete_individual_act"
+    ],
+    "page_content": "Órgão Oficial de Divulgação dos Poderes Públicos Municipais Ano XXIV\nEDIÇÃO ESPECIAL Nº 1654 - 05 DE NOVEMBRO DE 2026\nPODER EXECUTIVO\n“RESCISÃO CONSENSUAL CONTRATO AJ/CO \nNº041/2025, FIRMADO ENTRE O MUNICÍPIO \nDE CAETÉ E A EMPRESA ZURICH ENGENHARIA \nLTDA., RESPECTIVAMENTE CONTRATANTE E \nCONTRATADA. \nObjeto: Rescisão contratual de forma \nconsensual a partir de 03 de novembro de 2026.\nData: 03/11/2026. ”"
+  },
+  {
+    "id": "47874dad-69f9-5d36-b61f-7ef7fd56b0b7",
+    "chunk_id": "47874dad-69f9-5d36-b61f-7ef7fd56b0b7",
+    "act_id": "47874dad-69f9-5d36-b61f-7ef7fd56b0b7",
+    "act_key": null,
+    "tipo_ato": "TERMO ADITIVO",
+    "numero_ato": "",
+    "data_publicacao": "2026-11-06",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1655_2026-11-06.pdf (2026-11-06)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1655_2026-11-06.pdf (2026-11-06)) | Ano: 2026 | Tipo de Ato: TERMO ADITIVO | Órgãos/Cargos: Administração Pública Municipal]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "complete_individual_act"
+    ],
+    "page_content": "Órgão Oficial de Divulgação dos Poderes Públicos Municipais Ano XXIV\nEDIÇÃO ESPECIAL Nº 1655 - 06 DE NOVEMBRO DE 2026\nPODER EXECUTIVO\n1º TERMO ADITIVO À ATA DE REGISTRO \nDE PREÇOS Nº 049/2025, firmado entre o \nMUNICÍPIO DE CAETÉ e a empresa JARBAS \nSEBASTIÃO DOS REISME., respectivamente \nContratante e Fornecedora.\nOBJETIVO: Prorroga-se o período de vigência \npor 12 (doze) meses, a contar de 30 de \nsetembro de 2026. Como efeito da presente \nprorrogação, renovam-se os quantitativos dos \nitens inicialmente contratados. Cujo objeto é \no registro de preços para futuras e eventuais \ncontratações de empresa especializada para \nprestação de serviços de locação de máquinas \npesadas e caminhões\nDATA: 30/09/2026\n1º TERMO ADITIVO À ATA DE REGISTRO \nDE PREÇOS Nº 054/2025, firmado entre \no MUNICÍPIO DE CAETÉ e a empresa RCA \nCOMERCIAL L TDA., respectivamente \nContratante e Fornecedora.\nOBJETIVO: Prorroga-se o período de vigência \npor 12 (doze) meses, a contar de 05 de \nnovembro de 2026. Como efeito da presente \nprorrogação, renovam-se os quantitativos dos \nitens inicialmente contratados. Cujo objeto é \no registro de preços para futuras e eventuais \naquisições de material esportivo, premiações \ne uniformes para atendimento as demandas \nda Secretarias Municipal de Esporte e Lazer e \noutras.\nDATA: 30/09/2026\n2º TERMO ADITIVO AO CONVÊNIO AJ/CON \nNº 013/2025 firmado entre o MUNICÍPIO \nDE CAETÉ e a SOCIEDADE CIVIL DE \nBENEFICÊNCIA CAETEENSE - SANTA CASA \nDE CAETÉ., respectivamente concedente e \nconvenente.\nOBJETIVO: Prorroga-se o prazo de vigência \ndo presente Convênio por 12 (doze) meses, a \ncontar de 01 de setembro de 2026. \nDATA: 26/08/2026"
+  },
+  {
+    "id": "eb5fe434-bba8-58b3-b480-c7853c6066e5",
+    "chunk_id": "eb5fe434-bba8-58b3-b480-c7853c6066e5",
+    "act_id": "eb5fe434-bba8-58b3-b480-c7853c6066e5",
+    "act_key": "RESOLUÇÃO::7/2026",
+    "tipo_ato": "RESOLUÇÃO",
+    "numero_ato": "7/2026",
+    "data_publicacao": "2026-11-06",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1655_2026-11-06.pdf (2026-11-06)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1655_2026-11-06.pdf (2026-11-06)) | Ano: 2026 | Tipo de Ato: RESOLUÇÃO Nº 7/2026 | Órgãos/Cargos: SEMAS / Assistência Social]",
+    "cnpjs_Mencionados": [
+      "10.587.320/0001-43"
+    ],
+    "valores_mencionados": [
+      "R$56.858,77"
+    ],
+    "quality_flags": [
+      "complete_individual_act"
+    ],
+    "page_content": "Resolução Nº. 07 /2026 \n“Aprova Inscrição de Entidade “Associação \nProfissionalizante do Menor - ASSPROM” . \n \nO Conselho Municipal de Assistência Social \n– CMAS, no uso das atribuições que lhe são \nconferidas pelas Leis Federal 8.742/93 e \nMunicipal Nº. 1.917/1994, alterada a redação \nLei 2.208/00 – Alterada a redação Lei 2.288/02 \n- Lei 2.406/05 e Lei 3.315/2021\ne considerando\n• Considerando que a entidade está com a \ndocumentação em dia;\n• Considerando que a Associação \nProfissionalizante do Menor - ASSPROM atua no \namparo, na orientação, na formação humana e \ncidadã e na profissionalização de adolescentes \ne jovens carentes de família de baixa renda, em \nsituação de vulnerabilidade social; \n• Considerando que a entidade atende \nde forma gratuita os usuários de acordo com a \nlegislação;\n• A deliberação de sua plenária em \n27/10/2026.\n\n2\nSexta - feira , 06 de novembro de 2026\nRESOLVE:\n \n 1 – “Aprovar a inscrição da entidade “Associação \nProfissionalizante do Menor - ASSPROM” , \nconforme reunião extraordinária realizada no \ndia 27 de outubro de 2026 e registrada em ata \nde número onze (11)” .\n \nPublique-se, registra-se e cumpra-se.\nCaeté, 27 de outubro de 2026.\nAntônio Monteiro da Silva\nPresidente - CMAS\nPODER LEGISLATIVO\nEXTRATO DO SEGUNDO TERMO \nADITIVO AO CONTRATO Nº 022/2024\nSEGUNDO TERMO ADITIVO ao Contrato nº \n022/2024 de prestação de serviços de locação de \nimpressoras. Contratante: CÂMARA MUNICIPAL \nDE CAETÉ. Contratada: COPY&LOC COPIADORA \nLTDA – EPP . CNPJ: 10.587.320/0001-43. Objeto: \nProrrogação do prazo de vigência e reajuste do \nvalor original. Valor total: R$56.858,77 (cinquenta \ne seis mil oitocentos e cinquenta e oito reais e \nsetenta e sete centavos). Vigência: 06/11/2026 a \n06/11/2027. Fundamentação: Cláusula Segunda \ndo Contrato, com fundamento no artigo 107 \nda Lei Federal 14.133.21. Data de assinatura: \n06/11/2026."
+  },
+  {
+    "id": "7f1d54f6-4378-5887-ba1b-b2d860bd25b0",
+    "chunk_id": "7f1d54f6-4378-5887-ba1b-b2d860bd25b0",
+    "act_id": "7f1d54f6-4378-5887-ba1b-b2d860bd25b0",
+    "act_key": null,
+    "tipo_ato": "LEI",
+    "numero_ato": "",
+    "data_publicacao": "2026-11-10",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)) | Ano: 2026 | Tipo de Ato: LEI | Órgãos/Cargos: Secretaria de Educação, Procuradoria Geral]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "multi_part_with_header"
+    ],
+    "page_content": "[LEI | PARTE 1/11] Órgão Oficial de Divulgação dos Poderes Públicos Municipais Ano XXIV\nEDIÇÃO ESPECIAL Nº 1656 - 10 DE NOVEMBRO DE 2026\nPODER EXECUTIVO\nPARECER CONCLUSIVO \nCaeté, 09 de novembro de 2026\nA Secretaria Municipal de Administração, Logística e Patrimônio Público juntamente com o \nPrefeito Municipal, no uso das atribuições conferidas pela Lei Municipal nº 2.963/2015, decide \npela efetivação dos servidores abaixo relacionados, aprovados em Concurso Público, que se \nencontravam em estágio probatório: \n\n2\nTerça - feira , 10 de novembro de 2026\n\n3\nSexta-feira, 01 de novembro de 2019\n3\nTerçafeira, 10 de novembro de 2026\nPORTARIA SEME Nº 01, DE 03 DE NOVEMBRO DE 2026\nInstitui e regulamenta o Projeto “Educador Inovador de Boas Práticas – 2026” , no âmbito da \nRede Municipal de Ensino de Caeté/MG, estabelece diretrizes para identificação, valorização, \nreconhecimento, seleção, premiação e disseminação de práticas pedagógicas exitosas e dá outras \nprovidências.\nA SECRETÁRIA MUNICIPAL DE EDUCAÇÃO DE CAETÉ, no exercício de suas atribuições legais e \nregulamentares, observadas as competências conferidas pela legislação municipal vigente,\nCONSIDERANDO os princípios da legalidade, impessoalidade, moralidade, publicidade e eficiência, \nprevistos no art. 37, caput, da Constituição da República Federativa do Brasil de 1988;\nCONSIDERANDO os arts. 205, 206 e 211 da Constituição Federal, que estabelecem a educação como \ndireito de todos e dever do Estado, assegurando a valorização dos profissionais da educação, a \ngarantia do padrão de qualidade e a organização dos sistemas de ensino em regime de colaboração;\nCONSIDERANDO a Lei Federal nº 9.394, de 20 de dezembro de 1996, especialmente seus arts. 8º, \n11, 12 e 13, que disciplinam a organização dos sistemas de ensino e as responsabilidades dos \nestabelecimentos e profissionais da educação;\nCONSIDERANDO o Decreto Federal nº 11.556, de 12 de junho de 2023, e suas alterações, que institui \n4\nTerça - feira , 10 de novembro de 2026\no Compromisso Nacional Criança Alfabetizada \ne contempla estratégias de identificação, \nreconhecimento, premiação e disseminação de \npráticas pedagógicas e de gestão exitosas;\nCONSIDERANDO o Decreto Federal nº 12.191, \nde 20 de setembro de 2024, que institui o Selo \nNacional Compromisso com a Alfabetização;\nCONSIDERANDO o Edital MEC nº 7/2026, \nreferente à terceira edição do Selo Nacional \nCompromisso com a Alfabetização – 2026, \nProcesso nº 23000.012544/2026-67, documento \nSEI/MEC nº 7112529, especialmente as \ndisposições relativas ao reconhecimento e à \ndisseminação de boas práticas pedagógicas;\nCONSIDERANDO a necessidade de fomentar \npráticas educacionais inovadoras, inclusivas, \nparticipativas e comprometidas com o \ndesenvolvimento integral dos estudantes, \na alfabetização na idade adequada e a \nrecomposição das aprendizagens;\nCONSIDERANDO a importância de reconhecer \no protagonismo dos professores e pedagogos \nda Rede Municipal de Ensino, incentivando a \nprodução, a socialização e a multiplicação de \nexperiências pedagógicas exitosas;\nCONSIDERANDO a possibilidade de \nreconhecimento institucional de práticas \neducacionais mediante critérios objetivos, \nindicadores pedagógicos, participação dos \nprofissionais da educação e mecanismos de \ntransparência;\nCONSIDERANDO a disponibilização de \npremiação recreativa por meio de parceria \ninstitucional com a Rede Tauá de Hotéis, sem \ndesembolso financeiro municipal, condicionada \nà formalização e à aprovação da Procuradoria \nJurídica Municipal em relação ao respectivo \ninstrumento;\nRESOLVE:\nCAPÍTULO I\nDA INSTITUIÇÃO E DAS DISPOSIÇÕES GERAIS"
+  },
+  {
+    "id": "bad74779-61ee-5daa-88ed-7a5c26ef8abd",
+    "chunk_id": "bad74779-61ee-5daa-88ed-7a5c26ef8abd",
+    "act_id": "bad74779-61ee-5daa-88ed-7a5c26ef8abd",
+    "act_key": null,
+    "tipo_ato": "LEI",
+    "numero_ato": "",
+    "data_publicacao": "2026-11-10",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)) | Ano: 2026 | Tipo de Ato: LEI | Órgãos/Cargos: Secretaria de Educação, Procuradoria Geral]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "multi_part_with_header"
+    ],
+    "page_content": "[LEI | PARTE 2/11] Art. 1º Fica instituído, no âmbito da Secretaria \nMunicipal de Educação de Caeté/MG, o \nProjeto “Educador Inovador de Boas Práticas – \n2026” , destinado à identificação, valorização, \nreconhecimento, divulgação e disseminação \nde práticas pedagógicas inovadoras e exitosas \ndesenvolvidas pelos professores e pedagogos \nda Rede Municipal de Ensino.\n1º O projeto constitui iniciativa institucional \nde valorização profissional e fortalecimento \nda qualidade da educação pública municipal, \nalinhada às diretrizes do Compromisso Nacional \nCriança Alfabetizada.\n2º A iniciativa será desenvolvida durante o ano \nletivo de 2026, observadas as etapas e os prazos \nprevistos nesta Portaria e em seus anexos.\n3º O reconhecimento previsto nesta Portaria \npossui caráter pedagógico, institucional e \neventual, não constituindo mecanismo de \navaliação funcional individual, progressão \nna carreira ou atribuição de vantagem \nremuneratória. Art. 2º São objetivos do projeto:\nI – identificar e reconhecer experiências \npedagógicas que contribuam para a melhoria \nda aprendizagem e do desenvolvimento dos \nestudantes;\nII – incentivar a inovação, a criatividade e o \naperfeiçoamento das metodologias de ensino;\nIII – valorizar os professores e pedagogos da \nRede Municipal de Ensino;\nIV – fortalecer as práticas de alfabetização e \nletramento, especialmente nos anos iniciais do \nEnsino Fundamental;\nV – estimular estratégias de recomposição das \naprendizagens e desenvolvimento do raciocínio \nlógico;\nVI – reconhecer a importância dos jogos, \nbrincadeiras e atividades psicomotoras nos \nprocessos de desenvolvimento e aprendizagem;\nVII – promover a troca de experiências entre os \nprofissionais da educação;\nVIII – incentivar práticas inclusivas, equitativas e \nadaptadas às necessidades dos estudantes;\nIX – organizar registros e evidências \nde experiências exitosas para fins de \nmonitoramento, planejamento e disseminação;\nX – contribuir para o atendimento das diretrizes \ndo Compromisso Nacional Criança Alfabetizada \ne dos critérios pertinentes do Selo Nacional \nCompromisso com a Alfabetização.\nCAPÍTULO II\nDO PÚBLICO-ALVO E DAS CATEGORIAS \nTEMÁTICAS"
+  },
+  {
+    "id": "91b4e1b6-7d5e-5f88-9e5d-545878e73850",
+    "chunk_id": "91b4e1b6-7d5e-5f88-9e5d-545878e73850",
+    "act_id": "91b4e1b6-7d5e-5f88-9e5d-545878e73850",
+    "act_key": null,
+    "tipo_ato": "LEI",
+    "numero_ato": "",
+    "data_publicacao": "2026-11-10",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)) | Ano: 2026 | Tipo de Ato: LEI | Órgãos/Cargos: Secretaria de Educação, Procuradoria Geral]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "multi_part_with_header"
+    ],
+    "page_content": "[LEI | PARTE 3/11] Art. 3º Poderão participar do projeto os \nprofessores e pedagogos em efetivo exercício \nna Rede Municipal de Ensino de Caeté/MG, \nobservadas as categorias temáticas e os \nrespectivos campos de atuação. Art. 4º O projeto compreenderá quatro \ncategorias temáticas:\nI – Alfabetização e Letramento: destinada \n5\nSexta-feira, 01 de novembro de 2019\n5\nTerçafeira, 10 de novembro de 2026\naos professores e pedagogos que atuam \nnas turmas de 1º e 2º anos do Ensino \nFundamental, contemplando práticas voltadas \nà apropriação do sistema de escrita alfabética, \ndesenvolvimento da leitura, escrita, oralidade e \ncompreensão textual.\nII – Jogos e Brincadeiras: destinada aos \nprofessores e pedagogos que atuam nos Centros \nMunicipais de Atendimento Educacional – \nCEMAE’s I, II, III e IV, contemplando experiências \nque utilizem atividades lúdicas como \nestratégias de desenvolvimento, participação, \ninclusão e aprendizagem. Documento assinado \ndigitalmente em 04/11/2026 15:49:48\nAcesse o endereço: https://sl.cidade360.cloud/\nW6WHe para\nverificar a autenticidade III – Psicomotricidade: \ndestinada aos professores e pedagogos que \natuam na Educação Infantil, contemplando \nexperiências relacionadas ao desenvolvimento \nmotor, cognitivo, afetivo e social das crianças, \npor meio de atividades corporais, sensoriais e \npsicomotoras.\nIV – Recomposição das Aprendizagens, \nRaciocínio Lógico e Tecnologia: destinada aos \nprofessores e pedagogos que atuam nas turmas \nde 3º, 4º e 5º anos do Ensino Fundamental, \ncontemplando estratégias de superação de \ndefasagens, desenvolvimento do pensamento \nlógico e utilização pedagógica de recursos \ntecnológicos."
+  },
+  {
+    "id": "601242b2-3dc4-598b-ad8d-f1e471f8e0f3",
+    "chunk_id": "601242b2-3dc4-598b-ad8d-f1e471f8e0f3",
+    "act_id": "601242b2-3dc4-598b-ad8d-f1e471f8e0f3",
+    "act_key": null,
+    "tipo_ato": "LEI",
+    "numero_ato": "",
+    "data_publicacao": "2026-11-10",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)) | Ano: 2026 | Tipo de Ato: LEI | Órgãos/Cargos: Secretaria de Educação, Procuradoria Geral]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "multi_part_with_header"
+    ],
+    "page_content": "[LEI | PARTE 4/11] Art. 5º Os projetos poderão ser desenvolvidos \nindividualmente ou em equipe, desde que \nobservada a pertinência temática e a efetiva \nparticipação dos profissionais identificados.\n1º A relação dos integrantes de cada projeto \ndeverá ser formalmente registrada antes do \ninício da votação.\n2º A inclusão de integrantes deverá corresponder \nà efetiva participação na elaboração ou \nexecução da prática pedagógica.\n3º A relação de integrantes será validada pela \ndireção da unidade escolar ou pela coordenação \nresponsável, conforme o caso.\nCAPÍTULO III\nDA APRESENTAÇÃO E DOS INDICADORES \nPEDAGÓGICOS Art. 6º Os projetos participantes deverão ser \napresentados aos profissionais da educação, \nmediante organização e acompanhamento da \nSecretaria Municipal de Educação.\n1º As apresentações deverão possibilitar o \nconhecimento das práticas desenvolvidas, de \nseus objetivos, da metodologia empregada e \ndos resultados ou contribuições pedagógicas \nidentificados.\n2º A Secretaria Municipal de Educação \norganizará os registros das apresentações, \npodendo utilizar relatórios, fotografias, vídeos, \nmateriais pedagógicos e demais documentos \npertinentes, respeitada a legislação de proteção \nde dados pessoais e de imagem."
+  },
+  {
+    "id": "4226f6ce-ffc4-571b-9ef6-ae4da1f372e7",
+    "chunk_id": "4226f6ce-ffc4-571b-9ef6-ae4da1f372e7",
+    "act_id": "4226f6ce-ffc4-571b-9ef6-ae4da1f372e7",
+    "act_key": null,
+    "tipo_ato": "LEI",
+    "numero_ato": "",
+    "data_publicacao": "2026-11-10",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)) | Ano: 2026 | Tipo de Ato: LEI | Órgãos/Cargos: Secretaria de Educação, Procuradoria Geral]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "multi_part_with_header"
+    ],
+    "page_content": "[LEI | PARTE 5/11] Art. 7º Constituem indicadores pedagógicos \norientadores da apreciação dos projetos:\nI – relevância pedagógica: contribuição da prática \npara o desenvolvimento e a aprendizagem dos \nestudantes;\nII – inovação e criatividade: utilização de \nestratégias diferenciadas, contextualizadas ou \naperfeiçoadas;\nIII – intencionalidade pedagógica: clareza \ndos objetivos educacionais e adequação das \nmetodologias;\nIV – inclusão e equidade: respeito às diferenças e \natendimento às necessidades de aprendizagem;\nV – participação dos estudantes: promoção do \nprotagonismo, da interação e do envolvimento \nnas atividades;\nVI – resultados e evidências: demonstração \nde avanços, contribuições ou resultados \npedagógicos observáveis;\nVII – replicabilidade: possibilidade de adaptação \ne utilização da experiência em outras unidades \neducacionais.\nParágrafo único. Os indicadores previstos neste \nartigo deverão ser divulgados aos profissionais \nhabilitados à votação, constituindo referências \npara a escolha consciente dos projetos.\nCAPÍTULO IV\nDA VOTAÇÃO E DA SELEÇÃO DOS PROJETOS Art. 8º A seleção dos projetos vencedores \nserá realizada por meio de votação eletrônica \nparticipativa, restrita aos profissionais da \neducação que efetivamente acompanharem as \napresentações dos projetos.\n1º A votação ocorrerá entre os dias 9 e 13 \nde novembro de 2026, por meio dos links \nespecíficos de cada categoria temática, \nconstantes do Anexo I.\n2º Cada profissional habilitado poderá registrar \num voto válido por categoria temática, desde \nque tenha acompanhado as apresentações \ncorrespondentes.\n6\nTerça - feira , 10 de novembro de 2026\n 3º É vedado o voto por procuração, a utilização \nde identidade de terceiros e a emissão de votos \nduplicados na mesma categoria."
+  },
+  {
+    "id": "6d99ec16-c03c-5528-8e12-61534974edc2",
+    "chunk_id": "6d99ec16-c03c-5528-8e12-61534974edc2",
+    "act_id": "6d99ec16-c03c-5528-8e12-61534974edc2",
+    "act_key": null,
+    "tipo_ato": "LEI",
+    "numero_ato": "",
+    "data_publicacao": "2026-11-10",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)) | Ano: 2026 | Tipo de Ato: LEI | Órgãos/Cargos: Secretaria de Educação, Procuradoria Geral]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "multi_part_with_header"
+    ],
+    "page_content": "[LEI | PARTE 6/11] Art. 9º Será considerado vencedor, em cada \ncategoria temática, o projeto que obtiver o \nmaior número de votos válidos.\n1º Em caso de empate, será realizada votação \ncomplementar entre os projetos empatados, \nexclusivamente pelos profissionais habilitados \nna respectiva categoria, em data e horário \ndivulgados pela comissão organizadora.\n2º Persistindo o empate, será realizado sorteio \npúblico, com registro em ata, na presença de \nrepresentantes da comissão organizadora e dos \nprojetos envolvidos.\n3º Os procedimentos complementares de \ndesempate deverão ser concluídos em tempo \nhábil para a divulgação do resultado oficial. Art. 10. A apuração será realizada sob a supervisão \nde comissão organizadora designada pela \nSecretaria Municipal de Educação, competindolhe:\nI – verificar a regularidade do procedimento de \nvotação;\nII – conferir os registros e a quantidade de votos \nválidos;\nIII – identificar e desconsiderar eventuais votos \nduplicados ou irregulares, mediante justificativa \ndocumentada;\nIV – elaborar ata circunstanciada da apuração;\nV – consolidar a classificação dos projetos;\nVI – encaminhar o resultado à autoridade \ncompetente para homologação;\nVII – organizar e preservar a documentação \ncomprobatória do procedimento. Art. 11. O resultado oficial será divulgado em \n18 de novembro de 2026, por meio dos canais \ninstitucionais da Prefeitura Municipal de Caeté e \nda Secretaria Municipal de Educação.\nParágrafo único. A divulgação deverá identificar \nos projetos vencedores e suas respectivas \ncategorias, observadas as regras de proteção de \ndados pessoais.\nCAPÍTULO V\nDO RECONHECIMENTO E DA PREMIAÇÃO Art. 12. Os projetos classificados em primeiro lugar \nem cada uma das quatro categorias temáticas \nreceberão reconhecimento institucional da \nSecretaria Municipal de Educação."
+  },
+  {
+    "id": "08d3000c-8002-5b40-ab92-554fc90a47a0",
+    "chunk_id": "08d3000c-8002-5b40-ab92-554fc90a47a0",
+    "act_id": "08d3000c-8002-5b40-ab92-554fc90a47a0",
+    "act_key": null,
+    "tipo_ato": "LEI",
+    "numero_ato": "",
+    "data_publicacao": "2026-11-10",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)) | Ano: 2026 | Tipo de Ato: LEI | Órgãos/Cargos: Secretaria de Educação, Procuradoria Geral]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "multi_part_with_header"
+    ],
+    "page_content": "[LEI | PARTE 7/11] Art. 13. A premiação prevista para os projetos \nvencedores consistirá na disponibilização \nde um benefício recreativo individual, na \nmodalidade day use, na Rede Tauá de Hotéis, \nmediante parceria institucional formalizada, \nsem desembolso financeiro pelo Município.\n1º Serão contemplados todos os professores e \npedagogos que comprovadamente integrem o \nprojeto vencedor de cada categoria, conforme \nrelação previamente registrada e validada pela \nSecretaria Municipal de Educação.\n2º A premiação terá caráter eventual, pessoal e \nintransferível, não constituindo remuneração, \ngratificação, vantagem funcional permanente \nou benefício incorporável aos vencimentos.\n3º A concessão ficará condicionada:\nI – à formalização de instrumento jurídico \nadequado para o recebimento do benefício;\nII – à confirmação da quantidade de beneficiários \ne da disponibilidade integral dos benefícios;\nIII – à inexistência de contrapartidas indevidas \nou obrigações incompatíveis com o interesse \npúblico;\nIV – à observância das normas de integridade, \nimpessoalidade e prevenção de conflitos de \ninteresses;\nV – à manifestação jurídica favorável quanto à \nregularidade da disponibilização da premiação.\n4º A parceria não conferirá à entidade privada \nqualquer preferência em contratações públicas, \nbenefício administrativo, exclusividade \ncomercial ou direito de interferência na seleção \ndos projetos vencedores.\n5º A disponibilização do benefício não \nimplicará, por si só, autorização para utilização \nde transporte público, concessão de diárias, \npagamento de despesas particulares ou \nafastamento remunerado de servidores.\n6º A utilização do benefício observará as \ncondições formalizadas com a entidade parceira \ne as normas administrativas aplicáveis."
+  },
+  {
+    "id": "a4303a34-46bc-57cd-a350-4d318f0cdc70",
+    "chunk_id": "a4303a34-46bc-57cd-a350-4d318f0cdc70",
+    "act_id": "a4303a34-46bc-57cd-a350-4d318f0cdc70",
+    "act_key": null,
+    "tipo_ato": "LEI",
+    "numero_ato": "",
+    "data_publicacao": "2026-11-10",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)) | Ano: 2026 | Tipo de Ato: LEI | Órgãos/Cargos: Secretaria de Educação, Procuradoria Geral]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "multi_part_with_header"
+    ],
+    "page_content": "[LEI | PARTE 8/11] Art. 14. A entrega da premiação ocorrerá até 21 \nde dezembro de 2026, mediante organização da \nSecretaria Municipal de Educação.\nParágrafo único. A entrega ou disponibilização \ndo benefício deverá ser comprovada por \ndocumentação específica, contendo a \nidentificação dos beneficiários e o registro de \nrecebimento, preservados os dados pessoais de \ndivulgação restrita.\nCAPÍTULO VI\nDA COMISSÃO ORGANIZADORA\n7\nSexta-feira, 01 de novembro de 2019\n7\nTerçafeira, 10 de novembro de 2026 Art. 15. A Secretaria Municipal de Educação \ndesignará comissão organizadora responsável \npelo planejamento, acompanhamento, \nfiscalização e documentação das etapas do \nprojeto.\n1º A comissão será composta por, no mínimo, três \nservidores, designados por ato administrativo \npróprio.\n2º Os integrantes da comissão deverão atuar com \nimparcialidade, transparência e observância dos \nprincípios da Administração Pública.\n3º O integrante da comissão que participar \nde projeto concorrente, ou possuir interesse \npessoal direto no resultado, deverá declarar o \nimpedimento e abster-se de atuar na respectiva \ndeliberação ou apuração. Art. 16. Compete à comissão organizadora:\nI – coordenar a execução do cronograma;\nII – organizar e registrar as apresentações;\nIII – verificar a regularidade das inscrições e a \nidentificação dos integrantes;\nIV – orientar os profissionais sobre os indicadores \npedagógicos;\nV – acompanhar a votação eletrônica;\nVI – supervisionar a apuração e os procedimentos \nde desempate;\nVII – receber e examinar eventuais impugnações \nou recursos;\nVIII – elaborar relatório técnico final;\nIX – reunir as evidências documentais \nnecessárias à prestação de informações aos \nórgãos competentes;\nX – propor medidas para a disseminação das \npráticas pedagógicas reconhecidas.\nCAPÍTULO VII\nDA PUBLICIDADE, TRANSPARÊNCIA E \nPROTEÇÃO DE DADOS"
+  },
+  {
+    "id": "354ce67a-4aa0-54e5-8f15-4fb3b63241fd",
+    "chunk_id": "354ce67a-4aa0-54e5-8f15-4fb3b63241fd",
+    "act_id": "354ce67a-4aa0-54e5-8f15-4fb3b63241fd",
+    "act_key": null,
+    "tipo_ato": "LEI",
+    "numero_ato": "",
+    "data_publicacao": "2026-11-10",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)) | Ano: 2026 | Tipo de Ato: LEI | Órgãos/Cargos: Secretaria de Educação, Procuradoria Geral]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "multi_part_with_header"
+    ],
+    "page_content": "[LEI | PARTE 9/11] Art. 17. A execução do projeto observará \nos princípios da publicidade, transparência, \nimpessoalidade, isonomia e proteção dos dados \npessoais, nos termos da legislação vigente.\n1º Os procedimentos de votação deverão utilizar \nexclusivamente os dados pessoais estritamente \nnecessários à identificação e validação dos \nparticipantes.\n2º Os registros eletrônicos e documentos de \napuração serão utilizados exclusivamente para \nfinalidades institucionais legítimas, observadas \nas regras de acesso, segurança e conservação \ndocumental.\n3º A divulgação de fotografias, vídeos e demais \nmateriais que permitam identificar estudantes \ndeverá observar as normas de proteção da \nimagem, da privacidade e dos direitos de \ncrianças e adolescentes. Art. 18. A Secretaria Municipal de Educação \nmanterá processo administrativo próprio, \ncontendo, sempre que aplicável:\nI – esta Portaria e seus anexos;\nII – o ato de designação da comissão \norganizadora;\nIII – a relação dos projetos e respectivos \nparticipantes;\nIV – os registros das apresentações;\nV – os indicadores pedagógicos utilizados;\nVI – os registros e resultados da votação;\nVII – as atas de apuração e homologação;\nVIII – a documentação da parceria institucional;\nIX – os comprovantes de entrega da premiação;\nX – o relatório técnico final e as evidências de \nexecução.\nCAPÍTULO VIII\nDO MONITORAMENTO E DA DISSEMINAÇÃO \nDAS BOAS PRÁTICAS Art. 19. A Secretaria Municipal de Educação \npromoverá o registro, a sistematização \ne a divulgação das práticas pedagógicas \nreconhecidas, visando ao compartilhamento \nde experiências e ao aperfeiçoamento das \nestratégias educacionais da Rede Municipal de \nEnsino."
+  },
+  {
+    "id": "2e128d82-0f09-5d28-9feb-209daad87eed",
+    "chunk_id": "2e128d82-0f09-5d28-9feb-209daad87eed",
+    "act_id": "2e128d82-0f09-5d28-9feb-209daad87eed",
+    "act_key": null,
+    "tipo_ato": "LEI",
+    "numero_ato": "",
+    "data_publicacao": "2026-11-10",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)) | Ano: 2026 | Tipo de Ato: LEI | Órgãos/Cargos: Secretaria de Educação, Procuradoria Geral]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "multi_part_with_header"
+    ],
+    "page_content": "[LEI | PARTE 10/11] Art. 20. Será elaborado relatório técnico \ncontendo:\nI – identificação e fundamentação da iniciativa;\nII – objetivos e público-alvo;\nIII – categorias temáticas e projetos participantes;\nIV – indicadores pedagógicos adotados;\nV – cronograma de execução;\nVI – metodologia de apresentação, votação e \nseleção;\nVII – resultados e projetos reconhecidos;\nVIII – documentação da premiação;\nIX – evidências de realização;\nX – recomendações para continuidade e \naperfeiçoamento das práticas.\nParágrafo único. O relatório poderá subsidiar \na participação do Município no Selo Nacional \nCompromisso com a Alfabetização, observadas \nas exigências documentais, os prazos e os \ncritérios definidos pelo Ministério da Educação.\n8\nTerça - feira , 10 de novembro de 2026\nCAPÍTULO IX\nDAS DISPOSIÇÕES FINAIS Art. 21. A participação no projeto implica ciência e observância das disposições desta Portaria e de \nseus anexos. Art. 22. As situações omissas serão examinadas pela comissão organizadora e submetidas à decisão \nda autoridade competente, observados os princípios administrativos, as regras previamente \ndivulgadas e a legislação aplicável. Art. 23. A execução das atividades previstas nesta Portaria ocorrerá mediante utilização da estrutura \nadministrativa e dos recursos humanos disponíveis na Secretaria Municipal de Educação, sem \ncriação de cargos, funções remuneradas ou vantagens pecuniárias. Art. 24. A efetivação da premiação dependerá da conclusão das providências administrativas e \njurídicas necessárias à regular disponibilização dos benefícios, vedada a assunção de obrigações \nfinanceiras sem autorização legal e orçamentária. Art. 25. Integram esta Portaria:\nI – Anexo I: Categorias Temáticas, Público-Alvo e Links de Votação;\nII – Anexo II: Cronograma Oficial de Execução;\nIII – Anexo III: Indicadores Pedagógicos Orientadores;\nIV – Anexo IV: Procedimentos de Controle, Apuração e Registro."
+  },
+  {
+    "id": "d8374b33-735b-57f1-84b8-a5c005fa217b",
+    "chunk_id": "d8374b33-735b-57f1-84b8-a5c005fa217b",
+    "act_id": "d8374b33-735b-57f1-84b8-a5c005fa217b",
+    "act_key": null,
+    "tipo_ato": "LEI",
+    "numero_ato": "",
+    "data_publicacao": "2026-11-10",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)) | Ano: 2026 | Tipo de Ato: LEI | Órgãos/Cargos: Secretaria de Educação, Procuradoria Geral]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "multi_part_with_header"
+    ],
+    "page_content": "[LEI | PARTE 11/11] Art. 26. Esta Portaria entra em vigor na data de sua publicação, retroagindo seus efeitos em 27 de \njulho de 2026.\nCaeté/MG, 3 de novembro de 2026.\nMárcia Regina de Oliveira Bárbaro\nSecretária Municipal de Educação\nANEXO I\nCATEGORIAS TEMÁTICAS, PÚBLICO-ALVO E LINKS DE VOTAÇÃO\nCategoria I – Alfabetização e Letramento\nPúblico-alvo: professores e pedagogos que atuam nas turmas de 1º e 2º anos do Ensino Fundamental.\nLink: https://tr.ee/alfabetizacaoeletramento\nCategoria II – Jogos e Brincadeiras\nPúblico-alvo: professores e pedagogos que atuam nos CEMAEs I, II, III e IV.\nLink: https://tr.ee/jogosebrincadeira\nCategoria III – Psicomotricidade\nPúblico-alvo: professores e pedagogos que atuam na Educação Infantil.\nLink: https://tr.ee/psicomotricidade\nCategoria IV – Recomposição das Aprendizagens, Raciocínio Lógico e Tecnologia\nPúblico-alvo: professores e pedagogos que atuam nas turmas de 3º, 4º e 5º anos do Ensino \nFundamental.\nLink: https://tr.ee/recomposicaodeaprendizagens\nA votação será restrita aos profissionais da educação que acompanharem as apresentações dos \nprojetos, observadas as regras desta Portaria.\n9\nSexta-feira, 01 de novembro de 2019\n9\nTerçafeira, 10 de novembro de 2026\nANEXO II\nCRONOGRAMA OFICIAL DE EXECUÇÃO\nANEXO III\nINDICADORES PEDAGÓGICOS ORIENTADORES\nOs educadores habilitados à votação deverão considerar, na apreciação dos projetos, os \nseguintes indicadores:\n1. Relevância pedagógica: contribuição para a aprendizagem e o desenvolvimento dos estudantes.\n2. Inovação e criatividade: utilização de estratégias pedagógicas diferenciadas ou aperfeiçoadas.\n3. Intencionalidade pedagógica: adequação entre objetivos, metodologias e necessidades \neducacionais.\n4. Inclusão e equidade: promoção de oportunidades de aprendizagem, respeitando as diferenças.\n5. Participação dos estudantes: envolvimento e protagonismo dos educandos nas atividades.\n6. Resultados e evidências: demonstração de contribuições concretas para o processo educativo.\n7. Replicabilidade: possibilidade de compartilhamento e aplicação da experiência em outros \ncontextos educacionais.\nOs indicadores possuem natureza orientadora e deverão ser apresentados aos votantes \npreviamente à escolha dos projetos, não constituindo pontuação autônoma atribuída pela \ncomissão organizadora.\n\n10\nTerça - feira , 10 de novembro de 2026\nANEXO IV\nPROCEDIMENTOS DE CONTROLE, APURAÇÃO \nE REGISTRO\n1. Controle dos participantes\nA comissão organizadora deverá manter \nregistro dos profissionais que acompanharem \nas apresentações, para fins de habilitação à \nvotação.\n2. Controle da votação\nOs formulários eletrônicos deverão permitir \na identificação dos votantes habilitados e \no controle de duplicidade, assegurando a \nintegridade dos registros.\n3. Apuração\nA comissão deverá consolidar os votos válidos \npor categoria, registrar eventuais inconsistências \ne elaborar ata de apuração.\n4. Homologação\nOs resultados serão submetidos à autoridade \ncompetente para homologação e divulgação \noficial.\n5. Documentação comprobatória\nDeverão ser preservados os registros das \napresentações, os documentos de participação, \nos resultados consolidados e os demais \nelementos necessários à comprovação da \nregularidade do procedimento.\n6. Relatório técnico\nAo término das etapas, a comissão encaminhará \nà Secretaria Municipal de Educação relatório \ncontendo os projetos participantes, os \nvencedores, os indicadores utilizados, os \nresultados e as evidências da execução.\n7. Premiação\nA Secretaria Municipal de Educação manterá \nregistro da relação dos profissionais \ncontemplados, da disponibilização dos \nbenefícios pela entidade parceira e da respectiva \nentrega, observadas as condições formalizadas \nno instrumento jurídico pertinente.\nPODER LEGISLATIVO"
+  },
+  {
+    "id": "71688920-33e9-506f-8dba-135f12a78e3c",
+    "chunk_id": "71688920-33e9-506f-8dba-135f12a78e3c",
+    "act_id": "71688920-33e9-506f-8dba-135f12a78e3c",
+    "act_key": "EXTRATO CONTRATUAL::8/2026",
+    "tipo_ato": "EXTRATO CONTRATUAL",
+    "numero_ato": "8/2026",
+    "data_publicacao": "2026-11-10",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)) | Ano: 2026 | Tipo de Ato: EXTRATO CONTRATUAL Nº 8/2026 | Órgãos/Cargos: Administração Pública Municipal]",
+    "cnpjs_Mencionados": [
+      "44.187.544/0001-80"
+    ],
+    "valores_mencionados": [
+      "R$ 26.665,00"
+    ],
+    "quality_flags": [
+      "complete_individual_act"
+    ],
+    "page_content": "EXTRATO DE CONTRATO Nº 008/2026\nContrato nº 008/2026. Processo Administrativo \nnº 014/2026. Dispensa Eletrônica nº 004/2026. \nContratante: CÂMARA MUNICIPAL DE CAETÉ. \nContratada OSCIMAR COTA BARBOSA \n05266999659, inscrita no CNPJ/MF sob o nº \n44.187.544/0001-80. Objeto: fornecimento de \nmaterial de copa/cozinha, material de higiene \ne limpeza. Valor total: R$ 26.665,00 (vinte e seis \nmil seiscentos e sessenta e cinco reais). Vigência: \n12 (doze) meses contados da assinatura. \nFundamentação:"
+  },
+  {
+    "id": "39aa5559-b311-5326-aa8d-d5de2e1a1afe",
+    "chunk_id": "39aa5559-b311-5326-aa8d-d5de2e1a1afe",
+    "act_id": "39aa5559-b311-5326-aa8d-d5de2e1a1afe",
+    "act_key": "LEI::14133/2021",
+    "tipo_ato": "LEI",
+    "numero_ato": "14133/2021",
+    "data_publicacao": "2026-11-10",
+    "ano_edicao": 2021,
+    "source": "3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)) | Ano: 2021 | Tipo de Ato: LEI Nº 14133/2021 | Órgãos/Cargos: Administração Pública Municipal]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "complete_individual_act"
+    ],
+    "page_content": "Lei nº 14.133/2021 e demais \nlegislações aplicáveis. Data de assinatura: \n09/11/2026."
+  },
+  {
+    "id": "f0801a5b-038c-5364-aed8-bc4dd0036611",
+    "chunk_id": "f0801a5b-038c-5364-aed8-bc4dd0036611",
+    "act_id": "f0801a5b-038c-5364-aed8-bc4dd0036611",
+    "act_key": "EXTRATO CONTRATUAL::9/2026",
+    "tipo_ato": "EXTRATO CONTRATUAL",
+    "numero_ato": "9/2026",
+    "data_publicacao": "2026-11-10",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)) | Ano: 2026 | Tipo de Ato: EXTRATO CONTRATUAL Nº 9/2026 | Órgãos/Cargos: Administração Pública Municipal]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [
+      "R$ \n5.740,90"
+    ],
+    "quality_flags": [
+      "complete_individual_act"
+    ],
+    "page_content": "EXTRATO DE CONTRATO Nº 009/2026\nContrato nº 009/2026. Processo Administrativo \nnº 014/2026. Dispensa Eletrônica nº 004/2026. \nContratante: CÂMARA MUNICIPAL DE CAETÉ. \nContratada SINTAGMA ZENITE COMÉRCIO LTDA., \ninscrita no CNPJ sob o nº 17.926.188/0001-\n04. Objeto: fornecimento de material de \nconsumo/produtos saneantes. Valor total: R$ \n5.740,90 (cinco mil setecentos e quarenta reais \ne noventa centavos). Vigência: 12 (doze) meses \ncontados da assinatura. Fundamentação:"
+  },
+  {
+    "id": "5dd16695-6a43-528e-ba6a-a7a7220c953c",
+    "chunk_id": "5dd16695-6a43-528e-ba6a-a7a7220c953c",
+    "act_id": "5dd16695-6a43-528e-ba6a-a7a7220c953c",
+    "act_key": "LEI::14133/2021",
+    "tipo_ato": "LEI",
+    "numero_ato": "14133/2021",
+    "data_publicacao": "2026-11-10",
+    "ano_edicao": 2021,
+    "source": "3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)) | Ano: 2021 | Tipo de Ato: LEI Nº 14133/2021 | Órgãos/Cargos: SAAE]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "complete_individual_act"
+    ],
+    "page_content": "Lei \nnº 14.133/2021 e demais legislações aplicáveis. \nData de assinatura: 09/11/2026.\nSERVIÇO AUTÔNOMO DE \nÁGUA E ESGOTO - SAAE\nEXTRATO DO PREGÃO ELETRÔNICO Nº \n008/2026\nSERVIÇO AUTONÔMO DE ÁGUA E ESGOTO-SAAECAETÉ/MG-EXTRATO DO PREGÃO ELETRÔNICO \nNº 008/2026 – O SAAE de Caeté/MG, por sua \n11\nSexta-feira, 01 de novembro de 2019\n11\nTerçafeira, 10 de novembro de 2026\nPregoeira, designada pela Portaria nº 001/2026, \ntorna público que, no dia 26/11/2026, às 09 horas, \nrealizará na Plataforma Licitar Digital (www.\nlicitardigital.com.br) procedimento licitatório \nna modalidade de Pregão, na forma eletrônica, \ndo tipo Menor Preço por Item, nos termos da \nLei Federal nº 14.133/2021,"
+  },
+  {
+    "id": "4cb0d86a-75f1-5507-b0c0-7f2b4e982a8a",
+    "chunk_id": "4cb0d86a-75f1-5507-b0c0-7f2b4e982a8a",
+    "act_id": "4cb0d86a-75f1-5507-b0c0-7f2b4e982a8a",
+    "act_key": "DECRETO::297/2023",
+    "tipo_ato": "DECRETO",
+    "numero_ato": "297/2023",
+    "data_publicacao": "2026-11-10",
+    "ano_edicao": 2023,
+    "source": "3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf (2026-11-10)) | Ano: 2023 | Tipo de Ato: DECRETO Nº 297/2023 | Órgãos/Cargos: SAAE]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "complete_individual_act"
+    ],
+    "page_content": "Decreto Municipal \nnº 297/2023 e demais legislações aplicáveis, \ntendo como objeto o Fornecimento de tubos \nPVC de água, esgoto e tubo de aço galvanizado. \nO Edital na íntegra encontra-se disponível no \nendereço eletrônico www.saaecaete.mg.gov.\nbr; www.licitardigital.com.br. Informações pelo \ntelefone (31) 3651-5100. \nCaeté/MG, 06/11/2026. \nCíntia Soares Félix, Pregoeira."
+  },
+  {
+    "id": "3c14b5b2-7151-5561-a4d1-c28336a81848",
+    "chunk_id": "3c14b5b2-7151-5561-a4d1-c28336a81848",
+    "act_id": "3c14b5b2-7151-5561-a4d1-c28336a81848",
+    "act_key": "PORTARIA::54/2026",
+    "tipo_ato": "PORTARIA",
+    "numero_ato": "54/2026",
+    "data_publicacao": "2026-11-11",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1657_2026-11-11.pdf (2026-11-11)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1657_2026-11-11.pdf (2026-11-11)) | Ano: 2026 | Tipo de Ato: PORTARIA Nº 54/2026 | Órgãos/Cargos: Secretaria de Educação]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "complete_individual_act"
+    ],
+    "page_content": "PORTARIA Nº 054/2026\n“DISPÕE SOBRE O ROMPIMENTO DO VÍNCULO \nDE SERVIDOR PÚBLICO POR MOTIVO DE \nAPOSENTADORIA, NOS TERMOS DO 14 DO ART. \n37 DA CF/88”\nO PREFEITO MUNICIPAL DE CAETÉ, no uso das \natribuições que lhe são conferidas pelo artigo \n98, inciso VII da Lei Orgânica Municipal,\nConsiderando o disposto no 14 do art. 37 \nda Constituição Federal, segundo o qual “a \naposentadoria concedida com a utilização de \ntempo de contribuição decorrente de cargo, \nemprego ou função pública, inclusive do \nRegime Geral de Previdência Social, acarretará \no rompimento do vínculo que gerou o referido \ntempo de contribuição” ,\nConsiderando o disposto no Decreto \nMunicipal nº 254/2021 que “Regulamenta os \nProcedimentos Decorrentes de Aposentadoria \nVoluntária de Servidor Efetivo, e dá Outras \nProvidências” ,\nR E S O L V E:\nArt. 1º Fica rompido o vínculo da servidora \npública Rosane Luíza Bárbaro , Matrícula \nnº. 2924-6, Professor de Educação Infantil \ne Ensino Fudamental, com lotação na \nSecretaria Municipal de Educação, em razão \nda aposentadoria, na forma do art. 37, 14, da \nCF/88, a partir de 06 de novembro de 2026.\nArt. 2º A servidora, devido à aposentadoria, \nfará jus ao saldo de salário, férias vencidas \ne/ou proporcionais acrescidas do terço \nconstitucional, bem como ao décimo terceiro \nsalário proporcional.\nArt. 3º Esta Portaria entra em vigor na data de \nsua publicação, retroagindo seus efeitos a 06 \nde novembro de 2026.\n \nPublique-se, registre-se e cumpra-se.\n \n Caeté, 09 de novembro de 2026.\n \n Diêmerson Neves Porto\n Prefeito Municipal (em exercício)"
+  },
+  {
+    "id": "e1153abb-5359-57a2-8f28-cae7b73e2481",
+    "chunk_id": "e1153abb-5359-57a2-8f28-cae7b73e2481",
+    "act_id": "e1153abb-5359-57a2-8f28-cae7b73e2481",
+    "act_key": "PORTARIA::55/2026",
+    "tipo_ato": "PORTARIA",
+    "numero_ato": "55/2026",
+    "data_publicacao": "2026-11-11",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1657_2026-11-11.pdf (2026-11-11)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1657_2026-11-11.pdf (2026-11-11)) | Ano: 2026 | Tipo de Ato: PORTARIA Nº 55/2026 | Órgãos/Cargos: Secretaria de Educação, SAAE]",
+    "cnpjs_Mencionados": [
+      "14.644.274/0001-28"
+    ],
+    "valores_mencionados": [
+      "R$580,00"
+    ],
+    "quality_flags": [
+      "complete_individual_act"
+    ],
+    "page_content": "PORTARIA Nº 055/2026\n“DISPÕE SOBRE O ROMPIMENTO DO VÍNCULO \nDE SERVIDOR PÚBLICO POR MOTIVO DE \nAPOSENTADORIA, NOS TERMOS DO 14 DO ART. \n37 DA CF/88”\nO PREFEITO MUNICIPAL DE CAETÉ, no uso das \natribuições que lhe são conferidas pelo artigo \n98, inciso VII da Lei Orgânica Municipal,\nConsiderando o disposto no 14 do art. 37 \nda Constituição Federal, segundo o qual “a \naposentadoria concedida com a utilização de \ntempo de contribuição decorrente de cargo, \nemprego ou função pública, inclusive do \nRegime Geral de Previdência Social, acarretará \no rompimento do vínculo que gerou o referido \ntempo de contribuição” ,\n\n2\nQuarta - feira , 11 de novembro de 2026\nConsiderando o disposto no Decreto Municipal \nnº 254/2021 que “Regulamenta os Procedimentos Decorrentes de Aposentadoria Voluntária de \nServidor Efetivo, e dá Outras Providências” ,\nR E S O L V E:\nArt. 1º Fica rompido o vínculo da servidora \npública Marizan Amorim de Oliveira , Matrícula \nnº 4094-0, Auxiliar de Serviços Gerais, com \nlotação na Secretaria Municipal de Educação, \nem razão da aposentadoria, na forma do art. 37, \n§14, da CF/88, a partir de 06 de novembro de \n2026.\nArt. 2º A servidora, devido à aposentadoria, \nfará jus ao saldo de salário, férias vencidas \ne/ou proporcionais acrescidas do terço \nconstitucional, bem como ao décimo terceiro \nsalário proporcional.\nArt. 3º Esta Portaria entra em vigor na data de \nsua publicação, retroagindo seus efeitos a 06 de \nnovembro de 2026.\n \nPublique-se, registre-se e cumpra-se.\n \n \nCaeté, 09 de novembro de 2026.\n \nDiêmerson Neves Porto\nPrefeito Municipal (em exercício)\nSERVIÇO AUTÔNOMO DE ÁGUA \nE ESGOTO - SAAE \nEXTRATO DO 3º TERMO ADITIVO AO \nCONTRATO Nº 027/2023 \nPartes: O SAAE de Caeté/MG e a empresa \nROSIMEIRE RODRIGUES ALVES VIEIRA \n07038545698, inscrita no CNPJ nº \n14.644.274/0001-28. Objeto: Prorrogar o prazo \nde vigência contratual por mais 12 (doze) meses \naté 20/10/2027, e reajustar em 4,293630% o \nitem único contratado, conforme índice INPC \n(IBGE) acumulado no período de 10/2025 à \n09/2026. Dessa forma, adicionando ao contrato \no valor de R$580,00 (quinhentos e oitenta reais). \nFundamento: Dispensa por limite nº 001/2023, \nconforme a"
+  },
+  {
+    "id": "38be4e95-8122-506d-88bb-b75083e175e1",
+    "chunk_id": "38be4e95-8122-506d-88bb-b75083e175e1",
+    "act_id": "38be4e95-8122-506d-88bb-b75083e175e1",
+    "act_key": "LEI::8666/2093",
+    "tipo_ato": "LEI",
+    "numero_ato": "8666/2093",
+    "data_publicacao": "2026-11-11",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1657_2026-11-11.pdf (2026-11-11)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1657_2026-11-11.pdf (2026-11-11)) | Ano: 2093 | Tipo de Ato: LEI Nº 8666/2093 | Órgãos/Cargos: SAAE]",
+    "cnpjs_Mencionados": [
+      "05.684.180/0001-91"
+    ],
+    "valores_mencionados": [
+      "R$ 1.902,24"
+    ],
+    "quality_flags": [
+      "complete_individual_act"
+    ],
+    "page_content": "Lei nº 8.666/93, com suas posteriores \nalterações. Dotação: Orçamento de 2026 da \nAutarquia. \nCaeté/MG, 20/10/2026. \nWebber Leite Marchi, \nDiretoria Administrativa.\nSERVIÇO AUTÔNOMO DE ÁGUA E \nESGOTO-SAAE-CAETÉ/MG-EXTRATO \nDO 5º TERMO ADITIVO AO CONTRATO \nNº 030/2022\nPartes: O SAAE de Caeté/MG e a empresa \nCompanhia Itabirana de Telecomunicações \nLtda, inscrita no CNPJ nº 05.684.180/0001-91. \nObjeto: Prorrogar a vigência contratual por mais \n12(doze) meses, até 28/10/2027 e reajustar os \nitens contratados em 4,293630% conforme o \níndice INPC (IBGE) acumulado no período de \nOutubro/2025 a Setembro/2026, configurando \num acréscimo ao contrato de R$ 1.902,24 ( hum \nmil, novecentos e dois reais e vinte e quatro \ncentavos). Sendo este referente a Contratação \nde pessoa jurídica para fornecimento de LINKS \nde DADOS para ACESSO À INTERNET, de forma \npermanente e exclusiva à rede mundial de \ncomputadores. Demais cláusulas e condições \ninalteradas. Processo licitatório nº 034/2022, \nCarona em Ata de Registro de Preços, em \nconformidade com a"
+  },
+  {
+    "id": "21e7b165-b7ae-54e7-9f56-71baa74ebe85",
+    "chunk_id": "21e7b165-b7ae-54e7-9f56-71baa74ebe85",
+    "act_id": "21e7b165-b7ae-54e7-9f56-71baa74ebe85",
+    "act_key": "LEI::8666/2021",
+    "tipo_ato": "LEI",
+    "numero_ato": "8666/2021",
+    "data_publicacao": "2026-11-11",
+    "ano_edicao": 2021,
+    "source": "3110004__Jornal_Oficial_Caete_ed1657_2026-11-11.pdf (2026-11-11)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1657_2026-11-11.pdf (2026-11-11)) | Ano: 2021 | Tipo de Ato: LEI Nº 8666/2021 | Órgãos/Cargos: Administração Pública Municipal]",
+    "cnpjs_Mencionados": [
+      "11.963.458/0001-62",
+      "17.926.188/0001-04"
+    ],
+    "valores_mencionados": [
+      "R$ 94.449,35",
+      "R$ 1.358,78"
+    ],
+    "quality_flags": [
+      "complete_individual_act"
+    ],
+    "page_content": "Lei nº 8666 de 21/06/1993, \nLei Federal nº 10.520 de 17/07/2002 e demais \nlegislações e alterações em vigor. Dotação: \nOrçamento de 2026 da Autarquia. \nCaeté/MG, 28/10/2026. \nWebber Leite Marchi, \nDiretoria Administrativa.\n3\nSexta-feira, 01 de novembro de 2019\n3\nQuartafeira, 11 de novembro de 2026\nPODER LEGISLATIVO\nEXTRATO DO SEGUNDO TERMO \nADITIVO AO CONTRATO Nº 024/2024\nSEGUNDO TERMO ADITIVO ao Contrato \nnº 024/2024 de fornecimento de lanches \npara atender a Câmara e o Procon Câmara. \nContratante: CÂMARA MUNICIPAL DE CAETÉ. \nContratada: PÃES DE LÓ LTDA, inscrita no \nCNPJ sob o nº 11.963.458/0001-62. Objeto: \nProrrogação do prazo de vigência e reajuste \ndo valor original. Valor total: R$ 94.449,35 \n(noventa e quatro mil quatrocentos e quarenta \ne nove reais e trinta e cinco centavos). Vigência: \n12/11/2026 a 12/11/2027. Fundamentação: \nCláusulas Segunda e Sétima do Contrato, \ncom fundamento no artigo 107 da Lei Federal \n14.133.21. Data de assinatura: 11/11/2026.\nEXTRATO DO SEGUNDO TERMO \nADITIVO AO CONTRATO Nº 023/2024\nSEGUNDO TERMO ADITIVO ao Contrato nº \n023/2024 de fornecimento de softwares: \nCapCut Pro e Canva Pro. Contratante: CÂMARA \nMUNICIPAL DE CAETÉ. Contratada: SINTAGMA \nZENITE COMÉRCIO LTDA., inscrita no CNPJ sob o \nnº 17.926.188/0001-04. Objeto: Prorrogação do \nprazo de vigência e reajuste do valor original. \nValor total: R$ 1.358,78 (mil trezentos e cinquenta \ne oito reais e setenta e oito centavos), Vigência: \n11/11/2026 a 11/11/2027. Fundamentação: \nCláusulas Segunda e Sétima do Contrato, \ncom fundamento no artigo 107 da Lei Federal \n14.133.21. Data de assinatura: 11/11/2026."
+  },
+  {
+    "id": "47e118c7-371e-5fb2-89da-659c07e743b4",
+    "chunk_id": "47e118c7-371e-5fb2-89da-659c07e743b4",
+    "act_id": "47e118c7-371e-5fb2-89da-659c07e743b4",
+    "act_key": null,
+    "tipo_ato": "EDITAL / LICITAÇÃO",
+    "numero_ato": "",
+    "data_publicacao": "2026-11-12",
+    "ano_edicao": 2026,
+    "source": "3110004__Jornal_Oficial_Caete_ed1658_2026-11-12.pdf (2026-11-12)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1658_2026-11-12.pdf (2026-11-12)) | Ano: 2026 | Tipo de Ato: EDITAL / LICITAÇÃO | Órgãos/Cargos: SAAE]",
+    "cnpjs_Mencionados": [
+      "59.552.192/0001-91"
+    ],
+    "valores_mencionados": [
+      "R$ 619.900,00"
+    ],
+    "quality_flags": [
+      "complete_individual_act"
+    ],
+    "page_content": "Órgão Oficial de Divulgação dos Poderes Públicos Municipais Ano XXIV\nEDIÇÃO ESPECIAL Nº 1658 - 12 DE NOVEMBRO DE 2026\nSERVIÇO AUTÔNOMO DE \nÁGUA E ESGOTO - SAAE \nEXTRATO DE ADJUDICAÇÃO E HOMOLOGAÇÃO DO PE 007/2026\nSERVIÇO AUTÔNOMO DE ÁGUA E \nESGOTO-SAAE-CAETÉ/MG - EXTRATO DE \nADJUDICAÇÃO E HOMOLOGAÇÃO DO \nPREGÃO ELETRÔNICO Nº 007/2026 \nO Diretor Administrativo do SAAE de Caeté/\nMG adjudica e homologa o objeto do Pregão \nEletrônico nº 007/2026 – sendo este referente \nà prestação de serviços de Locação de veículos \ncom condutor e sem condutor- à empresa: \nPONTUAL LOCAÇÃO E SERVIÇOS LTDA-MECNPJ nº 59.552.192/0001-91, no valor de \nR$ 619.900,00 (seiscentos e dezenove mil \ne novecentos reais). Fundamento:"
+  },
+  {
+    "id": "a0193ddd-3ff5-5c81-9f87-ddd33a95d119",
+    "chunk_id": "a0193ddd-3ff5-5c81-9f87-ddd33a95d119",
+    "act_id": "a0193ddd-3ff5-5c81-9f87-ddd33a95d119",
+    "act_key": "DECRETO::297/2023",
+    "tipo_ato": "DECRETO",
+    "numero_ato": "297/2023",
+    "data_publicacao": "2026-11-12",
+    "ano_edicao": 2023,
+    "source": "3110004__Jornal_Oficial_Caete_ed1658_2026-11-12.pdf (2026-11-12)",
+    "contextual_header": "[Município: Caeté/MG | Fonte: Jornal Opinião (Órgão Oficial de Caeté/MG) (3110004__Jornal_Oficial_Caete_ed1658_2026-11-12.pdf (2026-11-12)) | Ano: 2023 | Tipo de Ato: DECRETO Nº 297/2023 | Órgãos/Cargos: Administração Pública Municipal]",
+    "cnpjs_Mencionados": [],
+    "valores_mencionados": [],
+    "quality_flags": [
+      "complete_individual_act"
+    ],
+    "page_content": "Decreto Municipal nº 297/2023 \ne demais legislações aplicáveis. Orçamento de \n2026 da Autarquia. \nCaeté/MG, 11/112026. \nWebber Leite Marchi\n Diretor Administrativo."
   }
 ]

@@ -1,0 +1,11 @@
+{
+  "release_id": "upl_20261116_105927_938",
+  "release_dir": "releases/upl_20261116_105927_938",
+  "release_chain": [
+    "releases/rel_20261112_203014_338",
+    "releases/rel_20261112_222740_023",
+    "releases/upl_20261116_105927_938"
+  ],
+  "updated_at": "2026-11-16 10:59:31",
+  "summary": "upload(3137205__pacote_consolidado_2024_2026.zip, tables=26)"
+}

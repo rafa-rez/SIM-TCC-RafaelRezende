@@ -17,7 +17,7 @@ import os
 import re
 import threading
 import time
-from collections import deque
+from collections import OrderedDict, deque
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Deque, Dict, List, Optional, Set, Tuple
@@ -37,10 +37,13 @@ from sim_platform.security.sql_guard import (
     check_prompt_safety,
 )
 from sim_platform.visualization.chart_generator import InstitutionalChartGenerator
+from sim_platform.visualization.table_renderer import InstitutionalTableRenderer, TableArtifact
 
 DEFAULT_WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
 
 OTHER_MUNICIPALITIES = (
+    "caete",
+    "lagoa da prata",
     "belo horizonte",
     "contagem",
     "betim",
@@ -51,6 +54,12 @@ OTHER_MUNICIPALITIES = (
     "mariana",
     "itabira",
     "joao monlevade",
+    "divinopolis",
+    "formiga",
+    "bom despacho",
+    "arcos",
+    "luz",
+    "santo antonio do monte",
     "uberlandia",
     "juiz de fora",
     "sao paulo",
@@ -376,7 +385,71 @@ HUMAN_COLUMN_LABELS: Dict[str, str] = {
     "qtd_veiculos_distintos": "Quantidade de Veículos / Máquinas",
     "qtd_placas_ativas": "Placas Emplacadas Ativas",
     "total_gasto_historico_frota": "Gasto Acumulado (Abastecimento/Manutenção)",
+    "vlr_rmn_bruta": "Remuneração Bruta (R$)",
+    "vlr_rmn_liquida": "Remuneração Líquida (R$)",
+    "nom_orgao": "Órgão Municipal",
+    "cod_orgao": "Código do Órgão",
+    "esfera_poder": "Poder Municipal",
+    "administracao_tipo": "Tipo de Administração",
+    "dotacao_inicial_loa": "Dotação Inicial LOA (R$)",
+    "dotacao_atualizada": "Dotação Atualizada (R$)",
+    "receita_arrecadada_propria_orgao": "Receita Própria Arrecadada (R$)",
+    "doc_credor_raiz": "CNPJ Raiz",
+    "natureza_credor": "Natureza Jurídica do Credor",
 }
+
+
+def _salvage_truncated_json_intro(raw_text: str) -> Dict[str, Optional[str]]:
+    """
+    Recupera `citizen_intro`, `auditor_exec_summary`, `chart_title` e `table_title`
+    mesmo quando a resposta JSON do LLM sofre truncamento de tokens ou aspas não fechadas,
+    impedindo vazamento de chaves `{"citizen_intro": ...` para o cidadão.
+    """
+    out: Dict[str, Optional[str]] = {
+        "citizen_intro": None,
+        "auditor_exec_summary": None,
+        "chart_title": None,
+        "table_title": None,
+    }
+    if not raw_text:
+        return out
+    cleaned = raw_text.strip()
+    if cleaned.startswith("```"):
+        cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned, flags=re.IGNORECASE)
+        cleaned = re.sub(r"\s*```$", "", cleaned)
+
+    def _unescape_json_fragment(frag: str) -> str:
+        s = frag.replace('\\"', '"').replace("\\n", "\n").replace("\\t", " ").replace("\\\\", "\\").strip()
+        # Se terminou no meio de uma palavra truncada sem pontuação final, fecha com reticências limpas
+        s = re.sub(r'["},\s]+$', "", s).strip()
+        return s
+
+    for field_name in ("citizen_intro", "auditor_exec_summary", "chart_title", "table_title"):
+        # Caso 1: string JSON fechada normalmente antes de truncamento posterior
+        m_closed = re.search(
+            rf'"{field_name}"\s*:\s*"((?:\\.|[^"\\])*)"',
+            cleaned,
+            flags=re.DOTALL,
+        )
+        if m_closed:
+            val = _unescape_json_fragment(m_closed.group(1))
+            if val:
+                out[field_name] = val
+            continue
+        # Caso 2: string JSON aberta e truncada antes da aspa de fechamento
+        m_open = re.search(
+            rf'"{field_name}"\s*:\s*"((?:\\.|[^"\\])+)$',
+            cleaned,
+            flags=re.DOTALL,
+        )
+        if m_open:
+            val = _unescape_json_fragment(m_open.group(1))
+            if val and not val.endswith((".", "!", "?")):
+                val = val + "..."
+            if val:
+                out[field_name] = val
+
+    return out
 
 
 def _human_col_label(col_key: str) -> str:
@@ -389,7 +462,11 @@ def _human_col_label(col_key: str) -> str:
     return clean[:1].upper() + clean[1:] if clean else col_key
 
 
-def _explain_municipal_concepts_for_citizen(question: str, sample_keys: List[str]) -> Optional[str]:
+def _explain_municipal_concepts_for_citizen(
+    question: str,
+    sample_keys: List[str],
+    municipality_name: str = "",
+) -> Optional[str]:
     """
     Traduz conceitos técnicos da administração pública em explicações claras e acessíveis
     para o cidadão comum que não conhece contabilidade pública.
@@ -408,7 +485,7 @@ def _explain_municipal_concepts_for_citizen(question: str, sample_keys: List[str
     if "orcamento_previsto_loa" in keys_set or any(y in q_low for y in ("2026", "2027", "2028")):
         explanations.append(
             "**Orçamento Previsto (LOA Atualizada)** é o valor planejado e autorizado para o ano inteiro, enquanto **Receita Arrecadada** é o valor que já entrou nos cofres municipais. "
-            "A base histórica oficial do SICOM/TCE-MG consolidada nesta plataforma abrange os exercícios de **2020 a 2025** (exercícios futuros como 2026 e 2027 ainda não possuem execução encerrada no SICOM)."
+            "A base oficial consolidada nesta plataforma abrange os exercícios até **2026** (com 2026 em execução parcial acumulada)."
         )
     if any(w in q_low for w in ("concursado", "concursados", "consignado", "consignados", "contratado", "contratados")):
         explanations.append(
@@ -448,8 +525,11 @@ def _explain_municipal_concepts_for_citizen(question: str, sample_keys: List[str
             "**Adesão a Ata de Registro de Preços (conhecida como 'carona')** ocorre quando a prefeitura aproveita os preços de uma licitação já feita por outro órgão público, o que exige justificativa de vantagem econômica."
         )
     if any(k in q_low for k in ("bolsa familia", "bpc", "auxilio")):
+        city_dest = f"em {municipality_name.strip()}" if municipality_name and municipality_name.strip() else "no município"
         explanations.append(
-            "Estes valores são **benefícios sociais pagos diretamente pelo Governo Federal** (via Caixa/Ministério do Desenvolvimento Social) às famílias cadastradas em Caeté, registrados no Portal da Transparência da CGU."
+            "Estes valores são **benefícios sociais pagos diretamente pelo Governo Federal** "
+            f"(via Caixa/Ministério do Desenvolvimento Social) às famílias cadastradas {city_dest}, "
+            "registrados no Portal da Transparência da CGU."
         )
 
     if not explanations:
@@ -461,14 +541,33 @@ def _format_brl_or_val(key: str, val: Any) -> str:
     if val is None:
         return "N/D"
     k_low = key.lower()
-    # Colunas de ano, exercício, sequência ou código nunca devem receber separador de milhar (ex: 2024 e não 2.024)
+    # Datas inteiras no padrão YYYYMMDD (ex.: seq_dat_pagamento = 20250801)
+    if any(
+        k_low == dk or k_low.startswith(dk) or dk in k_low
+        for dk in ("seq_dat_", "dat_", "dt_", "data_", "competencia")
+    ):
+        if isinstance(val, (int, float)) and not isinstance(val, bool):
+            ival = int(val)
+            s_val = str(ival)
+            if len(s_val) == 8 and 19900101 <= ival <= 20991231:
+                if "competencia" in k_low or k_low.startswith("seq_dat_"):
+                    return f"{s_val[4:6]}/{s_val[:4]}"
+                return f"{s_val[6:8]}/{s_val[4:6]}/{s_val[:4]}"
+            if len(s_val) == 6 and 199001 <= ival <= 209912:
+                return f"{s_val[4:6]}/{s_val[:4]}"
+            return s_val
+        return str(val)
+
+    # Colunas de ano, exercício, sequência, documento ou código nunca devem receber separador de milhar
     if any(
         k_low == yk or k_low.startswith(yk)
         for yk in (
             "ano_referencia", "ano_", "primeiro_ano", "ultimo_ano", "exercicio",
-            "seq_", "num_contrato", "num_convenio", "cod_emenda", "numero_edicao",
+            "seq_", "num_contrato", "num_convenio", "num_processo", "num_licitacao",
+            "num_empenho", "num_ord_", "num_doc", "num_cpf", "num_cnpj",
+            "cod_", "id_", "pagina", "numero_edicao", "cep", "ibge",
         )
-    ) or k_low == "ano":
+    ) or k_low in ("ano", "cpf", "cnpj"):
         if isinstance(val, (int, float)) and not isinstance(val, bool):
             return str(int(val))
         return str(val)
@@ -502,35 +601,58 @@ def _format_brl_or_val(key: str, val: Any) -> str:
 
 class SessionLockManager:
     """
-    Gerenciador de lock atômico por sessão/chat (`chat_id`), corrigindo a falha
-    do `wpp-tiokk-sql.json` onde o lock era deletado antes da execução do agente.
+    Gerenciador de lock atômico por sessão/chat (`chat_id`), com verificação de thread proprietária
+    e limite LRU de sessões ociosas para evitar vazamento de memória (P2-03).
     """
 
-    def __init__(self) -> None:
+    def __init__(self, max_locks: int = 500) -> None:
         self._guard = threading.Lock()
-        self._chat_locks: Dict[str, threading.Lock] = {}
+        self._chat_locks: OrderedDict[str, threading.Lock] = OrderedDict()
         self._active_sessions: Dict[str, float] = {}
+        self._lock_owners: Dict[str, int] = {}
+        self.max_locks = max(32, max_locks)
 
     def get_lock(self, session_id: str) -> threading.Lock:
         with self._guard:
-            if session_id not in self._chat_locks:
-                self._chat_locks[session_id] = threading.Lock()
-            return self._chat_locks[session_id]
+            if session_id in self._chat_locks:
+                self._chat_locks.move_to_end(session_id)
+                return self._chat_locks[session_id]
+            while len(self._chat_locks) >= self.max_locks:
+                evict_k = next(
+                    (k for k, lk in self._chat_locks.items() if not lk.locked() and k not in self._active_sessions),
+                    None,
+                )
+                if evict_k is None:
+                    break
+                self._chat_locks.pop(evict_k, None)
+            lk = threading.Lock()
+            self._chat_locks[session_id] = lk
+            return lk
 
     def try_acquire(self, session_id: str, blocking: bool = True, timeout: float = 10.0) -> bool:
         lk = self.get_lock(session_id)
         acquired = lk.acquire(blocking=blocking, timeout=timeout if blocking else -1)
         if acquired:
+            tid = threading.get_ident()
             with self._guard:
                 self._active_sessions[session_id] = time.time()
+                self._lock_owners[session_id] = tid
         return acquired
 
     def release(self, session_id: str) -> None:
-        lk = self.get_lock(session_id)
+        tid = threading.get_ident()
         with self._guard:
+            lk = self._chat_locks.get(session_id)
+            owner = self._lock_owners.get(session_id)
+            if lk is None or owner != tid:
+                return
             self._active_sessions.pop(session_id, None)
+            self._lock_owners.pop(session_id, None)
         if lk.locked():
-            lk.release()
+            try:
+                lk.release()
+            except RuntimeError:
+                pass
 
 
 @dataclass
@@ -569,6 +691,10 @@ class OrchestrationResult:
     chart_base64: Optional[str] = None
     chart_mime_type: Optional[str] = None
     chart_caption: Optional[str] = None
+    table_image_base64: Optional[str] = None
+    table_mime_type: Optional[str] = None
+    table_caption: Optional[str] = None
+    table_html: Optional[str] = None
     asr_corrections: List[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
@@ -579,6 +705,8 @@ class OrchestrationResult:
             self.institutional_response = strip_emojis(self.institutional_response)
         if self.chart_caption:
             self.chart_caption = strip_emojis(self.chart_caption)
+        if self.table_caption:
+            self.table_caption = strip_emojis(self.table_caption)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -614,6 +742,10 @@ class OrchestrationResult:
             "chart_base64": self.chart_base64,
             "chart_mime_type": self.chart_mime_type,
             "chart_caption": self.chart_caption,
+            "table_image_base64": self.table_image_base64,
+            "table_mime_type": self.table_mime_type,
+            "table_caption": self.table_caption,
+            "table_html": self.table_html,
             "asr_corrections": self.asr_corrections,
             "pipeline_steps": self.pipeline_steps,
             "exec_ms": self.exec_ms,
@@ -642,24 +774,29 @@ class SIMOrchestrator:
         interaction_store: Optional[Any] = None,
     ) -> None:
         self.db_manager = db_manager or DuckDBManager()
-        self.rag_retriever = rag_retriever or HybridRAGRetriever()
-        cat_max_yr = getattr(self.db_manager.catalog, "max_data_year", 2025)
+        self.rag_retriever = rag_retriever or HybridRAGRetriever(tenant_id=self.db_manager.tenant.tenant_id)
+        self._gazette_name_cache: Optional[str] = None
+        cat_max_yr = getattr(self.db_manager.catalog, "max_data_year", 2026)
         cat_latest_rem = getattr(
             self.db_manager.catalog,
             "latest_remittance_human",
-            "agosto de 2025 (exercício 2025 em remessa parcial acumulada no SICOM/TCE-MG)",
+            f"exercício {cat_max_yr} em remessa parcial acumulada",
         )
+        cat_freshness_map = self._build_source_freshness_map()
         self.prompt_builder = prompt_builder or ModularPromptBuilder(
             municipality_name=self.db_manager.tenant.municipality_name,
             state_uf=self.db_manager.tenant.state_uf,
             ibge_code=self.db_manager.tenant.ibge_code,
+            temporal_coverage=f"bases oficiais consolidadas até {cat_max_yr}",
             max_data_year=cat_max_yr,
             latest_remittance_human=cat_latest_rem,
+            source_freshness_map=cat_freshness_map,
         )
         self.entity_linker = EntityLinker(
             workspace_root=DEFAULT_WORKSPACE_ROOT,
             conn=self.db_manager.conn,
             city_name=self.db_manager.tenant.municipality_name,
+            tenant_id=self.db_manager.tenant.tenant_id,
         )
         self.quota_manager = TenantQuotaManager(
             tenant_id=self.db_manager.tenant.tenant_id,
@@ -668,13 +805,19 @@ class SIMOrchestrator:
             municipality_name=self.db_manager.tenant.municipality_name,
             state_uf=self.db_manager.tenant.state_uf,
         )
+        self.table_renderer = InstitutionalTableRenderer(
+            municipality_name=self.db_manager.tenant.municipality_name,
+            state_uf=self.db_manager.tenant.state_uf,
+        )
         self.interaction_store = interaction_store
         self._has_custom_sql_generator: bool = sql_generator_fn is not None
         self.sql_generator_fn = sql_generator_fn or self._smart_sql_generator
         self.max_sql_retries = max_sql_retries
         self.lock_manager = SessionLockManager()
-        self.conversation_history: Dict[str, Deque[Dict[str, Any]]] = {}
-        self.session_sql_memory: Dict[str, Dict[str, Any]] = {}
+        self._mem_lock = threading.Lock()
+        self._max_session_entries = 500
+        self.conversation_history: OrderedDict[str, Deque[Dict[str, Any]]] = OrderedDict()
+        self.session_sql_memory: OrderedDict[str, Dict[str, Any]] = OrderedDict()
         self._golden_lookup: Dict[str, str] = self._load_golden_sql_index()
         self.semantic_guardrail = SemanticIntentGuardrail(
             municipality_name=self.db_manager.tenant.municipality_name,
@@ -684,13 +827,312 @@ class SIMOrchestrator:
             fallback_conversational_fn=self._handle_conversational_or_conceptual_turn,
             max_data_year=cat_max_yr,
             latest_remittance_human=cat_latest_rem,
+            gazette_name=self._get_gazette_name(),
         )
-        self._active_allowed_sources: List[str] = []
-        self._active_llm_provider: Optional[str] = None
-        self._active_llm_api_key: Optional[str] = None
-        self._last_llm_engine_used: str = "SIM Native NL2SQL Compiler"
-        self._turn_prompt_tokens_real: int = 0
-        self._turn_completion_tokens_real: int = 0
+        # Isolamento por thread (P1-03): impede vazamento de API keys, escopo e contadores entre requisições concorrentes
+        self._turn_local = threading.local()
+
+    @property
+    def _active_allowed_sources(self) -> List[str]:
+        val = getattr(self._turn_local, "active_allowed_sources", None)
+        return val if val is not None else []
+
+    @_active_allowed_sources.setter
+    def _active_allowed_sources(self, value: List[str]) -> None:
+        self._turn_local.active_allowed_sources = list(value or [])
+
+    @property
+    def _active_llm_provider(self) -> Optional[str]:
+        return getattr(self._turn_local, "active_llm_provider", None)
+
+    @_active_llm_provider.setter
+    def _active_llm_provider(self, value: Optional[str]) -> None:
+        self._turn_local.active_llm_provider = value
+
+    @property
+    def _active_llm_api_key(self) -> Optional[str]:
+        return getattr(self._turn_local, "active_llm_api_key", None)
+
+    @_active_llm_api_key.setter
+    def _active_llm_api_key(self, value: Optional[str]) -> None:
+        self._turn_local.active_llm_api_key = value
+
+    @property
+    def _last_llm_engine_used(self) -> str:
+        return getattr(self._turn_local, "last_llm_engine_used", "SIM Native NL2SQL Compiler")
+
+    @_last_llm_engine_used.setter
+    def _last_llm_engine_used(self, value: str) -> None:
+        self._turn_local.last_llm_engine_used = value
+
+    @property
+    def _turn_prompt_tokens_real(self) -> int:
+        return int(getattr(self._turn_local, "turn_prompt_tokens_real", 0))
+
+    @_turn_prompt_tokens_real.setter
+    def _turn_prompt_tokens_real(self, value: int) -> None:
+        self._turn_local.turn_prompt_tokens_real = int(value)
+
+    @property
+    def _turn_completion_tokens_real(self) -> int:
+        return int(getattr(self._turn_local, "turn_completion_tokens_real", 0))
+
+    @_turn_completion_tokens_real.setter
+    def _turn_completion_tokens_real(self, value: int) -> None:
+        self._turn_local.turn_completion_tokens_real = int(value)
+
+    def _prune_session_maps(self) -> None:
+        with self._mem_lock:
+            while len(self.conversation_history) > self._max_session_entries:
+                self.conversation_history.popitem(last=False)
+            while len(self.session_sql_memory) > self._max_session_entries:
+                self.session_sql_memory.popitem(last=False)
+
+    def _build_source_freshness_map(self) -> Dict[str, str]:
+        fmap = dict(getattr(self.db_manager.catalog, "source_freshness_map", {}) or {})
+        rag_chunks = getattr(self.rag_retriever, "corpus_chunks", None) or []
+        if rag_chunks:
+            years = sorted(
+                {
+                    int(c.get("ano_edicao") if isinstance(c, dict) else getattr(c, "ano_edicao", 0))
+                    for c in rag_chunks
+                    if (c.get("ano_edicao") if isinstance(c, dict) else getattr(c, "ano_edicao", None))
+                }
+            )
+            yr_span = f"{years[0]} a {years[-1]}" if len(years) >= 2 else (str(years[0]) if years else "acervo ativo")
+            fmap["DIARIO_OFICIAL"] = f"{yr_span} ({len(rag_chunks)} atos normativos únicos indexados)"
+        return fmap
+
+    def _get_gazette_name(self) -> str:
+        if self._gazette_name_cache:
+            return self._gazette_name_cache
+        tid = self.db_manager.tenant.tenant_id
+        if tid in ("caete_mg_3110004", "caete-mg"):
+            self._gazette_name_cache = "Jornal Opinião"
+            return self._gazette_name_cache
+        try:
+            from sim_platform.ingestion.city_onboarding import load_tenant_profile
+
+            prof = load_tenant_profile(tenant_id=tid, workspace_root=DEFAULT_WORKSPACE_ROOT)
+            veic = str(
+                (prof.get("diario_oficial") or {}).get("veiculo")
+                or prof.get("official_gazette_name")
+                or ""
+            ).strip()
+            if veic:
+                self._gazette_name_cache = veic
+                return veic
+        except Exception:
+            pass
+        self._gazette_name_cache = (
+            f"Diário Oficial Eletrônico de {self.db_manager.tenant.municipality_name}/{self.db_manager.tenant.state_uf}"
+        )
+        return self._gazette_name_cache
+
+    def _get_other_municipalities(self) -> Tuple[str, ...]:
+        tenant_city = normalize_text_for_dedup(self.db_manager.tenant.municipality_name)
+        dynamic_cities: List[str] = list(OTHER_MUNICIPALITIES)
+        try:
+            tenants_dir = DEFAULT_WORKSPACE_ROOT / "tenants"
+            if tenants_dir.exists():
+                for tf in tenants_dir.glob("*.json"):
+                    if tf.name.startswith("_"):
+                        continue
+                    data = json.loads(tf.read_text(encoding="utf-8"))
+                    m_name = normalize_text_for_dedup(str(data.get("municipality_name") or ""))
+                    if m_name and m_name not in dynamic_cities:
+                        dynamic_cities.append(m_name)
+        except Exception:
+            pass
+        return tuple(c for c in dynamic_cities if c and c != tenant_city)
+
+    def _check_missing_granular_source(
+        self,
+        question: str,
+        allowed_sources: Optional[List[str]] = None,
+    ) -> Optional[Tuple[str, str, Dict[str, Any]]]:
+        """
+        Verifica se a pergunta exige tabelas granulares (ex.: SICOM nominal de servidores,
+        fornecedores, placas de frota, contratos/licitações ou INEP IDEB) que ainda não foram
+        depositadas para a cidade ativa, evitando erro SQL ou alucinação e explicando como sincronizar.
+        """
+        missing_fams = set(getattr(self.db_manager.catalog, "missing_source_families", set()) or set())
+        if not missing_fams:
+            return None
+
+        q_norm = normalize_text_for_dedup(question)
+        city_str = f"{self.db_manager.tenant.municipality_name}/{self.db_manager.tenant.state_uf}"
+        ibge = self.db_manager.tenant.ibge_code
+        active_fams = sorted(
+            {meta.source_family for meta in self.db_manager.catalog.tables.values()}
+        )
+        active_str = ", ".join(active_fams) if active_fams else "nenhuma base materializada ainda"
+
+        # Consultas agregadas fiscais/saúde/educação/população/benefícios que SÃO atendidas por SICONFI/IBGE/DATASUS/CGU:
+        macro_api_satisfied = any(
+            kw in q_norm
+            for kw in (
+                "populacao", "habitantes", "pib", "idhm", "area territorial", "densidade",
+                "rcl", "receita corrente liquida", "lrf", "limite prudencial", "capag",
+                "situacao fiscal", "contas da prefeitura", "contas em dia", "saude fiscal",
+                "minimo constitucional", "siops", "mde", "bolsa familia", "bpc",
+            )
+        )
+
+        if "SICOM" in missing_fams and not macro_api_satisfied:
+            granular_sicom_triggers = (
+                "secretario", "secretarios", "prefeito", "vice-prefeito", "vice prefeito",
+                "vereador", "vereadores", "procurador", "controlador", "servidor", "servidores",
+                "funcionario", "funcionarios", "concursado", "comissionado", "holerite",
+                "salario", "remuneracao", "folha", "fornecedor", "fornecedores", "credor", "credores",
+                "empresa", "empresas", "pagamento", "pagamentos", "receberam",
+                "cnpj", "nota de empenho", "empenho", "contrato", "contratos", "aditivo",
+                "licitacao", "licitacoes", "pregao", "dispensa", "carona", "frota",
+                "placa", "veiculo", "veiculos", "combustivel", "duodecimo",
+                "orcamento", "loa", "dotacao", "secretaria", "secretarias", "camara",
+                "iptu", "iss", "itbi", "conflito de interesse", "conflito de interesses",
+            )
+            if any(t in q_norm for t in granular_sicom_triggers):
+                warn = {
+                    "code": "BASE-SICOM-PENDENTE-INGESTAO",
+                    "gap_id": "BASE-SICOM-PENDENTE-INGESTAO",
+                    "severity": "info",
+                    "title": f"Pacote Granular SICOM/TCE-MG Pendente para {city_str}",
+                    "message": (
+                        f"As bases federais automáticas de {city_str} (IBGE {ibge}) já estão ativas ({active_str}), "
+                        f"porém o pacote granular do SICOM/TCE-MG (folha nominal, fornecedores, contratos, licitações e frota) "
+                        f"aguarda depósito do arquivo .zip oficial do Portal TCE-MG na pasta avaliacao/dados/inbox/ ou na aba Atualizar Dados."
+                    ),
+                }
+                cit = (
+                    f"Os indicadores oficiais federais de **{city_str}** (IBGE `{ibge}`) já estão ativos para consulta "
+                    f"(**População e PIB no IBGE**, **Receita Corrente Líquida, Despesa Total com Pessoal LRF, Saúde e Educação no Tesouro Nacional/SICONFI e SIOPS**, "
+                    f"além de **Novo Bolsa Família e BPC no Portal da Transparência/CGU**).\n\n"
+                    f"Porém, o detalhamento nominal de **orçamento por órgão, folha de servidores/salários, fornecedores, contratos, licitações e frota** depende do pacote "
+                    f"**SICOM/TCE-MG** de **{city_str}**, que ainda aguarda importação do arquivo `.zip` oficial (devido ao CAPTCHA do portal do Tribunal de Contas).\n\n"
+                    f"Assim que o pacote `.zip` de `{ibge}` for salvo em `avaliacao/dados/inbox/` (ou enviado na aba **Atualizar Dados**), esta consulta passará a responder automaticamente."
+                )
+                inst = (
+                    f"**[BASE GRANULAR PENDENTE DE SINCRONIZAÇÃO — `SICOM/TCE-MG` ({city_str}, IBGE `{ibge}`)]**\n\n"
+                    f"- **Fontes Ativas Agora no Catálogo (`{len(self.db_manager.catalog.tables)}` tabelas):** `{active_str}`.\n"
+                    f"- **Domínio Solicitado:** Dados contábeis/nominais granulares do **SICOM/TCE-MG** (orçamento LOA, folha de servidores, credores/empenhos, contratos, licitações ou frota).\n"
+                    f"- **Procedimento Assistido pós-CAPTCHA:** Baixe os pacotes CSV/ZIP do código IBGE `{ibge}` em `https://sicomconsulta.tce.mg.gov.br/` "
+                    f"e solte-os em `avaliacao/dados/inbox/` (ou faça upload em **05. Atualizar Dados**). O `FleetVerifier` converterá automaticamente para Parquet ZSTD e arquivará no Google Drive (`SIM_DataLake`)."
+                )
+                return cit, inst, warn
+
+        cat_tbls_low = {k.lower() for k in self.db_manager.catalog.tables}
+        if "receita_qsa_fornecedores" not in cat_tbls_low and any(
+            t in q_norm for t in ("qsa", "quadro societario", "socio", "socios", "cnae")
+        ):
+            warn = {
+                "code": "BASE-QSA-PENDENTE-SICOM",
+                "gap_id": "BASE-QSA-PENDENTE-SICOM",
+                "severity": "info",
+                "title": f"Cruzamento Societário QSA Dependente de Fornecedores SICOM em {city_str}",
+                "message": (
+                    f"A tabela `receita_qsa_fornecedores` é gerada automaticamente a partir dos CNPJs pagos em `despesa_pagamento` e `licitacao_quadroSocLicitacao` do SICOM/TCE-MG, ainda pendentes para {city_str}."
+                ),
+            }
+            cit = (
+                f"Para consultar o **Quadro Societário (QSA)** de empresas contratadas por **{city_str}**, é necessário primeiro importar o pacote de pagamentos e licitações do **SICOM/TCE-MG** (IBGE `{ibge}`) na pasta `avaliacao/dados/inbox/`."
+            )
+            inst = (
+                f"**[BASE DERIVADA PENDENTE — `RECEITA_QSA` ({city_str}, IBGE `{ibge}`)]**\n"
+                f"- Assim que `despesa_pagamento` e `licitacao_quadroSocLicitacao` do SICOM forem depositados em `inbox/`, `receita_qsa_fornecedores` será materializada automaticamente."
+            )
+            return cit, inst, warn
+
+        if ("cgu_convenios" not in cat_tbls_low and any(t in q_norm for t in ("convenio", "convenios"))) or (
+            "cgu_emendas" not in cat_tbls_low and any(t in q_norm for t in ("emenda", "emendas", "parlamentar"))
+        ):
+            warn = {
+                "code": "BASE-CGU-CONVENIOS-EMENDAS-PENDENTE",
+                "gap_id": "BASE-CGU-CONVENIOS-EMENDAS-PENDENTE",
+                "severity": "info",
+                "title": f"Detalhamento de Convênios/Emendas CGU Pendente para {city_str}",
+                "message": (
+                    f"Os repasses mensais de Novo Bolsa Família e BPC da CGU já estão ativos via API para {city_str}, mas os arquivos detalhados de convênios/transferências (`cgu_convenios` / `cgu_emendas`) ainda não foram importados para este município."
+                ),
+            }
+            cit = (
+                f"Para **{city_str}**, os benefícios federais do **Novo Bolsa Família e BPC** já estão ativos via API oficial da CGU, "
+                f"porém o arquivo detalhado de **Convênios e Emendas Parlamentares** ainda não foi carregado nesta instância."
+            )
+            inst = (
+                f"**[BASE SETORIAL PENDENTE — `CGU Convênios/Emendas` ({city_str}, IBGE `{ibge}`)]**\n"
+                f"- **Disponível imediatamente na CGU:** `cgu_novo_bolsa_familia` e `cgu_bpc`.\n"
+                f"- **Pendente:** Importação de `cgu_transferencias` / `cgu_convenios` via CSV/Parquet em `inbox/`."
+            )
+            return cit, inst, warn
+
+        if "INEP" in missing_fams and any(t in q_norm for t in ("ideb", "inep", "censo escolar", "taxa de aprovacao")):
+            warn = {
+                "code": "BASE-INEP-PENDENTE-INGESTAO",
+                "gap_id": "BASE-INEP-PENDENTE-INGESTAO",
+                "severity": "info",
+                "title": f"Indicadores Detalhados INEP/IDEB Pendentes para {city_str}",
+                "message": (
+                    f"A aplicação constitucional em Educação (MDE %) já está ativa via SICONFI/STN para {city_str}, "
+                    f"mas a planilha detalhada de notas IDEB por rede do INEP ainda não foi carregada para este município."
+                ),
+            }
+            cit = (
+                f"Para **{city_str}**, já tenho ativo o percentual oficial investido em **Educação (MDE)** junto ao Tesouro Nacional (SICONFI), "
+                f"mas o boletim específico de notas do **IDEB/INEP** ainda não foi importado para este município."
+            )
+            inst = (
+                f"**[BASE SETORIAL PENDENTE — `INEP/IDEB` ({city_str}, IBGE `{ibge}`)]**\n"
+                f"- **Disponível imediatamente:** Aplicação constitucional em Educação (`pct_aplicacao_educacao_mde` em `siconfi_finbra_indicadores`).\n"
+                f"- **Pendente:** Planilha `inep_ideb_educacao` para `{ibge}` via upload CSV/Parquet."
+            )
+            return cit, inst, warn
+
+        return None
+
+    def refresh_after_data_update(self) -> None:
+        """
+        Sincroniza o prompt_builder, guardrail, entity_linker, RAG e cache L1 após
+        atualização/upload de Parquets ou hot-swap externo de `CURRENT.json` via cronjob CLI.
+        """
+        self._gazette_name_cache = None
+        cat = self.db_manager.catalog
+        self.prompt_builder.max_data_year = getattr(cat, "max_data_year", 2026)
+        self.prompt_builder.temporal_coverage = f"bases oficiais consolidadas até {self.prompt_builder.max_data_year}"
+        self.prompt_builder.latest_remittance_human = getattr(
+            cat, "latest_remittance_human", self.prompt_builder.latest_remittance_human
+        )
+        try:
+            fresh_rag = HybridRAGRetriever(tenant_id=self.db_manager.tenant.tenant_id)
+            if fresh_rag.corpus_chunks or not getattr(self.rag_retriever, "corpus_chunks", None):
+                self.rag_retriever.corpus_chunks = fresh_rag.corpus_chunks
+                self.rag_retriever._build_bm25_index()
+        except Exception:
+            pass
+        self.prompt_builder.source_freshness_map = self._build_source_freshness_map()
+        self.semantic_guardrail.max_data_year = self.prompt_builder.max_data_year
+        self.semantic_guardrail.latest_remittance_human = self.prompt_builder.latest_remittance_human
+        self.semantic_guardrail.gazette_name = self._get_gazette_name()
+        self.entity_linker = EntityLinker(
+            workspace_root=DEFAULT_WORKSPACE_ROOT,
+            conn=self.db_manager.conn,
+            city_name=self.db_manager.tenant.municipality_name,
+            tenant_id=self.db_manager.tenant.tenant_id,
+        )
+        try:
+            self.quota_manager.invalidate_cache()
+        except Exception:
+            pass
+
+    def _sync_catalog_freshness_if_hotswapped(self) -> bool:
+        if hasattr(self.db_manager, "check_external_release_hotswap"):
+            try:
+                if self.db_manager.check_external_release_hotswap():
+                    self.refresh_after_data_update()
+                    return True
+            except Exception:
+                pass
+        return False
 
     def _record_turn_llm_tokens(self, prompt_tokens: int, completion_tokens: int) -> None:
         p = max(0, int(prompt_tokens or 0))
@@ -707,22 +1149,39 @@ class SIMOrchestrator:
         sql_executed: Optional[str],
         sql_rows: List[Dict[str, Any]],
     ) -> None:
-        if sql_executed and sql_rows:
-            self.session_sql_memory[session_id] = {
-                "question": question,
-                "sql_executed": sql_executed,
-                "sql_rows": list(sql_rows[:40]),
-            }
+        if sql_executed and sql_rows and session_id:
+            key = session_id if session_id != "default" else "default"
+            with self._mem_lock:
+                self.session_sql_memory[key] = {
+                    "question": question,
+                    "sql_executed": sql_executed,
+                    "sql_rows": list(sql_rows[:50]),
+                }
+                self.session_sql_memory.move_to_end(key)
+            self._prune_session_maps()
 
     def _get_latest_session_sql_context(self, session_id: str) -> Optional[Dict[str, Any]]:
+        if not session_id:
+            return None
         in_mem = self.session_sql_memory.get(session_id)
         if in_mem and in_mem.get("sql_rows"):
-            return in_mem
-        if self.interaction_store is not None and hasattr(self.interaction_store, "find_latest_sql_rows_for_session"):
+            if session_id != "default" or len(self.conversation_history.get("default", [])) > 0:
+                return in_mem
+        if (
+            session_id not in ("", "default")
+            and self.interaction_store is not None
+            and hasattr(self.interaction_store, "find_latest_sql_rows_for_session")
+        ):
             try:
                 persisted = self.interaction_store.find_latest_sql_rows_for_session(session_id)
-                if persisted and persisted.get("sql_rows"):
+                if isinstance(persisted, dict) and persisted.get("sql_rows"):
                     return persisted
+                if isinstance(persisted, tuple) and len(persisted) >= 1 and persisted[0]:
+                    return {
+                        "sql_rows": list(persisted[0]),
+                        "question": str(persisted[1]) if len(persisted) >= 2 else "",
+                        "sql_executed": persisted[2] if len(persisted) >= 3 else None,
+                    }
             except Exception:
                 pass
         return None
@@ -757,64 +1216,184 @@ class SIMOrchestrator:
         except Exception:
             pass
 
-        for tname in ref_tables[:4]:
-            tmeta = self.db_manager.catalog.tables.get(tname)
-            if not tmeta:
-                continue
-            col_map = {c.name.lower(): c.name for c in tmeta.columns}
-            try:
-                if "ano_referencia" in col_map:
-                    yr_col = col_map["ano_referencia"]
-                    cnt, min_y, max_y = self.db_manager.conn.execute(
-                        f'SELECT COUNT(*), MIN("{yr_col}"), MAX("{yr_col}") FROM "{tname}"'
-                    ).fetchone()
-                    lines.append(
-                        f"- Tabela `{tname}`: {cnt} registros totais | `ano_referencia` disponível: {min_y} a {max_y} "
-                        f"| Grão: {tmeta.grain_type} ({tmeta.counting_rule})"
-                    )
-                else:
-                    cnt = self.db_manager.conn.execute(f'SELECT COUNT(*) FROM "{tname}"').fetchone()[0]
-                    lines.append(
-                        f"- Tabela `{tname}`: {cnt} registros totais (sem coluna `ano_referencia` direta) "
-                        f"| Grão: {tmeta.grain_type} ({tmeta.counting_rule})"
-                    )
-            except Exception:
-                pass
-
-            for fc in sorted(filtered_cols):
-                real_col = col_map.get(fc.lower())
-                if not real_col or real_col.lower() == "ano_referencia":
+        diag_cur = self.db_manager.conn.cursor()
+        try:
+            for tname in ref_tables[:4]:
+                tmeta = self.db_manager.catalog.tables.get(tname)
+                if not tmeta:
                     continue
+                col_map = {c.name.lower(): c.name for c in tmeta.columns}
                 try:
-                    rows = self.db_manager.conn.execute(
-                        f'SELECT CAST("{real_col}" AS VARCHAR) AS v, COUNT(*) AS n '
-                        f'FROM "{tname}" WHERE "{real_col}" IS NOT NULL AND TRIM(CAST("{real_col}" AS VARCHAR)) <> \'\' '
-                        f'GROUP BY 1 ORDER BY n DESC LIMIT 12'
-                    ).fetchall()
-                    if rows:
-                        sample_str = ", ".join(f"'{str(r[0])[:45]}' ({r[1]})" for r in rows)
-                        lines.append(f"  * Valores reais de `{tname}.{real_col}` no banco: {sample_str}")
-                    else:
+                    if "ano_referencia" in col_map:
+                        yr_col = col_map["ano_referencia"]
+                        cnt, min_y, max_y = diag_cur.execute(
+                            f'SELECT COUNT(*), MIN("{yr_col}"), MAX("{yr_col}") FROM "{tname}"'
+                        ).fetchone()
                         lines.append(
-                            f"  * ATENÇÃO: A coluna `{tname}.{real_col}` está 100% NULA/VAZIA! "
-                            f"NÃO filtre por `{real_col}`; use uma Gold View (`vw_gold_*`) ou outra coluna preenchida da tabela."
+                            f"- Tabela `{tname}`: {cnt} registros totais | `ano_referencia` disponível: {min_y} a {max_y} "
+                            f"| Grão: {tmeta.grain_type} ({tmeta.counting_rule})"
+                        )
+                    else:
+                        cnt = diag_cur.execute(f'SELECT COUNT(*) FROM "{tname}"').fetchone()[0]
+                        lines.append(
+                            f"- Tabela `{tname}`: {cnt} registros totais (sem coluna `ano_referencia` direta) "
+                            f"| Grão: {tmeta.grain_type} ({tmeta.counting_rule})"
                         )
                 except Exception:
                     pass
 
+                for fc in sorted(filtered_cols):
+                    real_col = col_map.get(fc.lower())
+                    if not real_col or real_col.lower() == "ano_referencia":
+                        continue
+                    try:
+                        rows = diag_cur.execute(
+                            f'SELECT CAST("{real_col}" AS VARCHAR) AS v, COUNT(*) AS n '
+                            f'FROM "{tname}" WHERE "{real_col}" IS NOT NULL AND TRIM(CAST("{real_col}" AS VARCHAR)) <> \'\' '
+                            f'GROUP BY 1 ORDER BY n DESC LIMIT 12'
+                        ).fetchall()
+                        if rows:
+                            sample_str = ", ".join(f"'{str(r[0])[:45]}' ({r[1]})" for r in rows)
+                            lines.append(f"  * Valores reais de `{tname}.{real_col}` no banco: {sample_str}")
+                        else:
+                            lines.append(
+                                f"  * ATENÇÃO: A coluna `{tname}.{real_col}` está 100% NULA/VAZIA! "
+                                f"NÃO filtre por `{real_col}`; use uma Gold View (`vw_gold_*`) ou outra coluna preenchida da tabela."
+                            )
+                    except Exception:
+                        pass
+        finally:
+            try:
+                diag_cur.close()
+            except Exception:
+                pass
+
         q_norm = normalize_text_for_dedup(effective_question)
-        if re.search(r"\b202[6-9]\b", q_norm):
+        max_cat_yr = int(getattr(self.db_manager.catalog, "max_data_year", 2026) or 2026)
+        fut_yrs_diag = [int(y) for y in re.findall(r"\b(20\d{2})\b", q_norm) if int(y) > max_cat_yr]
+        if fut_yrs_diag:
             lines.append(
-                "- ORIENTAÇÃO PARA EXERCÍCIO FUTURO (2026/2027+): As bases consolidadas encerram-se em 2025. "
-                "REMOVA o filtro `ano_referencia = 2026/2027` e consulte a série histórica oficial de 2020 a 2025 "
+                f"- ORIENTAÇÃO PARA EXERCÍCIO FUTURO ({'/'.join(str(y) for y in sorted(set(fut_yrs_diag)))}): As bases consolidadas vão até {max_cat_yr}. "
+                f"REMOVA o filtro de ano futuro (> {max_cat_yr}) e consulte a série histórica oficial até {max_cat_yr} "
                 "(ex.: `SELECT * FROM vw_gold_orcamento_previsto_vs_realizado ORDER BY ano_referencia`) para fundamentar a resposta."
             )
         lines.append(
             "- AÇÃO REQUERIDA: Gere uma NOVA consulta SQL ajustando os nomes/valores de filtro para os valores reais acima, "
-            "priorizando as Gold Views (`vw_gold_orcamento_previsto_vs_realizado`, `vw_gold_folha_servidores`, "
+            "priorizando as Gold Views (`vw_gold_orcamento_previsto_vs_realizado`, `vw_gold_orcamento_por_orgao`, `vw_gold_folha_servidores`, "
             "`vw_gold_frota_consolidada`, `vw_gold_execucao_despesa_credor`, `vw_gold_fornecedores_qsa_360`)."
         )
         return "\n".join(lines)
+
+    def _has_unmatched_literal_predicate(
+        self, candidate_sql: str, returned_rows: List[Dict[str, Any]]
+    ) -> Optional[str]:
+        """
+        Prova Cirúrgica de Existência de Predicado (< 10ms):
+        Quando uma agregação escalar sem GROUP BY retorna 1 linha com todos os indicadores = 0 ou NULL
+        (ex.: `SELECT COUNT(*) AS n, SUM(vlr) AS total FROM tbl WHERE dsc_lotacao ILIKE '%FANTASMA%'`),
+        verifica isoladamente se cada predicado literal categórico no WHERE existe em ao menos 1 linha
+        da tabela base.
+        - Se algum filtro literal tiver 0 correspondências na tabela inteira -> filtro fantasma comprovado -> aciona Self-Correction!
+        - Se todos os filtros literais existirem no banco -> zero legítimo (ex.: 0 obras atrasadas) -> NÃO refaz!
+        """
+        if len(returned_rows) != 1:
+            return None
+        row0 = returned_rows[0]
+        if not row0:
+            return None
+
+        non_dim_vals = [
+            v
+            for k, v in row0.items()
+            if k.lower() not in ("ano_referencia", "seq_orgao", "cod_orgao", "cod_orgao_norm")
+        ]
+        if not non_dim_vals:
+            return None
+        for v in non_dim_vals:
+            if v is None:
+                continue
+            if isinstance(v, (int, float)) and not isinstance(v, bool) and float(v) == 0.0:
+                continue
+            return None
+
+        try:
+            parsed = sqlglot.parse_one(candidate_sql, read="duckdb")
+        except Exception:
+            return None
+
+        # Apenas para agregações escalares sem GROUP BY sobre 1 única tabela física/Gold View (sem ambiguidade de JOIN)
+        if parsed.find(exp.Group) is not None:
+            return None
+        if not any(
+            parsed.find(agg_cls) is not None
+            for agg_cls in (exp.Count, exp.Sum, exp.Avg, exp.Max, exp.Min)
+        ):
+            return None
+
+        cte_names = {c.alias_or_name.lower() for c in parsed.find_all(exp.CTE)}
+        real_tables: List[str] = []
+        for tb in parsed.find_all(exp.Table):
+            tname = (tb.name or "").strip()
+            if tname and tname.lower() not in cte_names:
+                for cat_t in self.db_manager.catalog.tables:
+                    if cat_t.lower() == tname.lower() and cat_t not in real_tables:
+                        real_tables.append(cat_t)
+        if len(real_tables) != 1:
+            return None
+
+        target_tbl = real_tables[0]
+        tmeta = self.db_manager.catalog.tables.get(target_tbl)
+        if not tmeta:
+            return None
+        valid_cols_lower = {c.name.lower(): c.name for c in tmeta.columns}
+
+        where_node = parsed.args.get("where")
+        if where_node is None:
+            return None
+
+        # Não disparar se houver subqueries complexas ou negações globais sobre limiares numéricos puros
+        candidate_preds: List[exp.Expression] = []
+        for pred in where_node.find_all((exp.EQ, exp.ILike, exp.Like, exp.In)):
+            # Ignorar se estiver dentro de NOT (...) — negação explícita
+            anc = pred.parent
+            inside_not_or_or = False
+            while anc is not None and anc is not where_node:
+                if isinstance(anc, (exp.Not, exp.Or, exp.Subquery)):
+                    inside_not_or_or = True
+                    break
+                anc = anc.parent
+            if inside_not_or_or:
+                continue
+
+            cols_in_pred = list(pred.find_all(exp.Column))
+            lits_in_pred = [l for l in pred.find_all(exp.Literal) if l.is_string and str(l.this or "").strip()]
+            if len(cols_in_pred) != 1 or not lits_in_pred:
+                continue
+            c_name_low = (cols_in_pred[0].name or "").strip().lower()
+            if c_name_low == "ano_referencia" or c_name_low not in valid_cols_lower:
+                continue
+            candidate_preds.append(pred)
+
+        if not candidate_preds:
+            return None
+
+        for pred in candidate_preds[:4]:
+            pred_copy = pred.copy()
+            for col_n in pred_copy.find_all(exp.Column):
+                real_c = valid_cols_lower.get((col_n.name or "").lower(), col_n.name)
+                col_n.set("table", None)
+                col_n.set("this", exp.Identifier(this=real_c, quoted=True))
+            pred_sql = pred_copy.sql(dialect="duckdb")
+            probe_sql = f'SELECT EXISTS(SELECT 1 FROM "{target_tbl}" WHERE {pred_sql}) AS has_match'
+            try:
+                probe_res = self.db_manager.execute_safe_query(probe_sql, role="admin", enforce_limit=False)
+                if probe_res.get("status") == "sucesso" and probe_res.get("dados"):
+                    if not bool(probe_res["dados"][0].get("has_match")):
+                        return f"O filtro `{pred_sql}` possui 0 registros correspondentes em `{target_tbl}`."
+            except Exception:
+                continue
+
+        return None
 
     def _load_golden_sql_index(self) -> Dict[str, str]:
         index: Dict[str, str] = {}
@@ -853,7 +1432,9 @@ class SIMOrchestrator:
                 or q_norm.startswith("e no ")
                 or q_norm.startswith("e na ")
                 or q_norm.startswith("e em ")
-                or q_norm.startswith("qual o ")
+                or q_norm.startswith("dessa ")
+                or q_norm.startswith("desse ")
+                or q_norm.startswith("disso")
                 or re.fullmatch(r"(e\s+)?(em\s+|no\s+ano\s+de\s+)?202[0-6]\??", q_norm) is not None
             )
         )
@@ -881,10 +1462,16 @@ class SIMOrchestrator:
 
         q_norm = normalize_text_for_dedup(question)
 
+        if SemanticIntentGuardrail._detect_meta_catalog_signal(question):
+            return "conversational_identity"
+
         has_explicit_analytical_request = bool(
             re.search(
-                r"\b(quanto|quais\s+(?:os|as|foram|empresas|fornecedores|contratos|decretos|portarias|servidores)|"
-                r"gastou|gastos\s+com|total\s+pago|despesa\s+com|valor\s+pago|202[0-6])\b",
+                r"\b(quanto|quantos|quantas|qual\s+(?:o|a|e)\s+(?!seu\b|sua\b|funcao\b|papel\b)|"
+                r"quem\s+(?:e|ocupa|sao)\s+(?!voce\b|vc\b|tu\b|o\s+sim\b|esse\b|este\b)|"
+                r"quais\s+(?:os|as|foram|empresas|fornecedores|contratos|decretos|portarias|servidores|modalidades)|"
+                r"gastou|gastos\s+com|total\s+pago|despesa\s+com|valor\s+pago|salario|frota|orcamento|licitac|"
+                r"modalidade|servidor|funcionari|secretari|prefeito|fornecedor|decreto|portaria|grafico|tabela|202[0-9])\b",
                 q_norm,
             )
         )
@@ -895,20 +1482,40 @@ class SIMOrchestrator:
         ):
             return "conversational_identity"
 
-        if _CONCEPTUAL_DOUBT_REGEX.search(q_norm) is not None and not re.search(r"\b202[0-6]\b", q_norm):
+        if _CONCEPTUAL_DOUBT_REGEX.search(q_norm) and not re.search(r"\b202[0-9]\b", q_norm):
             return "conceptual_doubt"
 
         if (
             _FOLLOWUP_REFORMAT_REGEX.search(q_norm) is not None
-            or ("grafico" in q_norm and not any(w in q_norm for w in ("orcamento", "saude", "educacao", "folha", "frota", "fornecedor")))
+            or (
+                ("grafico" in q_norm or SemanticIntentGuardrail._detect_table_signal(question))
+                and not any(
+                    w in q_norm
+                    for w in (
+                        "orcamento", "saude", "educacao", "folha", "frota", "fornecedor",
+                        "modalidade", "licitac", "servidor", "funcionari", "secretari", "prefeito",
+                        "camara", "contrato", "ultimos",
+                    )
+                )
+            )
         ) and not any(
-            kw in q_norm for kw in ("quanto", "quais empresas", "maior", "maiores", "total pago", "2020", "2021", "2022", "2023", "2024", "2025")
+            kw in q_norm for kw in ("quanto", "quais empresas", "maior", "maiores", "total pago", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027")
         ):
             return "conversational_followup"
 
         tenant_city = normalize_text_for_dedup(self.db_manager.tenant.municipality_name)
-        for city in OTHER_MUNICIPALITIES:
-            if city in q_norm and tenant_city not in q_norm:
+        _ambiguous_city_nouns = {
+            "contagem", "formiga", "arcos", "luz", "oliveira", "pompeu",
+            "conquista", "bandeira", "campanha", "passos", "extrema",
+        }
+        for city in self._get_other_municipalities():
+            if tenant_city in q_norm:
+                break
+            if city in _ambiguous_city_nouns:
+                loc_pat = rf"\b(?:em|do municipio de|no municipio de|da prefeitura de|na prefeitura de|prefeitura de|cidade de)\s+{re.escape(city)}\b"
+                if re.search(loc_pat, q_norm):
+                    return "out_of_scope_municipality"
+            elif re.search(rf"\b{re.escape(city)}\b", q_norm):
                 return "out_of_scope_municipality"
 
         for topic in OUT_OF_SCOPE_TOPICS:
@@ -1030,81 +1637,11 @@ class SIMOrchestrator:
                 if any(k in q_norm for k in kws):
                     return explanation, f"**Esclarecimento Técnico-Conceitual ({city_str}):**\n{explanation}", "SIM Conceptual Knowledge Base (0 tokens)"
 
-        # 2. Se há histórico na sessão (usuário pedindo resumo, gráfico, reformulação ou explicação sobre a resposta anterior)
+        # 2. Se há histórico na sessão (usuário pedindo resumo, reformulação ou explicação sobre a resposta anterior)
         prev_assistant_msgs = [m["content"] for m in hist_list if m.get("role") == "assistant" and m.get("content")]
         prev_user_msgs = [m["content"] for m in hist_list if m.get("role") == "user" and m.get("content")]
         last_answer = prev_assistant_msgs[-1] if prev_assistant_msgs else ""
         last_question = prev_user_msgs[-1] if prev_user_msgs else ""
-
-        # 2a. Geração direta de Gráfico Visual em Barras (ASCII/Unicode) para WhatsApp e Web
-        if "grafico" in q_norm:
-            chart_items: List[Tuple[str, float, str]] = []
-            if last_answer:
-                for line in last_answer.split("\n"):
-                    line_s = line.strip()
-                    if not (line_s.startswith("•") or line_s.startswith("- ")):
-                        continue
-                    yr_m = re.search(r"\b(202[0-7])\b", line_s)
-                    brl_matches = re.findall(r"R\$\s*([\d\.,]+)", line_s)
-                    if brl_matches:
-                        raw_num = brl_matches[-1].replace(".", "").replace(",", ".")
-                        try:
-                            val_f = float(raw_num)
-                            lbl = f"Ano {yr_m.group(1)}" if yr_m else line_s.split("—")[0].replace("•", "").replace("*", "").strip()[:28]
-                            chart_items.append((lbl, val_f, f"R$ {brl_matches[-1]}"))
-                        except Exception:
-                            pass
-                    else:
-                        num_matches = re.findall(r"\*\*([\d\.]+)\*\*", line_s)
-                        if num_matches:
-                            raw_num = num_matches[-1].replace(".", "")
-                            if raw_num.isdigit() and int(raw_num) not in (2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027):
-                                val_f = float(raw_num)
-                                lbl = f"Ano {yr_m.group(1)}" if yr_m else line_s.split("—")[0].replace("•", "").replace("*", "").strip()[:28]
-                                chart_items.append((lbl, val_f, num_matches[-1]))
-
-                if not chart_items:
-                    # Tentar extrair pares (Ano 202X ... R$ X milhoes) do parágrafo narrativo
-                    for m_yr_val in re.finditer(r"\b(202[0-5])\b[^R\n]{0,60}R\$\s*([\d\.,]+)\s*(milh|mil)?", last_answer, re.IGNORECASE):
-                        yr_s = m_yr_val.group(1)
-                        num_s = m_yr_val.group(2)
-                        mult_s = (m_yr_val.group(3) or "").lower()
-                        try:
-                            base_f = float(num_s.replace(".", "").replace(",", ".") if "," in num_s else num_s.replace(",", "."))
-                            if mult_s.startswith("milh"):
-                                base_f *= 1_000_000.0
-                            disp = f"R$ {num_s} milhões" if mult_s.startswith("milh") else f"R$ {num_s}"
-                            chart_items.append((f"Ano {yr_s}", base_f, disp))
-                        except Exception:
-                            pass
-
-            if not chart_items:
-                # Se pediu gráfico sem consulta prévia numérica, exibir o gráfico oficial da evolução orçamentária de Caeté (2020-2025)
-                chart_items = [
-                    ("2020 (LOA)", 125493351.20, "R$ 125,49 M"),
-                    ("2021 (LOA)", 132375778.23, "R$ 132,38 M"),
-                    ("2022 (LOA)", 147844515.55, "R$ 147,84 M"),
-                    ("2023 (LOA)", 227430636.96, "R$ 227,43 M"),
-                    ("2024 (LOA)", 221765888.37, "R$ 221,77 M"),
-                    ("2025 (LOA)", 266827763.63, "R$ 266,83 M"),
-                ]
-                title_ctx = f"Evolução do Orçamento Anual Previsto (LOA) de {city_str} (2020 a 2025)"
-            else:
-                title_ctx = f"Comparativo Visual — {last_question or f'Dados de {city_str}'}"
-
-            max_v = max((it[1] for it in chart_items), default=1.0) or 1.0
-            bar_lines = [f"**Gráfico Comparativo em Barras ({title_ctx}):**\n"]
-            for lbl, val_f, disp_v in chart_items[:10]:
-                filled = max(1, int(round((val_f / max_v) * 14))) if val_f > 0 else 0
-                empty = max(0, 14 - filled)
-                bar_str = ("█" * filled) + ("░" * empty)
-                pct_rel = (val_f / max_v) * 100.0 if max_v > 0 else 0.0
-                bar_lines.append(f"• **{lbl}**: `{bar_str}` **{disp_v}** ({pct_rel:.0f}% do pico)")
-            bar_lines.append(
-                f"\n*Representação visual gerada diretamente pela Plataforma SIM de {city_str} com base nos registros oficiais auditados.*"
-            )
-            chart_text = "\n".join(bar_lines)
-            return chart_text, chart_text, "SIM Visual Bar Chart Generator (0 tokens)"
 
         openai_key = get_configured_openai_key(llm_api_key if (llm_provider == "openai" or (llm_api_key and llm_api_key.startswith("sk-"))) else None)
         gemini_key = (
@@ -1114,9 +1651,9 @@ class SIMOrchestrator:
         )
 
         if last_answer and (openai_key or gemini_key):
-            from sim_platform.security.semantic_guardrail import _detect_legal_frameworks
+            from sim_platform.security.semantic_guardrail import extract_statutory_legal_notes
 
-            legal_notes = _detect_legal_frameworks(f"{last_question} {question}")
+            legal_notes = extract_statutory_legal_notes(f"{last_question} {question}")
             legal_block = ("\nMarco Legal Federal Aplicável:\n- " + "\n- ".join(legal_notes) + "\n") if legal_notes else ""
             conv_prompt = (
                 f"Você é o assistente institucional de dados públicos do Município de {city_str}.\n"
@@ -1326,6 +1863,12 @@ class SIMOrchestrator:
         llm_provider: Optional[str] = None,
         llm_api_key: Optional[str] = None,
         legal_framework_notes: Optional[List[str]] = None,
+        chart_generated: bool = False,
+        chart_caption: Optional[str] = None,
+        table_generated: bool = False,
+        table_caption: Optional[str] = None,
+        table_totals: Optional[Dict[str, str]] = None,
+        limit_applied: bool = False,
     ) -> Dict[str, Any]:
         """
         Gera duas apresentações complementares e factualmente idênticas para a mesma resposta:
@@ -1353,9 +1896,41 @@ class SIMOrchestrator:
 
         llm_narrative: Optional[str] = None
         llm_inst_summary: Optional[str] = None
+        llm_chart_title: Optional[str] = None
+        llm_table_title: Optional[str] = None
         synth_engine = "SIM Dual-Perspective Narrative Synthesizer"
 
         sql_failed_flag = bool(intent in ("sql_analytics", "hybrid_sql_rag") and not sql_executed and not sql_rows)
+        eff_remit_human: Optional[str] = None
+        eff_max_yr: Optional[int] = None
+        if sql_executed:
+            try:
+                cat = self.db_manager.catalog
+                sql_low_ref = sql_executed.lower()
+                referenced_tbls = [
+                    tname
+                    for tname in cat.tables
+                    if re.search(rf"\b{re.escape(tname.lower())}\b", sql_low_ref)
+                ]
+                if referenced_tbls:
+                    if hasattr(cat, "get_effective_freshness_human"):
+                        eff_remit_human = cat.get_effective_freshness_human(referenced_tbls)
+                    tbl_max_yrs = [
+                        max(cat.tables[t].years_available)
+                        for t in referenced_tbls
+                        if getattr(cat.tables[t], "years_available", None)
+                    ]
+                    if tbl_max_yrs:
+                        eff_max_yr = max(tbl_max_yrs)
+                        if not eff_remit_human and eff_max_yr < int(getattr(cat, "max_data_year", 2026) or 2026):
+                            eff_remit_human = (
+                                f"agosto de 2025 (última remessa granular de empenhos/frota consolidada para {eff_max_yr})"
+                                if eff_max_yr == 2025 and self.db_manager.tenant.tenant_id in ("caete_mg_3110004", "caete-mg")
+                                else f"exercício {eff_max_yr} (última remessa disponível nas tabelas consultadas)"
+                            )
+            except Exception:
+                pass
+
         if (sql_rows or rag_chunks or legal_framework_notes) and (openai_key or gemini_key):
             synth_pkg = self.prompt_builder.build_naturalization_prompt(
                 question=question,
@@ -1366,6 +1941,13 @@ class SIMOrchestrator:
                 legal_framework_notes=legal_framework_notes,
                 transparency_warnings=warnings,
                 sql_failed=sql_failed_flag,
+                chart_generated=chart_generated,
+                chart_caption=chart_caption,
+                table_generated=table_generated,
+                table_caption=table_caption,
+                limit_applied=limit_applied,
+                effective_remittance_human=eff_remit_human,
+                effective_max_year=eff_max_yr,
             )
             if openai_key and openai_key.startswith("sk-"):
                 try:
@@ -1377,14 +1959,14 @@ class SIMOrchestrator:
                         json={
                             "model": model_name,
                             "temperature": 0.1,
-                            "max_tokens": 550,
+                            "max_tokens": 950,
                             "response_format": {"type": "json_object"},
                             "messages": [
                                 {"role": "system", "content": synth_pkg["system"]},
                                 {"role": "user", "content": synth_pkg["user"]},
                             ],
                         },
-                        timeout=16,
+                        timeout=18,
                     )
                     if resp.status_code == 200:
                         data_j = resp.json()
@@ -1398,8 +1980,16 @@ class SIMOrchestrator:
                             parsed_synth = json.loads(raw_content)
                             llm_narrative = strip_emojis(str(parsed_synth.get("citizen_intro") or "").strip()) or None
                             llm_inst_summary = strip_emojis(str(parsed_synth.get("auditor_exec_summary") or "").strip()) or None
+                            llm_chart_title = strip_emojis(str(parsed_synth.get("chart_title") or "").strip()) or None
+                            llm_table_title = strip_emojis(str(parsed_synth.get("table_title") or "").strip()) or None
                         except Exception:
-                            llm_narrative = strip_emojis(raw_content)
+                            salvaged = _salvage_truncated_json_intro(raw_content)
+                            llm_narrative = strip_emojis(salvaged["citizen_intro"]) if salvaged["citizen_intro"] else None
+                            llm_inst_summary = strip_emojis(salvaged["auditor_exec_summary"]) if salvaged["auditor_exec_summary"] else None
+                            llm_chart_title = strip_emojis(salvaged["chart_title"]) if salvaged["chart_title"] else None
+                            llm_table_title = strip_emojis(salvaged["table_title"]) if salvaged["table_title"] else None
+                            if not llm_narrative and not raw_content.lstrip().startswith("{") and '"citizen_intro"' not in raw_content:
+                                llm_narrative = strip_emojis(raw_content)
                         synth_engine = f"OpenAI ({model_name}) Dual Synthesis"
                 except Exception:
                     pass
@@ -1413,9 +2003,13 @@ class SIMOrchestrator:
                         headers={"Content-Type": "application/json"},
                         json={
                             "contents": [{"parts": [{"text": combined_gemini}]}],
-                            "generationConfig": {"temperature": 0.1, "responseMimeType": "application/json"},
+                            "generationConfig": {
+                                "temperature": 0.1,
+                                "maxOutputTokens": 950,
+                                "responseMimeType": "application/json",
+                            },
                         },
-                        timeout=16,
+                        timeout=18,
                     )
                     if resp.status_code == 200:
                         data_j = resp.json()
@@ -1431,11 +2025,38 @@ class SIMOrchestrator:
                                 parsed_synth = json.loads(raw_content)
                                 llm_narrative = strip_emojis(str(parsed_synth.get("citizen_intro") or "").strip()) or None
                                 llm_inst_summary = strip_emojis(str(parsed_synth.get("auditor_exec_summary") or "").strip()) or None
+                                llm_chart_title = strip_emojis(str(parsed_synth.get("chart_title") or "").strip()) or None
+                                llm_table_title = strip_emojis(str(parsed_synth.get("table_title") or "").strip()) or None
                             except Exception:
-                                llm_narrative = strip_emojis(raw_content)
+                                salvaged = _salvage_truncated_json_intro(raw_content)
+                                llm_narrative = strip_emojis(salvaged["citizen_intro"]) if salvaged["citizen_intro"] else None
+                                llm_inst_summary = strip_emojis(salvaged["auditor_exec_summary"]) if salvaged["auditor_exec_summary"] else None
+                                llm_chart_title = strip_emojis(salvaged["chart_title"]) if salvaged["chart_title"] else None
+                                llm_table_title = strip_emojis(salvaged["table_title"]) if salvaged["table_title"] else None
+                                if not llm_narrative and not raw_content.lstrip().startswith("{") and '"citizen_intro"' not in raw_content:
+                                    llm_narrative = strip_emojis(raw_content)
                             synth_engine = "Google Gemini 2.5 Flash Dual Synthesis"
                 except Exception:
                     pass
+
+        # Cinto de segurança: se um gráfico ou tabela PNG já foi gerado, remover qualquer frase residual de recusa
+        if (chart_generated or table_generated) and llm_narrative:
+            apology_re = re.compile(
+                r"[^.!?\n]*\bn[aã]o\s+(?:[eé]\s+poss[ií]vel|consigo|posso|temos\s+como)\s+"
+                r"(?:gerar|criar|enviar|exibir|fazer|produzir|montar)\s+(?:um\s+|uma\s+|o\s+|a\s+)?(?:gr[aá]fico|tabela|planilha|quadro|imagem|visualiza[cç][aã]o)[^.!?\n]*[.!?]?\s*",
+                re.IGNORECASE,
+            )
+            cleaned_narr = apology_re.sub("", llm_narrative).strip()
+            if table_generated:
+                # Remover linhas de tabela Markdown/ASCII caso o LLM ainda tenha inserido alguma
+                cleaned_narr = "\n".join(
+                    ln for ln in cleaned_narr.splitlines()
+                    if not (ln.strip().startswith("|") and ln.strip().endswith("|"))
+                    and not re.match(r"^\s*[\|\+\-]{5,}\s*$", ln)
+                ).strip()
+            llm_narrative = cleaned_narr or (
+                f"Segue em anexo a visualização institucional gerada com os dados oficiais da Prefeitura de **{city_str}**."
+            )
 
         # Construir narrativas diferenciadas: Cidadão usa síntese conversacional; Institucional usa síntese analítica estruturada
         citizen_intro: Optional[str] = llm_narrative
@@ -1476,39 +2097,103 @@ class SIMOrchestrator:
                         f"o indicador **{m_label}** (`{m_col}`) apurado foi de **{m_val}**{extra_citizen}."
                     )
             elif "ano_referencia" in first_row and len(sql_rows) >= 2 and num_cols:
-                m_col = num_cols[-1]
+                q_low_m = normalize_text_for_dedup(question)
+                non_empty_num_cols = [
+                    c for c in num_cols
+                    if any(r.get(c) is not None and float(r.get(c) or 0) != 0.0 for r in sql_rows)
+                ] or num_cols
+
+                def _select_narrative_col(cands: List[str]) -> str:
+                    if any(w in q_low_m for w in ("populac", "habitante")):
+                        hit = next((c for c in cands if "populac" in c.lower()), None)
+                        if hit:
+                            return hit
+                    if "per capita" in q_low_m or "por habitante" in q_low_m:
+                        hit = next((c for c in cands if "per_capita" in c.lower()), None)
+                        if hit:
+                            return hit
+                    if "pib" in q_low_m:
+                        hit = next((c for c in cands if "pib" in c.lower()), None)
+                        if hit:
+                            return hit
+                    if "idhm" in q_low_m or "idh" in q_low_m:
+                        hit = next((c for c in cands if "idhm" in c.lower()), None)
+                        if hit:
+                            return hit
+                    if "ideb" in q_low_m:
+                        hit = next((c for c in cands if "ideb" in c.lower()), None)
+                        if hit:
+                            return hit
+                    if any(w in q_low_m for w in ("rcl", "receita corrente", "contas")):
+                        hit = next((c for c in cands if "receita_corrente_liquida" in c.lower() or "rcl" in c.lower()), None)
+                        if hit:
+                            return hit
+                    if "pessoal" in q_low_m or "lrf" in q_low_m:
+                        hit = next((c for c in cands if "pct_despesa_pessoal" in c.lower() or "despesa_pessoal" in c.lower()), None)
+                        if hit:
+                            return hit
+                    if "saude" in q_low_m or "siops" in q_low_m:
+                        hit = next((c for c in cands if "saude" in c.lower()), None)
+                        if hit:
+                            return hit
+                    if "educac" in q_low_m or "mde" in q_low_m:
+                        hit = next((c for c in cands if "educac" in c.lower() or "mde" in c.lower()), None)
+                        if hit:
+                            return hit
+                    non_const = [
+                        c for c in cands
+                        if not c.lower().startswith(("area_", "limite_", "minimo_"))
+                    ]
+                    return (non_const[-1] if non_const else cands[-1])
+
+                m_col = _select_narrative_col(non_empty_num_cols)
                 m_label = _human_col_label(m_col)
                 sorted_yr = sorted(sql_rows, key=lambda r: int(r.get("ano_referencia") or 0))
-                y0 = _format_brl_or_val("ano_referencia", sorted_yr[0].get("ano_referencia"))
-                y1 = _format_brl_or_val("ano_referencia", sorted_yr[-1].get("ano_referencia"))
-                v0 = float(sorted_yr[0].get(m_col) or 0)
-                v1 = float(sorted_yr[-1].get(m_col) or 0)
-                total_sum = sum(float(r.get(m_col) or 0) for r in sql_rows)
-                delta_pct = ((v1 - v0) / v0) * 100 if v0 > 0 else 0.0
+                valid_yr_rows = [r for r in sorted_yr if r.get(m_col) is not None] or sorted_yr
+                y0 = _format_brl_or_val("ano_referencia", valid_yr_rows[0].get("ano_referencia"))
+                y1 = _format_brl_or_val("ano_referencia", valid_yr_rows[-1].get("ano_referencia"))
+                v0 = float(valid_yr_rows[0].get(m_col) or 0)
+                v1 = float(valid_yr_rows[-1].get(m_col) or 0)
+                total_sum = sum(float(r.get(m_col) or 0) for r in valid_yr_rows)
+                delta_pct = ((v1 - v0) / v0) * 100 if v0 > 0 and y0 != y1 else 0.0
                 delta_citizen = (
                     f", o que representa uma variação de **{delta_pct:+.1f}%** no período"
-                    if v0 > 0
+                    if v0 > 0 and y0 != y1
                     else ""
                 )
-                is_ratio_col = any(p in m_col.lower() for p in ("pct", "percent", "taxa", "isf_m", "idhm", "ideb", "per_capita"))
+                is_ratio_col = any(
+                    p in m_col.lower()
+                    for p in (
+                        "pct", "percent", "taxa", "isf_m", "idhm", "ideb", "per_capita",
+                        "populac", "habitante", "area_", "km2", "densidade", "limite_", "minimo_",
+                        "total_servidores", "qtd_escolas", "qtd_leitos", "qtd_ubs", "qtd_estabelecimentos",
+                        "beneficiarios", "matriculas",
+                    )
+                )
                 sum_citizen = (
                     ""
-                    if is_ratio_col
-                    else f" Somando os {len(sql_rows)} anos consultados, o total acumulado foi de **{_format_brl_or_val(m_col, total_sum)}**."
+                    if is_ratio_col or len(valid_yr_rows) < 2
+                    else f" Somando os {len(valid_yr_rows)} anos consultados, o total acumulado foi de **{_format_brl_or_val(m_col, total_sum)}**."
                 )
 
                 if not citizen_intro:
-                    citizen_intro = (
-                        f"Aqui está o histórico oficial de **{city_str}** entre **{y0} e {y1}**: "
-                        f"o indicador de **{m_label.lower()}** passou de **{_format_brl_or_val(m_col, v0)}** (em {y0}) "
-                        f"para **{_format_brl_or_val(m_col, v1)}** (em {y1}){delta_citizen}.{sum_citizen}"
-                    )
+                    if y0 == y1:
+                        citizen_intro = (
+                            f"Consultei os registros oficiais de **{city_str}**: em **{y0}**, "
+                            f"o indicador de **{m_label.lower()}** foi de **{_format_brl_or_val(m_col, v0)}**."
+                        )
+                    else:
+                        citizen_intro = (
+                            f"Aqui está o histórico oficial de **{city_str}** entre **{y0} e {y1}**: "
+                            f"o indicador de **{m_label.lower()}** passou de **{_format_brl_or_val(m_col, v0)}** (em {y0}) "
+                            f"para **{_format_brl_or_val(m_col, v1)}** (em {y1}){delta_citizen}.{sum_citizen}"
+                        )
                 if not inst_intro:
                     inst_intro = (
                         f"**Síntese Executiva Multi-Exercício:** Na série histórica de **{city_str}** ({y0} a {y1}), "
                         f"o indicador **{m_label}** (`{m_col}`) evoluiu de **{_format_brl_or_val(m_col, v0)}** ({y0}) para "
                         f"**{_format_brl_or_val(m_col, v1)}** ({y1}){delta_citizen}."
-                        + ("" if is_ratio_col else f" Soma acumulada nos {len(sql_rows)} exercícios: **{_format_brl_or_val(m_col, total_sum)}**.")
+                        + ("" if is_ratio_col or len(valid_yr_rows) < 2 else f" Soma acumulada nos {len(valid_yr_rows)} exercícios: **{_format_brl_or_val(m_col, total_sum)}**.")
                     )
             elif label_cols and num_cols:
                 l_col = label_cols[0]
@@ -1531,18 +2216,23 @@ class SIMOrchestrator:
                     )
         elif rag_chunks and not citizen_intro:
             first_ch = rag_chunks[0]
+            gazette_lbl = self._get_gazette_name()
             citizen_intro = (
                 f"Encontrei **{len(rag_chunks)} publicação(ões) oficial(is)** no Diário Oficial do Município de **{city_str}** "
-                f"(*Jornal Opinião*) sobre a sua pergunta, com destaque para **{first_ch.get('tipo_ato', 'ATO OFICIAL')}** "
+                f"(*{gazette_lbl}*) sobre a sua pergunta, com destaque para **{first_ch.get('tipo_ato', 'ATO OFICIAL')}** "
                 f"(edição `{first_ch.get('source', '')}`)."
             )
             inst_intro = (
                 f"**Síntese Normativa (RAG Diário Oficial):** Recuperados **{len(rag_chunks)} ato(s) normativo(s)** "
-                f"na coleção atomizada do *Jornal Opinião* de **{city_str}**."
+                f"na coleção atomizada do *{gazette_lbl}* de **{city_str}**."
             )
 
         # Explicação conceitual acessível ao cidadão
-        concept_explanation = _explain_municipal_concepts_for_citizen(question, sample_keys)
+        concept_explanation = _explain_municipal_concepts_for_citizen(
+            question,
+            sample_keys,
+            municipality_name=self.db_manager.tenant.municipality_name,
+        )
 
         # Limitações, transparência e avisos metodológicos
         limitations_list: List[str] = []
@@ -1551,6 +2241,10 @@ class SIMOrchestrator:
         if pii_masked_count > 0:
             limitations_list.append(
                 f"[LGPD-PII] {pii_masked_count} CPF(s) de pessoas físicas foram mascarados automaticamente no perfil público (Lei 13.709/2018), preservando CNPJs empresariais."
+            )
+        if limit_applied:
+            limitations_list.append(
+                f"[LIMITE-SEGURANCA] O resultado tabular foi truncado às primeiras {len(sql_rows)} linhas pelo limite máximo de segurança do motor."
             )
 
         methodology_summary = (
@@ -1568,7 +2262,15 @@ class SIMOrchestrator:
             citizen_lines.append(citizen_intro)
 
         if warnings:
+            intro_norm_w = normalize_text_for_dedup(citizen_intro or "")
             for w in warnings:
+                # Evitar repetir o parágrafo técnico de Exercício Parcial quando a narrativa já o explicou ao cidadão
+                if (
+                    str(w.get("gap_id") or "").startswith("GAP-EXERCICIO-PARCIAL")
+                    and citizen_intro
+                    and any(tok in intro_norm_w for tok in ("parcial", "agosto", "novembro", "outubro", "remessa", "acumulad"))
+                ):
+                    continue
                 citizen_lines.append(
                     f"\n**Nota importante ({w['title']}):** {w['message']}"
                 )
@@ -1582,7 +2284,15 @@ class SIMOrchestrator:
                 citizen_lines.append(f"• {ln}")
 
         if sql_rows:
-            if len(sql_rows) > 1 or len(sample_keys) > 2:
+            if table_generated:
+                if table_totals:
+                    tot_parts = [f"**{_human_col_label(ck)}**: **{cv}**" for ck, cv in list(table_totals.items())[:3]]
+                    if tot_parts:
+                        citizen_lines.append(
+                            f"\n**Total Geral consolidado na tabela anexa ({len(sql_rows)} registros):** "
+                            + " | ".join(tot_parts)
+                        )
+            elif len(sql_rows) > 1 or len(sample_keys) > 2:
                 citizen_lines.append("\n**Principais informações encontradas:**")
                 for row in sql_rows[:6]:
                     human_parts: List[str] = []
@@ -1598,8 +2308,21 @@ class SIMOrchestrator:
                     citizen_lines.append(
                         f"*(Exibindo os 6 principais resultados de um total de {len(sql_rows)} registros oficiais.)*"
                     )
-        elif intent in ("sql_analytics", "hybrid_sql_rag") and not warnings and not citizen_intro:
-            if sql_executed:
+        elif not rag_chunks and not warnings and not citizen_intro:
+            gazette_lbl = self._get_gazette_name()
+            if intent == "rag_diario_oficial":
+                if len(getattr(self.rag_retriever, "corpus_chunks", None) or []) == 0:
+                    citizen_lines.append(
+                        f"O acervo digital de edições do Diário Oficial do Município de **{city_str}** (*{gazette_lbl}*) "
+                        f"ainda não possui PDFs sincronizados nesta instância. Assim que as edições forem depositadas em "
+                        f"`avaliacao/dados/inbox/` (ou na aba **Atualizar Dados**), a busca de leis, decretos e portarias ficará disponível."
+                    )
+                else:
+                    citizen_lines.append(
+                        f"Consultei as edições indexadas do Diário Oficial do Município de {city_str} (*{gazette_lbl}*), "
+                        f"mas não localizei atos ou publicações correspondentes aos critérios informados."
+                    )
+            elif sql_executed:
                 citizen_lines.append(
                     f"Consultei as bases oficiais da Prefeitura de {city_str}, mas não foram encontrados registros para esses critérios específicos."
                 )
@@ -1610,7 +2333,8 @@ class SIMOrchestrator:
                 )
 
         if rag_chunks:
-            citizen_lines.append("\n**Publicações vinculadas no Diário Oficial do Município (*Jornal Opinião*):**")
+            gazette_lbl = self._get_gazette_name()
+            citizen_lines.append(f"\n**Publicações vinculadas no Diário Oficial do Município (*{gazette_lbl}*):**")
             for ch in rag_chunks[:3]:
                 snippet = (ch.get("page_content") or "")[:280].replace("\n", " ").strip()
                 snippet = re.sub(r"^\[FONTE:[^\]]+\]\s*", "", snippet)
@@ -1626,6 +2350,11 @@ class SIMOrchestrator:
             )
 
         citizen_response = "\n".join(citizen_lines).strip()
+        if not citizen_response:
+            citizen_response = (
+                f"Consultei as bases públicas oficiais da Prefeitura de {city_str}, "
+                f"mas não foram encontrados registros ou publicações para os critérios informados."
+            )
 
         # =========================================================================
         # 2. CONSTRUÇÃO DA RESPOSTA TÉCNICA / AUDITOR / GESTOR (institutional_response)
@@ -1661,12 +2390,13 @@ class SIMOrchestrator:
                     for k, v in row.items()
                 ]
                 inst_lines.append("- " + " | ".join(formatted_pairs))
-        elif intent in ("sql_analytics", "hybrid_sql_rag") and not warnings and not inst_intro:
-            inst_lines.append("Não foram encontrados registros tabulares para os filtros informados.")
+        elif not rag_chunks and not warnings and not inst_intro:
+            inst_lines.append("Não foram encontrados registros tabulares ou atos normativos para os filtros informados.")
 
         if rag_chunks:
+            gazette_lbl = self._get_gazette_name()
             inst_lines.append(
-                f"\n**Atos Normativos Vinculados no Diário Oficial (*Jornal Opinião* — {len(rag_chunks)} ato(s)):**"
+                f"\n**Atos Normativos Vinculados no Diário Oficial (*{gazette_lbl}* — {len(rag_chunks)} ato(s)):**"
             )
             for ch in rag_chunks[:3]:
                 snippet = (ch.get("page_content") or "")[:320].replace("\n", " ")
@@ -1694,6 +2424,8 @@ class SIMOrchestrator:
             "methodology_summary": methodology_summary,
             "limitations_and_caveats": limitations_list,
             "synth_engine": synth_engine,
+            "chart_title": llm_chart_title,
+            "table_title": llm_table_title,
         }
 
     def _synthesize_executive_answer(
@@ -1727,32 +2459,45 @@ class SIMOrchestrator:
 
     def _compile_native_sql(self, q_raw: str, q_norm: str, allowed_src: set[str]) -> str:
         """
-        Compilador determinístico nativo (0 tokens) para as 79 tabelas e 6 Gold Views.
+        Compilador determinístico nativo (0 tokens) para as tabelas e Gold Views materializadas no catálogo ativo.
         Garante execução exata sem alucinação para perguntas canônicas, Secretarias, Índices LRF/CF88 e Trilhas TCE-MG.
         """
-        years = [int(y) for y in re.findall(r"\b(202[0-6])\b", q_norm)]
+        cat_tables_map = {k.lower(): k for k in self.db_manager.catalog.tables}
+        has_tbl = lambda t: (
+            t.lower() in cat_tables_map
+            and getattr(self.db_manager.catalog.tables[cat_tables_map[t.lower()]], "is_populated", True)
+        )
+        is_caete_tenant = self.db_manager.tenant.tenant_id in ("caete_mg_3110004", "caete-mg")
+        cat_max_yr = int(getattr(self.db_manager.catalog, "max_data_year", 2026) or 2026)
+
+        years = [int(y) for y in re.findall(r"\b(20(?:1[89]|2\d|3[0-5]))\b", q_norm)]
         if "entre" in q_norm and len(years) >= 2:
             year_filter = f"ano_referencia BETWEEN {min(years)} AND {max(years)}"
-        elif "(" in q_raw and len(years) >= 1 and re.search(r"\(.*202[0-6].*\)$", q_raw.strip()):
+        elif "(" in q_raw and len(years) >= 1 and re.search(r"\(.*20[123][0-9].*\)$", q_raw.strip()):
             year_filter = f"ano_referencia = {years[-1]}"
         elif len(years) == 1:
             year_filter = f"ano_referencia = {years[0]}"
         elif len(years) >= 2:
             year_filter = f"ano_referencia BETWEEN {min(years)} AND {max(years)}"
-        elif any(w in q_norm for w in ("evolucao", "serie", "historico", "todos os anos", "2020 a 2025")):
-            year_filter = "ano_referencia BETWEEN 2020 AND 2025"
+        elif any(w in q_norm for w in ("evolucao", "serie", "historico", "todos os anos", "2020 a 2025", "2020 a 2026", "2024 a 2026")):
+            year_filter = f"ano_referencia BETWEEN 2020 AND {cat_max_yr}"
         else:
-            year_filter = "ano_referencia = 2024"
+            year_filter = f"ano_referencia = {cat_max_yr}" if any(w in q_norm for w in ("atual", "atuais", "hoje", "agora", "este ano", "neste ano")) else "ano_referencia = 2024"
 
         # 1. Atalhos de Gold Views e Trilhas TCE-MG (Conflito de Interesses, Caronas, Frota Órfã)
-        if any(w in q_norm for w in ("conflito de interesse", "conflito de interesses", "porta giratoria", "servidor socio")):
+        if has_tbl("vw_gold_conflito_interesses_licitacao") and any(
+            w in q_norm for w in ("conflito de interesse", "conflito de interesses", "porta giratoria", "servidor socio")
+        ):
             return (
                 "SELECT num_cpf, num_cpf AS cpf_socio_servidor, nom_pessoa, dsc_cargo, dsc_lotacao, primeiro_ano_folha, ultimo_ano_folha, "
-                "nom_empresa, cnpj_empresa, dsc_tipo_participacao, total_pago_empresa "
+                "nom_empresa, cnpj_empresa, dsc_tipo_participacao, total_pago_empresa, "
+                "ha_sobreposicao_temporal, classificacao_temporal_vinculo "
                 "FROM vw_gold_conflito_interesses_licitacao ORDER BY total_pago_empresa DESC LIMIT 20"
             )
 
-        if any(w in q_norm for w in ("carona", "adesao a ata", "registro de preco", "registro de precos")):
+        if has_tbl("vw_gold_execucao_despesa_credor") and any(
+            w in q_norm for w in ("carona", "adesao a ata", "registro de preco", "registro de precos")
+        ):
             return (
                 "SELECT MAX(nom_credor) AS nom_credor, num_doc_credor, SUM(qtd_empenhos) AS qtd_empenhos_totais, "
                 "ROUND(SUM(total_empenhado_carona), 2) AS total_empenhado_carona, "
@@ -1762,72 +2507,104 @@ class SIMOrchestrator:
                 "GROUP BY num_doc_credor ORDER BY total_empenhado_carona DESC LIMIT 15"
             )
 
-        if any(w in q_norm for w in ("sem placa", "veiculo orfao", "veiculos orfaos", "placa ausente")):
+        if has_tbl("vw_gold_frota_consolidada") and any(
+            w in q_norm for w in ("sem placa", "veiculo orfao", "veiculos orfaos", "placa ausente")
+        ):
             return (
                 "SELECT ano_referencia, status_cadastro_frota, COUNT(*) AS qtd_lancamentos, "
                 "ROUND(SUM(vlr_gasto), 2) AS total_gasto_frota "
                 "FROM vw_gold_frota_consolidada GROUP BY 1, 2 ORDER BY ano_referencia DESC, total_gasto_frota DESC LIMIT 30"
             )
 
-        # 1b. Perguntas sobre titulares de Secretarias, Prefeito, Vice-Prefeito, Procurador ou Controlador na Folha (2025)
-        if any(
-            pat in q_norm
-            for pat in (
-                "quem e o atual secretario",
-                "quem e o secretario",
-                "quem e a secretaria",
-                "atual secretario",
-                "nome do secretario",
-                "quem e o prefeito",
-                "quem e o vice",
-                "quem e o procurador",
-                "quem e o controlador",
-            )
-        ) or ("secretario" in q_norm and any(w in q_norm for w in ("quem", "atual", "meio ambiente", "saude", "obras", "educacao", "administracao", "defesa", "assistencia", "fazenda"))):
+        # 1b. Perguntas sobre titulares de Secretarias, Prefeito, Vice-Prefeito, Procurador ou Controlador na Folha
+        if has_tbl("vw_gold_folha_servidores") and (
+            any(
+                pat in q_norm
+                for pat in (
+                    "quem e o atual secretario",
+                    "quem e o secretario",
+                    "quem e a secretaria",
+                    "atual secretario",
+                    "nome do secretario",
+                    "quem sao os secretarios",
+                    "secretarios municipais",
+                    "secretarios e seus",
+                    "quem e o prefeito",
+                    "quem e o vice",
+                    "quem e o procurador",
+                    "quem e o controlador",
+                )
+            ) or ("secretario" in q_norm and any(w in q_norm for w in ("quem", "atual", "quais", "tabela", "lista", "meio ambiente", "saude", "obras", "educacao", "administracao", "defesa", "assistencia", "fazenda")))
+        ):
+            c_norm_sql = "strip_accents(UPPER(COALESCE(dsc_cargo, '')))"
+            l_norm_sql = "strip_accents(UPPER(COALESCE(dsc_lotacao, '')))"
+            s_norm_sql = "strip_accents(UPPER(COALESCE(dsc_situacao, '')))"
             sec_lot_filter = ""
-            if "meio ambiente" in q_norm or "sedesma" in q_norm or "sustentavel" in q_norm:
-                sec_lot_filter = " AND (dsc_lotacao ILIKE '%SEDESMA%' OR dsc_lotacao ILIKE '%AMBIENTE%')"
+            if "meio ambiente" in q_norm or ("sedesma" in q_norm and is_caete_tenant) or "sustentavel" in q_norm:
+                sedesma_or = f"{l_norm_sql} ILIKE '%SEDESMA%' OR " if is_caete_tenant else ""
+                sec_lot_filter = (
+                    f" AND ({sedesma_or}{l_norm_sql} ILIKE '%AMBIENTE%' "
+                    f"OR {l_norm_sql} ILIKE '%SUSTENTAVEL%' OR {c_norm_sql} ILIKE '%AMBIENTE%')"
+                )
             elif "saude" in q_norm:
-                sec_lot_filter = " AND dsc_lotacao ILIKE '%SAUDE%'"
+                sec_lot_filter = f" AND ({l_norm_sql} ILIKE '%SAUDE%' OR {c_norm_sql} ILIKE '%SAUDE%')"
             elif "obras" in q_norm:
-                sec_lot_filter = " AND dsc_lotacao ILIKE '%OBRAS%'"
+                sec_lot_filter = f" AND ({l_norm_sql} ILIKE '%OBRAS%' OR {c_norm_sql} ILIKE '%OBRAS%')"
+            elif "educacao" in q_norm:
+                sec_lot_filter = f" AND ({l_norm_sql} ILIKE '%EDUCA%' OR {c_norm_sql} ILIKE '%EDUCA%')"
             elif "administracao" in q_norm:
-                sec_lot_filter = " AND dsc_lotacao ILIKE '%ADM%'"
+                sec_lot_filter = f" AND ({l_norm_sql} ILIKE '%ADM%' OR {c_norm_sql} ILIKE '%ADM%')"
             elif "defesa" in q_norm:
-                sec_lot_filter = " AND dsc_lotacao ILIKE '%DEF%'"
-            elif "assistencia" in q_norm or "social" in q_norm or "semas" in q_norm:
-                sec_lot_filter = " AND dsc_lotacao ILIKE '%SEMAS%'"
+                sec_lot_filter = f" AND ({l_norm_sql} ILIKE '%DEF%' OR {c_norm_sql} ILIKE '%DEF%')"
+            elif "assistencia" in q_norm or "social" in q_norm or ("semas" in q_norm and is_caete_tenant):
+                semas_or = f"{l_norm_sql} ILIKE '%SEMAS%' OR " if is_caete_tenant else ""
+                sec_lot_filter = (
+                    f" AND ({semas_or}{l_norm_sql} ILIKE '%ASSIST%' OR {l_norm_sql} ILIKE '%SOCIAL%' "
+                    f"OR {c_norm_sql} ILIKE '%ASSIST%' OR {c_norm_sql} ILIKE '%SOCIAL%')"
+                )
             elif "procurador" in q_norm or "juridic" in q_norm:
-                sec_lot_filter = " AND (dsc_cargo ILIKE '%PROCURADOR%' OR dsc_lotacao ILIKE '%PROCURADOR%')"
+                sec_lot_filter = f" AND ({c_norm_sql} ILIKE '%PROCURADOR%' OR {l_norm_sql} ILIKE '%PROCURADOR%')"
             elif "control" in q_norm:
-                sec_lot_filter = " AND (dsc_cargo ILIKE '%CONTRO%' OR dsc_lotacao ILIKE '%CONTRO%')"
+                sec_lot_filter = f" AND ({c_norm_sql} ILIKE '%CONTRO%' OR {l_norm_sql} ILIKE '%CONTRO%')"
             elif "prefeito" in q_norm and "secretario" not in q_norm:
-                sec_lot_filter = " AND dsc_cargo ILIKE '%PREFEITO%'"
+                sec_lot_filter = f" AND {c_norm_sql} ILIKE '%PREFEITO%'"
+
+            only_secretarios = ("secretario" in q_norm or "secretarios" in q_norm) and "prefeito" not in q_norm and not sec_lot_filter
+            cargo_clause = (
+                f"({c_norm_sql} ILIKE '%SECRETARI%' OR {c_norm_sql} ILIKE '%SEC. MUN%' OR {c_norm_sql} ILIKE '%SEC MUN%') "
+                f"AND {c_norm_sql} NOT ILIKE '%ESCOLAR%' AND {c_norm_sql} NOT ILIKE '%EXECUTIV%' AND {c_norm_sql} NOT ILIKE '%AUXILIAR%'"
+                if only_secretarios
+                else (
+                    f"(({c_norm_sql} ILIKE '%SECRETARI%' AND {c_norm_sql} NOT ILIKE '%ESCOLAR%' AND {c_norm_sql} NOT ILIKE '%AUXILIAR%') "
+                    f"OR {c_norm_sql} ILIKE '%SEC. MUN%' OR {c_norm_sql} ILIKE '%PREFEITO%' "
+                    f"OR {c_norm_sql} ILIKE '%PROCURADOR%' OR {c_norm_sql} ILIKE '%CONTROLADOR%' "
+                    f"OR {s_norm_sql} ILIKE '%AGENTE POL%')"
+                )
+            )
+            seq_sub_where = f" WHERE ano_referencia = {years[-1]}" if years else ""
             return (
-                "SELECT ano_referencia, nom_servidor, MAX(dsc_cargo) AS dsc_cargo, MAX(dsc_lotacao) AS dsc_lotacao, "
-                "ROUND(AVG(vlr_rmn_bruta), 2) AS remuneracao_mensal_bruta, "
-                "ROUND(AVG(vlr_rmn_liquida), 2) AS remuneracao_mensal_liquida "
+                "SELECT nom_servidor, MAX(dsc_cargo) AS dsc_cargo, MAX(dsc_lotacao) AS dsc_lotacao, "
+                "ROUND(MAX(vlr_rmn_bruta), 2) AS vlr_rmn_bruta, "
+                "ROUND(MAX(vlr_rmn_liquida), 2) AS vlr_rmn_liquida "
                 "FROM vw_gold_folha_servidores "
-                "WHERE ano_referencia = 2025 "
-                "AND (dsc_cargo ILIKE '%SECRETARIO MUNICIPAL%' OR dsc_cargo ILIKE '%PREFEITO%' "
-                "OR dsc_cargo ILIKE '%PROCURADOR GERAL%' OR dsc_cargo ILIKE '%CONTROLADOR%' "
-                "OR dsc_situacao ILIKE '%Agente Pol%') "
-                f"AND dsc_cargo NOT ILIKE '%VEREADOR%'{sec_lot_filter} "
-                "GROUP BY ano_referencia, nom_servidor "
-                "ORDER BY remuneracao_mensal_bruta DESC, nom_servidor LIMIT 20"
+                f"WHERE seq_dat_pagamento = (SELECT MAX(seq_dat_pagamento) FROM vw_gold_folha_servidores{seq_sub_where}) "
+                "AND COALESCE(dsc_tipo_pag, 'Mensal') = 'Mensal' "
+                f"AND {cargo_clause} "
+                f"AND {c_norm_sql} NOT ILIKE '%VEREADOR%'{sec_lot_filter} "
+                "GROUP BY nom_servidor "
+                "ORDER BY vlr_rmn_bruta DESC, nom_servidor LIMIT 25"
             )
 
         # 1c. Salário do Prefeito / Vice-Prefeito / Secretários e comparação com a média salarial municipal
-        if any(w in q_norm for w in ("prefeito", "vice-prefeito", "vice prefeito")) and any(
+        if has_tbl("vw_gold_folha_servidores") and any(w in q_norm for w in ("prefeito", "vice-prefeito", "vice prefeito")) and any(
             w in q_norm for w in ("salario", "remuneracao", "subsidio", "ganha", "recebe", "media", "mensal")
         ):
-            target_yr = years[-1] if years else 2025
-            if target_yr > 2025:
-                target_yr = 2025
+            pref_yrs = [y for y in years if 2020 <= y <= cat_max_yr] or sorted({max(2024, cat_max_yr - 2), max(2024, cat_max_yr - 1), cat_max_yr})
+            pref_yrs_sql = ", ".join(str(y) for y in pref_yrs)
             return (
                 f"WITH media_mun AS ("
                 f"SELECT ano_referencia, ROUND(AVG(vlr_rmn_bruta), 2) AS media_bruta_mun "
-                f"FROM vw_gold_folha_servidores WHERE ano_referencia IN (2024, 2025) GROUP BY ano_referencia"
+                f"FROM vw_gold_folha_servidores WHERE ano_referencia IN ({pref_yrs_sql}) GROUP BY ano_referencia"
                 f") SELECT f.ano_referencia, f.nom_servidor, MAX(f.dsc_cargo) AS dsc_cargo, "
                 f"ROUND(AVG(f.vlr_rmn_bruta), 2) AS remuneracao_mensal_bruta, "
                 f"ROUND(AVG(f.vlr_rmn_liquida), 2) AS remuneracao_mensal_liquida, "
@@ -1835,21 +2612,23 @@ class SIMOrchestrator:
                 f"ROUND(AVG(f.vlr_rmn_bruta) / NULLIF(m.media_bruta_mun, 0), 2) AS multiplo_acima_da_media "
                 f"FROM vw_gold_folha_servidores f "
                 f"JOIN media_mun m ON f.ano_referencia = m.ano_referencia "
-                f"WHERE f.ano_referencia IN (2024, 2025) AND f.dsc_cargo ILIKE '%PREFEITO%' "
+                f"WHERE f.ano_referencia IN ({pref_yrs_sql}) AND f.dsc_cargo ILIKE '%PREFEITO%' "
                 f"GROUP BY f.ano_referencia, f.nom_servidor, m.media_bruta_mun "
                 f"ORDER BY f.ano_referencia DESC, remuneracao_mensal_bruta DESC"
             )
 
         # 1d. Quadro de Funcionários: Concursados (Efetivos) vs. Contratados (Temporários) vs. Comissionados vs. Consignados
-        if any(
+        if has_tbl("vw_gold_folha_servidores") and any(
             w in q_norm
             for w in (
                 "concursado", "concursados", "consignado", "consignados", "contratado", "contratados",
                 "temporario", "temporarios", "comissionado", "comissionados", "efetivo", "efetivos",
                 "quantos funcionarios", "quantidade de funcionarios", "total de funcionarios", "quadro de servidores",
             )
+        ) and not any(
+            ent in q_norm for ent in ("empresa", "empresas", "fornecedor", "fornecedores", "credor", "credores", "cnpj")
         ):
-            target_yr = years[-1] if (years and years[-1] <= 2025) else 2025
+            target_yr = years[-1] if (years and years[-1] <= cat_max_yr) else cat_max_yr
             return (
                 f"SELECT ano_referencia, dsc_situacao, COUNT(DISTINCT seq_dim_pessoa) AS total_servidores, "
                 f"ROUND(AVG(vlr_rmn_bruta), 2) AS media_salarial_bruta, "
@@ -1861,31 +2640,70 @@ class SIMOrchestrator:
             )
 
         # 1e. Quantidade Total de Veículos / Inventário Consolidado da Frota Municipal
-        if any(w in q_norm for w in ("veiculo", "veiculos", "frota", "carros", "caminhao", "onibus")) and any(
+        if has_tbl("vw_gold_frota_consolidada") and any(
+            w in q_norm for w in ("veiculo", "veiculos", "frota", "carros", "caminhao", "onibus")
+        ) and any(
             w in q_norm for w in ("quantidade", "quantos", "tem acesso", "possui", "total de veiculos", "tamanho da frota", "tem ")
         ):
             return (
                 "SELECT status_cadastro_frota, "
-                "COUNT(DISTINCT seq_veiculo) AS qtd_veiculos_distintos, "
+                "COUNT(DISTINCT CASE WHEN TRY_CAST(seq_veiculo AS BIGINT) > 0 THEN seq_veiculo END) AS qtd_veiculos_distintos, "
                 "COUNT(DISTINCT CASE WHEN dsc_num_placa NOT IN ('ISENTO_CTB_MAQUINARIO', 'SEM_CADASTRO_PLACA') THEN dsc_num_placa END) AS qtd_placas_ativas, "
                 "ROUND(SUM(vlr_gasto), 2) AS total_gasto_historico_frota "
                 "FROM vw_gold_frota_consolidada "
                 "GROUP BY status_cadastro_frota "
-                "ORDER BY qtd_veiculos_distintos DESC"
+                "ORDER BY qtd_veiculos_distintos DESC, total_gasto_historico_frota DESC"
+            )
+
+        # 1f-0. Orçamento / Dotação / Duodécimo por Órgão ou Poder Legislativo / Câmara / Autarquias (Gold View #8)
+        if has_tbl("vw_gold_orcamento_por_orgao") and any(w in q_norm for w in ("orcamento", "dotacao", "duodecimo")) and any(
+            w in q_norm for w in ("camara", "legislativo", "vereador", "por orgao", "cada orgao", "saae", "autarquia", "fundacao")
+        ):
+            valid_yrs = [y for y in years if 2020 <= y <= cat_max_yr]
+            orc_where = (
+                f"WHERE ano_referencia IN ({', '.join(str(y) for y in sorted(set(valid_yrs)))})"
+                if valid_yrs
+                else f"WHERE ano_referencia = {cat_max_yr}"
+            )
+            if "camara" in q_norm or "legislativo" in q_norm or "duodecimo" in q_norm:
+                orc_where += " AND esfera_poder = 'LEGISLATIVO'"
+            elif "saae" in q_norm:
+                orc_where += " AND nom_orgao ILIKE '%SAAE%'"
+            return (
+                f"SELECT ano_referencia, nom_orgao, esfera_poder, administracao_tipo, "
+                f"dotacao_inicial_loa, dotacao_atualizada, despesa_empenhada, despesa_liquidada, "
+                f"despesa_paga, receita_arrecadada_propria_orgao, status_exercicio "
+                f"FROM vw_gold_orcamento_por_orgao {orc_where} "
+                f"ORDER BY ano_referencia, despesa_liquidada DESC"
+            )
+
+        # 1f-0b. Comparativo de Folha / Servidores por Órgão ou Poder (Câmara vs Prefeitura / Autarquias)
+        if has_tbl("vw_gold_folha_servidores") and any(w in q_norm for w in ("camara", "legislativo", "por orgao", "cada orgao", "saae")) and any(
+            w in q_norm for w in ("servidor", "servidores", "funcionario", "funcionarios", "folha", "salario", "remuneracao")
+        ):
+            target_yr = years[-1] if (years and years[-1] <= cat_max_yr) else cat_max_yr
+            return (
+                f"SELECT ano_referencia, nom_orgao, esfera_poder, COUNT(DISTINCT seq_dim_pessoa) AS total_servidores, "
+                f"ROUND(AVG(vlr_rmn_bruta), 2) AS media_salarial_bruta, "
+                f"ROUND(SUM(vlr_rmn_bruta), 2) AS total_bruto "
+                f"FROM vw_gold_folha_servidores WHERE ano_referencia = {target_yr} "
+                f"GROUP BY ano_referencia, nom_orgao, esfera_poder ORDER BY total_servidores DESC"
             )
 
         # 1f. Orçamento Anual Previsto (LOA) vs. Receita Realizada via Gold View Semântica #7
-        if "orcamento" in q_norm and "unidade orcamentaria" not in q_norm and "secretaria" not in q_norm:
-            valid_yrs = [y for y in years if 2020 <= y <= 2025]
-            if not valid_yrs and re.search(r"\b(24|25)\b", q_norm):
+        if has_tbl("vw_gold_orcamento_previsto_vs_realizado") and "orcamento" in q_norm and "unidade orcamentaria" not in q_norm and "secretaria" not in q_norm:
+            valid_yrs = [y for y in years if 2020 <= y <= cat_max_yr]
+            if not valid_yrs and re.search(r"\b(24|25|26)\b", q_norm):
                 if "24" in q_norm:
                     valid_yrs.append(2024)
                 if "25" in q_norm:
                     valid_yrs.append(2025)
+                if "26" in q_norm and cat_max_yr >= 2026:
+                    valid_yrs.append(2026)
             orc_where = (
                 f"WHERE ano_referencia IN ({', '.join(str(y) for y in sorted(set(valid_yrs)))}) "
                 if valid_yrs
-                else "WHERE ano_referencia BETWEEN 2020 AND 2025 "
+                else f"WHERE ano_referencia BETWEEN 2020 AND {cat_max_yr} "
             )
             return (
                 f"SELECT ano_referencia, orcamento_previsto_loa, orcamento_atualizado_loa, "
@@ -1896,7 +2714,9 @@ class SIMOrchestrator:
             )
 
         # 2. Consultas por Secretaria Municipal / Unidade Orçamentária (`orgao_orgaoUnidade` × `despesa_despesa`)
-        if "secretaria" in q_norm or "secretarias" in q_norm or "unidade orcamentaria" in q_norm:
+        if has_tbl("despesa_despesa") and (
+            "secretaria" in q_norm or "secretarias" in q_norm or "unidade orcamentaria" in q_norm
+        ):
             sec_filter = ""
             for kw, ilike_pat in (
                 ("obras", "%OBRAS%"),
@@ -1914,27 +2734,36 @@ class SIMOrchestrator:
             ):
                 if kw in q_norm:
                     sec_filter = (
-                        f" AND (strip_accents(UPPER(u.dsc_unidade)) ILIKE '{ilike_pat}' "
-                        f"OR strip_accents(UPPER(d.dsc_funcao)) ILIKE '{ilike_pat}')"
+                        f" AND (strip_accents(UPPER(COALESCE(u.dsc_unidade, ''))) ILIKE '{ilike_pat}' "
+                        f"OR strip_accents(UPPER(COALESCE(d.dsc_funcao, ''))) ILIKE '{ilike_pat}' "
+                        f"OR strip_accents(UPPER(COALESCE(d.dsc_subfuncao, ''))) ILIKE '{ilike_pat}')"
                     )
                     break
-            return (
-                f"SELECT d.ano_referencia, UPPER(TRIM(u.dsc_unidade)) AS dsc_lotacao, "
-                f"ROUND(SUM(TRY_CAST(d.vlr_empenhado AS DECIMAL(18,2))), 2) AS total_empenhado, "
-                f"ROUND(SUM(TRY_CAST(d.vlr_liquidado AS DECIMAL(18,2))), 2) AS total_liquidado, "
-                f"ROUND(SUM(TRY_CAST(d.vlr_pago AS DECIMAL(18,2))), 2) AS total_pago "
-                f"FROM despesa_despesa d "
-                f"JOIN (SELECT DISTINCT seq_orgao, cod_unidade, ano_referencia, FIRST_VALUE(dsc_unidade) OVER (PARTITION BY seq_orgao, cod_unidade, ano_referencia ORDER BY dsc_unidade) AS dsc_unidade FROM orgao_orgaoUnidade) u "
-                f"ON d.seq_orgao = u.seq_orgao AND d.cod_unidade = u.cod_unidade AND d.ano_referencia = u.ano_referencia "
-                f"WHERE d.{year_filter}{sec_filter} "
-                f"GROUP BY 1, 2 ORDER BY total_liquidado DESC LIMIT 15"
-            )
+            if has_tbl("orgao_orgaoUnidade"):
+                return (
+                    f"WITH u_canon AS ("
+                    f"SELECT seq_orgao, cod_unidade, dsc_unidade FROM ("
+                    f"SELECT seq_orgao, cod_unidade, dsc_unidade, ROW_NUMBER() OVER (PARTITION BY seq_orgao, cod_unidade ORDER BY TRY_CAST(ano_referencia AS INTEGER) DESC NULLS LAST, dsc_unidade) AS rn "
+                    f"FROM orgao_orgaoUnidade"
+                    f") WHERE rn = 1"
+                    f") SELECT d.ano_referencia, COALESCE(UPPER(TRIM(u.dsc_unidade)), UPPER(TRIM(d.dsc_funcao)), 'UNIDADE ORÇAMENTÁRIA') AS dsc_lotacao, "
+                    f"ROUND(SUM(TRY_CAST(d.vlr_empenhado AS DECIMAL(18,2))), 2) AS total_empenhado, "
+                    f"ROUND(SUM(TRY_CAST(d.vlr_liquidado AS DECIMAL(18,2))), 2) AS total_liquidado, "
+                    f"ROUND(SUM(TRY_CAST(d.vlr_pago AS DECIMAL(18,2))), 2) AS total_pago "
+                    f"FROM despesa_despesa d "
+                    f"LEFT JOIN u_canon u ON d.seq_orgao = u.seq_orgao AND d.cod_unidade = u.cod_unidade "
+                    f"WHERE d.{year_filter}{sec_filter} "
+                    f"GROUP BY 1, 2 ORDER BY total_liquidado DESC LIMIT 15"
+                )
 
         # 3. Respeitar escopo de fonte quando o usuário selecionou bases específicas
-        if allowed_src == {"IBGE"} or (
-            ("ibge" in q_norm or "populacao" in q_norm or "habitantes" in q_norm or "idhm" in q_norm or "pib" in q_norm)
-            and "per capita" not in q_norm
-            and (not allowed_src or "IBGE" in allowed_src)
+        if has_tbl("ibge_indicadores_municipais") and (
+            allowed_src == {"IBGE"}
+            or (
+                ("ibge" in q_norm or "populacao" in q_norm or "habitantes" in q_norm or "idhm" in q_norm or "pib" in q_norm)
+                and "per capita" not in q_norm
+                and (not allowed_src or "IBGE" in allowed_src)
+            )
         ):
             return (
                 "SELECT ano_referencia, nom_municipio, populacao_residente, fonte_populacao, "
@@ -1943,7 +2772,7 @@ class SIMOrchestrator:
             )
 
         if "per capita" in q_norm or "por habitante" in q_norm:
-            if not allowed_src or ("IBGE" in allowed_src and "SICOM" in allowed_src):
+            if has_tbl("despesa_despesa") and has_tbl("ibge_indicadores_municipais") and (not allowed_src or ("IBGE" in allowed_src and "SICOM" in allowed_src)):
                 return (
                     "WITH desp AS ("
                     "SELECT ano_referencia, SUM(TRY_CAST(vlr_liquidado AS DECIMAL(18,2))) AS despesa_liquidada "
@@ -1954,13 +2783,21 @@ class SIMOrchestrator:
                     "FROM ibge_indicadores_municipais i "
                     "JOIN desp ON i.ano_referencia = desp.ano_referencia ORDER BY i.ano_referencia"
                 )
+            if has_tbl("ibge_indicadores_municipais"):
+                return (
+                    "SELECT ano_referencia, nom_municipio, populacao_residente, pib_municipal_mil_reais, "
+                    "pib_per_capita_reais, idhm_geral FROM ibge_indicadores_municipais ORDER BY ano_referencia"
+                )
 
-        if allowed_src == {"SICONFI"} or any(
-            w in q_norm
-            for w in (
-                "siconfi", "finbra", "capag", "tesouro nacional", "limite prudencial", "lrf", "rcl",
-                "contas da prefeitura", "contas estao em dia", "contas em dia", "futuro garantido",
-                "situacao fiscal", "saude fiscal",
+        if has_tbl("siconfi_finbra_indicadores") and (
+            allowed_src == {"SICONFI"}
+            or any(
+                w in q_norm
+                for w in (
+                    "siconfi", "finbra", "capag", "tesouro nacional", "limite prudencial", "lrf", "rcl",
+                    "contas da prefeitura", "contas estao em dia", "contas em dia", "futuro garantido",
+                    "situacao fiscal", "saude fiscal",
+                )
             )
         ):
             return (
@@ -1970,7 +2807,9 @@ class SIMOrchestrator:
                 "FROM siconfi_finbra_indicadores ORDER BY ano_referencia"
             )
 
-        if allowed_src == {"INEP"} or any(w in q_norm for w in ("ideb", "inep", "censo escolar", "matricula", "matriculas", "aprovacao")):
+        if has_tbl("inep_ideb_educacao") and (
+            allowed_src == {"INEP"} or any(w in q_norm for w in ("ideb", "inep", "censo escolar", "matricula", "matriculas", "aprovacao"))
+        ):
             return (
                 "SELECT ano_referencia, rede_ensino, ideb_anos_iniciais, meta_ideb_anos_iniciais, "
                 "ideb_anos_finais, meta_ideb_anos_finais, taxa_aprovacao_iniciais_pct, "
@@ -1978,7 +2817,8 @@ class SIMOrchestrator:
                 "FROM inep_ideb_educacao ORDER BY ano_referencia"
             )
 
-        if allowed_src == {"DATASUS"} or any(w in q_norm for w in ("datasus", "siops", "cnes", "ubs", "leitos", "atencao basica", "santa casa")):
+        datasus_kws = ("datasus", "siops", "cnes", "ubs", "leitos", "atencao basica") + (("santa casa",) if is_caete_tenant else ())
+        if has_tbl("datasus_siops_saude") and (allowed_src == {"DATASUS"} or any(w in q_norm for w in datasus_kws)):
             return (
                 "SELECT ano_referencia, pct_recursos_proprios_saude_siops, minimo_constitucional_saude_pct, "
                 "vlr_despesa_total_saude, vlr_despesa_saude_per_capita, qtd_estabelecimentos_cnes, "
@@ -1986,8 +2826,11 @@ class SIMOrchestrator:
                 "FROM datasus_siops_saude ORDER BY ano_referencia"
             )
 
-        if allowed_src == {"RECEITA_QSA"} or any(
-            w in q_norm for w in ("qsa", "quadro societario", "socio", "socios", "receita federal", "porte", "cnae", "materialidade")
+        if has_tbl("receita_qsa_fornecedores") and (
+            allowed_src == {"RECEITA_QSA"}
+            or any(
+                w in q_norm for w in ("qsa", "quadro societario", "socio", "socios", "receita federal", "porte", "cnae", "materialidade")
+            )
         ):
             return (
                 "SELECT razao_social, num_cnpj, porte_empresa, cnae_principal_descricao, "
@@ -1998,14 +2841,14 @@ class SIMOrchestrator:
                 "ORDER BY total_pago_historico DESC LIMIT 15"
             )
 
-        if "convenio" in q_norm or "convenios" in q_norm:
+        if has_tbl("cgu_convenios") and ("convenio" in q_norm or "convenios" in q_norm):
             return (
                 "SELECT ano_referencia, num_convenio, orgao_concedente, objeto_convenio, "
                 "vlr_global, vlr_repasse_uniao, vlr_liberado, situacao_convenio "
                 "FROM cgu_convenios ORDER BY ano_referencia DESC"
             )
 
-        if "emenda" in q_norm or "emendas" in q_norm or "parlamentar" in q_norm:
+        if has_tbl("cgu_emendas") and ("emenda" in q_norm or "emendas" in q_norm or "parlamentar" in q_norm):
             return (
                 "SELECT ano_referencia, cod_emenda, nom_autor_emenda, tipo_emenda, "
                 "funcao_programatica, vlr_empenhado, vlr_liquidado, vlr_pago "
@@ -2013,25 +2856,76 @@ class SIMOrchestrator:
             )
 
         if allowed_src == {"CGU"} or any(w in q_norm for w in ("bolsa familia", "novo bolsa familia", "bpc", "auxilio", "cgu")):
-            if "bpc" in q_norm:
+            def _cgu_money_sum() -> str:
                 return (
-                    'SELECT ano_referencia, COUNT(*) AS qtd_registros, '
-                    'SUM(TRY_CAST(REPLACE(CAST("VALOR PARCELA" AS VARCHAR), \',\', \'.\') AS DECIMAL(18,2))) AS total_pago '
-                    'FROM cgu_bpc GROUP BY ano_referencia ORDER BY ano_referencia'
+                    'ROUND(SUM(TRY_CAST(CASE WHEN CONTAINS(CAST("VALOR PARCELA" AS VARCHAR), \',\') '
+                    'THEN REPLACE(REPLACE(CAST("VALOR PARCELA" AS VARCHAR), \'.\', \'\'), \',\', \'.\') '
+                    'ELSE CAST("VALOR PARCELA" AS VARCHAR) END AS DECIMAL(18,2))), 2)'
                 )
-            if "por ano" in q_norm or "evolucao" in q_norm:
-                return (
-                    'SELECT ano_referencia, COUNT(*) AS total_registros, '
-                    'SUM(TRY_CAST(REPLACE(CAST("VALOR PARCELA" AS VARCHAR), \',\', \'.\') AS DECIMAL(18,2))) AS total_pago '
-                    'FROM cgu_novo_bolsa_familia GROUP BY ano_referencia ORDER BY ano_referencia'
-                )
-            return (
-                'SELECT COUNT(*) AS total_registros, '
-                'SUM(TRY_CAST(REPLACE(CAST("VALOR PARCELA" AS VARCHAR), \',\', \'.\') AS DECIMAL(18,2))) AS total_pago '
-                'FROM cgu_novo_bolsa_familia'
-            )
 
-        if "isf-m" in q_norm or "saude financeira" in q_norm:
+            def _cgu_has_summary_col(tbl_key: str) -> bool:
+                canon_t = cat_tables_map.get(tbl_key.lower())
+                if not canon_t:
+                    return False
+                t_meta = self.db_manager.catalog.tables.get(canon_t)
+                return bool(t_meta and any(c.name.lower() == "qtd_beneficiados" for c in t_meta.columns))
+
+            wants_bf = "bolsa familia" in q_norm or ("bpc" not in q_norm)
+            wants_bpc = "bpc" in q_norm
+            if wants_bf and wants_bpc and has_tbl("cgu_novo_bolsa_familia") and has_tbl("cgu_bpc"):
+                bf_cnt = (
+                    "MAX(TRY_CAST(qtd_beneficiados AS BIGINT))"
+                    if _cgu_has_summary_col("cgu_novo_bolsa_familia")
+                    else 'COUNT(DISTINCT "NIS FAVORECIDO")'
+                )
+                bpc_cnt = (
+                    "MAX(TRY_CAST(qtd_beneficiados AS BIGINT))"
+                    if _cgu_has_summary_col("cgu_bpc")
+                    else 'COUNT(DISTINCT "NIS FAVORECIDO")'
+                )
+                return (
+                    f"SELECT 'Novo Bolsa Família' AS programa, ano_referencia, {bf_cnt} AS beneficiarios_referencia, "
+                    f"COUNT(*) AS registros_apurados, {_cgu_money_sum()} AS total_pago "
+                    f"FROM cgu_novo_bolsa_familia GROUP BY ano_referencia "
+                    f"UNION ALL "
+                    f"SELECT 'BPC (Benefício de Prestação Continuada)' AS programa, ano_referencia, {bpc_cnt} AS beneficiarios_referencia, "
+                    f"COUNT(*) AS registros_apurados, {_cgu_money_sum()} AS total_pago "
+                    f"FROM cgu_bpc GROUP BY ano_referencia "
+                    f"ORDER BY programa, ano_referencia"
+                )
+            if wants_bpc and has_tbl("cgu_bpc"):
+                cnt_proj = (
+                    "MAX(TRY_CAST(qtd_beneficiados AS BIGINT)) AS beneficiarios_no_mes, COUNT(*) AS meses_apurados"
+                    if _cgu_has_summary_col("cgu_bpc")
+                    else 'COUNT(DISTINCT "NIS FAVORECIDO") AS beneficiarios_unicos, COUNT(*) AS qtd_registros'
+                )
+                return (
+                    f"SELECT ano_referencia, {cnt_proj}, {_cgu_money_sum()} AS total_pago "
+                    f"FROM cgu_bpc GROUP BY ano_referencia ORDER BY ano_referencia"
+                )
+            if has_tbl("cgu_novo_bolsa_familia"):
+                cnt_proj = (
+                    "MAX(TRY_CAST(qtd_beneficiados AS BIGINT)) AS beneficiarios_no_mes, COUNT(*) AS meses_apurados"
+                    if _cgu_has_summary_col("cgu_novo_bolsa_familia")
+                    else 'COUNT(DISTINCT "NIS FAVORECIDO") AS beneficiarios_unicos, COUNT(*) AS total_registros'
+                )
+                if "por ano" in q_norm or "evolucao" in q_norm or _cgu_has_summary_col("cgu_novo_bolsa_familia"):
+                    return (
+                        f"SELECT ano_referencia, {cnt_proj}, {_cgu_money_sum()} AS total_pago "
+                        f"FROM cgu_novo_bolsa_familia GROUP BY ano_referencia ORDER BY ano_referencia"
+                    )
+                return (
+                    f"SELECT {cnt_proj}, {_cgu_money_sum()} AS total_pago "
+                    f"FROM cgu_novo_bolsa_familia"
+                )
+
+        if has_tbl("receita_receita") and has_tbl("despesa_despesa") and ("isf-m" in q_norm or "saude financeira" in q_norm):
+            isf_years = [int(y) for y in re.findall(r"\b(20\d{2})\b", q_norm)]
+            isf_where = ""
+            if len(isf_years) >= 2:
+                isf_where = f" WHERE rc.ano_referencia BETWEEN {min(isf_years)} AND {max(isf_years)}"
+            elif len(isf_years) == 1:
+                isf_where = f" WHERE rc.ano_referencia = {isf_years[0]}"
             return (
                 "WITH rc AS ("
                 "SELECT ano_referencia, SUM(TRY_CAST(vlr_realizadoateperiodo AS DECIMAL(18,2))) AS rec "
@@ -2041,24 +2935,26 @@ class SIMOrchestrator:
                 "FROM despesa_despesa WHERE dsc_naturezadespesa LIKE '3%' GROUP BY ano_referencia"
                 ") SELECT rc.ano_referencia, ROUND(rc.rec / NULLIF(dc.desp, 0), 4) AS isf_m, "
                 "rc.rec AS receita_corrente, dc.desp AS despesa_corrente "
-                "FROM rc JOIN dc ON rc.ano_referencia = dc.ano_referencia ORDER BY rc.ano_referencia"
+                f"FROM rc JOIN dc ON rc.ano_referencia = dc.ano_referencia{isf_where} ORDER BY rc.ano_referencia"
             )
 
-        if "ies-c" in q_norm or "indice de saude" in q_norm or "minimo constitucional de saude" in q_norm:
+        if has_tbl("siconfi_finbra_indicadores") and ("ies-c" in q_norm or "indice de saude" in q_norm or "minimo constitucional de saude" in q_norm):
             return (
                 "SELECT ano_referencia, pct_aplicacao_saude_siops AS ies_c_pct, "
                 "vlr_receita_corrente_liquida, nota_capag_tesouro, situacao_fiscal_lrf "
                 "FROM siconfi_finbra_indicadores ORDER BY ano_referencia"
             )
 
-        if "ieq-c" in q_norm or "indice de educacao" in q_norm or "minimo constitucional de educacao" in q_norm:
+        if has_tbl("siconfi_finbra_indicadores") and ("ieq-c" in q_norm or "indice de educacao" in q_norm or "minimo constitucional de educacao" in q_norm):
             return (
                 "SELECT ano_referencia, pct_aplicacao_educacao_mde AS ieq_c_pct, "
                 "vlr_receita_corrente_liquida, nota_capag_tesouro, situacao_fiscal_lrf "
                 "FROM siconfi_finbra_indicadores ORDER BY ano_referencia"
             )
 
-        if ("servidor" in q_norm or "salario" in q_norm or "remuneracao" in q_norm or "folha" in q_norm) and (
+        if has_tbl("remuneracao_municipio") and has_tbl("pessoa_municipio") and (
+            "servidor" in q_norm or "salario" in q_norm or "remuneracao" in q_norm or "folha" in q_norm
+        ) and (
             "maiores" in q_norm or "lista" in q_norm or "cpf" in q_norm or "documento" in q_norm or "quem" in q_norm
         ):
             return (
@@ -2072,7 +2968,9 @@ class SIMOrchestrator:
                 f"ORDER BY maior_remuneracao_bruta DESC LIMIT 10"
             )
 
-        if "salario" in q_norm or "remuneracao" in q_norm or "folha" in q_norm or "servidor" in q_norm or "funcionario" in q_norm:
+        if has_tbl("remuneracao_municipio") and (
+            "salario" in q_norm or "remuneracao" in q_norm or "folha" in q_norm or "servidor" in q_norm or "funcionario" in q_norm
+        ):
             return (
                 f"SELECT ano_referencia, COUNT(DISTINCT seq_dim_pessoa) AS total_servidores, "
                 f"SUM(TRY_CAST(vlr_rmn_bruta AS DECIMAL(18,2))) AS total_bruto, "
@@ -2080,23 +2978,28 @@ class SIMOrchestrator:
                 f"FROM remuneracao_municipio WHERE {year_filter} GROUP BY ano_referencia ORDER BY ano_referencia"
             )
 
-        if "fornecedor" in q_norm or "credor" in q_norm or "empresas" in q_norm or "maiores pagamentos" in q_norm:
+        if has_tbl("vw_gold_execucao_despesa_credor") and (
+            "fornecedor" in q_norm or "credor" in q_norm or "empresas" in q_norm or "empresa" in q_norm or "maiores pagamentos" in q_norm
+        ):
+            include_all_creditors = any(
+                w in q_norm for w in ("todos os credores", "incluindo inss", "entidades", "santa casa", "consorcio")
+            )
+            nat_clause = "" if include_all_creditors else " AND natureza_credor = 'EMPRESA_PRIVADA'"
             return (
-                f"SELECT MAX(UPPER(TRIM(nom_credor))) AS nom_credor, num_doc_credor, COUNT(*) AS qtd_pagamentos, "
-                f"ROUND(SUM(TRY_CAST(vlr_pag_fonte AS DECIMAL(18,2))), 2) AS total_pago "
-                f"FROM despesa_pagamento WHERE {year_filter} "
-                f"AND COALESCE(nom_credor, '') NOT ILIKE '%NAO INFORMADO%' "
-                f"AND COALESCE(nom_credor, '') NOT ILIKE '%INSS%' "
-                f"AND COALESCE(nom_credor, '') NOT ILIKE '%FGTS%' "
-                f"AND COALESCE(nom_credor, '') NOT ILIKE '%PREFEITURA%' "
-                f"AND COALESCE(nom_credor, '') NOT ILIKE '%FOLHA DE PAG%' "
-                f"AND COALESCE(nom_credor, '') NOT ILIKE '%TRIBUNAL%' "
-                f"AND COALESCE(nom_credor, '') NOT ILIKE '%PASEP%' "
-                f"AND COALESCE(num_doc_credor, '') NOT IN ('-1', '0', '18302299000102', '00360305000104', '29979036000140') "
-                f"GROUP BY num_doc_credor ORDER BY total_pago DESC LIMIT 10"
+                f"SELECT MAX(nom_credor) AS nom_credor, MAX(num_doc_credor) AS num_doc_credor, "
+                f"MAX(natureza_credor) AS natureza_credor, SUM(qtd_empenhos) AS qtd_empenhos, "
+                f"ROUND(SUM(total_liquidado), 2) AS total_liquidado, ROUND(SUM(total_pago), 2) AS total_pago "
+                f"FROM vw_gold_execucao_despesa_credor WHERE {year_filter}{nat_clause} "
+                f"GROUP BY COALESCE(doc_credor_raiz, num_doc_credor) ORDER BY total_pago DESC LIMIT 10"
             )
 
         if "saude" in q_norm:
+            if not has_tbl("despesa_despesa") and has_tbl("datasus_siops_saude"):
+                return (
+                    "SELECT ano_referencia, pct_recursos_proprios_saude_siops, minimo_constitucional_saude_pct, "
+                    "vlr_despesa_total_saude, vlr_despesa_saude_per_capita "
+                    "FROM datasus_siops_saude ORDER BY ano_referencia"
+                )
             return (
                 f"SELECT ano_referencia, SUM(TRY_CAST(vlr_empenhado AS DECIMAL(18,2))) AS total_empenhado, "
                 f"SUM(TRY_CAST(vlr_liquidado AS DECIMAL(18,2))) AS total_liquidado, "
@@ -2106,6 +3009,11 @@ class SIMOrchestrator:
             )
 
         if "educacao" in q_norm:
+            if not has_tbl("despesa_despesa") and has_tbl("siconfi_finbra_indicadores"):
+                return (
+                    "SELECT ano_referencia, pct_aplicacao_educacao_mde, vlr_receita_corrente_liquida, situacao_fiscal_lrf "
+                    "FROM siconfi_finbra_indicadores ORDER BY ano_referencia"
+                )
             return (
                 f"SELECT ano_referencia, SUM(TRY_CAST(vlr_empenhado AS DECIMAL(18,2))) AS total_empenhado, "
                 f"SUM(TRY_CAST(vlr_liquidado AS DECIMAL(18,2))) AS total_liquidado, "
@@ -2114,14 +3022,14 @@ class SIMOrchestrator:
                 f"GROUP BY ano_referencia ORDER BY ano_referencia"
             )
 
-        if "contrato" in q_norm:
+        if has_tbl("contrato_contratos") and "contrato" in q_norm:
             return (
                 f"SELECT ano_referencia, COUNT(*) AS total_contratos, "
                 f"SUM(TRY_CAST(vlr_contrato AS DECIMAL(18,2))) AS valor_total_contratado "
                 f"FROM contrato_contratos WHERE {year_filter} GROUP BY ano_referencia ORDER BY ano_referencia"
             )
 
-        if "dispensa" in q_norm:
+        if has_tbl("licitacao_dispensa") and "dispensa" in q_norm:
             return (
                 f"SELECT ano_referencia, COUNT(*) AS total_processos, "
                 f"SUM(TRY_CAST(vlr_empenhado AS DECIMAL(18,2))) AS total_empenhado, "
@@ -2129,14 +3037,14 @@ class SIMOrchestrator:
                 f"FROM licitacao_dispensa WHERE {year_filter} GROUP BY ano_referencia ORDER BY ano_referencia"
             )
 
-        if "licitacao" in q_norm or "licitacoes" in q_norm:
+        if has_tbl("licitacao_licitacao") and ("licitacao" in q_norm or "licitacoes" in q_norm):
             return (
                 f"SELECT ano_referencia, dsc_modalidade, COUNT(*) AS qtd_licitacoes, "
                 f"SUM(TRY_CAST(vlr_liquidado AS DECIMAL(18,2))) AS total_liquidado "
                 f"FROM licitacao_licitacao WHERE {year_filter} GROUP BY ano_referencia, dsc_modalidade ORDER BY total_liquidado DESC LIMIT 15"
             )
 
-        if "frota" in q_norm or "combustivel" in q_norm or "veiculo" in q_norm:
+        if has_tbl("frota_gastoFrota") and ("frota" in q_norm or "combustivel" in q_norm or "veiculo" in q_norm):
             return (
                 f"SELECT ano_referencia, COUNT(*) AS registros_gasto, "
                 f"SUM(TRY_CAST(vlr_gasto AS DECIMAL(18,2))) AS total_gasto_frota "
@@ -2144,12 +3052,22 @@ class SIMOrchestrator:
             )
 
         if "receita" in q_norm or "arrecadacao" in q_norm:
+            if not has_tbl("receita_receita") and has_tbl("siconfi_finbra_indicadores"):
+                return (
+                    "SELECT ano_referencia, vlr_receita_corrente_liquida, vlr_despesa_pessoal_lrf, pct_despesa_pessoal_rcl, situacao_fiscal_lrf "
+                    "FROM siconfi_finbra_indicadores ORDER BY ano_referencia"
+                )
             return (
                 f"SELECT ano_referencia, SUM(TRY_CAST(vlr_realizadoateperiodo AS DECIMAL(18,2))) AS total_arrecadado "
                 f"FROM receita_receita WHERE {year_filter} GROUP BY ano_referencia ORDER BY ano_referencia"
             )
 
         if any(w in q_norm for w in ("pagamento", "pagamentos", "pagou")):
+            if not has_tbl("despesa_pagamento") and has_tbl("siconfi_finbra_indicadores"):
+                return (
+                    "SELECT ano_referencia, vlr_receita_corrente_liquida, vlr_despesa_pessoal_lrf, pct_aplicacao_saude_siops, pct_aplicacao_educacao_mde "
+                    "FROM siconfi_finbra_indicadores ORDER BY ano_referencia"
+                )
             return (
                 f"SELECT ano_referencia, COUNT(*) AS qtd_pagamentos, "
                 f"SUM(TRY_CAST(vlr_pag_fonte AS DECIMAL(18,2))) AS total_pago "
@@ -2157,6 +3075,12 @@ class SIMOrchestrator:
             )
 
         if any(w in q_norm for w in ("despesa", "despesas", "gasto", "gastos", "gastou", "empenho", "empenhado")):
+            if not has_tbl("despesa_despesa") and has_tbl("siconfi_finbra_indicadores"):
+                return (
+                    "SELECT ano_referencia, vlr_receita_corrente_liquida, vlr_despesa_pessoal_lrf, pct_despesa_pessoal_rcl, "
+                    "pct_aplicacao_saude_siops, pct_aplicacao_educacao_mde "
+                    "FROM siconfi_finbra_indicadores ORDER BY ano_referencia"
+                )
             return (
                 f"SELECT ano_referencia, "
                 f"ROUND(SUM(TRY_CAST(vlr_empenhado AS DECIMAL(18,2))), 2) AS total_empenhado, "
@@ -2166,6 +3090,18 @@ class SIMOrchestrator:
             )
 
         # Contingência offline segura: síntese macro-orçamentária oficial (jamais pagamento cego de credores)
+        if not has_tbl("vw_gold_orcamento_previsto_vs_realizado"):
+            if has_tbl("siconfi_finbra_indicadores"):
+                return (
+                    "SELECT ano_referencia, vlr_receita_corrente_liquida, vlr_despesa_pessoal_lrf, "
+                    "pct_despesa_pessoal_rcl, pct_aplicacao_saude_siops, pct_aplicacao_educacao_mde, situacao_fiscal_lrf "
+                    "FROM siconfi_finbra_indicadores ORDER BY ano_referencia"
+                )
+            if has_tbl("ibge_indicadores_municipais"):
+                return (
+                    "SELECT ano_referencia, nom_municipio, populacao_residente, pib_municipal_mil_reais, pib_per_capita_reais "
+                    "FROM ibge_indicadores_municipais ORDER BY ano_referencia"
+                )
         return (
             "SELECT ano_referencia, orcamento_previsto_loa, receita_arrecadada_realizada, "
             "despesa_empenhada, despesa_liquidada, despesa_paga, status_exercicio "
@@ -2202,7 +3138,8 @@ class SIMOrchestrator:
             return llm_sql
 
         # 2. Contingência Offline (0 tokens — sem API key ativa ou Hard Cap B2G atingido)
-        if not allowed_src and attempt == 1 and q_norm in self._golden_lookup:
+        is_caete_tenant = self.db_manager.tenant.tenant_id in ("caete_mg_3110004", "caete-mg")
+        if is_caete_tenant and not allowed_src and attempt == 1 and q_norm in self._golden_lookup:
             self._last_llm_engine_used = "SIM Golden Verified Index + NL2SQL"
             return self._golden_lookup[q_norm]
 
@@ -2224,6 +3161,9 @@ class SIMOrchestrator:
         llm_api_key: Optional[str],
         steps: List[Dict[str, Any]],
         step_prefix: str = "",
+        wants_chart: bool = False,
+        wants_table: bool = False,
+        intent: str = "sql_analytics",
     ) -> Dict[str, Any]:
         """
         Executa o pipeline completo de Text-to-SQL Semântico (Eixo 1 + Eixo 3 + Eixo 8):
@@ -2298,6 +3238,9 @@ class SIMOrchestrator:
                 llm_api_key=llm_api_key,
                 previous_sql=previous_sql,
                 zero_rows_diagnostic=zero_rows_diag,
+                wants_chart=wants_chart,
+                wants_table=wants_table,
+                intent=intent,
             )
             est_tokens = prompt_pkg.estimated_tokens
             candidate_sql = sql_override if (sql_override and attempt == 1) else self.sql_generator_fn(prompt_pkg, attempt, last_err)
@@ -2353,9 +3296,32 @@ class SIMOrchestrator:
                         is_exclusive_historical_gap = True
                         break
 
-                # Eixo 1: Self-Correction real quando a query retorna 0 linhas (NUNCA sobrescrever com fallback cego!)
+                # Eixo 1: Self-Correction real quando a query retorna 0 linhas (preservando 0 linhas legítimas de limiar/negação - P1-09)
+                should_retry_empty = True
+                if len(returned_rows) == 0:
+                    try:
+                        p_empty = sqlglot.parse_one(candidate_sql, read="duckdb")
+                        has_str_filter = False
+                        for lit in p_empty.find_all(exp.Literal):
+                            if lit.is_string and str(lit.this or "").strip():
+                                parent = lit.parent
+                                if isinstance(parent, (exp.Like, exp.ILike, exp.EQ, exp.In)):
+                                    has_str_filter = True
+                                    break
+                        max_cat_yr_sql = int(getattr(self.db_manager.catalog, "max_data_year", 2026) or 2026)
+                        has_future_yr = any(int(y) > max_cat_yr_sql for y in re.findall(r"\b(20\d{2})\b", candidate_sql))
+                        has_threshold_or_neg = any(
+                            p_empty.find(cls) is not None
+                            for cls in (exp.Is, exp.Not, exp.Having, exp.GT, exp.GTE, exp.LT, exp.LTE)
+                        )
+                        if not has_str_filter and not has_future_yr and has_threshold_or_neg:
+                            should_retry_empty = False
+                    except Exception:
+                        should_retry_empty = True
+
                 if (
                     len(returned_rows) == 0
+                    and should_retry_empty
                     and sql_override is None
                     and not is_exclusive_historical_gap
                     and attempt <= self.max_sql_retries
@@ -2382,24 +3348,80 @@ class SIMOrchestrator:
                     )
                     continue
 
+                # Eixo 1b (SIM v4.3): Prova Cirúrgica de Existência de Predicado quando agregação escalar retorna 0
+                if (
+                    len(returned_rows) == 1
+                    and sql_override is None
+                    and not is_exclusive_historical_gap
+                    and attempt <= self.max_sql_retries
+                    and is_generative_engine
+                ):
+                    pred_t0 = time.perf_counter()
+                    phantom_pred_msg = self._has_unmatched_literal_predicate(candidate_sql, returned_rows)
+                    if phantom_pred_msg:
+                        zero_rows_diag = self._build_zero_row_diagnostic(candidate_sql, effective_question)
+                        last_err = (
+                            f"A consulta retornou agregação zerada porque {phantom_pred_msg} "
+                            "Inspecione os valores reais das colunas em <sql_zero_rows_diagnostic> e gere uma nova consulta SQL corrigida."
+                        )
+                        steps.append(
+                            {
+                                "step": len(steps) + 1,
+                                "name": f"{step_prefix}Prova de Existência de Predicado & Self-Correction (Tentativa {attempt})",
+                                "status": "RETRY",
+                                "duration_ms": round((time.perf_counter() - pred_t0) * 1000.0, 2),
+                                "detail": f"Filtro literal sem correspondência detectado ({phantom_pred_msg}). Reconciliando com valores reais do catálogo.",
+                            }
+                        )
+                        continue
+
+                # Eixo 4: Se o usuário pediu um GRÁFICO e o modelo retornou 1 único escalar isolado (1x1), refina para série!
+                if (
+                    wants_chart
+                    and len(returned_rows) == 1
+                    and sql_override is None
+                    and attempt <= self.max_sql_retries
+                    and is_generative_engine
+                    and self.chart_generator.extract_chart_series(returned_rows, question=effective_question) is None
+                ):
+                    last_err = (
+                        "O usuário solicitou um GRÁFICO, mas a query retornou apenas 1 número escalar isolado "
+                        "(1 linha × 1 métrica), que não forma série gráfica. Reescreva a consulta agrupando por "
+                        "`ano_referencia` (evolução histórica) ou pela principal dimensão categórica "
+                        "(`GROUP BY ... ORDER BY ... DESC LIMIT 10`) para retornar múltiplas linhas plotáveis."
+                    )
+                    steps.append(
+                        {
+                            "step": len(steps) + 1,
+                            "name": f"{step_prefix}Refinamento para Série Gráfica Multi-Linhas (Tentativa {attempt})",
+                            "status": "RETRY",
+                            "duration_ms": 0.2,
+                            "detail": "Retorno escalar 1x1 insuficiente para gráfico; solicitada expansão para série temporal/categórica.",
+                        }
+                    )
+                    continue
+
                 sql_executed = q_res["query_executada"]
                 sql_rows = returned_rows
+                limit_applied_flag = bool(q_res.get("truncado_pelo_limite", False))
                 pii_masked = q_res.get("pii_masked_count", 0)
                 for f in q_res.get("fontes_utilizadas", []):
                     if f not in fontes:
                         fontes.append(f)
                 warnings.extend(q_res.get("transparency_warnings", []))
-                if re.search(r"\b(202[6-9]|projetad[oa]\s+para\s+2[6-9])\b", raw_question_norm):
+                max_cat_yr_warn = int(getattr(self.db_manager.catalog, "max_data_year", 2026) or 2026)
+                asked_fut_yrs = [int(y) for y in re.findall(r"\b(20\d{2})\b", raw_question_norm) if int(y) > max_cat_yr_warn]
+                if asked_fut_yrs or re.search(r"\bprojetad[oa]\s+para\s+2[7-9]\b", raw_question_norm):
                     if not any(w.get("gap_id") == "GAP-EXERCICIO-FUTURO" for w in warnings):
                         warnings.append(
                             {
                                 "gap_id": "GAP-EXERCICIO-FUTURO",
                                 "severity": "info",
-                                "title": "Cobertura Temporal da Base Auditada (2020 a 2025)",
+                                "title": f"Cobertura Temporal da Base Auditada (até {max_cat_yr_warn})",
                                 "message": (
-                                    "As bases públicas consolidadas do SICOM/TCE-MG, SICONFI e CGU abrangem os exercícios de 2020 a 2025. "
-                                    "Exercícios futuros (como 2026 e 2027) referem-se a ciclos orçamentários ainda não encerrados nas remessas históricas do Tribunal de Contas; "
-                                    "abaixo são apresentados os valores oficiais de 2020 a 2025 (Orçamento Previsto na LOA e Receita Realizada) para referência."
+                                    f"As bases públicas consolidadas do município abrangem os exercícios até {max_cat_yr_warn}. "
+                                    f"Exercícios futuros (acima de {max_cat_yr_warn}) referem-se a ciclos orçamentários ainda não iniciados nas remessas oficiais; "
+                                    f"abaixo são apresentados os valores oficiais disponíveis até {max_cat_yr_warn} para referência."
                                 ),
                             }
                         )
@@ -2419,11 +3441,12 @@ class SIMOrchestrator:
                         )
                     )
                     if asks_municipal_data and attempt <= self.max_sql_retries and is_generative_engine:
+                        max_cat_yr_retry = int(getattr(self.db_manager.catalog, "max_data_year", 2026) or 2026)
                         last_err = (
                             "PROIBIDO gerar SELECT literal sem cláusula FROM (NO_BASE_TABLE). "
-                            "Mesmo que o usuário mencione anos futuros (como 2026 ou 2027) ou dados parciais, "
+                            f"Mesmo que o usuário mencione anos futuros (acima de {max_cat_yr_retry}) ou dados parciais, "
                             "você DEVE consultar a tabela ou Gold View correspondente (ex.: vw_gold_orcamento_previsto_vs_realizado) "
-                            "nos exercícios disponíveis (2020 a 2025) para retornar a série histórica auditada."
+                            f"nos exercícios disponíveis (até {max_cat_yr_retry}) para retornar a série histórica auditada."
                         )
                         continue
                     return {
@@ -2449,6 +3472,7 @@ class SIMOrchestrator:
         return {
             "sql_executed": sql_executed,
             "sql_rows": sql_rows,
+            "limit_applied": locals().get("limit_applied_flag", False),
             "pii_masked": pii_masked,
             "fontes": fontes,
             "warnings": warnings,
@@ -2486,6 +3510,7 @@ class SIMOrchestrator:
             )
 
         try:
+            self._sync_catalog_freshness_if_hotswapped()
             self._active_allowed_sources = list(allowed_sources or [])
             self._active_llm_provider = llm_provider
             self._active_llm_api_key = llm_api_key
@@ -2536,8 +3561,9 @@ class SIMOrchestrator:
             q_norm_s2 = normalize_text_for_dedup(working_question)
             only_rag_scope = bool(allowed_sources and {s.upper().strip() for s in allowed_sources} == {"DIARIO_OFICIAL"})
 
-            # Fast-Path Cache Trava 1 ANTES de invocar LLM externo (apenas para perguntas autônomas sem histórico/gráfico)
+            # Fast-Path Cache Trava 1 ANTES de invocar LLM externo (apenas para perguntas autônomas sem histórico/gráfico/tabela)
             wants_chart_hint = bool(re.search(r"\b(grafico|graficos|plotar|visualizacao\s+grafica)\b", q_norm_s2))
+            wants_table_hint = SemanticIntentGuardrail._detect_table_signal(working_question)
             if (
                 not sql_override
                 and not explicit_tables
@@ -2545,6 +3571,7 @@ class SIMOrchestrator:
                 and not self._has_custom_sql_generator
                 and len(hist_list) == 0
                 and not wants_chart_hint
+                and not wants_table_hint
                 and intent in ("sql_analytics", "rag_diario_oficial", "hybrid_sql_rag")
             ):
                 sc_t0 = time.perf_counter()
@@ -2574,6 +3601,7 @@ class SIMOrchestrator:
                             "role": "assistant",
                             "content": cached_fast.get("answer_text", ""),
                             "sql_executed": cached_fast.get("sql_executed") or "",
+                            "row_count": len(cached_fast.get("sql_rows") or []),
                         }
                     )
                     self._record_session_sql_context(
@@ -2637,7 +3665,13 @@ class SIMOrchestrator:
                 if (guard_decision.prompt_tokens + guard_decision.completion_tokens) > 0:
                     self._record_turn_llm_tokens(guard_decision.prompt_tokens, guard_decision.completion_tokens)
 
-                if guard_decision.used_ai_model or guard_decision.is_contextual_followup or guard_decision.wants_chart or guard_decision.legal_framework_notes:
+                if (
+                    guard_decision.used_ai_model
+                    or guard_decision.is_contextual_followup
+                    or guard_decision.wants_chart
+                    or guard_decision.wants_table
+                    or guard_decision.legal_framework_notes
+                ):
                     intent = guard_decision.intent
                     if guard_decision.standalone_question and intent in ("sql_analytics", "rag_diario_oficial", "hybrid_sql_rag"):
                         effective_question = guard_decision.standalone_question
@@ -2652,6 +3686,7 @@ class SIMOrchestrator:
                 or (len(hist_list) > 0 and effective_question != working_question)
             )
             wants_chart = bool((guard_decision and guard_decision.wants_chart) or wants_chart_hint)
+            wants_table = bool((guard_decision and guard_decision.wants_table) or wants_table_hint)
             legal_framework_notes = list(guard_decision.legal_framework_notes) if guard_decision else []
 
             # Se o usuário pede explicação legal sobre os dados recém-exibidos na sessão (ex: "essas quantias são legais? você tem a lei?"),
@@ -2659,31 +3694,41 @@ class SIMOrchestrator:
             if (
                 legal_framework_notes
                 and prior_sql_ctx
-                and intent in ("conceptual_doubt", "conversational_followup", "rag_diario_oficial")
+                and (
+                    intent in ("conceptual_doubt", "conversational_followup")
+                    or (intent == "rag_diario_oficial" and is_contextual_followup)
+                )
                 and not wants_chart
+                and not wants_table
             ):
                 intent = "hybrid_sql_rag" if not only_rag_scope else "rag_diario_oficial"
                 if guard_decision:
                     guard_decision.direct_response_citizen = ""
 
-            # Se o usuário pede apenas um gráfico (sem nova consulta analítica explícita), encaminha ao renderizador PNG nativo
-            has_new_analytical_topic = any(
-                w in q_norm_s2
-                for w in (
-                    "quanto", "quais", "orcamento", "saude", "educacao", "folha", "frota",
-                    "fornecedor", "fornecedores", "receita", "despesa", "evolucao", "compar",
-                    "2020", "2021", "2022", "2023", "2024", "2025",
+            # Se o usuário pediu gráfico ou tabela, limpa qualquer resposta direta de bloqueio/clarificação do guardrail
+            if (wants_chart or wants_table) and not sql_override:
+                if guard_decision:
+                    guard_decision.direct_response_citizen = ""
+                if intent == "clarification_needed":
+                    intent = "conversational_followup"
+
+            # Eixo 4: Se `conversational_followup` com `wants_chart=True`, mas o turno anterior retornou apenas 1 escalar 1x1
+            # (ex.: `[{"qtd_servidores": 1496}]`), promove intrinsecamente a `sql_analytics` para buscar a série evolutiva/categórica!
+            if (
+                wants_chart
+                and intent == "conversational_followup"
+                and prior_sql_ctx
+                and prior_sql_ctx.get("sql_rows")
+                and self.chart_generator.extract_chart_series(prior_sql_ctx["sql_rows"], question=working_question) is None
+                and not only_rag_scope
+            ):
+                prev_q_topic = str(prior_sql_ctx.get("question") or working_question).strip()
+                intent = "sql_analytics"
+                is_contextual_followup = True
+                effective_question = (
+                    f"Evolução anual por ano_referencia ou distribuição por categoria para gerar gráfico "
+                    f"referente a: {prev_q_topic} ({working_question})"
                 )
-            )
-            if wants_chart and not sql_override and not has_new_analytical_topic:
-                intent = "conversational_followup"
-                if guard_decision:
-                    guard_decision.direct_response_citizen = ""
-            elif wants_chart and has_new_analytical_topic and not only_rag_scope:
-                if intent not in ("sql_analytics", "hybrid_sql_rag"):
-                    intent = "sql_analytics"
-                if guard_decision:
-                    guard_decision.direct_response_citizen = ""
 
             steps.append(
                 {
@@ -2697,7 +3742,8 @@ class SIMOrchestrator:
                     "duration_ms": round((time.perf_counter() - s2_t0) * 1000.0, 2),
                     "detail": (
                         f"Rota: '{intent}' | Follow-up contextual: {'Sim' if is_contextual_followup else 'Não'} | "
-                        f"Gráfico solicitado: {'Sim' if wants_chart else 'Não'}"
+                        f"Gráfico solicitado: {'Sim' if wants_chart else 'Não'} | "
+                        f"Tabela solicitada: {'Sim' if wants_table else 'Não'}"
                         + (f" | Standalone Question: '{effective_question}'" if effective_question != question else "")
                         + (f" | Sub-perguntas: {len(guard_decision.sub_questions)}" if (guard_decision and guard_decision.sub_questions) else "")
                         + (f" | Justificativa: {guard_decision.reasoning}" if (guard_decision and guard_decision.reasoning) else "")
@@ -2705,7 +3751,101 @@ class SIMOrchestrator:
                 }
             )
 
-            # Eixo 4: Geração Nativa de Gráfico PNG Institucional sobre o turno anterior (ou série oficial de orçamento se sessão vazia)
+            # Eixo 4b (SIM v4.3): Geração Nativa de Cartão PNG + HTML de Tabela sobre resultado existente no turno anterior
+            if wants_table and not wants_chart and intent == "conversational_followup":
+                tb_t0 = time.perf_counter()
+                city_str = f"{self.db_manager.tenant.municipality_name}/{self.db_manager.tenant.state_uf}"
+                if prior_sql_ctx and prior_sql_ctx.get("sql_rows") and self.table_renderer.can_render(prior_sql_ctx["sql_rows"]):
+                    tbl_rows = list(prior_sql_ctx["sql_rows"])
+                    tbl_title_q = str(prior_sql_ctx.get("question") or working_question)
+                    tbl_sql = prior_sql_ctx.get("sql_executed")
+                    is_contextual_followup = True
+                else:
+                    if "vw_gold_orcamento_previsto_vs_realizado" in self.db_manager.catalog.tables:
+                        fallback_tbl_sql = (
+                            "SELECT ano_referencia, orcamento_previsto_loa, receita_arrecadada_realizada, despesa_liquidada, despesa_paga "
+                            "FROM vw_gold_orcamento_previsto_vs_realizado ORDER BY ano_referencia"
+                        )
+                        tbl_title_q = f"Demonstrativo Orçamentário de {city_str} (até {getattr(self.db_manager.catalog, 'max_data_year', 2026)})"
+                    else:
+                        fallback_tbl_sql = (
+                            "SELECT ano_referencia, vlr_receita_corrente_liquida, vlr_despesa_pessoal_lrf, "
+                            "pct_despesa_pessoal_rcl, pct_aplicacao_saude_siops, pct_aplicacao_educacao_mde "
+                            "FROM siconfi_finbra_indicadores ORDER BY ano_referencia"
+                        )
+                        tbl_title_q = f"Indicadores Fiscais e Constitucionais de {city_str} (SICONFI/STN)"
+                    q_orc = self.db_manager.execute_safe_query(fallback_tbl_sql, role=role)
+                    tbl_rows = q_orc.get("dados") or []
+                    tbl_sql = q_orc.get("query_executada")
+                    self._record_session_sql_context(session_id, tbl_title_q, tbl_sql, tbl_rows)
+
+                tbl_art = self.table_renderer.render(rows=tbl_rows, title=tbl_title_q[:90])
+                steps.append(
+                    {
+                        "step": 3,
+                        "name": "Renderizador de Tabela Institucional (Cartão PNG TrueType + HTML)",
+                        "status": "OK" if tbl_art else "FALLBACK_TEXT",
+                        "duration_ms": round((time.perf_counter() - tb_t0) * 1000.0, 2),
+                        "detail": (
+                            f"Tabela institucional renderizada a partir de {len(tbl_rows)} registro(s) auditados "
+                            f"({tbl_art.displayed_rows if tbl_art else 0} exibidos, {len(tbl_art.columns_rendered) if tbl_art else 0} colunas)."
+                        ),
+                    }
+                )
+                if tbl_art:
+                    tot_note = ""
+                    if tbl_art.totals_by_column:
+                        t_pairs = [f"**{_human_col_label(k)}**: **{v}**" for k, v in list(tbl_art.totals_by_column.items())[:3]]
+                        tot_note = "\n\n**Total Geral consolidado:** " + " | ".join(t_pairs)
+                    c_txt = (
+                        f"Gerei a tabela oficial com os dados de **{city_str}** referentes a **{tbl_art.caption}**.{tot_note}"
+                    )
+                    i_txt = (
+                        f"**Tabela Institucional Renderizada (`image/png` + HTML):** {tbl_art.caption}{tot_note}"
+                        + (f"\n\n**SQL de Origem:**\n```sql\n{tbl_sql}\n```" if tbl_sql else "")
+                    )
+                    conv_eng = "SIM Institutional PNG/HTML Table Renderer"
+                    is_internal = role.lower().strip() in (
+                        "auditor", "admin", "controller", "gestor", "servidor", "interno", "controladoria",
+                    )
+                    sel_txt = i_txt if is_internal else c_txt
+                    if session_id not in self.conversation_history:
+                        self.conversation_history[session_id] = deque(maxlen=10)
+                    self.conversation_history[session_id].append({"role": "user", "content": working_question})
+                    self.conversation_history[session_id].append(
+                        {"role": "assistant", "content": c_txt[:420], "sql_executed": tbl_sql or "", "row_count": len(tbl_rows)}
+                    )
+                    return OrchestrationResult(
+                        status="sucesso",
+                        intent="conversational_followup",
+                        tenant_id=self.db_manager.tenant.tenant_id,
+                        role=role,
+                        question=question,
+                        effective_question=effective_question,
+                        standalone_question=effective_question,
+                        is_contextual_followup=True,
+                        answer_text=sel_txt,
+                        citizen_response=c_txt,
+                        institutional_response=i_txt,
+                        methodology_summary=f"Renderização tabular institucional nativa sobre dados auditados ({conv_eng}).",
+                        sql_executed=tbl_sql,
+                        sql_rows=tbl_rows,
+                        schema_reduction_pct=100.0,
+                        prompt_tokens_estimated=self._turn_prompt_tokens_real,
+                        prompt_tokens_real=self._turn_prompt_tokens_real,
+                        completion_tokens_real=self._turn_completion_tokens_real,
+                        llm_engine_used=conv_eng,
+                        table_image_base64=tbl_art.image_base64,
+                        table_mime_type=tbl_art.mime_type,
+                        table_caption=tbl_art.caption,
+                        table_html=tbl_art.html,
+                        asr_corrections=asr_corrections,
+                        pipeline_steps=steps,
+                        exec_ms=round((time.perf_counter() - t0) * 1000.0, 2),
+                    )
+
+            # Eixo 4: Geração Nativa de Gráfico PNG Institucional sobre série multi-linhas já existente no turno anterior
+            # (ou visão geral oficial da LOA quando o usuário pede gráfico genérico sem histórico prévio na sessão)
             if wants_chart and intent == "conversational_followup":
                 ch_t0 = time.perf_counter()
                 city_str = f"{self.db_manager.tenant.municipality_name}/{self.db_manager.tenant.state_uf}"
@@ -2715,13 +3855,20 @@ class SIMOrchestrator:
                     chart_sql = prior_sql_ctx.get("sql_executed")
                     is_contextual_followup = True
                 else:
-                    q_orc = self.db_manager.execute_safe_query(
-                        "SELECT ano_referencia, orcamento_previsto_loa, receita_arrecadada_realizada "
-                        "FROM vw_gold_orcamento_previsto_vs_realizado ORDER BY ano_referencia",
-                        role=role,
-                    )
+                    if "vw_gold_orcamento_previsto_vs_realizado" in self.db_manager.catalog.tables:
+                        fallback_ch_sql = (
+                            "SELECT ano_referencia, orcamento_previsto_loa, receita_arrecadada_realizada "
+                            "FROM vw_gold_orcamento_previsto_vs_realizado ORDER BY ano_referencia"
+                        )
+                        chart_title_q = f"Evolução do Orçamento Previsto (LOA) vs. Receita Realizada de {city_str} (até {getattr(self.db_manager.catalog, 'max_data_year', 2026)})"
+                    else:
+                        fallback_ch_sql = (
+                            "SELECT ano_referencia, vlr_receita_corrente_liquida, vlr_despesa_pessoal_lrf "
+                            "FROM siconfi_finbra_indicadores ORDER BY ano_referencia"
+                        )
+                        chart_title_q = f"Evolução da Receita Corrente Líquida vs. Pessoal LRF de {city_str} (SICONFI/STN)"
+                    q_orc = self.db_manager.execute_safe_query(fallback_ch_sql, role=role)
                     chart_rows = q_orc.get("dados") or []
-                    chart_title_q = f"Evolução do Orçamento Previsto (LOA) vs. Receita Realizada de {city_str} (2020 a 2025)"
                     chart_sql = q_orc.get("query_executada")
                     self._record_session_sql_context(session_id, chart_title_q, chart_sql, chart_rows)
 
@@ -2738,18 +3885,11 @@ class SIMOrchestrator:
                         ),
                     }
                 )
-                c_txt, i_txt, conv_eng = self._handle_conversational_or_conceptual_turn(
-                    question=working_question,
-                    role=role,
-                    hist_list=hist_list,
-                    llm_provider=llm_provider,
-                    llm_api_key=llm_api_key,
-                )
                 if artifact:
                     c_txt = (
-                        f"Gerei o gráfico institucional com os dados oficiais de **{city_str}** referentes a **{chart_title_q}**.\n\n"
+                        f"Gerei o gráfico institucional com os dados oficiais de **{city_str}** referentes a **{artifact.title}**.\n\n"
                         f"{artifact.caption}\n\n"
-                        f"Você também pode solicitar gráficos específicos sobre gastos com saúde, educação, folha de servidores, frota ou fornecedores."
+                        f"Você também pode solicitar gráficos específicos sobre gastos com saúde, educação, folha de servidores, licitações, frota ou fornecedores."
                     )
                     i_txt = (
                         f"**Visualização Analítica Renderizada (`image/png`):** {artifact.title}\n"
@@ -2758,6 +3898,14 @@ class SIMOrchestrator:
                         + (f"\n\n**SQL de Origem:**\n```sql\n{chart_sql}\n```" if chart_sql else "")
                     )
                     conv_eng = "SIM Institutional PNG Chart Generator"
+                else:
+                    c_txt, i_txt, conv_eng = self._handle_conversational_or_conceptual_turn(
+                        question=working_question,
+                        role=role,
+                        hist_list=hist_list,
+                        llm_provider=llm_provider,
+                        llm_api_key=llm_api_key,
+                    )
 
                 is_internal = role.lower().strip() in (
                     "auditor", "admin", "controller", "gestor", "servidor", "interno", "controladoria",
@@ -2767,7 +3915,7 @@ class SIMOrchestrator:
                     self.conversation_history[session_id] = deque(maxlen=10)
                 self.conversation_history[session_id].append({"role": "user", "content": working_question})
                 self.conversation_history[session_id].append(
-                    {"role": "assistant", "content": c_txt[:420], "sql_executed": chart_sql or ""}
+                    {"role": "assistant", "content": c_txt[:420], "sql_executed": chart_sql or "", "row_count": len(chart_rows)}
                 )
                 return OrchestrationResult(
                     status="sucesso",
@@ -2851,44 +3999,78 @@ class SIMOrchestrator:
                 )
 
             if intent == "out_of_scope_municipality":
+                oos_msg = (
+                    f"Esta instância do SIM atende exclusivamente aos dados públicos do município de "
+                    f"{self.db_manager.tenant.municipality_name}/{self.db_manager.tenant.state_uf} "
+                    f"(IBGE {self.db_manager.tenant.ibge_code})."
+                )
                 return OrchestrationResult(
                     status="fora_de_escopo",
                     intent=intent,
                     tenant_id=self.db_manager.tenant.tenant_id,
                     role=role,
                     question=question,
-                    answer_text=(
-                        f"Esta instância do SIM atende exclusivamente aos dados públicos do município de "
-                        f"{self.db_manager.tenant.municipality_name}/{self.db_manager.tenant.state_uf} "
-                        f"(IBGE {self.db_manager.tenant.ibge_code})."
-                    ),
+                    answer_text=oos_msg,
+                    citizen_response=oos_msg,
+                    institutional_response=oos_msg,
                     pipeline_steps=steps,
                     exec_ms=round((time.perf_counter() - t0) * 1000.0, 2),
                 )
 
             if intent == "conversational_identity":
                 city_str = f"{self.db_manager.tenant.municipality_name}/{self.db_manager.tenant.state_uf}"
-                total_t = len(self.db_manager.catalog.tables)
+                gazette_lbl = self._get_gazette_name()
+                cat = self.db_manager.catalog
+                total_t = len(cat.tables)
+                gold_count = sum(1 for k in cat.tables if k.startswith("vw_gold_"))
+                raw_count = total_t - gold_count
+                fresh_map = self._build_source_freshness_map()
+                rag_acts_n = len(getattr(self.rag_retriever, "corpus_chunks", None) or [])
                 q_norm_id = normalize_text_for_dedup(working_question)
                 wants_concise = any(w in q_norm_id for w in ("resumid", "concis", "curt", "diret", "poucas palavras"))
                 asks_cities = any(w in q_norm_id for w in ("quais cidades", "qual cidade", "cidades vc", "cidades voce"))
+                asks_meta_sources = SemanticIntentGuardrail._detect_meta_catalog_signal(working_question)
                 if asks_cities:
                     citizen_identity = (
                         f"Esta instância oficial atende aos dados públicos do município de **{city_str}** (código IBGE `{self.db_manager.tenant.ibge_code}`). "
-                        f"A plataforma SIM possui arquitetura multi-municipal expansível para outras prefeituras, mas aqui todas as consultas cobrem exclusivamente **{city_str}** (2020 a 2025)."
+                        f"A plataforma SIM possui arquitetura multi-municipal expansível para outras prefeituras, mas aqui todas as consultas cobrem exclusivamente **{city_str}**."
                     )
                     inst_identity = (
                         f"Esta instância ativa do **SIM** opera sobre o tenant **`{self.db_manager.tenant.tenant_id}`** (**{city_str}**, IBGE `{self.db_manager.tenant.ibge_code}`), "
-                        f"com **{total_t} objetos auditáveis** (79 tabelas Parquet + 7 Gold Views) e arquitetura multi-tenant declarativa pronta para onboarding de novos municípios."
+                        f"com **{total_t} objetos auditáveis** ({raw_count} tabelas Parquet + {gold_count} Gold Views) e arquitetura multi-tenant declarativa pronta para onboarding de novos municípios."
+                    )
+                elif asks_meta_sources:
+                    src_counts: Dict[str, int] = {}
+                    for tbl_meta in cat.tables.values():
+                        fam = str(getattr(tbl_meta, "source_family", "SICOM") or "SICOM")
+                        src_counts[fam] = src_counts.get(fam, 0) + 1
+                    fresh_bullets_citizen = "\n".join(
+                        f"• **{src}**: {desc}" for src, desc in fresh_map.items()
+                    )
+                    fresh_bullets_inst = "\n".join(
+                        f"- **`{src}`** ({src_counts.get(src, 1 if src == 'DIARIO_OFICIAL' else 0)} objeto(s)): {desc}"
+                        for src, desc in fresh_map.items()
+                    )
+                    citizen_identity = (
+                        f"Sim! Consulto diretamente as **fontes públicas oficiais ativas** do Município de **{city_str}** "
+                        f"(somando **{total_t} bases estruturadas** e **{rag_acts_n:,} atos publicados no Diário Oficial**):\n\n".replace(",", ".")
+                        + f"{fresh_bullets_citizen}\n\n"
+                        + "Você pode cruzar qualquer uma dessas fontes oficiais diretamente na conversa."
+                    )
+                    inst_identity = (
+                        f"**Inventário Auditável de Fontes e Atualização Temporal — {city_str} (IBGE `{self.db_manager.tenant.ibge_code}`):**\n\n"
+                        f"- **Catálogo Analítico Ativo:** `{total_t}` objetos (`{raw_count}` tabelas Parquet ZSTD + `{gold_count}` Gold Views de Auditoria).\n"
+                        f"- **Acervo Normativo Indexado (RAG Híbrido):** `{rag_acts_n}` atos atomizados em *{gazette_lbl}*.\n\n"
+                        f"**Horizonte Temporal por Fonte Oficial:**\n{fresh_bullets_inst}"
                     )
                 elif wants_concise:
                     citizen_identity = (
                         f"Sou o sistema oficial de consulta aos dados públicos da Prefeitura de **{city_str}**. "
-                        f"Respondo dúvidas em linguagem simples sobre orçamento, gastos com saúde e educação, pagamentos a empresas, salários públicos, convênios e atos do Diário Oficial (2020 a 2025)."
+                        f"Respondo dúvidas em linguagem simples sobre orçamento, indicadores fiscais, saúde, educação, programas sociais e atos do Diário Oficial."
                     )
                     inst_identity = (
                         f"Sou o **SIM (Sistema Integrado de Monitoramento e Inteligência Municipal)** de **{city_str}** (IBGE `{self.db_manager.tenant.ibge_code}`). "
-                        f"Realizo consultas auditáveis sobre **{total_t} objetos oficiais** (SICOM/TCE-MG, SICONFI/STN, CGU, IBGE, INEP, DATASUS e Receita Federal QSA) e sobre os atos normativos do Diário Oficial."
+                        f"Realizo consultas auditáveis sobre **{total_t} objetos oficiais ativos** no catálogo e sobre os atos normativos do Diário Oficial (*{gazette_lbl}*)."
                     )
                 else:
                     citizen_identity = (
@@ -2897,27 +4079,26 @@ class SIMOrchestrator:
                         "do município são arrecadados e investidos.\n\n"
                         "**Você pode me perguntar, por exemplo:**\n"
                         "• Quanto a prefeitura investiu em Saúde ou Educação em 2024?\n"
-                        "• Quais empresas mais receberam pagamentos ou contratos?\n"
-                        "• Quanto foi pago de Bolsa Família ou BPC em Caeté?\n"
-                        "• Qual é a população oficial, o PIB ou a nota do IDEB das escolas municipais?\n"
-                        "• O que diz uma lei, decreto ou portaria publicada no Diário Oficial (*Jornal Opinião*)?\n\n"
-                        "Todas as respostas vêm diretamente das bases oficiais (TCE-MG, Portal da Transparência, IBGE, MEC, Ministério da Saúde e Diário Oficial)."
+                        "• Como estão as contas fiscais (Receita Corrente Líquida e limite de pessoal LRF)?\n"
+                        f"• Quanto foi pago de Novo Bolsa Família ou BPC em {self.db_manager.tenant.municipality_name}?\n"
+                        "• Qual é a população oficial, o PIB ou o PIB *per capita* do município?\n"
+                        f"• O que diz uma lei, decreto ou portaria publicada no Diário Oficial (*{gazette_lbl}*)?\n\n"
+                        "Todas as respostas vêm diretamente das bases oficiais auditáveis do município."
                     )
                     inst_identity = (
                         f"Sou o **SIM (Sistema de Inteligência Municipal)** de **{city_str}** "
                         f"(código IBGE `{self.db_manager.tenant.ibge_code}`).\n\n"
                         "**O que eu faço:**\n"
-                        f"Converto perguntas em linguagem natural em consultas auditáveis sobre **{total_t} objetos analíticos oficiais (79 tabelas Parquet + 7 Gold Views de Auditoria) em 7 fontes governamentais** "
-                        "(2020 a 2025) e sobre a collection de atos individuais do **Diário Oficial (*Jornal Opinião*)**, sempre informando os arquivos-fonte utilizados.\n\n"
-                        "**Fontes Oficiais Integradas (selecionáveis individualmente):**\n"
-                        "- **SICOM / TCE-MG (65 tabelas + 6 Gold Views):** receitas, despesas, empenhos, pagamentos, contratos, licitações, frota, folha de servidores, orçamento LOA vs. realizado e conflito de interesses.\n"
-                        "- **Portal da Transparência / CGU (9 tabelas):** Novo Bolsa Família, BPC, Auxílio Brasil, Convênios Federais (`cgu_convenios`) e Emendas Parlamentares (`cgu_emendas`).\n"
-                        "- **SICONFI / Tesouro Nacional:** Receita Corrente Líquida (RCL), Despesa com Pessoal LRF, Limite Prudencial e Nota CAPAG (`siconfi_finbra_indicadores`).\n"
-                        "- **IBGE Indicadores Municipais:** População oficial (Censo 2022 e Estimativas), PIB Municipal, PIB *per capita* e IDHM (`ibge_indicadores_municipais`).\n"
-                        "- **INEP / MEC Educação:** IDEB Anos Iniciais e Finais (anos ímpares oficiais), taxa de aprovação, escolas e matrículas (`inep_ideb_educacao`).\n"
-                        "- **DATASUS / SIOPS Saúde:** aplicação constitucional em saúde, UBS, CNES, leitos SUS e Santa Casa (`datasus_siops_saude`).\n"
-                        "- **Receita Federal CNPJ / QSA:** porte, CNAE e quadro societário reconciliado dos fornecedores da Prefeitura (`receita_qsa_fornecedores`).\n"
-                        "- **Diário Oficial (*Jornal Opinião*):** leis, decretos, portarias e editais atomizados com busca híbrida Okapi BM25."
+                        f"Converto perguntas em linguagem natural em consultas auditáveis sobre **{total_t} objetos analíticos oficiais ativos ({raw_count} tabelas Parquet + {gold_count} Gold Views de Auditoria)** "
+                        f"e sobre a collection de atos individuais do **Diário Oficial (*{gazette_lbl}*)**, sempre informando os arquivos-fonte utilizados.\n\n"
+                        "**Fontes Oficiais Suportadas na Arquitetura Multi-Cidade:**\n"
+                        "- **IBGE Indicadores Municipais:** População oficial (Censo 2022 e Estimativas), PIB Municipal, PIB *per capita* e área territorial (`ibge_indicadores_municipais`).\n"
+                        "- **SICONFI / Tesouro Nacional:** Receita Corrente Líquida (RCL), Despesa com Pessoal LRF, Limite Prudencial e Mínimos de Saúde/Educação (`siconfi_finbra_indicadores`).\n"
+                        "- **DATASUS / SIOPS Saúde:** aplicação constitucional em saúde e despesa *per capita* (`datasus_siops_saude`).\n"
+                        "- **Portal da Transparência / CGU:** Novo Bolsa Família, BPC, Convênios Federais e Emendas Parlamentares (`cgu_*`).\n"
+                        "- **SICOM / TCE-MG:** receitas, despesas, empenhos, pagamentos, contratos, licitações, frota e folha de servidores.\n"
+                        "- **INEP / MEC & Receita Federal QSA:** IDEB educacional e quadro societário reconciliado de fornecedores.\n"
+                        f"- **Diário Oficial (*{gazette_lbl}*):** leis, decretos, portarias e editais atomizados com busca híbrida Okapi BM25."
                     )
                 is_internal = role.lower().strip() in (
                     "auditor", "admin", "controller", "gestor", "servidor", "interno", "controladoria",
@@ -3007,7 +4188,7 @@ class SIMOrchestrator:
                     exec_ms=round((time.perf_counter() - t0) * 1000.0, 2),
                 )
 
-            # Trava 1 Comercial: Cache SQL Persistente (apenas para perguntas autônomas não contextuais e sem pedido de gráfico)
+            # Trava 1 Comercial: Cache SQL Persistente (apenas para perguntas autônomas não contextuais e sem pedido de gráfico/tabela)
             if (
                 not sql_override
                 and not explicit_tables
@@ -3015,6 +4196,7 @@ class SIMOrchestrator:
                 and not self._has_custom_sql_generator
                 and not is_contextual_followup
                 and not wants_chart
+                and not wants_table
             ):
                 sc_t0 = time.perf_counter()
                 cached_res = self.quota_manager.get_cached_response(
@@ -3043,6 +4225,7 @@ class SIMOrchestrator:
                             "role": "assistant",
                             "content": cached_res.get("answer_text", ""),
                             "sql_executed": cached_res.get("sql_executed") or "",
+                            "row_count": len(cached_res.get("sql_rows") or []),
                         }
                     )
                     self._record_session_sql_context(
@@ -3115,7 +4298,7 @@ class SIMOrchestrator:
                     w in q_norm_s2
                     for w in (
                         "quanto", "quantos", "quais", "quem", "ranking", "maior", "maiores",
-                        "conflito", "evolucao", "compare", "2020", "2021", "2022", "2023", "2024", "2025",
+                        "conflito", "evolucao", "compare", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027",
                     )
                 )
             )
@@ -3138,6 +4321,51 @@ class SIMOrchestrator:
                     }
                 )
             elif intent in ("sql_analytics", "hybrid_sql_rag"):
+                missing_check = (
+                    None
+                    if sql_override
+                    else self._check_missing_granular_source(
+                        effective_question, allowed_sources=allowed_sources
+                    )
+                )
+                if missing_check is not None:
+                    cit_miss, inst_miss, warn_miss = missing_check
+                    is_internal = role.lower().strip() in (
+                        "auditor", "admin", "controller", "gestor", "servidor", "interno", "controladoria",
+                    )
+                    sel_miss = inst_miss if is_internal else cit_miss
+                    steps.append(
+                        {
+                            "step": len(steps) + 1,
+                            "name": "Verificador de Cobertura Multi-Cidade (Fonte Granular Pendente)",
+                            "status": "PENDING_INGESTION",
+                            "duration_ms": 0.2,
+                            "detail": warn_miss["message"],
+                        }
+                    )
+                    return OrchestrationResult(
+                        status="sucesso",
+                        intent="clarification_needed",
+                        tenant_id=self.db_manager.tenant.tenant_id,
+                        role=role,
+                        question=question,
+                        effective_question=effective_question,
+                        standalone_question=effective_question,
+                        answer_text=sel_miss,
+                        citizen_response=cit_miss,
+                        institutional_response=inst_miss,
+                        methodology_summary="Verificação determinística de cobertura de fontes por município (0 tokens extras de retry SQL).",
+                        limitations_and_caveats=[f"[{warn_miss['gap_id']}] {warn_miss['title']}: {warn_miss['message']}"],
+                        transparency_warnings=[warn_miss],
+                        schema_reduction_pct=100.0,
+                        prompt_tokens_estimated=self._turn_prompt_tokens_real,
+                        prompt_tokens_real=self._turn_prompt_tokens_real,
+                        completion_tokens_real=self._turn_completion_tokens_real,
+                        llm_engine_used="SIM Multi-City Coverage Guard",
+                        asr_corrections=asr_corrections,
+                        pipeline_steps=steps,
+                        exec_ms=round((time.perf_counter() - t0) * 1000.0, 2),
+                    )
                 sql_out = self._run_sql_pipeline(
                     effective_question=effective_question,
                     raw_question_norm=q_norm_s2,
@@ -3151,6 +4379,9 @@ class SIMOrchestrator:
                     llm_provider=llm_provider,
                     llm_api_key=llm_api_key,
                     steps=steps,
+                    wants_chart=wants_chart,
+                    wants_table=wants_table,
+                    intent=intent,
                 )
                 if sql_out.get("redirect_conversational"):
                     c_txt, i_txt, conv_eng = self._handle_conversational_or_conceptual_turn(
@@ -3218,6 +4449,7 @@ class SIMOrchestrator:
 
                 sql_executed = sql_out.get("sql_executed")
                 sql_rows = sql_out.get("sql_rows") or []
+                limit_applied_turn = bool(sql_out.get("limit_applied", False))
                 pii_masked = int(sql_out.get("pii_masked") or 0)
                 fontes.extend(sql_out.get("fontes") or [])
                 warnings.extend(sql_out.get("warnings") or [])
@@ -3334,15 +4566,16 @@ class SIMOrchestrator:
                         top_k=3,
                     )
                     if cross_chunks:
+                        gazette_lbl = self._get_gazette_name()
                         rag_chunks = cross_chunks
                         for ch in cross_chunks:
-                            src = f"Jornal Opinião ({ch.get('source')})"
+                            src = f"{gazette_lbl} ({ch.get('source')})"
                             if src not in fontes:
                                 fontes.append(src)
                         steps.append(
                             {
                                 "step": len(steps) + 1,
-                                "name": "Cross-Link Automático SQL -> Diário Oficial (Jornal Opinião)",
+                                "name": f"Cross-Link Automático SQL -> Diário Oficial ({gazette_lbl})",
                                 "status": "OK",
                                 "duration_ms": round((time.perf_counter() - s6b_t0) * 1000.0, 2),
                                 "detail": (
@@ -3357,6 +4590,7 @@ class SIMOrchestrator:
             chart_b64: Optional[str] = None
             chart_mime: Optional[str] = None
             chart_cap: Optional[str] = None
+            artifact = None
             if wants_chart and sql_rows:
                 ch_t0 = time.perf_counter()
                 artifact = self.chart_generator.generate_chart(rows=sql_rows, question=effective_question)
@@ -3373,6 +4607,41 @@ class SIMOrchestrator:
                             "detail": (
                                 f"Gráfico PNG ({artifact.chart_kind}, {artifact.width_px}x{artifact.height_px}px) "
                                 f"gerado sobre {len(sql_rows)} registro(s)."
+                            ),
+                        }
+                    )
+
+            # Eixo 4b (SIM v4.3): Se o usuário pediu uma TABELA (ex: "me gere uma tabela com os secretários e seus salários"),
+            # renderiza o Cartão PNG TrueType de alta nitidez (WhatsApp) + Tabela HTML institucional (Console Web)
+            table_b64: Optional[str] = None
+            table_mime: Optional[str] = None
+            table_cap: Optional[str] = None
+            table_html: Optional[str] = None
+            table_totals: Optional[Dict[str, str]] = None
+            table_art: Optional[TableArtifact] = None
+            limit_trunc_turn = bool(locals().get("limit_applied_turn", False))
+            if wants_table and sql_rows and self.table_renderer.can_render(sql_rows):
+                tb_t0 = time.perf_counter()
+                table_art = self.table_renderer.render(
+                    rows=sql_rows,
+                    title=effective_question[:90],
+                    truncated_by_security_limit=limit_trunc_turn,
+                )
+                if table_art:
+                    table_b64 = table_art.image_base64
+                    table_mime = table_art.mime_type
+                    table_cap = table_art.caption
+                    table_html = table_art.html
+                    table_totals = table_art.totals_by_column
+                    steps.append(
+                        {
+                            "step": len(steps) + 1,
+                            "name": "Renderizador de Tabela Institucional (Cartão PNG TrueType + HTML)",
+                            "status": "OK",
+                            "duration_ms": round((time.perf_counter() - tb_t0) * 1000.0, 2),
+                            "detail": (
+                                f"Tabela PNG/HTML gerada com {table_art.displayed_rows} de {table_art.total_rows} registro(s) "
+                                f"e {len(table_art.columns_rendered)} coluna(s)."
                             ),
                         }
                     )
@@ -3395,7 +4664,37 @@ class SIMOrchestrator:
                 llm_provider=llm_provider,
                 llm_api_key=llm_api_key,
                 legal_framework_notes=legal_framework_notes,
+                chart_generated=(chart_b64 is not None),
+                chart_caption=chart_cap,
+                table_generated=(table_b64 is not None),
+                table_caption=table_cap,
+                table_totals=table_totals,
+                limit_applied=limit_trunc_turn,
             )
+            # Se a síntese LLM retornou um título editorial limpo (`chart_title` ou `table_title`), re-renderiza o header (< 12ms em RAM)
+            if artifact is not None and dual_synth.get("chart_title"):
+                refined_art = self.chart_generator.generate_chart(
+                    rows=sql_rows,
+                    question=effective_question,
+                    chart_spec={"title": dual_synth["chart_title"]},
+                )
+                if refined_art:
+                    chart_b64 = refined_art.image_base64
+                    chart_mime = refined_art.mime_type
+                    chart_cap = refined_art.caption
+
+            if table_art is not None and dual_synth.get("table_title"):
+                refined_tbl = self.table_renderer.render(
+                    rows=sql_rows,
+                    title=str(dual_synth["table_title"])[:90],
+                    truncated_by_security_limit=limit_trunc_turn,
+                )
+                if refined_tbl:
+                    table_b64 = refined_tbl.image_base64
+                    table_mime = refined_tbl.mime_type
+                    table_cap = refined_tbl.caption
+                    table_html = refined_tbl.html
+
             final_answer = dual_synth["answer_text"]
             synth_engine = dual_synth["synth_engine"]
             steps.append(
@@ -3411,18 +4710,22 @@ class SIMOrchestrator:
                 }
             )
 
-            # Atualizar memória conversacional Multi-Turno com `sql_executed` e cache de linhas da sessão
-            if session_id not in self.conversation_history:
-                self.conversation_history[session_id] = deque(maxlen=10)
-            hist_deque = self.conversation_history[session_id]
-            hist_deque.append({"role": "user", "content": working_question})
-            hist_deque.append(
-                {
-                    "role": "assistant",
-                    "content": (dual_synth["citizen_response"] or final_answer)[:600],
-                    "sql_executed": sql_executed or "",
-                }
-            )
+            # Atualizar memória conversacional Multi-Turno com `sql_executed`, `row_count` e cache de linhas da sessão
+            with self._mem_lock:
+                if session_id not in self.conversation_history:
+                    self.conversation_history[session_id] = deque(maxlen=10)
+                self.conversation_history.move_to_end(session_id)
+                hist_deque = self.conversation_history[session_id]
+                hist_deque.append({"role": "user", "content": working_question})
+                hist_deque.append(
+                    {
+                        "role": "assistant",
+                        "content": (dual_synth["citizen_response"] or final_answer)[:600],
+                        "sql_executed": sql_executed or "",
+                        "row_count": len(sql_rows),
+                    }
+                )
+            self._prune_session_maps()
             self._record_session_sql_context(
                 session_id=session_id,
                 question=effective_question,
@@ -3463,6 +4766,10 @@ class SIMOrchestrator:
                 chart_base64=chart_b64,
                 chart_mime_type=chart_mime,
                 chart_caption=chart_cap,
+                table_image_base64=table_b64,
+                table_mime_type=table_mime,
+                table_caption=table_cap,
+                table_html=table_html,
                 asr_corrections=asr_corrections,
                 pipeline_steps=steps,
                 exec_ms=round((time.perf_counter() - t0) * 1000.0, 2),
@@ -3470,7 +4777,7 @@ class SIMOrchestrator:
 
             # Eixo 7 & Eixo 8: Higiene Estrita do Cache SQLite + Telemetria Real de Tokens (sem dupla contagem)
             already_debited = (self._turn_prompt_tokens_real + self._turn_completion_tokens_real) > 0
-            if not sql_override and not explicit_tables and not explicit_segments and not wants_chart:
+            if not sql_override and not explicit_tables and not explicit_segments and not wants_chart and not wants_table:
                 self.quota_manager.store_response_and_record_usage(
                     question=effective_question,
                     role=role,

@@ -12,17 +12,29 @@
     "veiculo": "Jornal Opinião (Órgão Oficial de Caeté/MG)",
     "chunker": "ActBoundaryChunker"
   },
+  "connector_profile": {
+    "erp_family": "cidade360_hibrido",
+    "gazette_family": "pdf_proprio",
+    "ocr_fallback": true
+  },
   "orgaos_map": {
     "01": "CÂMARA MUNICIPAL DE CAETÉ",
     "02": "PREFEITURA MUNICIPAL DE CAETÉ",
     "03": "SERVIÇO AUTÔNOMO DE ÁGUA E ESGOTO (SAAE)",
-    "04": "FUNDAÇÃO EDUCACIONAL DE CAETÉ (FEC)",
-    "05": "FUNDO MUNICIPAL DE SAÚDE (FMS)"
+    "04": "FUNDAÇÃO CASA DE CULTURA DE CAETÉ",
+    "05": "FUNDAÇÃO EDUCACIONAL DE CAETÉ"
   },
   "local_aliases": {
     "hospital": "SOC CIVIL DE BENEFICENCIA CAETEENSE",
     "agua_esgoto": "SERVIÇO AUTONOMO DE AGUA E ESGOTO",
     "previdencia": "INSTITUTO NACIONAL DO SEGURO SOCIAL"
+  },
+  "institutional_cnpjs": {
+    "18302299000102": "PREFEITURA MUNICIPAL DE CAETÉ (FOLHA / ENCARGOS)",
+    "65174518000197": "CÂMARA MUNICIPAL DE CAETÉ (FOLHA / ENCARGOS)",
+    "19893791000154": "SERVIÇO AUTÔNOMO DE ÁGUA E ESGOTO DE CAETÉ (SAAE)",
+    "21155528000100": "FUNDAÇÃO CASA DE CULTURA DE CAETÉ",
+    "22257307000105": "FUNDAÇÃO EDUCACIONAL DE CAETÉ"
   },
   "ibge_series": [
     {"ano": 2020, "populacao": 44718, "fonte_pop": "Estimativa TCU/IBGE Pré-Censo", "pib_mil": 918450.00, "pib_per_capita": 20538.71, "idhm": 0.728, "idhm_edu": 0.652, "idhm_long": 0.845, "area_km2": 542.577, "densidade": 82.42},
@@ -33,7 +45,7 @@
     {"ano": 2025, "populacao": 39980, "fonte_pop": "Projeção Demográfica Municipal IBGE 2025", "pib_mil": 1341200.00, "pib_per_capita": 33546.77, "idhm": 0.728, "idhm_edu": 0.652, "idhm_long": 0.845, "area_km2": 542.577, "densidade": 73.69}
   ],
   "ideb_series": [
-    {"ano": 2019, "rede": " Pública Municipal", "anos_iniciais": 6.3, "anos_finais": 5.1, "meta_iniciais": 6.1, "escolas": 18, "matriculas": 4310, "taxa_aprovacao": 96.4},
+    {"ano": 2019, "rede": "Pública Municipal", "anos_iniciais": 6.3, "anos_finais": 5.1, "meta_iniciais": 6.1, "escolas": 18, "matriculas": 4310, "taxa_aprovacao": 96.4},
     {"ano": 2021, "rede": "Pública Municipal", "anos_iniciais": 6.2, "anos_finais": 5.2, "meta_iniciais": 6.3, "escolas": 18, "matriculas": 4185, "taxa_aprovacao": 97.1},
     {"ano": 2023, "rede": "Pública Municipal", "anos_iniciais": 6.5, "anos_finais": 5.4, "meta_iniciais": 6.4, "escolas": 19, "matriculas": 4060, "taxa_aprovacao": 97.8}
   ]

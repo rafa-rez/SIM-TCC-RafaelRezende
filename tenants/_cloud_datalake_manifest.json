@@ -1,0 +1,371 @@
+{
+  "provider": "google_drive",
+  "account": "rafaelrez2004@gmail.com",
+  "account_hint": "rafaelrez2004@gmail.com",
+  "root_folder_name": "SIM_DataLake",
+  "root_folder_id": "1OZQ1aJCQd1mHThz4fjidpD0oQ1699tRG",
+  "root_folder_url": "https://drive.google.com/drive/folders/1OZQ1aJCQd1mHThz4fjidpD0oQ1699tRG",
+  "updated_at": "2026-11-16 11:02:04",
+  "states": {
+    "MG": {
+      "folder_id": "1GAVyGutJG-20CGg4Jz5bn1O6G6589i1x",
+      "folder_url": "https://drive.google.com/drive/folders/1GAVyGutJG-20CGg4Jz5bn1O6G6589i1x"
+    }
+  },
+  "tenants": {
+    "caete_mg_3110004": {
+      "municipality_name": "Caeté",
+      "state_uf": "MG",
+      "ibge_code": "3110004",
+      "drive_folder_name": "3110004_caete",
+      "city_folder_name": "3110004_caete",
+      "folder_id": "14_uMKcv3KBCTVDOwywF_t98Ai_Xjr6Ao",
+      "folder_url": "https://drive.google.com/drive/folders/14_uMKcv3KBCTVDOwywF_t98Ai_Xjr6Ao",
+      "city_folder_url": "https://drive.google.com/drive/folders/14_uMKcv3KBCTVDOwywF_t98Ai_Xjr6Ao",
+      "raw_packages_folder_id": "1knnIZ7yaxILg8NhNiWbhb1TbAnFkBMYi",
+      "releases_folder_id": "1PMkmS7pf7NH1R6aHHM332LZS9XuyVMK5",
+      "synced_files": [
+        {
+          "filename": "caete_mg_3110004__rel_20261112_161540_980__parquet_bundle.zip",
+          "category": "releases",
+          "drive_file_id": "1mKj_O66UrmuVqphjQ_8d63jwSxYbgoEW",
+          "web_view_link": "https://drive.google.com/file/d/1mKj_O66UrmuVqphjQ_8d63jwSxYbgoEW/view?usp=drivesdk",
+          "size_bytes": 15789174,
+          "two_phase_verified": true,
+          "uploaded_at": "2026-11-12T18:39:23Z"
+        },
+        {
+          "filename": "caete_mg_3110004__rel_20261112_202843_129__parquet_bundle.zip",
+          "category": "releases",
+          "drive_file_id": "1vSra4YT46fcn8NIlZ73pk3XzfM76Omg9",
+          "parent_folder_id": "1PMkmS7pf7NH1R6aHHM332LZS9XuyVMK5",
+          "size_bytes": 15789516,
+          "uploaded_at": "2026-11-12 20:30:21",
+          "web_url": "https://drive.google.com/file/d/1vSra4YT46fcn8NIlZ73pk3XzfM76Omg9/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__20261112_221348__3110004__atualizacao_consolidada_2026.zip",
+          "category": "raw_packages",
+          "drive_file_id": "1GBSVQMpwcPSjZC7K6NI-E4HxW00R1or7",
+          "parent_folder_id": "1knnIZ7yaxILg8NhNiWbhb1TbAnFkBMYi",
+          "size_bytes": 630298,
+          "uploaded_at": "2026-11-12 22:14:47",
+          "web_url": "https://drive.google.com/file/d/1GBSVQMpwcPSjZC7K6NI-E4HxW00R1or7/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__20261112_221350__3110004__Jornal_Oficial_Caete_ed1654_2026-11-05.pdf",
+          "category": "raw_packages",
+          "drive_file_id": "11xKy3Fu34UxgGyYF-cuT6McGUbyvnuKB",
+          "parent_folder_id": "1knnIZ7yaxILg8NhNiWbhb1TbAnFkBMYi",
+          "size_bytes": 418174,
+          "uploaded_at": "2026-11-12 22:14:50",
+          "web_url": "https://drive.google.com/file/d/11xKy3Fu34UxgGyYF-cuT6McGUbyvnuKB/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__20261112_221351__3110004__Jornal_Oficial_Caete_ed1655_2026-11-06.pdf",
+          "category": "raw_packages",
+          "drive_file_id": "1oOwOm-wMSSEkVIelYHDs3xdFdkXUZKWC",
+          "parent_folder_id": "1knnIZ7yaxILg8NhNiWbhb1TbAnFkBMYi",
+          "size_bytes": 455227,
+          "uploaded_at": "2026-11-12 22:14:53",
+          "web_url": "https://drive.google.com/file/d/1oOwOm-wMSSEkVIelYHDs3xdFdkXUZKWC/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__20261112_221352__3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf",
+          "category": "raw_packages",
+          "drive_file_id": "1S-55nzPB37sQex2XNyQyRzmTGGbQ6A6y",
+          "parent_folder_id": "1knnIZ7yaxILg8NhNiWbhb1TbAnFkBMYi",
+          "size_bytes": 4285938,
+          "uploaded_at": "2026-11-12 22:14:55",
+          "web_url": "https://drive.google.com/file/d/1S-55nzPB37sQex2XNyQyRzmTGGbQ6A6y/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__20261112_221354__3110004__Jornal_Oficial_Caete_ed1657_2026-11-11.pdf",
+          "category": "raw_packages",
+          "drive_file_id": "1ZoWOAKR0wygajXENjqtpKqcD2ibdEy9v",
+          "parent_folder_id": "1knnIZ7yaxILg8NhNiWbhb1TbAnFkBMYi",
+          "size_bytes": 467248,
+          "uploaded_at": "2026-11-12 22:14:58",
+          "web_url": "https://drive.google.com/file/d/1ZoWOAKR0wygajXENjqtpKqcD2ibdEy9v/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__20261112_221355__3110004__Jornal_Oficial_Caete_ed1658_2026-11-12.pdf",
+          "category": "raw_packages",
+          "drive_file_id": "1dLKfrHQ1sxwUMEQOeOdSGFK63LyTXggF",
+          "parent_folder_id": "1knnIZ7yaxILg8NhNiWbhb1TbAnFkBMYi",
+          "size_bytes": 422704,
+          "uploaded_at": "2026-11-12 22:15:01",
+          "web_url": "https://drive.google.com/file/d/1dLKfrHQ1sxwUMEQOeOdSGFK63LyTXggF/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__rel_20261112_221423_897__parquet_bundle.zip",
+          "category": "releases",
+          "drive_file_id": "1ToELd0_RIwbl0c9PVugiRJoNrJ28DgMH",
+          "parent_folder_id": "1PMkmS7pf7NH1R6aHHM332LZS9XuyVMK5",
+          "size_bytes": 16484557,
+          "uploaded_at": "2026-11-12 22:15:04",
+          "web_url": "https://drive.google.com/file/d/1ToELd0_RIwbl0c9PVugiRJoNrJ28DgMH/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__upl_20261112_221346_557__parquet_bundle.zip",
+          "category": "releases",
+          "drive_file_id": "1mn-6eYMjIXPglHYa5zpkxrFlGIwFfEQt",
+          "parent_folder_id": "1PMkmS7pf7NH1R6aHHM332LZS9XuyVMK5",
+          "size_bytes": 16483970,
+          "uploaded_at": "2026-11-12 22:15:07",
+          "web_url": "https://drive.google.com/file/d/1mn-6eYMjIXPglHYa5zpkxrFlGIwFfEQt/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__20261112_222651__3110004__atualizacao_consolidada_2026.zip",
+          "category": "raw_packages",
+          "drive_file_id": "19T1Ljxp6O3bd8YaINRu1ClExlQhk9DGB",
+          "parent_folder_id": "1knnIZ7yaxILg8NhNiWbhb1TbAnFkBMYi",
+          "size_bytes": 337354,
+          "uploaded_at": "2026-11-12 22:27:43",
+          "web_url": "https://drive.google.com/file/d/19T1Ljxp6O3bd8YaINRu1ClExlQhk9DGB/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__rel_20261112_222714_431__parquet_bundle.zip",
+          "category": "releases",
+          "drive_file_id": "1EGzq8e9PUp7fBLwkdbyAusT2JXfDzVc_",
+          "parent_folder_id": "1PMkmS7pf7NH1R6aHHM332LZS9XuyVMK5",
+          "size_bytes": 16113139,
+          "uploaded_at": "2026-11-12 22:27:46",
+          "web_url": "https://drive.google.com/file/d/1EGzq8e9PUp7fBLwkdbyAusT2JXfDzVc_/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__upl_20261112_222649_901__parquet_bundle.zip",
+          "category": "releases",
+          "drive_file_id": "1KdilFQFs24_ndEJwTq5di4ec69r3rsmF",
+          "parent_folder_id": "1PMkmS7pf7NH1R6aHHM332LZS9XuyVMK5",
+          "size_bytes": 16112892,
+          "uploaded_at": "2026-11-12 22:27:50",
+          "web_url": "https://drive.google.com/file/d/1KdilFQFs24_ndEJwTq5di4ec69r3rsmF/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__20261116_105919__3110004__atualizacao_consolidada_2026.zip",
+          "category": "raw_packages",
+          "drive_file_id": "1HyvUBTH9zDw_EtTt0gSK2BPuHtxH8aTQ",
+          "parent_folder_id": "1knnIZ7yaxILg8NhNiWbhb1TbAnFkBMYi",
+          "size_bytes": 347760,
+          "md5_checksum": "2c6e8e9ed747a9db3edf5dddbc45b9b9",
+          "two_phase_verified": true,
+          "uploaded_at": "2026-11-16 11:01:33",
+          "web_url": "https://drive.google.com/file/d/1HyvUBTH9zDw_EtTt0gSK2BPuHtxH8aTQ/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__20261116_105920__3110004__Jornal_Oficial_Caete_ed1654_2026-11-05.pdf",
+          "category": "raw_packages",
+          "drive_file_id": "1rJIDUzz7DHpO_ufSTTbnnMeFyO2dwUrf",
+          "parent_folder_id": "1knnIZ7yaxILg8NhNiWbhb1TbAnFkBMYi",
+          "size_bytes": 418174,
+          "md5_checksum": "ae47684293226adf8adde35d3737f1b5",
+          "two_phase_verified": true,
+          "uploaded_at": "2026-11-16 11:01:36",
+          "web_url": "https://drive.google.com/file/d/1rJIDUzz7DHpO_ufSTTbnnMeFyO2dwUrf/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__20261116_105922__3110004__Jornal_Oficial_Caete_ed1655_2026-11-06.pdf",
+          "category": "raw_packages",
+          "drive_file_id": "1dNlnxe4zjq46bpG-LyPP2jHNzgA7ET40",
+          "parent_folder_id": "1knnIZ7yaxILg8NhNiWbhb1TbAnFkBMYi",
+          "size_bytes": 455227,
+          "md5_checksum": "cf0b53d968f9cf7f25458a8db2fb8660",
+          "two_phase_verified": true,
+          "uploaded_at": "2026-11-16 11:01:39",
+          "web_url": "https://drive.google.com/file/d/1dNlnxe4zjq46bpG-LyPP2jHNzgA7ET40/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__20261116_105923__3110004__Jornal_Oficial_Caete_ed1656_2026-11-10.pdf",
+          "category": "raw_packages",
+          "drive_file_id": "1e4UnEl1o9oIqpk-DuM8iBTGGsfw1sBOC",
+          "parent_folder_id": "1knnIZ7yaxILg8NhNiWbhb1TbAnFkBMYi",
+          "size_bytes": 4285938,
+          "md5_checksum": "8617db0f4d6cc241c108bbb43154113d",
+          "two_phase_verified": true,
+          "uploaded_at": "2026-11-16 11:01:42",
+          "web_url": "https://drive.google.com/file/d/1e4UnEl1o9oIqpk-DuM8iBTGGsfw1sBOC/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__20261116_105924__3110004__Jornal_Oficial_Caete_ed1657_2026-11-11.pdf",
+          "category": "raw_packages",
+          "drive_file_id": "1fUoAjayLHvUIiiFjX_HGMxb4vTKCLV_v",
+          "parent_folder_id": "1knnIZ7yaxILg8NhNiWbhb1TbAnFkBMYi",
+          "size_bytes": 467248,
+          "md5_checksum": "7ced361cdcf1e9104b160a0ac6101ba4",
+          "two_phase_verified": true,
+          "uploaded_at": "2026-11-16 11:01:46",
+          "web_url": "https://drive.google.com/file/d/1fUoAjayLHvUIiiFjX_HGMxb4vTKCLV_v/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__20261116_105925__3110004__Jornal_Oficial_Caete_ed1658_2026-11-12.pdf",
+          "category": "raw_packages",
+          "drive_file_id": "1AnVIf5K7_l3DfR6zIyKfIujGm2N-bDE7",
+          "parent_folder_id": "1knnIZ7yaxILg8NhNiWbhb1TbAnFkBMYi",
+          "size_bytes": 422704,
+          "md5_checksum": "809b712c24e779aefef8659bd0f5857b",
+          "two_phase_verified": true,
+          "uploaded_at": "2026-11-16 11:01:48",
+          "web_url": "https://drive.google.com/file/d/1AnVIf5K7_l3DfR6zIyKfIujGm2N-bDE7/view?usp=drivesdk"
+        },
+        {
+          "filename": "caete_mg_3110004__rel_20261116_110051_172__parquet_bundle.zip",
+          "category": "releases",
+          "drive_file_id": "1xtnYpv_L4esVelvfcRiPg84PYCccyK4p",
+          "parent_folder_id": "1PMkmS7pf7NH1R6aHHM332LZS9XuyVMK5",
+          "size_bytes": 16141890,
+          "md5_checksum": "f9b6a41e112da7c7d8fd93173a4d3aa2",
+          "two_phase_verified": true,
+          "uploaded_at": "2026-11-16 11:01:52",
+          "web_url": "https://drive.google.com/file/d/1xtnYpv_L4esVelvfcRiPg84PYCccyK4p/view?usp=drivesdk"
+        }
+      ]
+    },
+    "lagoa_da_prata_mg_3137205": {
+      "municipality_name": "Lagoa da Prata",
+      "state_uf": "MG",
+      "ibge_code": "3137205",
+      "drive_folder_name": "3137205_lagoa_da_prata",
+      "city_folder_name": "3137205_lagoa_da_prata",
+      "folder_id": "1YweA1lGv2NfXkdgzaKbwrHgOZseF5lLM",
+      "folder_url": "https://drive.google.com/drive/folders/1YweA1lGv2NfXkdgzaKbwrHgOZseF5lLM",
+      "city_folder_url": "https://drive.google.com/drive/folders/1YweA1lGv2NfXkdgzaKbwrHgOZseF5lLM",
+      "raw_packages_folder_id": "15lbbpmQpARP5qofSTTkZIAt982ScgV_n",
+      "releases_folder_id": "1ZKJ-TEW_hGwtj_NVyw2O7drMx19UkiP0",
+      "synced_files": [
+        {
+          "filename": "lagoa_da_prata_mg_3137205__base_20261112__parquet_bundle.zip",
+          "category": "releases",
+          "drive_file_id": "1WzT25wGjQE3I0bjgDxb370chhTFQryFN",
+          "web_view_link": "https://drive.google.com/file/d/1WzT25wGjQE3I0bjgDxb370chhTFQryFN/view?usp=drivesdk",
+          "size_bytes": 13413,
+          "two_phase_verified": true,
+          "uploaded_at": "2026-11-12T18:39:24Z"
+        },
+        {
+          "filename": "lagoa_da_prata_mg_3137205__rel_20261112_165216_153__parquet_bundle.zip",
+          "category": "releases",
+          "drive_file_id": "1YjBzIOC7NZHwKldubeLmLhO8rh43iTRC",
+          "parent_folder_id": "1ZKJ-TEW_hGwtj_NVyw2O7drMx19UkiP0",
+          "size_bytes": 14004,
+          "uploaded_at": "2026-11-12 16:52:19",
+          "web_url": "https://drive.google.com/file/d/1YjBzIOC7NZHwKldubeLmLhO8rh43iTRC/view?usp=drivesdk"
+        },
+        {
+          "filename": "lagoa_da_prata_mg_3137205__rel_20261112_203014_338__parquet_bundle.zip",
+          "category": "releases",
+          "drive_file_id": "1BMnaX4LQsNDZ6eGd-iUMaOWkdud4G8Av",
+          "parent_folder_id": "1ZKJ-TEW_hGwtj_NVyw2O7drMx19UkiP0",
+          "size_bytes": 15407,
+          "uploaded_at": "2026-11-12 20:30:24",
+          "web_url": "https://drive.google.com/file/d/1BMnaX4LQsNDZ6eGd-iUMaOWkdud4G8Av/view?usp=drivesdk"
+        },
+        {
+          "filename": "lagoa_da_prata_mg_3137205__20261112_221356__3137205__diario_oficial_amm_lagoa_da_prata_2026.json",
+          "category": "raw_packages",
+          "drive_file_id": "114F2spvlbzsQDo7CG2JnRpL4pkSilKZ_",
+          "parent_folder_id": "15lbbpmQpARP5qofSTTkZIAt982ScgV_n",
+          "size_bytes": 690431,
+          "uploaded_at": "2026-11-12 22:15:10",
+          "web_url": "https://drive.google.com/file/d/114F2spvlbzsQDo7CG2JnRpL4pkSilKZ_/view?usp=drivesdk"
+        },
+        {
+          "filename": "lagoa_da_prata_mg_3137205__20261112_221359__3137205__pacote_consolidado_2024_2026.zip",
+          "category": "raw_packages",
+          "drive_file_id": "1F4XEVffJSf9c884B9oMDwK05UwNH4FxV",
+          "parent_folder_id": "15lbbpmQpARP5qofSTTkZIAt982ScgV_n",
+          "size_bytes": 4338479,
+          "uploaded_at": "2026-11-12 22:15:13",
+          "web_url": "https://drive.google.com/file/d/1F4XEVffJSf9c884B9oMDwK05UwNH4FxV/view?usp=drivesdk"
+        },
+        {
+          "filename": "lagoa_da_prata_mg_3137205__rel_20261112_203014_338__parquet_bundle.zip",
+          "category": "releases",
+          "drive_file_id": "17q1j3sT0NjrrqJSgZxt693XmLH99szbq",
+          "parent_folder_id": "1ZKJ-TEW_hGwtj_NVyw2O7drMx19UkiP0",
+          "size_bytes": 155675,
+          "uploaded_at": "2026-11-12 22:15:15",
+          "web_url": "https://drive.google.com/file/d/17q1j3sT0NjrrqJSgZxt693XmLH99szbq/view?usp=drivesdk"
+        },
+        {
+          "filename": "lagoa_da_prata_mg_3137205__rel_20261112_221441_760__parquet_bundle.zip",
+          "category": "releases",
+          "drive_file_id": "1nhV3lmV-9tSI14Nf7erS2GyvAgfv9gUU",
+          "parent_folder_id": "1ZKJ-TEW_hGwtj_NVyw2O7drMx19UkiP0",
+          "size_bytes": 4509606,
+          "uploaded_at": "2026-11-12 22:15:19",
+          "web_url": "https://drive.google.com/file/d/1nhV3lmV-9tSI14Nf7erS2GyvAgfv9gUU/view?usp=drivesdk"
+        },
+        {
+          "filename": "lagoa_da_prata_mg_3137205__upl_20261112_221357_452__parquet_bundle.zip",
+          "category": "releases",
+          "drive_file_id": "1CWFu4PThL8S3d6qdTRgwIbEhbYU5dfeq",
+          "parent_folder_id": "1ZKJ-TEW_hGwtj_NVyw2O7drMx19UkiP0",
+          "size_bytes": 4509722,
+          "uploaded_at": "2026-11-12 22:15:22",
+          "web_url": "https://drive.google.com/file/d/1CWFu4PThL8S3d6qdTRgwIbEhbYU5dfeq/view?usp=drivesdk"
+        },
+        {
+          "filename": "lagoa_da_prata_mg_3137205__20261112_222654__3137205__pacote_consolidado_2024_2026.zip",
+          "category": "raw_packages",
+          "drive_file_id": "12r5G5gjZbKv5VhfIQn-DD6eUFcjhO1uD",
+          "parent_folder_id": "15lbbpmQpARP5qofSTTkZIAt982ScgV_n",
+          "size_bytes": 4303023,
+          "uploaded_at": "2026-11-12 22:27:53",
+          "web_url": "https://drive.google.com/file/d/12r5G5gjZbKv5VhfIQn-DD6eUFcjhO1uD/view?usp=drivesdk"
+        },
+        {
+          "filename": "lagoa_da_prata_mg_3137205__rel_20261112_222740_023__parquet_bundle.zip",
+          "category": "releases",
+          "drive_file_id": "10iQYBWFJtcIIDbSGJ3XYGGeVtHUkcCLU",
+          "parent_folder_id": "1ZKJ-TEW_hGwtj_NVyw2O7drMx19UkiP0",
+          "size_bytes": 4478761,
+          "uploaded_at": "2026-11-12 22:27:55",
+          "web_url": "https://drive.google.com/file/d/10iQYBWFJtcIIDbSGJ3XYGGeVtHUkcCLU/view?usp=drivesdk"
+        },
+        {
+          "filename": "lagoa_da_prata_mg_3137205__upl_20261112_222652_328__parquet_bundle.zip",
+          "category": "releases",
+          "drive_file_id": "1mxuJLJ_KCMupFxl3KhdzDOrckfyGNVQ1",
+          "parent_folder_id": "1ZKJ-TEW_hGwtj_NVyw2O7drMx19UkiP0",
+          "size_bytes": 4478896,
+          "uploaded_at": "2026-11-12 22:27:59",
+          "web_url": "https://drive.google.com/file/d/1mxuJLJ_KCMupFxl3KhdzDOrckfyGNVQ1/view?usp=drivesdk"
+        },
+        {
+          "filename": "lagoa_da_prata_mg_3137205__20261116_105926__3137205__diario_oficial_amm_lagoa_da_prata_2026.json",
+          "category": "raw_packages",
+          "drive_file_id": "11AabKW7wAPyeaw8icm8QiTTKbXU18tWV",
+          "parent_folder_id": "15lbbpmQpARP5qofSTTkZIAt982ScgV_n",
+          "size_bytes": 720659,
+          "md5_checksum": "c75a484190bebd943404a8c1ec40fbc6",
+          "two_phase_verified": true,
+          "uploaded_at": "2026-11-16 11:01:56",
+          "web_url": "https://drive.google.com/file/d/11AabKW7wAPyeaw8icm8QiTTKbXU18tWV/view?usp=drivesdk"
+        },
+        {
+          "filename": "lagoa_da_prata_mg_3137205__20261116_105931__3137205__pacote_consolidado_2024_2026.zip",
+          "category": "raw_packages",
+          "drive_file_id": "1zaxVIaHp82IpD1upX1NzUnPjb6u2Llkb",
+          "parent_folder_id": "15lbbpmQpARP5qofSTTkZIAt982ScgV_n",
+          "size_bytes": 4223305,
+          "md5_checksum": "1c5af7ef9a0d6ac4b77aace946a0221f",
+          "two_phase_verified": true,
+          "uploaded_at": "2026-11-16 11:02:00",
+          "web_url": "https://drive.google.com/file/d/1zaxVIaHp82IpD1upX1NzUnPjb6u2Llkb/view?usp=drivesdk"
+        },
+        {
+          "filename": "lagoa_da_prata_mg_3137205__rel_20261116_110129_623__parquet_bundle.zip",
+          "category": "releases",
+          "drive_file_id": "1RGgmyZzPx5Z7tlBUueOQkPx8sgZNso2x",
+          "parent_folder_id": "1ZKJ-TEW_hGwtj_NVyw2O7drMx19UkiP0",
+          "size_bytes": 4392964,
+          "md5_checksum": "7aee8bf13e8d7900daaaaee1caac4489",
+          "two_phase_verified": true,
+          "uploaded_at": "2026-11-16 11:02:04",
+          "web_url": "https://drive.google.com/file/d/1RGgmyZzPx5Z7tlBUueOQkPx8sgZNso2x/view?usp=drivesdk"
+        }
+      ]
+    }
+  }
+}

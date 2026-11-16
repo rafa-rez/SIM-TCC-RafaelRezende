@@ -16,6 +16,7 @@ import hashlib
 import json
 import math
 import re
+import threading
 import unicodedata
 import uuid
 from collections import Counter
@@ -57,7 +58,11 @@ INSTITUTIONAL_SYNONYMS: List[Tuple[Tuple[str, ...], List[str]]] = [
 ]
 
 
-def build_chunk_contextual_header(raw: Dict[str, Any]) -> str:
+def build_chunk_contextual_header(
+    raw: Dict[str, Any],
+    municipality_label: str = "Caeté/MG",
+    gazette_name: str = "Jornal Oficial",
+) -> str:
     """
     Eixo 6.1 (Anthropic Contextual Retrieval, 2024): Garante que todo chunk possua um cabeçalho
     contextual estruturado indexado tanto no BM25 quanto disponível para síntese.
@@ -66,7 +71,15 @@ def build_chunk_contextual_header(raw: Dict[str, Any]) -> str:
     if existing:
         return existing
     content = raw.get("page_content") or ""
-    src = raw.get("source") or "Jornal Oficial de Caeté"
+    stripped_content = content.lstrip()
+    if stripped_content.startswith("[Município:"):
+        end_bracket = stripped_content.find("]")
+        first_nl = stripped_content.find("\n")
+        if end_bracket != -1 and (first_nl == -1 or end_bracket < first_nl):
+            return stripped_content[: end_bracket + 1].strip()
+        if first_nl != -1:
+            return stripped_content[:first_nl].strip()
+    src = raw.get("source") or gazette_name
     ano = raw.get("ano_edicao") or "2023-2025"
     tipo = (raw.get("tipo_ato") or "GERAL / OUTROS").upper()
     orgaos: List[str] = []
@@ -84,7 +97,7 @@ def build_chunk_contextual_header(raw: Dict[str, Any]) -> str:
     if "14.133" in norm_c or "LICITA" in norm_c:
         orgaos.append("Licitações e Contratos (Lei 14.133/2021)")
     org_str = ", ".join(orgaos) if orgaos else "Administração Pública Municipal"
-    return f"[Município: Caeté/MG | Fonte: Jornal Oficial ({src}) | Ano: {ano} | Tipo de Ato: {tipo} | Órgãos/Cargos: {org_str}]"
+    return f"[Município: {municipality_label} | Fonte: {gazette_name} ({src}) | Ano: {ano} | Tipo de Ato: {tipo} | Órgãos/Cargos: {org_str}]"
 
 
 def expand_query_with_institutional_synonyms(query: str) -> Tuple[List[str], List[str]]:
@@ -158,24 +171,46 @@ def deterministic_chunk_id(source_pdf: str, page_content: str) -> str:
     return str(uuid.uuid5(NAMESPACE_SIM_RAG, key))
 
 
-def load_real_caete_rag_corpus(workspace_root: Path = DEFAULT_WORKSPACE_ROOT) -> List[Dict[str, Any]]:
+def load_real_caete_rag_corpus(
+    workspace_root: Path = DEFAULT_WORKSPACE_ROOT,
+    tenant_id: str = "caete_mg_3110004",
+) -> List[Dict[str, Any]]:
     """
-    Carrega a collection limpa e 100% deduplicada de atos individuais do Diário Oficial de Caeté
-    (*Jornal Opinião*), com reparo de ligaduras PDF (`ﬁ ns` -> `fins`), des-hifenização de colunas
-    e separação de atos colados via `sim_platform.rag.newspaper_pipeline`.
+    Carrega a collection limpa e 100% deduplicada de atos individuais do Diário Oficial do município,
+    garantindo isolamento estrito por `tenant_id` (jamais vazando o *Jornal Opinião* de Caeté em outros municípios).
     """
-    persisted = workspace_root / "avaliacao" / "dados" / "parquet" / "caete_mg_3110004" / "rag_jornais_individuais.json"
+    t_clean = (tenant_id or "caete_mg_3110004").strip()
+    is_caete = t_clean in ("caete_mg_3110004", "caete-mg")
+    target_dir = "caete_mg_3110004" if is_caete else t_clean
+    persisted = workspace_root / "avaliacao" / "dados" / "parquet" / target_dir / "rag_jornais_individuais.json"
     if persisted.exists():
         try:
             data = json.loads(persisted.read_text(encoding="utf-8"))
-            if isinstance(data, list) and len(data) > 0:
+            if isinstance(data, list):
                 return data
         except Exception:
             pass
 
+    if not is_caete:
+        city_gazette_dir = workspace_root / "avaliacao" / "dados" / "diario_oficial" / target_dir
+        if city_gazette_dir.exists() and (any(city_gazette_dir.glob("*.txt")) or any(city_gazette_dir.glob("*.json"))):
+            from sim_platform.rag.newspaper_pipeline import build_clean_individual_collection
+
+            res = build_clean_individual_collection(
+                workspace_root=workspace_root,
+                persist_json=True,
+                tenant_id=target_dir,
+            )
+            return res["collection"]
+        return []
+
     from sim_platform.rag.newspaper_pipeline import build_clean_individual_collection
 
-    res = build_clean_individual_collection(workspace_root=workspace_root, persist_json=True)
+    res = build_clean_individual_collection(
+        workspace_root=workspace_root,
+        persist_json=True,
+        tenant_id=target_dir,
+    )
     return res["collection"]
 
 
@@ -199,9 +234,13 @@ class RetrievedChunk:
             "page_content": self.page_content,
             "contextual_header": self.contextual_header,
             "contextualized_content": (
-                f"{self.contextual_header} {self.page_content}".strip()
-                if self.contextual_header
-                else self.page_content
+                self.page_content
+                if self.page_content.lstrip().startswith("[Município:")
+                else (
+                    f"{self.contextual_header} {self.page_content}".strip()
+                    if self.contextual_header
+                    else self.page_content
+                )
             ),
             "source": self.source,
             "tipo_ato": self.tipo_ato,
@@ -218,42 +257,86 @@ class HybridRAGRetriever:
     boosting determinístico de número de ato/CNPJ e Cross-Linker SQL↔RAG.
     """
 
-    def __init__(self, corpus_chunks: Optional[List[Dict[str, Any]]] = None, k1: float = 1.5, b: float = 0.75) -> None:
+    def __init__(
+        self,
+        corpus_chunks: Optional[List[Dict[str, Any]]] = None,
+        k1: float = 1.5,
+        b: float = 0.75,
+        tenant_id: str = "caete_mg_3110004",
+        workspace_root: Path = DEFAULT_WORKSPACE_ROOT,
+        municipality_label: Optional[str] = None,
+        gazette_name: Optional[str] = None,
+    ) -> None:
+        self.tenant_id = tenant_id
+        self.workspace_root = workspace_root
+        if municipality_label is None or gazette_name is None:
+            from sim_platform.ingestion.city_onboarding import load_tenant_profile
+
+            prof = load_tenant_profile(tenant_id, workspace_root=workspace_root)
+            c_name = str(prof.get("municipality_name") or "Caeté")
+            c_uf = str(prof.get("state_uf") or "MG")
+            municipality_label = municipality_label or f"{c_name}/{c_uf}"
+            gazette_name = gazette_name or str(
+                (prof.get("diario_oficial") or {}).get("veiculo") or f"Diário Oficial de {c_name}/{c_uf}"
+            )
+        self.municipality_label = municipality_label
+        self.gazette_name = gazette_name
         if corpus_chunks is not None:
             self.corpus_chunks = corpus_chunks
         else:
-            self.corpus_chunks = load_real_caete_rag_corpus()
+            self.corpus_chunks = load_real_caete_rag_corpus(
+                workspace_root=workspace_root,
+                tenant_id=tenant_id,
+            )
         self.k1 = k1
         self.b = b
+        self._index_lock = threading.RLock()
         self._doc_freqs: Dict[str, int] = {}
         self._doc_lens: List[int] = []
         self._doc_tfs: List[Counter] = []
         self._doc_norms: List[str] = []
+        self._ctx_headers: List[str] = []
         self._avgdl: float = 1.0
         self._build_bm25_index()
 
     def _build_bm25_index(self) -> None:
-        self._doc_freqs.clear()
-        self._doc_lens.clear()
-        self._doc_tfs.clear()
-        self._doc_norms.clear()
-        self._ctx_headers: List[str] = []
+        with self._index_lock:
+            chunks_snapshot = list(self.corpus_chunks)
+            doc_freqs: Dict[str, int] = {}
+            doc_lens: List[int] = []
+            doc_tfs: List[Counter] = []
+            doc_norms: List[str] = []
+            ctx_headers: List[str] = []
 
-        for raw in self.corpus_chunks:
-            content = raw.get("page_content") or ""
-            ctx_hdr = build_chunk_contextual_header(raw)
-            self._ctx_headers.append(ctx_hdr)
-            indexed_text = f"{ctx_hdr} {content}"
-            norm = normalize_text_for_dedup(indexed_text)
-            self._doc_norms.append(norm)
-            tokens = tokenize_bm25(indexed_text)
-            tf = Counter(tokens)
-            self._doc_tfs.append(tf)
-            self._doc_lens.append(len(tokens))
-            for term in tf.keys():
-                self._doc_freqs[term] = self._doc_freqs.get(term, 0) + 1
+            for raw in chunks_snapshot:
+                content = raw.get("page_content") or ""
+                ctx_hdr = build_chunk_contextual_header(
+                    raw,
+                    municipality_label=self.municipality_label,
+                    gazette_name=self.gazette_name,
+                )
+                ctx_headers.append(ctx_hdr)
+                indexed_text = (
+                    content
+                    if content.lstrip().startswith("[Município:")
+                    else f"{ctx_hdr} {content}"
+                )
+                norm = normalize_text_for_dedup(indexed_text)
+                doc_norms.append(norm)
+                tokens = tokenize_bm25(indexed_text)
+                tf = Counter(tokens)
+                doc_tfs.append(tf)
+                doc_lens.append(len(tokens))
+                for term in tf.keys():
+                    doc_freqs[term] = doc_freqs.get(term, 0) + 1
 
-        self._avgdl = (sum(self._doc_lens) / len(self._doc_lens)) if self._doc_lens else 1.0
+            avgdl = (sum(doc_lens) / len(doc_lens)) if doc_lens else 1.0
+            self._doc_freqs = doc_freqs
+            self._doc_lens = doc_lens
+            self._doc_tfs = doc_tfs
+            self._doc_norms = doc_norms
+            self._ctx_headers = ctx_headers
+            self._avgdl = avgdl
 
     def _bm25_score(self, query_tokens: List[str], doc_idx: int) -> float:
         if not query_tokens or doc_idx >= len(self._doc_tfs):
@@ -351,8 +434,16 @@ class HybridRAGRetriever:
 
         for idx, raw in enumerate(self.corpus_chunks):
             content = raw.get("page_content") or ""
-            ctx_hdr = self._ctx_headers[idx] if idx < len(self._ctx_headers) else build_chunk_contextual_header(raw)
-            source = raw.get("source") or "Jornal Opinião (Diário Oficial de Caeté)"
+            ctx_hdr = (
+                self._ctx_headers[idx]
+                if idx < len(self._ctx_headers)
+                else build_chunk_contextual_header(
+                    raw,
+                    municipality_label=self.municipality_label,
+                    gazette_name=self.gazette_name,
+                )
+            )
+            source = raw.get("source") or f"{self.gazette_name} ({self.municipality_label})"
             tipo_ato = (raw.get("tipo_ato") or "GERAL / OUTROS").upper()
             cnpjs_list = raw.get("cnpjs_Mencionados") or raw.get("cnpjs_mencionados") or []
             norm_content = self._doc_norms[idx] if idx < len(self._doc_norms) else normalize_text_for_dedup(content)
@@ -468,7 +559,7 @@ class HybridRAGRetriever:
                         score += 0.9 * (matched_toks / len(e_tokens))
 
             if score >= 0.6:
-                source = raw.get("source") or "Jornal Opinião (Diário Oficial de Caeté)"
+                source = raw.get("source") or f"{self.gazette_name} ({self.municipality_label})"
                 hits.append(
                     RetrievedChunk(
                         chunk_id=raw.get("id") or deterministic_chunk_id(source, content),

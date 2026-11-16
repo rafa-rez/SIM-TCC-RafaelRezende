@@ -102,6 +102,7 @@ class SemanticGuardrailDecision:
     sub_questions: List[str] = field(default_factory=list)
     is_contextual_followup: bool = False
     wants_chart: bool = False
+    wants_table: bool = False
     legal_framework_notes: List[str] = field(default_factory=list)
     direct_response_citizen: str = ""
     direct_response_institutional: str = ""
@@ -124,6 +125,7 @@ class SemanticGuardrailDecision:
             "sub_questions": self.sub_questions,
             "is_contextual_followup": self.is_contextual_followup,
             "wants_chart": self.wants_chart,
+            "wants_table": self.wants_table,
             "legal_framework_notes": self.legal_framework_notes,
             "direct_response_citizen": self.direct_response_citizen,
             "direct_response_institutional": self.direct_response_institutional,
@@ -168,8 +170,9 @@ class SemanticIntentGuardrail:
         fallback_classifier_fn: Optional[Callable[[str, Optional[List[str]]], str]] = None,
         fallback_conversational_fn: Optional[Callable[..., Any]] = None,
         max_cache_size: int = 512,
-        max_data_year: int = 2025,
-        latest_remittance_human: str = "agosto de 2025 (última remessa consolidada no SICOM/TCE-MG)",
+        max_data_year: int = 2026,
+        latest_remittance_human: str = "última remessa consolidada no SICOM/TCE-MG",
+        gazette_name: str = "Diário Oficial do Município",
     ) -> None:
         self.municipality_name = municipality_name
         self.state_uf = state_uf
@@ -179,23 +182,52 @@ class SemanticIntentGuardrail:
         self.max_cache_size = max_cache_size
         self.max_data_year = max_data_year
         self.latest_remittance_human = latest_remittance_human
-        self._decision_cache: OrderedDict[str, SemanticGuardrailDecision] = OrderedDict()
+        self.gazette_name = gazette_name or f"Diário Oficial de {municipality_name}/{state_uf}"
+        self._cache_ttl_seconds: float = 3600.0
+        self._decision_cache: OrderedDict[str, Tuple[float, SemanticGuardrailDecision]] = OrderedDict()
 
     def _cache_key(
         self,
         question: str,
         recent_history: List[Dict[str, Any]],
         allowed_sources: Optional[List[str]],
+        role: str = "citizen",
     ) -> str:
         last_turn = ""
         if recent_history:
             last_turn = "|".join(
-                f"{m.get('role')}:{str(m.get('content', ''))[:160]}:{str(m.get('sql_executed', ''))[:100]}"
+                f"{m.get('role')}:{str(m.get('content', ''))[:160]}:"
+                f"{hashlib.sha256(str(m.get('sql_executed', '')).encode('utf-8')).hexdigest()[:16]}:"
+                f"{m.get('row_count', '')}"
                 for m in recent_history[-3:]
             )
         srcs = ",".join(sorted(s.upper() for s in (allowed_sources or [])))
-        raw = f"{question.strip().lower()}||{last_turn}||{srcs}"
+        raw = f"{role.strip().lower()}||{question.strip().lower()}||{last_turn}||{srcs}"
         return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:32]
+
+    @staticmethod
+    def _detect_table_signal(question: str) -> bool:
+        q_norm = _norm_ascii(question)
+        return bool(
+            re.search(
+                r"\b(tabela|quadro\s+resumo|quadro\s+comparativo|planilha|em\s+formato\s+tabular|"
+                r"monte\s+um\s+quadro|gere\s+um\s+quadro|com\s+as\s+colunas|total\s+geral\s+ao\s+final)\b",
+                q_norm,
+            )
+        )
+
+    @staticmethod
+    def _detect_meta_catalog_signal(question: str) -> bool:
+        q_norm = _norm_ascii(question)
+        return bool(
+            re.search(
+                r"(quais\s+(?:sao\s+)?(?:os\s+|as\s+)?(?:bancos?\s+de\s+dados|bases?\s+de\s+dados|fontes?\s+de\s+dados|fontes?\s+oficiais|tabelas\s+disponiveis)|"
+                r"de\s+onde\s+(?:vem|veem|voce\s+tira)\s+(?:os\s+|esses\s+)?dados|"
+                r"(?:voce|vc|sistema)\s+tem\s+acesso\s+ao\s+(?:diario\s+oficial|jornal\s+oficial|jornal\s+opiniao)|"
+                r"ate\s+(?:que\s+mes|qual\s+mes|quando)\s+(?:os\s+|seus\s+)?dados\s+(?:estao\s+|vao|foram)\s*atualizados)",
+                q_norm,
+            )
+        )
 
     @staticmethod
     def _detect_contextual_and_chart_signals(
@@ -236,10 +268,63 @@ class SemanticIntentGuardrail:
             "gerar um grafico",
             "gera um grafico",
         )
+        elliptical_starts = (
+            "e ",
+            "mas ",
+            "dessa ",
+            "desse ",
+            "disso",
+            "dele ",
+            "dela ",
+            "deles ",
+            "delas ",
+            "nele ",
+            "nela ",
+        )
+        standalone_domain_nouns = (
+            "orcamento",
+            "receita",
+            "despesa",
+            "fornecedor",
+            "credor",
+            "frota",
+            "veiculo",
+            "servidor",
+            "funcionario",
+            "folha",
+            "contrato",
+            "aditivo",
+            "licitacao",
+            "pregao",
+            "dispensa",
+            "populacao",
+            "pib",
+            "ideb",
+            "escola",
+            "saude",
+            "educacao",
+            "prefeito",
+            "secretario",
+            "bolsa familia",
+            "capag",
+            "emenda",
+            "decreto",
+            "portaria",
+            "lei ",
+            "conflito",
+        )
+        words = q_norm.split()
+        has_domain_noun = any(dn in q_norm for dn in standalone_domain_nouns)
+        is_bare_short_reply = (
+            len(words) <= 4
+            and not has_domain_noun
+            and not q_norm.startswith(("qual ", "quais ", "quanto", "quem "))
+        )
         is_followup = bool(recent_history) and (
             any(m in q_norm for m in anaphora_markers)
-            or (wants_chart and len(q_norm.split()) <= 10)
-            or len(q_norm.split()) <= 5
+            or q_norm.startswith(elliptical_starts)
+            or (wants_chart and len(words) <= 10 and not has_domain_noun)
+            or is_bare_short_reply
         )
         return is_followup, wants_chart
 
@@ -311,32 +396,35 @@ class SemanticIntentGuardrail:
                 used_ai_model=False,
             )
 
-        # 2. Verificar Cache LRU de decisões do Guardião Semântico
-        ckey = self._cache_key(question, hist, allowed_sources)
+        # 2. Verificar Cache LRU de decisões do Guardião Semântico (com TTL de 1h)
+        ckey = self._cache_key(question, hist, allowed_sources, role=role)
         if ckey in self._decision_cache:
-            cached = self._decision_cache[ckey]
-            self._decision_cache.move_to_end(ckey)
-            return SemanticGuardrailDecision(
-                makes_sense=cached.makes_sense,
-                is_safe=cached.is_safe,
-                intent=cached.intent,
-                standalone_question=cached.standalone_question,
-                requires_sql=cached.requires_sql,
-                requires_rag=cached.requires_rag,
-                sub_questions=list(cached.sub_questions),
-                is_contextual_followup=cached.is_contextual_followup,
-                wants_chart=cached.wants_chart,
-                legal_framework_notes=list(cached.legal_framework_notes),
-                direct_response_citizen=cached.direct_response_citizen,
-                direct_response_institutional=cached.direct_response_institutional,
-                reasoning=cached.reasoning,
-                engine_used=f"{cached.engine_used} (Cache L1)",
-                tokens_used=0,
-                prompt_tokens=0,
-                completion_tokens=0,
-                latency_ms=round((time.perf_counter() - t0) * 1000.0, 2),
-                used_ai_model=cached.used_ai_model,
-            )
+            cached_ts, cached = self._decision_cache[ckey]
+            if (time.time() - cached_ts) <= self._cache_ttl_seconds:
+                self._decision_cache.move_to_end(ckey)
+                return SemanticGuardrailDecision(
+                    makes_sense=cached.makes_sense,
+                    is_safe=cached.is_safe,
+                    intent=cached.intent,
+                    standalone_question=cached.standalone_question,
+                    requires_sql=cached.requires_sql,
+                    requires_rag=cached.requires_rag,
+                    sub_questions=list(cached.sub_questions),
+                    is_contextual_followup=cached.is_contextual_followup,
+                    wants_chart=cached.wants_chart,
+                    wants_table=cached.wants_table,
+                    legal_framework_notes=list(cached.legal_framework_notes),
+                    direct_response_citizen=cached.direct_response_citizen,
+                    direct_response_institutional=cached.direct_response_institutional,
+                    reasoning=cached.reasoning,
+                    engine_used=f"{cached.engine_used} (Cache L1)",
+                    tokens_used=0,
+                    prompt_tokens=0,
+                    completion_tokens=0,
+                    latency_ms=round((time.perf_counter() - t0) * 1000.0, 2),
+                    used_ai_model=cached.used_ai_model,
+                )
+            self._decision_cache.pop(ckey, None)
 
         # 3. Se o filtro de escopo na UI restringiu explicitamente a apenas DIARIO_OFICIAL, respeitar
         if allowed_sources:
@@ -391,7 +479,7 @@ class SemanticIntentGuardrail:
         return fallback_decision
 
     def _store_cache(self, key: str, decision: SemanticGuardrailDecision) -> None:
-        self._decision_cache[key] = decision
+        self._decision_cache[key] = (time.time(), decision)
         if len(self._decision_cache) > self.max_cache_size:
             self._decision_cache.popitem(last=False)
 
@@ -428,14 +516,16 @@ class SemanticIntentGuardrail:
         history_snippet = "Sem histórico anterior nesta sessão."
         if recent_history:
             turns = []
-            # Últimos 3 turnos completos (até 6 mensagens user/assistant), incluindo sql_executed!
+            # Últimos 3 turnos completos (até 6 mensagens user/assistant), incluindo sql_executed e row_count!
             for m in recent_history[-6:]:
                 r_label = "Usuário" if m.get("role") == "user" else "SIM"
                 c_txt = str(m.get("content") or "")[:420].replace("\n", " ")
                 sql_prev = str(m.get("sql_executed") or "").strip()
+                rc_prev = m.get("row_count")
                 line = f"- {r_label}: {c_txt}"
                 if sql_prev:
-                    line += f" | [SQL Executado: {sql_prev[:260]}]"
+                    rc_tag = f" ({rc_prev} linha(s))" if rc_prev is not None else ""
+                    line += f" | [SQL Executado{rc_tag}: {sql_prev[:260]}]"
                 turns.append(line)
             history_snippet = "\n".join(turns)
 
@@ -450,30 +540,31 @@ class SemanticIntentGuardrail:
             f"- ÚLTIMA ATUALIZAÇÃO OFICIAL CONSOLIDADA NA BASE: {self.latest_remittance_human}.\n\n"
             f"DOMÍNIOS DISPONÍVEIS NO BANCO SQL DE {city_str} (2020 a {self.max_data_year}):\n"
             f"- Orçamento LOA previsto vs. realizado, receitas, despesas, empenhos, liquidações e pagamentos (SICOM/TCE-MG)\n"
-            f"- Fornecedores, quadro societário (QSA), licitações, dispensas, adesões a atas (caronas) e contratos/aditivos\n"
-            f"- Folha de pagamento, vínculos (concursados/efetivos, temporários, comissionados, agentes políticos), salários e ocupantes de cargos/secretarias (2023 a {self.max_data_year})\n"
+            f"- Fornecedores, quadro societário (QSA), licitações/modalidades, dispensas, adesões a atas (caronas) e contratos/aditivos\n"
+            f"- Folha de pagamento, vínculos (concursados/efetivos, temporários, comissionados, agentes políticos), salários e ocupantes de cargos/secretarias\n"
             f"- Frota municipal de veículos (cadastro patrimonial cumulativo e gastos de combustível/manutenção)\n"
             f"- Saúde (SIOPS/DATASUS), Educação (IDEB/INEP/FUNDEB), Demografia/PIB (IBGE), Indicadores Fiscais LRF/RCL/CAPAG (SICONFI), Convênios/Emendas/Bolsa Família/BPC (CGU)\n"
-            f"- Atos normativos do Diário Oficial (*Jornal Opinião*: decretos, portarias, leis municipais, editais)\n\n"
+            f"- Atos normativos do Diário Oficial ({self.gazette_name}: decretos, portarias, leis municipais, editais)\n\n"
             f"CLASSIFIQUE `intent` EM UMA DAS OPÇÕES:\n"
-            f"1. `sql_analytics`: consulta quantitativa, cadastral, ocupantes de cargos/secretarias, frota, orçamento (inclusive anos futuros como 2026/2027 para comparar com a série histórica), indicadores fiscais ('as contas estão em dia?') ou follow-up numérico ('Deste total, quantos são concursados?', 'E em 2023?').\n"
+            f"1. `sql_analytics`: consulta quantitativa, cadastral, ocupantes de cargos/secretarias, frota, licitações/modalidades, orçamento, indicadores fiscais, follow-up numérico ('Deste total, quantos são concursados?', 'E em 2023?') OU QUALQUER pedido de gráfico/visualização que peça um novo tema, categoria, métrica ou janela temporal (ex.: 'consegue fazer um gráfico das modalidades dos últimos 4 anos?', 'gráfico de servidores por ano') OU quando o turno anterior retornou apenas 1 linha escalar e o usuário pede um gráfico evolutivo/comparativo daquela informação (`requires_sql: true`, `wants_chart: true`).\n"
             f"2. `rag_diario_oficial`: busca estritamente textual sobre decreto, lei municipal, portaria ou edital específico no Diário Oficial.\n"
-            f"3. `hybrid_sql_rag`: pergunta composta que exige DADOS SQL + LEI/ATO NORMATIVO (ex.: 'Essas quantias de carona são legais? Qual lei trata disso?', 'Qual o valor pago em contratos e o que diz a Portaria X?').\n"
-            f"4. `conversational_identity`: saudação, apresentação do sistema ('oi', 'quem é vc?', 'que é vc?', 'o que você faz?') ou sobre quais cidades/dados o SIM responde.\n"
-            f"5. `conversational_followup`: pedido para resumir, colocar em tópicos ou gerar gráfico (`wants_chart: true`) dos dados JÁ consultados no turno anterior sem precisar de nova query SQL.\n"
+            f"3. `hybrid_sql_rag`: pergunta composta que exige DADOS SQL + LEI/ATO NORMATIVO (ex.: 'Essas quantias de carona são legais? Qual lei trata disso?', 'Qual o valor pago à empresa X e o que diz a Portaria Y?').\n"
+            f"4. `conversational_identity`: saudação pura, apresentação do sistema ('oi', 'quem é vc?', 'o que você faz?') OU perguntas de inventário/catálogo sobre quais bancos de dados, fontes oficiais, acesso ao Diário Oficial/Jornal Oficial ou até que mês/ano os dados do sistema estão atualizados (sem pedir valores financeiros específicos).\n"
+            f"5. `conversational_followup`: pedido para resumir/simplificar a resposta anterior, OU pedido de gráfico/tabela (`wants_chart: true` ou `wants_table: true`, `requires_sql: false`) EXCLUSIVAMENTE quando os dados multi-linhas (`>= 2` linhas) JÁ foram consultados no turno imediatamente anterior.\n"
             f"6. `conceptual_doubt`: dúvida puramente conceitual sobre contabilidade pública (ex.: 'O que significa empenho, liquidação e restos a pagar?') sem pedir dados nem julgar valores do turno anterior.\n"
             f"7. `clarification_needed`: mensagem incompreensível (ex.: 'teste 123') ou pedido vago sem contexto anterior na sessão.\n"
             f"8. `out_of_scope_municipality`: pergunta pedindo dados de outro município que não seja {self.municipality_name}.\n"
             f"9. `out_of_scope_general`: assunto sem relação com gestão pública (receita de bolo, previsão do tempo, futebol).\n\n"
             f"REGRAS CRÍTICAS:\n"
             f"- NUNCA use emojis e NUNCA exponha jargões internos de engenharia (como 'CRAG', 'roteador', 'SQL', 'RAG') em `direct_response`.\n"
-            f"- CONCILIAÇÃO TEMPORAL ('HOJE / ATUAL' vs. TETO DA BASE): Hoje é {today_pt}, mas os dados oficiais vão até {self.latest_remittance_human}. Se o usuário pedir estoque acumulado ('qual a frota atual', 'quantos veículos a prefeitura tem'), NÃO adicione 'em {self.max_data_year}' na `standalone_question` (reescreva como 'Qual é a frota consolidada total de veículos da Prefeitura de {self.municipality_name} segundo a base oficial mais recente disponível?'). Se mudar totalmente de assunto em relação ao turno anterior (ex.: falava de funcionários e agora pergunta de veículos), marque `is_contextual_followup: false` e NÃO herde filtros de ano do assunto antigo!\n"
+            f"- CONCILIAÇÃO TEMPORAL ('HOJE / ATUAL' vs. TETO DA BASE): Hoje é {today_pt}, mas os dados oficiais vão até {self.latest_remittance_human}. Se o usuário pedir estoque acumulado ('qual a frota atual', 'quantos veículos a prefeitura tem'), NÃO adicione 'em {self.max_data_year}' na `standalone_question` (reescreva como 'Qual é a frota consolidada total de veículos da Prefeitura de {self.municipality_name} segundo a base oficial mais recente disponível?'). Se mudar de assunto em relação ao turno anterior, marque `is_contextual_followup: false` e NÃO herde filtros de ano do assunto antigo!\n"
+            f"- JANELAS RELATIVAS DE ANOS: Quando o usuário pedir 'últimos N anos' (ex.: 'últimos 4 anos'), ancorar até o teto disponível na base ({self.max_data_year}), isto é, de {max(2020, self.max_data_year - 3)} a {self.max_data_year} para 4 anos.\n"
             f"- Preencha SEMPRE `standalone_question`: reescreva a pergunta de forma 100% explícita, completa e autônoma resolvendo pronomes/anáforas quando `is_contextual_followup` for `true`.\n"
-            f"- Preencha `wants_chart: true` se o usuário pedir gráfico/visualização.\n"
+            f"- Preencha `wants_chart: true` se o usuário pedir gráfico/visualização e `wants_table: true` se o usuário pedir tabela/quadro/planilha/colunas.\n"
             f"- Preencha `requires_sql` (bool), `requires_rag` (bool) e `sub_questions` (lista de sub-perguntas caso haja 2+ perguntas na mesma mensagem).\n"
-            f"- Deixe `direct_response` vazio (\"\") para `conversational_identity`, `sql_analytics`, `rag_diario_oficial`, `hybrid_sql_rag` ou quando `wants_chart` for `true`.\n\n"
+            f"- Deixe `direct_response` vazio (\"\") para `conversational_identity`, `sql_analytics`, `rag_diario_oficial`, `hybrid_sql_rag` ou quando `wants_chart` ou `wants_table` for `true`.\n\n"
             f"FORMATO JSON OBRIGATÓRIO:\n"
-            f'{{"makes_sense": true, "intent": "...", "standalone_question": "...", "requires_sql": true, "requires_rag": false, "sub_questions": [], "is_contextual_followup": false, "wants_chart": false, "direct_response": "...", "reasoning": "..."}}'
+            f'{{"makes_sense": true, "intent": "...", "standalone_question": "...", "requires_sql": true, "requires_rag": false, "sub_questions": [], "is_contextual_followup": false, "wants_chart": false, "wants_table": false, "direct_response": "...", "reasoning": "..."}}'
         )
 
         user_payload = (
@@ -583,8 +674,12 @@ class SemanticIntentGuardrail:
         reasoning = strip_emojis(str(parsed.get("reasoning") or "Classificação semântica concluída.").strip())
 
         det_followup, det_chart = self._detect_contextual_and_chart_signals(original_question, recent_history)
-        is_followup = bool(parsed.get("is_contextual_followup", False)) or det_followup
+        det_table = self._detect_table_signal(original_question)
+        is_followup = bool(parsed.get("is_contextual_followup", False))
+        if intent == "conversational_followup" and recent_history:
+            is_followup = True
         wants_chart = bool(parsed.get("wants_chart", False)) or det_chart
+        wants_table = bool(parsed.get("wants_table", False)) or det_table
 
         if is_followup and standalone_q.strip().lower() == original_question.strip().lower():
             standalone_q = self._heuristic_rewrite_standalone(original_question, recent_history)
@@ -595,6 +690,16 @@ class SemanticIntentGuardrail:
         legal_notes = extract_statutory_legal_notes(f"{original_question} {standalone_q}")
         q_norm = _norm_ascii(original_question)
 
+        # Perguntas puras de inventário de bases/fontes/atualização do sistema -> conversational_identity determinístico
+        if (
+            self._detect_meta_catalog_signal(original_question)
+            and not wants_chart
+            and not wants_table
+            and not re.search(r"\b(quanto\s+gast|quanto\s+foi\s+pago|qual\s+o\s+valor|maiores\s+fornecedores|salarios?\s+dos)\b", q_norm)
+        ):
+            intent = "conversational_identity"
+            direct_resp = ""
+
         # Se o usuário questiona legalidade/lei de dados recém-apresentados, promover a hybrid_sql_rag
         if legal_notes and any(w in q_norm for w in ("lei", "legais", "legal", "ilegal", "contra isso", "permitido", "limite")):
             if intent in ("rag_diario_oficial", "conceptual_doubt", "conversational_followup"):
@@ -603,14 +708,17 @@ class SemanticIntentGuardrail:
 
         requires_sql = bool(parsed.get("requires_sql", intent in ("sql_analytics", "hybrid_sql_rag")))
         requires_rag = bool(parsed.get("requires_rag", intent in ("rag_diario_oficial", "hybrid_sql_rag")))
-        if requires_sql and requires_rag and intent in ("sql_analytics", "rag_diario_oficial"):
+        if intent == "conversational_identity":
+            requires_sql = False
+            requires_rag = False
+        elif requires_sql and requires_rag and intent in ("sql_analytics", "rag_diario_oficial"):
             intent = "hybrid_sql_rag"
             direct_resp = ""
 
-        # Se o usuário pediu um gráfico, nunca bloquear com texto de recusa no guardrail
-        if wants_chart:
+        # Se o usuário pediu um gráfico ou tabela, nunca bloquear com texto de recusa no guardrail
+        if wants_chart or wants_table:
             direct_resp = ""
-            if intent == "clarification_needed" and recent_history:
+            if intent == "clarification_needed":
                 intent = "conversational_followup"
 
         city_str = f"{self.municipality_name}/{self.state_uf}"
@@ -626,9 +734,10 @@ class SemanticIntentGuardrail:
                 f"fornecedores, servidores, saúde, educação e Diário Oficial)."
             )
         elif intent == "clarification_needed" and not direct_resp:
+            cov_end = max(2026, int(self.max_data_year or 2026))
             direct_resp = (
                 f"Não consegui identificar qual dado público de {city_str} você deseja consultar. "
-                f"Você pode informar o tema (ex.: orçamento, saúde, educação, fornecedores, contratos, salários ou decretos) e o ano desejado (2020 a 2025)?"
+                f"Você pode informar o tema (ex.: orçamento, saúde, educação, fornecedores, contratos, salários ou decretos) e o ano desejado (2020 a {cov_end})?"
             )
 
         inst_resp = direct_resp
@@ -645,6 +754,7 @@ class SemanticIntentGuardrail:
             sub_questions=sub_questions,
             is_contextual_followup=is_followup,
             wants_chart=wants_chart,
+            wants_table=wants_table,
             legal_framework_notes=legal_notes,
             direct_response_citizen=direct_resp,
             direct_response_institutional=inst_resp,
@@ -667,6 +777,7 @@ class SemanticIntentGuardrail:
     ) -> SemanticGuardrailDecision:
         q_norm = _norm_ascii(question)
         is_followup, wants_chart = self._detect_contextual_and_chart_signals(question, recent_history)
+        wants_table = self._detect_table_signal(question)
         standalone_q = self._heuristic_rewrite_standalone(question, recent_history)
         legal_notes = extract_statutory_legal_notes(standalone_q)
 
@@ -674,15 +785,27 @@ class SemanticIntentGuardrail:
         if self.fallback_classifier_fn is not None:
             intent = self.fallback_classifier_fn(question, allowed_sources)
 
-        if wants_chart:
+        if (
+            self._detect_meta_catalog_signal(question)
+            and not wants_chart
+            and not wants_table
+            and not re.search(r"\b(quanto\s+gast|quanto\s+foi\s+pago|qual\s+o\s+valor|maiores\s+fornecedores|salarios?\s+dos)\b", q_norm)
+        ):
+            intent = "conversational_identity"
+        elif wants_chart:
             has_data_topic = any(
                 k in q_norm
-                for k in ("saude", "educacao", "orcamento", "despesa", "receita", "fornecedor", "servidor", "funcionari", "frota", "carona", "contrato")
+                for k in (
+                    "saude", "educacao", "orcamento", "despesa", "receita", "fornecedor", "servidor",
+                    "funcionari", "frota", "carona", "contrato", "modalidade", "licitac", "pregao",
+                    "dispensa", "evolucao", "ultimos", "por ano", "prefeito", "salario", "veiculo",
+                    "empenho", "liquidac", "pagamento",
+                )
             )
             if not has_data_topic and recent_history:
                 intent = "conversational_followup"
             elif not has_data_topic and not recent_history:
-                intent = "clarification_needed"
+                intent = "conversational_followup"
             else:
                 intent = "sql_analytics"
         elif intent == "sql_analytics":
@@ -692,10 +815,10 @@ class SemanticIntentGuardrail:
                 "concursado", "comissionado", "secretario", "prefeito", "contrato", "aditivo", "licitacao",
                 "dispensa", "carona", "frota", "veiculo", "placa", "saude", "siops", "educacao", "ideb",
                 "escola", "matricula", "populacao", "pib", "idhm", "capag", "lrf", "rcl", "bolsa familia",
-                "bpc", "convenio", "emenda", "contas",
+                "bpc", "convenio", "emenda", "contas", "camara", "duodecimo",
             )
             has_sql_entity = any(s in q_norm for s in sql_data_signals)
-            has_year = bool(re.search(r"\b202[0-9]\b", q_norm))
+            has_year = bool(re.search(r"\b20(?:1[89]|2\d|3[0-5])\b", q_norm))
 
             identity_signals = (
                 "pra que serve", "para que serve", "esse sistema", "essa plataforma", "esse assistente",
@@ -732,13 +855,14 @@ class SemanticIntentGuardrail:
         cit_resp = ""
         inst_resp = ""
         city_str = f"{self.municipality_name}/{self.state_uf}"
+        cov_end = max(2026, int(self.max_data_year or 2026))
         if intent == "conversational_identity":
             cit_resp = (
                 f"Sou o sistema oficial de consulta aos dados públicos da Prefeitura de **{city_str}** (IBGE `{self.ibge_code}`). "
-                f"Respondo dúvidas em linguagem simples sobre orçamento, despesas, saúde, educação, fornecedores, salários, frota, convênios e atos do Diário Oficial (2020 a 2025)."
+                f"Respondo dúvidas em linguagem simples sobre orçamento, despesas, saúde, educação, fornecedores, salários, frota, convênios e atos do Diário Oficial (2020 a {cov_end})."
             )
             inst_resp = cit_resp
-        elif intent in ("conversational_followup", "conceptual_doubt") and not wants_chart and self.fallback_conversational_fn is not None:
+        elif intent in ("conversational_followup", "conceptual_doubt") and not wants_chart and not wants_table and self.fallback_conversational_fn is not None:
             cit_resp, inst_resp, _ = self.fallback_conversational_fn(
                 question=question,
                 role=role,
@@ -748,7 +872,7 @@ class SemanticIntentGuardrail:
             if wants_chart:
                 cit_resp = (
                     f"Sim, gero gráficos oficiais de barras diretamente aqui! Informe qual indicador ou série de {city_str} "
-                    f"você deseja visualizar em gráfico (por exemplo: orçamento anual 2020-2025, gastos com saúde ou maiores fornecedores)."
+                    f"você deseja visualizar em gráfico (por exemplo: orçamento anual 2020-{cov_end}, gastos com saúde ou maiores fornecedores)."
                 )
             else:
                 cit_resp = (
@@ -770,6 +894,7 @@ class SemanticIntentGuardrail:
             sub_questions=[],
             is_contextual_followup=is_followup,
             wants_chart=wants_chart,
+            wants_table=wants_table,
             legal_framework_notes=legal_notes,
             direct_response_citizen=strip_emojis(cit_resp),
             direct_response_institutional=strip_emojis(inst_resp),

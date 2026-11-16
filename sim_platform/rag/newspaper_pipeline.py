@@ -213,6 +213,8 @@ def build_act_contextual_header(
     numero_ato: Optional[str],
     ano_edicao: Optional[int],
     source_pdf: str,
+    municipality_label: str = "Caeté/MG",
+    gazette_name: str = "Diário Oficial",
 ) -> str:
     """
     Eixo 6.1 (Contextual Retrieval): Constrói cabeçalho contextual estruturado por ato normativo
@@ -238,7 +240,7 @@ def build_act_contextual_header(
     ato_lbl = f"{tipo_ato} Nº {numero_ato}" if numero_ato else tipo_ato
     ano_str = str(ano_edicao) if ano_edicao else "2023-2025"
     return (
-        f"[Município: Caeté/MG | Fonte: Diário Oficial ({source_pdf}) | "
+        f"[Município: {municipality_label} | Fonte: {gazette_name} ({source_pdf}) | "
         f"Ano: {ano_str} | Tipo de Ato: {ato_lbl} | Órgãos/Cargos: {org_str}]"
     )
 
@@ -299,6 +301,8 @@ class ActBoundaryChunker:
         raw_edition_text: str,
         source_pdf: str = "Jornal_Opiniao_Caete.pdf",
         default_year: Optional[int] = None,
+        municipality_label: str = "Caeté/MG",
+        gazette_name: str = "Diário Oficial",
     ) -> List[NewspaperChunk]:
         cleaned_text, _ = clean_newspaper_pdf_text(raw_edition_text)
         if not cleaned_text:
@@ -334,6 +338,8 @@ class ActBoundaryChunker:
                 numero_ato=info["numero_ato"],
                 ano_edicao=ano,
                 source_pdf=source_pdf,
+                municipality_label=municipality_label,
+                gazette_name=gazette_name,
             )
 
             if len(act_text) <= self.max_chunk_chars:
@@ -429,9 +435,21 @@ def build_clean_individual_collection(
     multi_act_chunks_split = 0
 
     chunker = ActBoundaryChunker(max_chunk_chars=2200, min_orphan_chars=180)
+    t_clean = (tenant_id or "caete_mg_3110004").strip()
+    is_caete = t_clean in ("caete_mg_3110004", "caete-mg")
+    from sim_platform.ingestion.city_onboarding import load_tenant_profile
 
-    # 1. Opcionalmente carregar golden_rag apenas se solicitado explicitamente (desativado por padrão em produção!)
-    if include_golden_benchmark:
+    prof = load_tenant_profile(t_clean, workspace_root=workspace_root)
+    city_name = str(prof.get("municipality_name") or ("Caeté" if is_caete else t_clean))
+    state_uf = str(prof.get("state_uf") or "MG")
+    municipality_label = f"{city_name}/{state_uf}"
+    gazette_name = str(
+        (prof.get("diario_oficial") or {}).get("veiculo")
+        or ("Jornal Oficial" if is_caete else f"Diário Oficial de {municipality_label}")
+    )
+
+    # 1. Opcionalmente carregar golden_rag apenas se solicitado explicitamente E apenas para Caeté
+    if include_golden_benchmark and is_caete:
         for g_name in ("golden_rag_v1.3.csv", "golden_rag_v1.2.csv", "golden_rag_v1.1.csv", "golden_rag_v1.0.csv"):
             g_rag = workspace_root / "avaliacao" / "dados" / "golden_rag" / g_name
             if g_rag.exists():
@@ -453,9 +471,9 @@ def build_clean_individual_collection(
                             }
                         )
 
-    # 2. Carregar reference_chunks/*.json
+    # 2. Carregar reference_chunks/*.json (estritamente Caeté)
     ref_dir = workspace_root / "avaliacao" / "dados" / "golden_rag" / "reference_chunks"
-    if ref_dir.exists():
+    if is_caete and ref_dir.exists():
         for jf in sorted(ref_dir.glob("*.json")):
             try:
                 obj = json.loads(jf.read_text(encoding="utf-8"))
@@ -476,41 +494,42 @@ def build_clean_individual_collection(
             except Exception:
                 continue
 
-    # 3. Carregar todos os checkpoints reais do Qdrant
+    # 3. Carregar todos os checkpoints reais do Qdrant (estritamente Caeté)
     exp_dir = workspace_root / "avaliacao" / "experimentos"
-    for sub in ("rag_golden_v13_hibrido", "rag_golden_v13_denso", "rag_golden_v13_dedup", "rag_golden_v13_filtro_dedup"):
-        ckpt = exp_dir / sub / "checkpoint_rag.jsonl"
-        if ckpt.exists():
-            for line in ckpt.read_text(encoding="utf-8").splitlines():
-                if not line.strip():
-                    continue
-                try:
-                    obj = json.loads(line)
-                    for item in obj.get("retrieved", []):
-                        payload = item.get("payload") or {}
-                        raw_t = payload.get("page_content") or item.get("match_text_preview") or ""
-                        if not raw_t:
-                            continue
-                        cleaned_t, st = clean_newspaper_pdf_text(raw_t)
-                        total_ligatures_repaired += st["ligatures_fixed"]
-                        total_hyphenations_repaired += st["hyphenations_fixed"]
-                        raw_candidates.append(
-                            {
-                                "source": payload.get("source") or item.get("label") or "Jornal_Oficial_Caete.pdf",
-                                "tipo_ato": (payload.get("tipo_ato") or "GERAL / OUTROS").upper(),
-                                "ano_edicao": payload.get("ano_edicao"),
-                                "numero_edicao": payload.get("numero_edicao"),
-                                "cnpjs_Mencionados": payload.get("cnpjs_Mencionados") or [],
-                                "page_content": cleaned_t,
-                                "origin": sub,
-                            }
-                        )
-                except Exception:
-                    continue
+    if is_caete:
+        for sub in ("rag_golden_v13_hibrido", "rag_golden_v13_denso", "rag_golden_v13_dedup", "rag_golden_v13_filtro_dedup"):
+            ckpt = exp_dir / sub / "checkpoint_rag.jsonl"
+            if ckpt.exists():
+                for line in ckpt.read_text(encoding="utf-8").splitlines():
+                    if not line.strip():
+                        continue
+                    try:
+                        obj = json.loads(line)
+                        for item in obj.get("retrieved", []):
+                            payload = item.get("payload") or {}
+                            raw_t = payload.get("page_content") or item.get("match_text_preview") or ""
+                            if not raw_t:
+                                continue
+                            cleaned_t, st = clean_newspaper_pdf_text(raw_t)
+                            total_ligatures_repaired += st["ligatures_fixed"]
+                            total_hyphenations_repaired += st["hyphenations_fixed"]
+                            raw_candidates.append(
+                                {
+                                    "source": payload.get("source") or item.get("label") or "Jornal_Oficial_Caete.pdf",
+                                    "tipo_ato": (payload.get("tipo_ato") or "GERAL / OUTROS").upper(),
+                                    "ano_edicao": payload.get("ano_edicao"),
+                                    "numero_edicao": payload.get("numero_edicao"),
+                                    "cnpjs_Mencionados": payload.get("cnpjs_Mencionados") or [],
+                                    "page_content": cleaned_t,
+                                    "origin": sub,
+                                }
+                            )
+                    except Exception:
+                        continue
 
-    # 3b. Carregar inventário estruturado do Diário Oficial (extraído dos PDFs reais do jornal, sem gabarito de perguntas)
+    # 3b. Carregar inventário estruturado do Diário Oficial de Caeté
     inv_csv = workspace_root / "avaliacao" / "dados" / "cruzamento" / "inventario_atos_diario_oficial.csv"
-    if inv_csv.exists() and tenant_id == "caete_mg_3110004":
+    if inv_csv.exists() and is_caete:
         try:
             with open(inv_csv, encoding="utf-8-sig") as f:
                 for row in csv.DictReader(f, delimiter=";"):
@@ -556,13 +575,64 @@ def build_clean_individual_collection(
         except Exception:
             pass
 
+    # 3c. Diretório dedicado por município (`avaliacao/dados/diario_oficial/<tenant_id>/` para textos/JSONs de qualquer cidade)
+    city_gazette_dir = workspace_root / "avaliacao" / "dados" / "diario_oficial" / t_clean
+    if city_gazette_dir.exists():
+        for txt_f in sorted(city_gazette_dir.glob("*.txt")):
+            try:
+                raw_t = txt_f.read_text(encoding="utf-8", errors="ignore")
+                if raw_t.strip():
+                    cleaned_t, st = clean_newspaper_pdf_text(raw_t)
+                    total_ligatures_repaired += st["ligatures_fixed"]
+                    total_hyphenations_repaired += st["hyphenations_fixed"]
+                    raw_candidates.append(
+                        {
+                            "source": txt_f.name,
+                            "tipo_ato": "GERAL / OUTROS",
+                            "page_content": cleaned_t,
+                            "origin": f"diario_oficial/{t_clean}/{txt_f.name}",
+                        }
+                    )
+            except Exception:
+                continue
+        for jf in sorted(city_gazette_dir.glob("*.json")):
+            try:
+                obj = json.loads(jf.read_text(encoding="utf-8"))
+                items = obj if isinstance(obj, list) else [obj]
+                for it in items:
+                    if not isinstance(it, dict):
+                        continue
+                    raw_t = str(it.get("page_content") or it.get("texto") or "").strip()
+                    if not raw_t:
+                        continue
+                    cleaned_t, st = clean_newspaper_pdf_text(raw_t)
+                    total_ligatures_repaired += st["ligatures_fixed"]
+                    total_hyphenations_repaired += st["hyphenations_fixed"]
+                    raw_candidates.append(
+                        {
+                            "source": str(it.get("source") or jf.name),
+                            "tipo_ato": str(it.get("tipo_ato") or "GERAL / OUTROS").upper(),
+                            "ano_edicao": it.get("ano_edicao"),
+                            "numero_edicao": it.get("numero_edicao"),
+                            "data_publicacao": it.get("data_publicacao"),
+                            "page_content": cleaned_t,
+                            "origin": f"diario_oficial/{t_clean}/{jf.name}",
+                        }
+                    )
+            except Exception:
+                continue
+
+    default_src = "Jornal_Oficial_Caete.pdf" if is_caete else f"Diario_Oficial_{t_clean}.pdf"
+
     # 4. Aplicar ActBoundaryChunker para separar chunks com múltiplos atos colados (ex: Portaria 42 + 43 + 196)
     atomic_candidates: List[Dict[str, Any]] = []
     for cand in raw_candidates:
         sub_chunks = chunker.chunk_edition_text(
             raw_edition_text=cand["page_content"],
-            source_pdf=cand.get("source") or "Jornal_Oficial_Caete.pdf",
+            source_pdf=cand.get("source") or default_src,
             default_year=cand.get("ano_edicao"),
+            municipality_label=municipality_label,
+            gazette_name=gazette_name,
         )
         if len(sub_chunks) > 1:
             multi_act_chunks_split += 1
@@ -573,6 +643,7 @@ def build_clean_individual_collection(
                     "tipo_ato": sc.tipo_ato if sc.tipo_ato != "GERAL / OUTROS" else cand.get("tipo_ato", "GERAL / OUTROS"),
                     "ano_edicao": sc.ano_edicao or cand.get("ano_edicao"),
                     "numero_edicao": cand.get("numero_edicao"),
+                    "data_publicacao": cand.get("data_publicacao"),
                     "cnpjs_Mencionados": sorted(set((cand.get("cnpjs_Mencionados") or []) + sc.cnpjs_mencionados)),
                     "page_content": sc.page_content,
                     "origin": cand.get("origin"),
@@ -593,7 +664,28 @@ def build_clean_individual_collection(
             flags.append("orphan_closing_fragment")
 
         parte_m = re.search(r"\[[^\]]*PARTE\s+(\d+/\d+)\]", content[:140], re.IGNORECASE)
-        parte_suffix = f"::{parte_m.group(1)}" if parte_m else ""
+        parte_raw = parte_m.group(1) if parte_m else ""
+        parte_suffix = f"::{parte_raw}" if (parte_raw and parte_raw != "1/1") else ""
+        is_legacy_qdrant_frag = bool(parte_suffix and "[TIPO:" in content[:160])
+        is_truncated_stub = bool(
+            parte_suffix
+            and len(content.strip()) < 95
+            and content.strip().endswith("...")
+        )
+        if is_truncated_stub:
+            duplicates_removed += 1
+            continue
+
+        if info["act_key"] and parte_suffix:
+            base_existing = by_unique_key.get(info["act_key"])
+            if base_existing is not None:
+                base_is_single = "multi_part_with_header" not in (base_existing.get("quality_flags") or [])
+                if is_legacy_qdrant_frag or (
+                    base_is_single and len(base_existing["page_content"]) >= len(content)
+                ):
+                    duplicates_removed += 1
+                    continue
+
         nfkd = unicodedata.normalize("NFKD", content.lower())
         alnum = re.sub(r"[^a-z0-9]", "", "".join(c for c in nfkd if not unicodedata.combining(c)))
         fp = alnum[:160]
@@ -614,8 +706,9 @@ def build_clean_individual_collection(
         )
         eff_tipo = info["tipo_ato"] if info["tipo_ato"] != "GERAL / OUTROS" else cand.get("tipo_ato", "GERAL / OUTROS")
         eff_ano = info["ano_ato"] or cand.get("ano_edicao") or "2024/2025"
-        eff_src = cand.get("source") or "Jornal_Oficial_Caete.pdf"
+        eff_src = cand.get("source") or default_src
         orgaos_detected: List[str] = []
+        saae_lbl = "SAAE Caeté" if is_caete else f"SAAE {city_name}"
         for pat_org, lbl_org in (
             (r"\bSEDESMA\b|MEIO AMBIENTE", "SEDESMA / Secretaria de Meio Ambiente"),
             (r"\bSEMAS\b|ASSIST[EÊ]NCIA SOCIAL", "SEMAS / Secretaria de Assistência Social"),
@@ -624,7 +717,7 @@ def build_clean_individual_collection(
             (r"OBRAS", "Secretaria Municipal de Obras"),
             (r"ADMINISTRA[CÇ][AÃ]O", "Secretaria Municipal de Administração"),
             (r"FAZENDA|FINAN[CÇ]AS", "Secretaria Municipal de Fazenda"),
-            (r"\bSAAE\b|[AÁ]GUA E ESGOTO", "SAAE Caeté"),
+            (r"\bSAAE\b|[AÁ]GUA E ESGOTO", saae_lbl),
             (r"PREFEITO|GABINETE", "Gabinete do Prefeito"),
             (r"FISCALIZA[CÇ][AÃ]O|COMISS[AÃ]O", "Comissão de Fiscalização / Licitação"),
         ):
@@ -633,10 +726,10 @@ def build_clean_individual_collection(
         orgaos_str = ", ".join(orgaos_detected[:3]) if orgaos_detected else "Administração Direta Municipal"
         num_str = f" Nº {info['numero_ato']}" if info.get("numero_ato") else ""
         contextual_header = (
-            f"[Município: Caeté/MG | Fonte: Jornal Oficial ({eff_src}) | "
+            f"[Município: {municipality_label} | Fonte: {gazette_name} ({eff_src}) | "
             f"Ano: {eff_ano} | Tipo de Ato: {eff_tipo}{num_str} | Órgãos/Cargos: {orgaos_str}]"
         )
-        by_unique_key[unique_key] = {
+        entry_obj: Dict[str, Any] = {
             "id": cid,
             "unique_key": unique_key,
             "act_key": info["act_key"],
@@ -652,13 +745,38 @@ def build_clean_individual_collection(
             "quality_flags": list(dict.fromkeys(flags)),
             "page_content": content,
         }
+        if cand.get("data_publicacao"):
+            entry_obj["data_publicacao"] = cand["data_publicacao"]
+        by_unique_key[unique_key] = entry_obj
+
+    # 5b. Pós-varredura: quando existir o ato completo (`act_key` sem `[PARTE k/N]`),
+    # descartar fragmentos duplicados legados `act_key::k/N` que tenham chegado antes no fluxo.
+    for ukey in list(by_unique_key.keys()):
+        if ukey.startswith("FP::"):
+            continue
+        item_entry = by_unique_key.get(ukey)
+        if not item_entry:
+            continue
+        ak = item_entry.get("act_key")
+        if ak and ukey != ak and ukey.startswith(f"{ak}::"):
+            base_entry = by_unique_key.get(ak)
+            if base_entry is not None:
+                frag_content = item_entry.get("page_content") or ""
+                base_is_single = "multi_part_with_header" not in (base_entry.get("quality_flags") or [])
+                if "[TIPO:" in frag_content[:160] or (
+                    base_is_single and len(base_entry.get("page_content") or "") >= len(frag_content)
+                ):
+                    del by_unique_key[ukey]
+                    duplicates_removed += 1
 
     individual_collection = sorted(
         by_unique_key.values(),
         key=lambda x: (str(x.get("ano_edicao") or "2024"), str(x.get("tipo_ato") or ""), str(x.get("unique_key") or "")),
     )
 
+    is_caete_tenant = tenant_id in ("caete_mg_3110004", "caete-mg")
     audit_summary = {
+        "tenant_id": tenant_id,
         "raw_candidates_scanned": len(raw_candidates),
         "atomic_candidates_after_split": len(atomic_candidates),
         "multi_act_chunks_split": multi_act_chunks_split,
@@ -671,16 +789,20 @@ def build_clean_individual_collection(
         "hyphenations_repaired": total_hyphenations_repaired,
         "orphan_closing_tails_detected_and_repaired": orphan_tails_detected,
         "golden_benchmark_leakage_removed": not include_golden_benchmark,
-        "qdrant_historical_stats": {
-            "raw_points_in_qdrant_before": 9346,
-            "numbered_act_headers_in_qdrant_before": 3020,
-            "unique_numbered_acts_in_inventory": 747,
-            "singletons_before_fix": 54,
-            "duplicated_2x_before_fix": 498,
-            "duplicated_4x_or_more_before_fix": 195,
-            "duplicate_points_before_pct": 47.9,
-            "unique_points_after_act_dedup": len(individual_collection),
-        },
+        "qdrant_historical_stats": (
+            {
+                "raw_points_in_qdrant_before": 9346,
+                "numbered_act_headers_in_qdrant_before": 3020,
+                "unique_numbered_acts_in_inventory": 747,
+                "singletons_before_fix": 54,
+                "duplicated_2x_before_fix": 498,
+                "duplicated_4x_or_more_before_fix": 195,
+                "duplicate_points_before_pct": 47.9,
+                "unique_points_after_act_dedup": len(individual_collection),
+            }
+            if is_caete_tenant
+            else None
+        ),
         "acts_by_type": {},
     }
     for item in individual_collection:

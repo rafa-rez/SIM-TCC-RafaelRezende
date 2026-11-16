@@ -30,7 +30,7 @@ services:
       - waha_sessions:/app/.sessions
       - waha_media:/app/.media
     ports:
-      - "3001:3000"
+      - "127.0.0.1:3001:3000"
     networks:
       - prefeitura_net
 
@@ -72,6 +72,11 @@ services:
       WAHA_API_URL: http://waha:3000
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      CGU_API_KEY: ${CGU_API_KEY:-}
+      SIM_ADMIN_USER: ${SIM_ADMIN_USER:-admin}
+      SIM_ADMIN_PASSWORD: ${SIM_ADMIN_PASSWORD:-}
+      SIM_BOOTSTRAP_PASSWORD: ${SIM_BOOTSTRAP_PASSWORD:-}
+      SIM_JWT_SECRET: ${SIM_JWT_SECRET:-}
     volumes:
       - ./:/workspace
       - ./avaliacao/dados:/gov/dados

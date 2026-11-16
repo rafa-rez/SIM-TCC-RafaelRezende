@@ -29,7 +29,7 @@ import os
 import threading
 import time
 import uuid
-from collections import deque
+from collections import OrderedDict, deque
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
@@ -322,6 +322,13 @@ class UnifiedInteractionStore:
                     }
                 ],
             )
+            if len(self._records) >= self.max_records:
+                evicted = self._records.popleft()
+                self._by_id.pop(evicted.interaction_id, None)
+                if evicted.inbound_message_id:
+                    self._by_inbound_msg_id.pop(evicted.inbound_message_id, None)
+                if evicted.outbound_message_id:
+                    self._by_outbound_msg_id.pop(evicted.outbound_message_id, None)
             self._records.append(rec)
             self._by_id[interaction_id] = rec
             if inbound_message_id:
@@ -429,7 +436,7 @@ class UnifiedInteractionStore:
         sobre os dados recém-consultados.
         """
         target = (chat_or_session_id or "").strip()
-        if not target:
+        if not target or target.lower() == "default":
             return None
         with self._lock:
             for rec in reversed(self._records):
@@ -464,6 +471,7 @@ class UnifiedInteractionStore:
         search: Optional[str] = None,
         gabinete_id: Optional[str] = None,
         limit: int = 50,
+        allow_phone_search: bool = False,
     ) -> Dict[str, Any]:
         with self._lock:
             items = list(reversed(self._records))
@@ -483,7 +491,7 @@ class UnifiedInteractionStore:
                     q_low in (r.question or "").lower()
                     or q_low in (r.citizen_response or "").lower()
                     or q_low in (r.institutional_response or "").lower()
-                    or q_low in (r.chat_id or "").lower()
+                    or (allow_phone_search and q_low in (r.chat_id or "").lower())
                     or q_low in (r.interaction_id or "").lower()
                 ):
                     continue
@@ -501,6 +509,10 @@ class UnifiedInteractionStore:
                 gab_k = r.gabinete_id or "publico"
                 by_gabinete[gab_k] = by_gabinete.get(gab_k, 0) + 1
 
+            confirmed_cnt = sum(1 for r in all_items if r.answered_confirmed)
+            failed_cnt = sum(1 for r in all_items if r.message_state == MessageLifecycleState.FAILED.value)
+            avg_ms = round(sum(float(r.exec_ms or 0.0) for r in all_items) / len(all_items), 2) if all_items else 0.0
+
             return {
                 "total_stored": len(all_items),
                 "total_filtered": len(filtered),
@@ -510,8 +522,10 @@ class UnifiedInteractionStore:
                     "by_state": by_state,
                     "by_role": by_role,
                     "by_gabinete": by_gabinete,
-                    "confirmed_answers": sum(1 for r in all_items if r.answered_confirmed),
-                    "failed_or_unconfirmed": sum(1 for r in all_items if r.message_state == MessageLifecycleState.FAILED.value),
+                    "confirmed_answers": confirmed_cnt,
+                    "confirmed_answered": confirmed_cnt,
+                    "failed_or_unconfirmed": failed_cnt,
+                    "avg_exec_ms": avg_ms,
                 },
                 "interactions": [r.to_dict(include_heavy=False) for r in filtered[: max(1, min(limit, 200))]],
             }
@@ -526,20 +540,32 @@ class ChatSessionCoordinator:
     - Lock por `chat_id` que preserva a ordem estrita de execução e entrega.
     """
 
-    def __init__(self, dedup_ttl_sec: float = 900.0) -> None:
+    def __init__(
+        self,
+        dedup_ttl_sec: float = 900.0,
+        max_chat_locks: int = 500,
+        max_seen_ids: int = 10_000,
+        max_pending_fragments: int = 20,
+    ) -> None:
         self._guard = threading.Lock()
-        self._seen_message_ids: Dict[str, Tuple[float, str]] = {}
-        self._chat_locks: Dict[str, threading.Lock] = {}
+        self._seen_message_ids: OrderedDict[str, Tuple[float, str]] = OrderedDict()
+        self._chat_locks: OrderedDict[str, threading.Lock] = OrderedDict()
         self._pending_buffers: Dict[str, List[Dict[str, Any]]] = {}
         self._active_chats: Dict[str, str] = {}
         self.dedup_ttl_sec = dedup_ttl_sec
+        self.max_chat_locks = max(32, max_chat_locks)
+        self.max_seen_ids = max(64, int(max_seen_ids))
+        self.max_pending_fragments = max(1, int(max_pending_fragments))
         self.duplicates_blocked = 0
         self.coalesced_messages = 0
 
     def _prune_seen(self, now: float) -> None:
-        expired = [mid for mid, (ts, _) in self._seen_message_ids.items() if (now - ts) > self.dedup_ttl_sec]
-        for mid in expired:
-            self._seen_message_ids.pop(mid, None)
+        while self._seen_message_ids:
+            oldest_mid, (ts, _) = next(iter(self._seen_message_ids.items()))
+            if (now - ts) > self.dedup_ttl_sec or len(self._seen_message_ids) > self.max_seen_ids:
+                self._seen_message_ids.pop(oldest_mid, None)
+            else:
+                break
 
     def check_and_mark_seen_message(
         self,
@@ -559,8 +585,12 @@ class ChatSessionCoordinator:
                 if eff_id in self._seen_message_ids:
                     self.duplicates_blocked += 1
                     _, existing_iid = self._seen_message_ids[eff_id]
+                    self._seen_message_ids.move_to_end(eff_id)
                     return True, existing_iid, eff_id
                 self._seen_message_ids[eff_id] = (now, "pending")
+                self._seen_message_ids.move_to_end(eff_id)
+                while len(self._seen_message_ids) > self.max_seen_ids:
+                    self._seen_message_ids.popitem(last=False)
                 return False, None, eff_id
 
             # Se o payload não trouxe ID explícito, gerar ID único para esta requisição
@@ -571,27 +601,102 @@ class ChatSessionCoordinator:
         if not message_id:
             return
         with self._guard:
-            self._seen_message_ids[message_id] = (time.time(), interaction_id)
+            now = time.time()
+            self._seen_message_ids[message_id] = (now, interaction_id)
+            self._seen_message_ids.move_to_end(message_id)
+            self._prune_seen(now)
 
     def get_chat_lock(self, chat_id: str) -> threading.Lock:
         with self._guard:
-            if chat_id not in self._chat_locks:
-                self._chat_locks[chat_id] = threading.Lock()
-            return self._chat_locks[chat_id]
+            if chat_id in self._chat_locks:
+                self._chat_locks.move_to_end(chat_id)
+                return self._chat_locks[chat_id]
+            while len(self._chat_locks) >= self.max_chat_locks:
+                evict_key = next(
+                    (
+                        k
+                        for k, lk in self._chat_locks.items()
+                        if not lk.locked() and k not in self._active_chats and not self._pending_buffers.get(k)
+                    ),
+                    None,
+                )
+                if evict_key is None:
+                    break
+                self._chat_locks.pop(evict_key, None)
+            lk = threading.Lock()
+            self._chat_locks[chat_id] = lk
+            return lk
 
-    def enqueue_if_busy(self, chat_id: str, fragment_text: str, message_id: str) -> bool:
+    def acquire_turn_or_coalesce(self, chat_id: str, fragment_text: str, message_id: str) -> bool:
         """
-        Se o `chat_id` já está processando uma mensagem na thread atual/outra thread e a fila
-        de coalescência está aberta, adiciona o fragmento para ser consolidado ou processado em ordem.
+        Aquisição atômica de turno por `chat_id` sem janela de *lost wakeup* (P2-03):
+        - Se `chat_id` já possui turno ativo em `_active_chats`, enfileira o fragmento em `_pending_buffers`
+          (limitado a `max_pending_fragments = 20`) sob o mesmo `self._guard` e retorna `False` (coalescido).
+        - Caso contrário, registra `chat_id` em `_active_chats` e retorna `True` (dono do turno).
         """
-        lk = self.get_chat_lock(chat_id)
-        if lk.locked():
-            with self._guard:
-                self._pending_buffers.setdefault(chat_id, []).append(
+        with self._guard:
+            if chat_id in self._active_chats:
+                buf = self._pending_buffers.setdefault(chat_id, [])
+                if len(buf) >= self.max_pending_fragments:
+                    buf.pop(0)
+                buf.append(
                     {"text": fragment_text, "message_id": message_id, "timestamp": time.time()}
                 )
                 self.coalesced_messages += 1
+                return False
+            self._active_chats[chat_id] = message_id
             return True
+
+    def drain_or_finish_turn(self, chat_id: str) -> List[Dict[str, Any]]:
+        """
+        Sob o mesmo `self._guard`, verifica atomicamente se chegaram fragmentos durante o processamento:
+        - Se houver fragmentos pendentes válidos, drena-os mantendo `chat_id` ativo em `_active_chats`;
+        - Se o buffer estiver vazio (ou só contiver itens vazios), encerra atomicamente o turno removendo `chat_id` de `_active_chats`.
+        """
+        with self._guard:
+            items = self._pending_buffers.pop(chat_id, [])
+            valid_items = [it for it in items if str(it.get("text") or "").strip()]
+            if valid_items:
+                return valid_items
+            self._active_chats.pop(chat_id, None)
+            return []
+
+    def force_release_turn(self, chat_id: str) -> List[Dict[str, Any]]:
+        """
+        Executa a liberação forçada do turno sob o mesmo `self._guard` atômico sem descartar itens pendentes:
+        remove entradas vazias de `_pending_buffers[chat_id]`, preserva eventuais fragmentos válidos (máx `20`)
+        para o próximo ciclo de drenagem e libera `_active_chats`.
+        """
+        with self._guard:
+            self._active_chats.pop(chat_id, None)
+            raw_pending = self._pending_buffers.get(chat_id)
+            if not raw_pending:
+                self._pending_buffers.pop(chat_id, None)
+                return []
+            valid_pending = [
+                it for it in raw_pending if str(it.get("text") or "").strip()
+            ][-self.max_pending_fragments :]
+            if valid_pending:
+                self._pending_buffers[chat_id] = valid_pending
+                return list(valid_pending)
+            self._pending_buffers.pop(chat_id, None)
+            return []
+
+    def enqueue_if_busy(self, chat_id: str, fragment_text: str, message_id: str) -> bool:
+        """
+        Compatibilidade com chamadas legadas: verifica tanto `_active_chats` quanto o lock físico sob `_guard`.
+        """
+        lk = self.get_chat_lock(chat_id)
+        with self._guard:
+            if chat_id in self._active_chats or lk.locked():
+                buf = self._pending_buffers.setdefault(chat_id, [])
+                if len(buf) >= self.max_pending_fragments:
+                    buf.pop(0)
+                buf.append(
+                    {"text": fragment_text, "message_id": message_id, "timestamp": time.time()}
+                )
+                self.coalesced_messages += 1
+                return True
         return False
 
     def drain_coalesced_fragments(self, chat_id: str) -> List[Dict[str, Any]]:
@@ -638,13 +743,14 @@ class WAHAMessagingManager:
         endpoint: str,
         payload: Dict[str, Any],
         timeout: float = 6.0,
+        dry_run: bool = False,
     ) -> Dict[str, Any]:
         """
-        Executa chamada à API do WAHA (se configurada) ou registra a ação verificada localmente
-        em ambiente de teste/desenvolvimento sem container WAHA ativo.
+        Executa chamada à API do WAHA (se configurada e `dry_run=False`) ou registra a ação verificada localmente
+        em ambiente de teste/simulador Web sem disparar mensagens reais no WhatsApp conectado.
         """
         t0 = time.perf_counter()
-        base_url = self._resolve_waha_url()
+        base_url = "" if dry_run else self._resolve_waha_url()
         def _summarize_val(k: str, v: Any) -> Any:
             if k in ("text", "caption"):
                 return f"{str(v)[:60]}... ({len(str(v))} chars)"
@@ -728,35 +834,60 @@ class WAHAMessagingManager:
         s = str(message_id).strip()
         return s.startswith("true_") or s.startswith("false_")
 
-    def send_seen(self, rec: InteractionRecord, session: str, chat_id: str, message_id: Optional[str] = None) -> Dict[str, Any]:
+    def send_seen(
+        self,
+        rec: InteractionRecord,
+        session: str,
+        chat_id: str,
+        message_id: Optional[str] = None,
+        dry_run: bool = False,
+        store: Optional[UnifiedInteractionStore] = None,
+    ) -> Dict[str, Any]:
+        eff_store = store or self.store
         payload: Dict[str, Any] = {"session": session, "chatId": chat_id}
-        if message_id and (not self._resolve_waha_url() or self._is_waha_serialized_msg_id(message_id)):
+        if message_id and (dry_run or not self._resolve_waha_url() or self._is_waha_serialized_msg_id(message_id)):
             payload["messageId"] = message_id
-        res = self._call_waha("POST", "/api/sendSeen", payload, timeout=4.0)
+        res = self._call_waha("POST", "/api/sendSeen", payload, timeout=4.0, dry_run=dry_run)
         rec.waha_actions.append({"action": "sendSeen", **res})
-        self.store.transition_state(
+        eff_store.transition_state(
             rec.interaction_id,
             MessageLifecycleState.SEEN,
             detail="Confirmação de visualização (sendSeen) enviada ao WhatsApp.",
         )
         return res
 
-    def start_typing(self, rec: InteractionRecord, session: str, chat_id: str) -> Dict[str, Any]:
+    def start_typing(
+        self,
+        rec: InteractionRecord,
+        session: str,
+        chat_id: str,
+        dry_run: bool = False,
+        store: Optional[UnifiedInteractionStore] = None,
+    ) -> Dict[str, Any]:
+        eff_store = store or self.store
         payload = {"session": session, "chatId": chat_id}
-        res = self._call_waha("POST", "/api/startTyping", payload, timeout=4.0)
+        res = self._call_waha("POST", "/api/startTyping", payload, timeout=4.0, dry_run=dry_run)
         rec.waha_actions.append({"action": "startTyping", **res})
-        self.store.transition_state(
+        eff_store.transition_state(
             rec.interaction_id,
             MessageLifecycleState.PROCESSING,
             detail="Indicador de digitação (startTyping) ativado no WhatsApp enquanto os agentes consultam as bases oficiais.",
         )
         return res
 
-    def stop_typing(self, rec: InteractionRecord, session: str, chat_id: str) -> Dict[str, Any]:
+    def stop_typing(
+        self,
+        rec: InteractionRecord,
+        session: str,
+        chat_id: str,
+        dry_run: bool = False,
+        store: Optional[UnifiedInteractionStore] = None,
+    ) -> Dict[str, Any]:
+        eff_store = store or self.store
         payload = {"session": session, "chatId": chat_id}
-        res = self._call_waha("POST", "/api/stopTyping", payload, timeout=4.0)
+        res = self._call_waha("POST", "/api/stopTyping", payload, timeout=4.0, dry_run=dry_run)
         rec.waha_actions.append({"action": "stopTyping", **res})
-        self.store.save(rec)
+        eff_store.save(rec)
         return res
 
     def send_reaction(
@@ -765,16 +896,19 @@ class WAHAMessagingManager:
         session: str,
         message_id: Optional[str],
         emoji: str,
+        dry_run: bool = False,
+        store: Optional[UnifiedInteractionStore] = None,
     ) -> Optional[Dict[str, Any]]:
         if not message_id:
             return None
-        if self._resolve_waha_url() and not self._is_waha_serialized_msg_id(message_id):
-            self.store.add_reaction(rec.interaction_id, emoji=emoji, actor="system", message_id=message_id)
+        eff_store = store or self.store
+        if not dry_run and self._resolve_waha_url() and not self._is_waha_serialized_msg_id(message_id):
+            eff_store.add_reaction(rec.interaction_id, emoji=emoji, actor="system", message_id=message_id)
             return None
         payload = {"session": session, "messageId": message_id, "reaction": emoji}
-        res = self._call_waha("PUT", "/api/reaction", payload, timeout=4.0)
+        res = self._call_waha("PUT", "/api/reaction", payload, timeout=4.0, dry_run=dry_run)
         rec.waha_actions.append({"action": "reaction", "emoji": emoji, **res})
-        self.store.add_reaction(rec.interaction_id, emoji=emoji, actor="system", message_id=message_id)
+        eff_store.add_reaction(rec.interaction_id, emoji=emoji, actor="system", message_id=message_id)
         return res
 
     def send_text_with_confirmation(
@@ -784,13 +918,16 @@ class WAHAMessagingManager:
         chat_id: str,
         text: str,
         reply_to: Optional[str] = None,
+        dry_run: bool = False,
+        store: Optional[UnifiedInteractionStore] = None,
     ) -> Dict[str, Any]:
         """
         Envia a resposta ao cidadão pelo WAHA com retentativa em caso de falha transitória.
         NUNCA marca a mensagem como respondida (`sent`) antes da confirmação adequada.
         """
+        eff_store = store or self.store
         payload: Dict[str, Any] = {"session": session, "chatId": chat_id, "text": text}
-        if reply_to and (not self._resolve_waha_url() or self._is_waha_serialized_msg_id(reply_to)):
+        if reply_to and (dry_run or not self._resolve_waha_url() or self._is_waha_serialized_msg_id(reply_to)):
             payload["reply_to"] = reply_to
 
         last_res: Dict[str, Any] = {}
@@ -798,7 +935,7 @@ class WAHAMessagingManager:
             rec.send_attempts = attempt
             if attempt > 1:
                 payload.pop("reply_to", None)
-            last_res = self._call_waha("POST", "/api/sendText", payload, timeout=10.0)
+            last_res = self._call_waha("POST", "/api/sendText", payload, timeout=10.0, dry_run=dry_run)
             rec.waha_actions.append({"action": "sendText", "attempt": attempt, **last_res})
 
             if last_res.get("ok"):
@@ -814,8 +951,8 @@ class WAHAMessagingManager:
                     "waha_live_confirmed" if last_res.get("mode") == "waha_http" else "local_verified"
                 )
                 rec.last_send_error = None
-                self.store.register_outbound_message_id(rec.interaction_id, str(out_id))
-                self.store.transition_state(
+                eff_store.register_outbound_message_id(rec.interaction_id, str(out_id))
+                eff_store.transition_state(
                     rec.interaction_id,
                     MessageLifecycleState.SENT,
                     detail=(
@@ -829,7 +966,7 @@ class WAHAMessagingManager:
         err_msg = last_res.get("error") or "Falha de comunicação com o serviço WAHA"
         rec.delivery_mode = "failed_unconfirmed"
         rec.last_send_error = err_msg
-        self.store.transition_state(
+        eff_store.transition_state(
             rec.interaction_id,
             MessageLifecycleState.FAILED,
             detail=f"Envio não confirmado após {self.max_send_retries} tentativa(s): {err_msg}",
@@ -846,13 +983,16 @@ class WAHAMessagingManager:
         caption: str = "",
         mimetype: str = "image/png",
         mime_type: Optional[str] = None,
-        filename: str = "grafico_sim_caete.png",
+        filename: str = "grafico_institucional_sim.png",
         reply_to: Optional[str] = None,
+        dry_run: bool = False,
+        store: Optional[UnifiedInteractionStore] = None,
     ) -> Dict[str, Any]:
         """
         Eixo 4: Envia imagem PNG institucional (gráfico gerado pelo SIM) no WhatsApp via WAHA
         `POST /api/sendImage` com retentativa automática e rastreabilidade em `waha_actions`.
         """
+        eff_store = store or self.store
         eff_mime = (mime_type or mimetype or "image/png").strip()
         clean_b64 = (image_base64 or "").strip()
         if clean_b64.startswith("data:") and "," in clean_b64:
@@ -868,20 +1008,20 @@ class WAHAMessagingManager:
             },
             "caption": caption,
         }
-        if reply_to and (not self._resolve_waha_url() or self._is_waha_serialized_msg_id(reply_to)):
+        if reply_to and (dry_run or not self._resolve_waha_url() or self._is_waha_serialized_msg_id(reply_to)):
             payload["reply_to"] = reply_to
 
         last_res: Dict[str, Any] = {}
         for attempt in range(1, self.max_send_retries + 1):
             if attempt > 1:
                 payload.pop("reply_to", None)
-            last_res = self._call_waha("POST", "/api/sendImage", payload, timeout=15.0)
+            last_res = self._call_waha("POST", "/api/sendImage", payload, timeout=15.0, dry_run=dry_run)
             rec.waha_actions.append({"action": "sendImage", "attempt": attempt, **last_res})
             if last_res.get("ok"):
-                self.store.save(rec)
+                eff_store.save(rec)
                 return last_res
 
-        self.store.save(rec)
+        eff_store.save(rec)
         return last_res
 
     def handle_webhook_event(
@@ -889,12 +1029,16 @@ class WAHAMessagingManager:
         event_name: str,
         session: str,
         payload: Dict[str, Any],
+        store: Optional[UnifiedInteractionStore] = None,
+        match_strict_msg_id_only: bool = False,
     ) -> Optional[Dict[str, Any]]:
         """
         Processa eventos assíncronos de estado do WAHA (`message.ack`, `message.reaction`, `session.status`, `message.revoked`).
         Retorna um dicionário de resposta se o evento for um evento de ciclo de vida não-mensagem,
         ou `None` se for uma mensagem de entrada (`message` / `message.any`) que deve seguir para o orquestrador.
+        Quando `match_strict_msg_id_only=True` (ex.: fallback cross-runtime), exige match exato de `msg_id` sem `find_latest_for_chat`.
         """
+        eff_store = store or self.store
         ev = (event_name or "").strip().lower()
 
         if ev == "message.ack":
@@ -920,9 +1064,9 @@ class WAHAMessagingManager:
                 ack_int = 1
 
             mapped_state = WAHA_ACK_TO_STATE.get(ack_int, MessageLifecycleState.SENT.value)
-            rec = self.store.find_by_message_id(msg_id)
-            if not rec and chat_id:
-                cand = self.store.find_latest_for_chat(chat_id)
+            rec = eff_store.find_by_message_id(msg_id)
+            if not rec and chat_id and not match_strict_msg_id_only:
+                cand = eff_store.find_latest_for_chat(chat_id)
                 if cand and (cand.outbound_message_id or cand.message_state in ("sent", "delivered", "read")):
                     rec = cand
 
@@ -936,7 +1080,7 @@ class WAHAMessagingManager:
                 }
 
             allow_down = mapped_state == MessageLifecycleState.FAILED.value
-            self.store.transition_state(
+            eff_store.transition_state(
                 rec.interaction_id,
                 mapped_state,
                 detail=f"Webhook WAHA `message.ack` recebido (ack={ack_int} / {ack_name or mapped_state}).",
@@ -962,9 +1106,9 @@ class WAHAMessagingManager:
             ).strip()
             chat_id = str(payload.get("from") or payload.get("chatId") or "").strip()
 
-            rec = self.store.find_by_message_id(target_msg_id)
-            if not rec and chat_id:
-                rec = self.store.find_latest_for_chat(chat_id)
+            rec = eff_store.find_by_message_id(target_msg_id)
+            if not rec and chat_id and not match_strict_msg_id_only:
+                rec = eff_store.find_latest_for_chat(chat_id)
 
             if not rec:
                 return {
@@ -974,7 +1118,7 @@ class WAHAMessagingManager:
                     "message_id": target_msg_id,
                 }
 
-            self.store.add_reaction(
+            eff_store.add_reaction(
                 rec.interaction_id,
                 emoji=emoji,
                 actor=chat_id or "citizen",

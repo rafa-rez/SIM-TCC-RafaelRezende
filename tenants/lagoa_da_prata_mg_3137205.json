@@ -1,0 +1,41 @@
+{
+  "tenant_id": "lagoa_da_prata_mg_3137205",
+  "municipality_name": "Lagoa da Prata",
+  "state_uf": "MG",
+  "ibge_code": "3137205",
+  "plan_code": "porte_2",
+  "plan_name": "Prefeitura Porte II — Controladoria, Ouvidoria & Gestão 360º (30k a 100k hab.)",
+  "monthly_quota_requests": 30000,
+  "status_dados_externos": "SINCRONIZACAO_AUTOMATICA_API_ATIVA",
+  "hospital_referencia": "FUNDAÇÃO SÃO CARLOS / HOSPITAL SÃO CARLOS DE LAGOA DA PRATA",
+  "diario_oficial": {
+    "tipo": "pdf_diario_eletronico",
+    "veiculo": "Diário Oficial Eletrônico de Lagoa da Prata/MG (AMM-MG)",
+    "chunker": "ActBoundaryChunker"
+  },
+  "connector_profile": {
+    "erp_family": "betha_cloud",
+    "gazette_family": "amm_mg",
+    "ocr_fallback": false
+  },
+  "orgaos_map": {
+    "01": "CÂMARA MUNICIPAL DE LAGOA DA PRATA",
+    "02": "PREFEITURA MUNICIPAL DE LAGOA DA PRATA",
+    "03": "SERVIÇO AUTÔNOMO DE ÁGUA E ESGOTO DE LAGOA DA PRATA"
+  },
+  "local_aliases": {
+    "hospital": "FUNDAÇÃO SÃO CARLOS",
+    "agua_esgoto": "SERVIÇO AUTÔNOMO DE ÁGUA E ESGOTO",
+    "previdencia": "INSTITUTO NACIONAL DE SEGURIDADE SOCIAL"
+  },
+  "institutional_cnpjs": {
+    "18318618000160": "PREFEITURA MUNICIPAL DE LAGOA DA PRATA (FOLHA / ENCARGOS)",
+    "18423582000184": "SERVIÇO AUTÔNOMO DE ÁGUA E ESGOTO DE LAGOA DA PRATA (SAAE)",
+    "18457226000181": "CÂMARA MUNICIPAL DE LAGOA DA PRATA (FOLHA / ENCARGOS)"
+  },
+  "ibge_series": [],
+  "ideb_series": [
+    {"ano": 2019, "rede": "Pública Municipal", "anos_iniciais": 7.2, "anos_finais": 5.2, "meta_iniciais": 6.6, "escolas": null, "matriculas": null, "taxa_aprovacao": null},
+    {"ano": 2023, "rede": "Pública Municipal", "anos_iniciais": 7.2, "anos_finais": 5.2, "meta_iniciais": 6.9, "escolas": null, "matriculas": null, "taxa_aprovacao": 100.0}
+  ]
+}

@@ -18,12 +18,67 @@ Resolve o bloqueio estrutural apontado pelo Subagente 2:
 from __future__ import annotations
 
 import json
+import os
 import re
+import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 
 DEFAULT_REPO_ROOT = Path(__file__).resolve().parents[2]
+
+VALID_IBGE_UF_PREFIXES = frozenset(
+    {
+        "11", "12", "13", "14", "15", "16", "17",
+        "21", "22", "23", "24", "25", "26", "27", "28", "29",
+        "31", "32", "33", "35",
+        "41", "42", "43",
+        "50", "51", "52", "53",
+    }
+)
+
+
+def is_valid_ibge7(code: str) -> bool:
+    """Valida se `code` é um código municipal IBGE de 7 dígitos com prefixo de UF oficial."""
+    s = str(code or "").strip()
+    return bool(
+        len(s) == 7
+        and s.isdigit()
+        and s[:2] in VALID_IBGE_UF_PREFIXES
+        and s[2:] != "00000"
+    )
+
+
+def _split_semicolon_quote_aware(line: str) -> List[str]:
+    """
+    Divide uma linha CSV delimitada por `;` respeitando campos entre aspas duplas (`"..."` e escape `""`).
+    Se a linha contiver aspas desbalanceadas (sujeira comum em textos livres não escapados), faz fallback
+    seguro para `line.split(";")` para não engolir as colunas finais numéricas.
+    """
+    parts: List[str] = []
+    buf: List[str] = []
+    in_quotes = False
+    i = 0
+    n = len(line)
+    while i < n:
+        ch = line[i]
+        if ch == '"':
+            if in_quotes and (i + 1) < n and line[i + 1] == '"':
+                buf.append('""')
+                i += 2
+                continue
+            in_quotes = not in_quotes
+            buf.append(ch)
+        elif ch == ";" and not in_quotes:
+            parts.append("".join(buf))
+            buf.clear()
+        else:
+            buf.append(ch)
+        i += 1
+    parts.append("".join(buf))
+    if in_quotes:
+        return line.split(";")
+    return parts
 
 
 def load_tenant_profile(
@@ -95,7 +150,7 @@ def repair_sicom_remuneracao_csv_lines(
             return [], {"shifted_rows_repaired": 0}
         return str(raw_text), 0
 
-    header_cols = [c.strip().lower() for c in lines[0].split(";")]
+    header_cols = [c.strip().strip('"').strip().lower() for c in _split_semicolon_quote_aware(lines[0])]
     expected_len = len(header_cols)
     req_idx = 10
     for target_col in ("dsc_req_crg", "dsc_cargo", "nom_cargo"):
@@ -108,11 +163,12 @@ def repair_sicom_remuneracao_csv_lines(
     repaired_count = 0
 
     for ln in lines[1:]:
-        parts = ln.split(";")
+        parts = _split_semicolon_quote_aware(ln)
         if len(parts) > expected_len and suffix_count > 0:
             prefix = parts[:req_idx]
             suffix = parts[-suffix_count:]
-            middle_merged = ", ".join(p.strip() for p in parts[req_idx : len(parts) - suffix_count])
+            raw_mid = [p.strip().strip('"').strip() for p in parts[req_idx : len(parts) - suffix_count]]
+            middle_merged = ", ".join(x for x in raw_mid if x) if any(raw_mid) else ""
             fixed_parts = prefix + [middle_merged] + suffix
             out_lines.append(";".join(fixed_parts))
             repaired_count += 1
@@ -134,14 +190,59 @@ class CityOnboardingManager:
         self.tenants_dir = workspace_root / "tenants"
         self.tenants_dir.mkdir(parents=True, exist_ok=True)
 
+    @staticmethod
+    def _count_layered_parquets(pq_dir: Path) -> int:
+        if not pq_dir.exists():
+            return 0
+        stems = {pq.stem for pq in pq_dir.glob("*.parquet")}
+        ptr = pq_dir / "CURRENT.json"
+        if ptr.exists():
+            try:
+                payload = json.loads(ptr.read_text(encoding="utf-8"))
+                rel_dirs: List[str] = []
+                chain = payload.get("release_chain")
+                if isinstance(chain, list):
+                    rel_dirs.extend(str(x) for x in chain if x)
+                rel_single = str(payload.get("release_dir") or "").strip()
+                if rel_single and rel_single not in rel_dirs:
+                    rel_dirs.append(rel_single)
+                base_res = pq_dir.resolve()
+                for rel_sub in rel_dirs:
+                    cand = (base_res / rel_sub).resolve()
+                    if (cand == base_res or base_res in cand.parents) and cand.exists():
+                        for pq in cand.glob("*.parquet"):
+                            stems.add(pq.stem)
+            except Exception:
+                pass
+        return len(stems)
+
     def list_tenants(self) -> List[Dict[str, Any]]:
         profiles: List[Dict[str, Any]] = []
+        cloud_manifest_path = self.tenants_dir / "_cloud_datalake_manifest.json"
+        cloud_tenants: Dict[str, Any] = {}
+        if cloud_manifest_path.exists():
+            try:
+                cm = json.loads(cloud_manifest_path.read_text(encoding="utf-8"))
+                cloud_tenants = cm.get("tenants") or {}
+            except Exception:
+                cloud_tenants = {}
+
         for p in sorted(self.tenants_dir.glob("*.json")):
+            if p.name.startswith("_"):
+                continue
             try:
                 data = json.loads(p.read_text(encoding="utf-8"))
                 tid = data.get("tenant_id", p.stem)
                 pq_dir = self.workspace_root / "avaliacao" / "dados" / "parquet" / tid
-                pq_count = len(list(pq_dir.glob("*.parquet"))) if pq_dir.exists() else 0
+                pq_count = self._count_layered_parquets(pq_dir)
+                if pq_count >= 60:
+                    st_label = "ACTIVE_PRODUCTION"
+                elif pq_count >= 3:
+                    st_label = "ACTIVE_API_SYNCED"
+                else:
+                    st_label = "TEMPLATE_READY_FOR_INGESTION"
+                c_meta = cloud_tenants.get(tid) or data.get("cloud_datalake") or {}
+                synced_files = c_meta.get("synced_files") if isinstance(c_meta.get("synced_files"), list) else []
                 profiles.append(
                     {
                         "tenant_id": tid,
@@ -149,12 +250,25 @@ class CityOnboardingManager:
                         "state_uf": data.get("state_uf", "MG"),
                         "ibge_code": data.get("ibge_code"),
                         "plan_code": data.get("plan_code", "porte_2"),
+                        "plan_key": data.get("plan_code", "porte_2"),
                         "plan_name": data.get("plan_name"),
                         "monthly_quota_requests": data.get("monthly_quota_requests", 30000),
                         "hospital_referencia": data.get("hospital_referencia"),
+                        "official_gazette_name": (data.get("diario_oficial") or {}).get("veiculo") or data.get("official_gazette_name"),
                         "diario_oficial": data.get("diario_oficial", {}),
                         "parquet_tables_materialized": pq_count,
-                        "status": "ACTIVE_PRODUCTION" if pq_count >= 79 else "TEMPLATE_READY_FOR_INGESTION",
+                        "parquet_tables_ready": pq_count,
+                        "status": st_label,
+                        "cloud_datalake": {
+                            "provider": c_meta.get("provider", "google_drive"),
+                            "folder_url": c_meta.get("folder_url"),
+                            "city_folder_url": c_meta.get("folder_url") or c_meta.get("city_folder_url"),
+                            "drive_folder_name": c_meta.get("drive_folder_name") or c_meta.get("city_folder_name"),
+                            "city_folder_name": c_meta.get("drive_folder_name") or c_meta.get("city_folder_name"),
+                            "releases_folder_id": c_meta.get("releases_folder_id"),
+                            "raw_packages_folder_id": c_meta.get("raw_packages_folder_id"),
+                            "synced_files_count": len(synced_files),
+                        } if c_meta else None,
                     }
                 )
             except Exception:
@@ -173,21 +287,30 @@ class CityOnboardingManager:
         plan_tier: str = "porte_2",
         official_gazette_name: Optional[str] = None,
         seed_from_template_if_empty: bool = True,
+        overwrite: bool = False,
     ) -> Dict[str, Any]:
-        m_name = municipality_name or (tenant_id.split("_")[0].title() if tenant_id else "Sabará")
-        ibge = ibge_code or (tenant_id.split("_")[-1] if tenant_id and tenant_id.split("_")[-1].isdigit() else "3156700")
+        m_name = (municipality_name or (tenant_id.split("_")[0].title() if tenant_id else "")).strip()
+        if not m_name:
+            raise ValueError("`municipality_name` é obrigatório para cadastrar um novo município.")
+        raw_ibge = ibge_code or (tenant_id.split("_")[-1] if tenant_id and tenant_id.split("_")[-1].isdigit() else "")
+        clean_ibge = re.sub(r"[^0-9]", "", str(raw_ibge or "").strip())
+        if not is_valid_ibge7(clean_ibge):
+            raise ValueError(
+                f"Código IBGE inválido ('{raw_ibge}'). Informe exatamente 7 dígitos numéricos oficiais (ex.: '3137205')."
+            )
         res = self.onboard_or_validate_city(
             municipality_name=m_name,
             state_uf=state_uf,
-            ibge_code=ibge,
+            ibge_code=clean_ibge,
             plan_code=plan_tier,
             diario_veiculo=official_gazette_name,
+            overwrite=overwrite,
         )
         t_id = res["tenant_id"]
         pq_dir = self.workspace_root / "avaliacao" / "dados" / "parquet" / t_id
         pq_dir.mkdir(parents=True, exist_ok=True)
         res["municipality"] = f"{m_name}/{state_uf.upper()}"
-        res["ibge_code"] = ibge
+        res["ibge_code"] = clean_ibge
         res["parquet_dir"] = str(pq_dir)
         return res
 
@@ -199,16 +322,18 @@ class CityOnboardingManager:
         plan_code: str = "porte_2",
         hospital_referencia: Optional[str] = None,
         diario_veiculo: Optional[str] = None,
-        populacao_censo: int = 40000,
-        pib_mil_reais: float = 1200000.0,
-        idhm: float = 0.730,
-        area_km2: float = 400.0,
-        ideb_iniciais: float = 6.2,
-        ideb_finais: float = 5.2,
+        populacao_censo: Optional[int] = None,
+        pib_mil_reais: Optional[float] = None,
+        idhm: Optional[float] = None,
+        area_km2: Optional[float] = None,
+        ideb_iniciais: Optional[float] = None,
+        ideb_finais: Optional[float] = None,
+        overwrite: bool = False,
     ) -> Dict[str, Any]:
         """
         Gera e persiste o manifesto `tenants/<tenant_id>.json` para uma nova cidade em < 1 segundo,
-        deixando o pipeline `DataSyncManager(tenant_id=...)` 100% parametrizado sem tocar em código Python.
+        sem inventar estatísticas demográficas/educacionais quando valores oficiais não forem fornecidos.
+        Impede sobrescrita acidental de manifesto existente sem `overwrite=True` explícito.
         """
         import unicodedata
 
@@ -216,13 +341,95 @@ class CityOnboardingManager:
         slug = re.sub(r"[^a-z0-9]+", "_", ascii_name.lower().strip()).strip("_")
         uf = state_uf.upper().strip()
         ibge = re.sub(r"[^0-9]", "", ibge_code.strip())
+        if not is_valid_ibge7(ibge):
+            raise ValueError(
+                f"Código IBGE inválido ('{ibge_code}'). Informe exatamente 7 dígitos numéricos oficiais."
+            )
         tenant_id = f"{slug}_{uf.lower()}_{ibge}"
+        out_path = self.tenants_dir / f"{tenant_id}.json"
 
-        from sim_platform.security.quota_manager import COMMERCIAL_PLANS
+        if not overwrite:
+            if out_path.exists():
+                raise ValueError(
+                    f"Manifesto '{out_path.name}' já existe para o município '{tenant_id}'. "
+                    "Informe overwrite=True para sobrescrevê-lo explicitamente."
+                )
+            for existing_p in sorted(self.tenants_dir.glob("*.json")):
+                if existing_p.name.startswith("_") or existing_p == out_path:
+                    continue
+                try:
+                    ex_data = json.loads(existing_p.read_text(encoding="utf-8"))
+                    if str(ex_data.get("ibge_code") or "").strip() == ibge:
+                        raise ValueError(
+                            f"Código IBGE '{ibge}' já está cadastrado em '{existing_p.name}'. "
+                            "Informe overwrite=True se desejar substituir."
+                        )
+                except ValueError:
+                    raise
+                except Exception:
+                    continue
+
+        try:
+            from sim_platform.security.quota_manager import COMMERCIAL_PLANS
+        except ImportError:
+            COMMERCIAL_PLANS = {
+                "camara": {
+                    "plan_code": "camara",
+                    "plan_name": "SIM Câmara — Legislativo & Fiscalização (Até 15 Gabinetes)",
+                    "monthly_quota_requests": 10000,
+                },
+                "porte_1": {
+                    "plan_code": "porte_1",
+                    "plan_name": "Prefeitura Porte I — Transparência & Gestão (Até 30 mil hab.)",
+                    "monthly_quota_requests": 15000,
+                },
+                "porte_2": {
+                    "plan_code": "porte_2",
+                    "plan_name": "Prefeitura Porte II — Controladoria, Ouvidoria & Gestão 360º (30k a 100k hab.)",
+                    "monthly_quota_requests": 30000,
+                },
+                "porte_3": {
+                    "plan_code": "porte_3",
+                    "plan_name": "Prefeitura Porte III — GovTech Full Enterprise (> 100 mil hab.)",
+                    "monthly_quota_requests": 60000,
+                },
+            }
 
         plan_meta = COMMERCIAL_PLANS.get(plan_code, COMMERCIAL_PLANS["porte_2"])
-        pib_pc = round((pib_mil_reais * 1000.0) / max(1, populacao_censo), 2)
-        dens = round(populacao_censo / max(0.1, area_km2), 2)
+        has_verified_ibge = all(v is not None for v in (populacao_censo, pib_mil_reais, idhm, area_km2))
+        has_verified_ideb = all(v is not None for v in (ideb_iniciais, ideb_finais))
+
+        ibge_series: List[Dict[str, Any]] = []
+        if has_verified_ibge:
+            pop_val = int(populacao_censo or 0)
+            pib_val = float(pib_mil_reais or 0.0)
+            idhm_val = float(idhm or 0.0)
+            area_val = float(area_km2 or 1.0)
+            pib_pc = round((pib_val * 1000.0) / max(1, pop_val), 2)
+            dens = round(pop_val / max(0.1, area_val), 2)
+            ibge_series = [
+                {
+                    "ano": 2022,
+                    "populacao": pop_val,
+                    "fonte_pop": "Parâmetro Informado no Onboarding",
+                    "pib_mil": pib_val,
+                    "pib_per_capita": pib_pc,
+                    "idhm": idhm_val,
+                    "area_km2": area_val,
+                    "densidade": dens,
+                }
+            ]
+
+        ideb_series: List[Dict[str, Any]] = []
+        if has_verified_ideb:
+            ideb_series = [
+                {
+                    "ano": 2023,
+                    "rede": "Pública Municipal",
+                    "anos_iniciais": float(ideb_iniciais or 0.0),
+                    "anos_finais": float(ideb_finais or 0.0),
+                }
+            ]
 
         manifest = {
             "tenant_id": tenant_id,
@@ -232,6 +439,11 @@ class CityOnboardingManager:
             "plan_code": plan_meta["plan_code"],
             "plan_name": plan_meta["plan_name"],
             "monthly_quota_requests": plan_meta["monthly_quota_requests"],
+            "status_dados_externos": (
+                "INFORMADOS_NO_ONBOARDING"
+                if (has_verified_ibge or has_verified_ideb)
+                else "AGUARDANDO_SINCRONIZACAO_OFICIAL"
+            ),
             "hospital_referencia": hospital_referencia or f"HOSPITAL MUNICIPAL / SANTA CASA DE {municipality_name.upper()}",
             "diario_oficial": {
                 "tipo": "pdf_diario_eletronico",
@@ -246,47 +458,13 @@ class CityOnboardingManager:
             "local_aliases": {
                 "hospital": hospital_referencia or f"SANTA CASA DE {municipality_name.upper()}",
             },
-            "ibge_series": [
-                {
-                    "ano": yr,
-                    "populacao": populacao_censo,
-                    "fonte_pop": "Censo / Estimativa Oficial IBGE",
-                    "pib_mil": pib_mil_reais,
-                    "pib_per_capita": pib_pc,
-                    "idhm": idhm,
-                    "idhm_edu": round(idhm - 0.06, 3),
-                    "idhm_long": round(min(0.95, idhm + 0.11), 3),
-                    "area_km2": area_km2,
-                    "densidade": dens,
-                }
-                for yr in (2022, 2023, 2024, 2025)
-            ],
-            "ideb_series": [
-                {
-                    "ano": 2021,
-                    "rede": "Pública Municipal",
-                    "anos_iniciais": ideb_iniciais,
-                    "anos_finais": ideb_finais,
-                    "meta_iniciais": round(ideb_iniciais - 0.1, 1),
-                    "escolas": max(5, populacao_censo // 2200),
-                    "matriculas": max(500, populacao_censo // 9),
-                    "taxa_aprovacao": 96.5,
-                },
-                {
-                    "ano": 2023,
-                    "rede": "Pública Municipal",
-                    "anos_iniciais": round(ideb_iniciais + 0.2, 1),
-                    "anos_finais": round(ideb_finais + 0.2, 1),
-                    "meta_iniciais": ideb_iniciais,
-                    "escolas": max(5, populacao_censo // 2200),
-                    "matriculas": max(500, populacao_censo // 9),
-                    "taxa_aprovacao": 97.4,
-                },
-            ],
+            "ibge_series": ibge_series,
+            "ideb_series": ideb_series,
         }
 
-        out_path = self.tenants_dir / f"{tenant_id}.json"
-        out_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+        tmp_path = self.tenants_dir / f".{tenant_id}.{os.getpid()}.{time.time_ns()}.json.tmp"
+        tmp_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+        os.replace(str(tmp_path), str(out_path))
         return {
             "status": "sucesso",
             "tenant_id": tenant_id,

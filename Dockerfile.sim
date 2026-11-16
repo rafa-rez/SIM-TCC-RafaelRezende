@@ -1,19 +1,20 @@
 FROM python:3.11-slim
 
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/workspace
+
 WORKDIR /workspace
 
-# Instala apenas as dependências enxutas do servidor SIM v3.0 na camada da imagem
-# (evita rodar pip install a cada inicialização do container)
-RUN pip install --no-cache-dir \
-    "fastapi>=0.110.0" \
-    "uvicorn>=0.29.0" \
-    "duckdb>=1.1.0" \
-    "sqlglot>=25.0.0" \
-    "pydantic>=2.7.0" \
-    "requests>=2.31.0" \
-    "python-dotenv>=1.0.0"
+# Fontes DejaVu para renderização nítida de tabelas e gráficos PNG institucionais no Linux
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends fonts-dejavu-core \
+    && rm -rf /var/lib/apt/lists/*
 
-ENV PYTHONPATH=/workspace
+# Instala dependências sincronizadas com requirements.txt na camada da imagem
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt \
+    && rm -f /tmp/requirements.txt
 
 EXPOSE 8000
 
