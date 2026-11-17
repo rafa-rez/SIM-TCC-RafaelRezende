@@ -480,8 +480,9 @@ _YEAR_COL_CANDIDATES = (
 )
 
 _YEAR_OR_ID_COL_RE = re.compile(
-    r"(^ano|ano_|_ano$|num_ano|exercicio|competencia|ultima_competencia|"
-    r"^mes$|mes_|_mes$|num_mes|seq_dat_pagamento|"
+    r"(^ano$|^ano_referencia$|^ano_exercicio$|^ano_folha$|^ano_licitacao$|^ano_contrato$|^ano_edicao$|"
+    r"^num_ano|^exercicio$|^num_exercicio$|^competencia$|^ultima_competencia$|^de_ano$|^ate_ano$|"
+    r"^mes$|^mes_referencia$|^num_mes|seq_dat_pagamento|"
     r"^id$|^id_|_id$|^cod_|_cod$|^seq_|_seq$|"
     r"num_contrato|nro_contrato|num_licitacao|num_processo|num_empenho|numero_ato)",
     re.IGNORECASE,
@@ -497,7 +498,7 @@ _MONETARY_HINTS = (
 _NON_ADDITIVE_STOCK_HINTS = (
     "servidor", "funcionari", "veiculo", "frota", "matricula", "escola",
     "leito", "populacao", "habitante", "ubs", "cnes", "media_", "mediana_",
-    "ideb", "idhm", "nota_", "isf_", "taxa_", "ies_", "ieq_",
+    "ideb", "idhm", "nota_", "isf_", "taxa_", "ies_", "ieq_", "pib",
 )
 
 _HUMAN_COLUMN_LABELS: Dict[str, str] = {
@@ -1019,8 +1020,9 @@ class InstitutionalChartGenerator:
                 }
 
             primary_col = _pick_primary_metric(numeric_cols)
+            scale_mult = 1000.0 if "mil_reais" in primary_col.lower() else 1.0
             valid_ts_pairs = [
-                (lbl, float(_to_float(r.get(primary_col))))
+                (lbl, float(_to_float(r.get(primary_col))) * scale_mult)
                 for lbl, r in zip(labels, sorted_rows)
                 if r.get(primary_col) is not None and _to_float(r.get(primary_col)) is not None
             ]
@@ -1028,7 +1030,7 @@ class InstitutionalChartGenerator:
                 labels = [p[0] for p in valid_ts_pairs]
                 vals = [p[1] for p in valid_ts_pairs]
             else:
-                vals = [float(_to_float(r.get(primary_col)) or 0.0) for r in sorted_rows]
+                vals = [float(_to_float(r.get(primary_col)) or 0.0) * scale_mult for r in sorted_rows]
             if max([abs(v) for v in vals] + [0.0]) <= 0:
                 return None
             ctype_out = "line" if (wants_line and len(labels) >= 3) else "vertical_bar"
@@ -1040,15 +1042,51 @@ class InstitutionalChartGenerator:
                 "is_pct": _is_pct_col(primary_col),
             }
 
-        # Caso 3b: Série Mensal/Competência + Categoria (ex.: Gasolina vs Diesel mês a mês, ou Comissionados vs Efetivos de Jan a Out)
+        # Caso 3b: Série Mensal/Competência (1D ou + Categoria)
         primary_col = _pick_primary_metric(numeric_cols)
         month_col = next(
             (
                 c for c in cols
-                if c != primary_col and re.search(r"(^mes$|^mes_|_mes$|num_mes|competencia|seq_dat_pagamento)", c.lower())
+                if c != primary_col and re.search(r"(^mes$|^mes_referencia$|^num_mes|^competencia$|seq_dat_pagamento)", c.lower())
             ),
             None,
         )
+        _PT_MONTHS_SHORT = {
+            1: "Jan", 2: "Fev", 3: "Mar", 4: "Abr", 5: "Mai", 6: "Jun",
+            7: "Jul", 8: "Ago", 9: "Set", 10: "Out", 11: "Nov", 12: "Dez",
+        }
+        if month_col and month_col != primary_col and not label_candidates:
+            m_pairs: List[Tuple[int, str, float]] = []
+            for idx_m, r in enumerate(clean_rows):
+                raw_m = r.get(month_col)
+                s_m = str(raw_m or "").strip()
+                mv = float(_to_float(r.get(primary_col)) or 0.0)
+                if re.fullmatch(r"\d{6,8}", s_m):
+                    mo_i = int(s_m[4:6])
+                    lbl_m = f"{_PT_MONTHS_SHORT.get(mo_i, s_m[4:6])}/{s_m[2:4]}"
+                    ord_k = int(s_m[:6])
+                else:
+                    mf = _to_float(raw_m)
+                    if mf is not None and 1 <= int(round(mf)) <= 12:
+                        mo_i = int(round(mf))
+                        lbl_m = _PT_MONTHS_SHORT[mo_i]
+                        ord_k = mo_i
+                    else:
+                        lbl_m = s_m[:10]
+                        ord_k = idx_m + 100
+                m_pairs.append((ord_k, lbl_m, mv))
+            m_pairs.sort(key=lambda t: t[0])
+            # Remove meses finais zerados (ex.: linhas de previsão LOA no mês 12 sem arrecadação realizada)
+            while len(m_pairs) > 2 and abs(m_pairs[-1][2]) < 1e-9:
+                m_pairs.pop()
+            if len(m_pairs) >= 2 and max(abs(x[2]) for x in m_pairs) > 0:
+                return {
+                    "chart_type": "line" if (wants_line and len(m_pairs) >= 3) else "vertical_bar",
+                    "labels": [x[1] for x in m_pairs[:12]],
+                    "series": [{"name": _pretty_col_name(primary_col), "values": [x[2] for x in m_pairs[:12]]}],
+                    "is_monetary": _is_monetary_col(primary_col),
+                    "is_pct": _is_pct_col(primary_col),
+                }
         if month_col and month_col != primary_col and label_candidates:
             cat_m_col = label_candidates[0]
             def _fmt_month_tok(raw_m: Any) -> str:

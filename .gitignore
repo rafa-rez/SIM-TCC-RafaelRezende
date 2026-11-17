@@ -99,4 +99,5 @@ avaliacao/dados/_staging/
 **/_fleet.lock
 **/quota_ledger_*.sqlite*
 **/semantic_cache_*.sqlite*
+**/_duckdb_tmp/
 avaliacao/dados/governance/

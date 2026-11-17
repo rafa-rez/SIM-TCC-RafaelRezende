@@ -275,10 +275,10 @@ class UnifiedInteractionStore:
         try:
             self.persist_path.parent.mkdir(parents=True, exist_ok=True)
             serialized = [r.to_dict(include_heavy=True) for r in self._records]
-            self.persist_path.write_text(
-                json.dumps(serialized, ensure_ascii=False, indent=2),
-                encoding="utf-8",
-            )
+            payload_txt = json.dumps(serialized, ensure_ascii=False, indent=2)
+            tmp_path = self.persist_path.with_suffix(f".tmp.{os.getpid()}.{uuid.uuid4().hex[:8]}")
+            tmp_path.write_text(payload_txt, encoding="utf-8")
+            os.replace(str(tmp_path), str(self.persist_path))
         except Exception:
             pass
 

@@ -1,0 +1,10 @@
+{
+  "release_id": "upl_20261116_234352_116",
+  "release_dir": "releases/upl_20261116_234352_116",
+  "release_chain": [
+    "releases/rel_00000000_schema_stubs",
+    "releases/upl_20261116_234352_116"
+  ],
+  "updated_at": "2026-11-16 23:43:54",
+  "summary": "upload(3106200__ckan_portal_bundle.zip, tables=9)"
+}

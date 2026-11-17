@@ -1331,11 +1331,18 @@ class FleetVerifier:
                 _add_chk("06_ibge_population_no_gaps_2022_plus", null_pop == 0, {"null_pop_years": null_pop})
 
                 pol_row = con.execute(
-                    "SELECT MAX(ano_referencia), COUNT(DISTINCT CASE WHEN dsc_situacao ILIKE '%Agente Pol%' THEN seq_dim_pessoa END) "
-                    "FROM vw_gold_folha_servidores WHERE ano_referencia = (SELECT MAX(ano_referencia) FROM vw_gold_folha_servidores)"
+                    "WITH ym_stats AS ("
+                    "  SELECT MAX(ano_referencia) AS yr, LEFT(CAST(seq_dat_pagamento AS VARCHAR), 6) AS ym, "
+                    "         COUNT(*) AS n_rows, "
+                    "         COUNT(DISTINCT CASE WHEN dsc_situacao ILIKE '%Agente Pol%' THEN seq_dim_pessoa END) AS pol_cnt "
+                    "  FROM vw_gold_folha_servidores "
+                    "  WHERE ano_referencia = (SELECT MAX(ano_referencia) FROM vw_gold_folha_servidores) "
+                    "  GROUP BY 2"
+                    ") SELECT yr, pol_cnt FROM ym_stats ORDER BY (n_rows >= 80) DESC, ym DESC LIMIT 1"
                 ).fetchone()
                 pol_cnt = int(pol_row[1] or 0) if pol_row else 0
-                _add_chk("07_folha_political_agents_sane_bounds", 1 <= pol_cnt <= 80, {"max_year": pol_row[0] if pol_row else None, "political_agents": pol_cnt})
+                pol_max = 120 if str(t.get("plan_code") or "") in ("porte_3", "metropole_capital") else 80
+                _add_chk("07_folha_political_agents_sane_bounds", 1 <= pol_cnt <= pol_max, {"max_year": pol_row[0] if pol_row else None, "political_agents": pol_cnt})
 
                 ct_row = con.execute(
                     "SELECT COUNT(*), SUM(CASE WHEN COALESCE(nom_contratado, '') = '' OR nom_contratado ILIKE '%NÃO INFORMADO%' OR nom_contratado ILIKE '%NAO INFORMADO%' THEN 1 ELSE 0 END) "

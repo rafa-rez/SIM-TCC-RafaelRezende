@@ -31,17 +31,21 @@ _PERCENTAGE_COL_RE = re.compile(
 )
 
 _NON_ADDITIVE_COL_RE = re.compile(
-    r"(^ano|ano_|_ano$|num_ano|exercicio|competencia|ultima_competencia|^mes$|^mes_|_mes$|seq_|^cod_|_cod$|^id_|^id$|_id$|"
+    r"(^ano$|^ano_referencia$|^ano_exercicio$|^num_ano|^exercicio$|^competencia$|^ultima_competencia$|"
+    r"^mes$|^mes_referencia$|^num_mes|seq_|^cod_|_cod$|^id_|^id$|_id$|"
     r"quadrimestre|trimestre|bimestre|semestre|edicao|ordem|ranking|posicao|"
     r"cpf|cnpj|doc_credor|documento|nis|socios|qtd_socios|"
     r"placa|pct_|percent|proporc|taxa|aliquota|media|medio|avg|mediana|per_capita|por_aluno|por_hab|"
+    r"pib|rcl|receita_corrente_liquida|"
     r"densidade|area_territorial|km2|ideb|idhm|idh|isf_m|indice|nota_capag|limite_|minimo_|"
     r"telefone|cep|^num_|^nro_|^numero_|_numero$|convenio|edital|portaria|decreto|protocolo|processo|contrato_id)",
     re.IGNORECASE,
 )
 
 _YEAR_OR_CODE_COL_RE = re.compile(
-    r"(^ano|ano_|_ano$|num_ano|exercicio|competencia|ultima_competencia|^mes$|^mes_|_mes$|seq_dat_pagamento|"
+    r"(^ano$|^ano_referencia$|^ano_exercicio$|^ano_folha$|^ano_licitacao$|^ano_contrato$|^ano_edicao$|"
+    r"^de_ano$|^ate_ano$|^primeiro_ano|^ultimo_ano|"
+    r"^num_ano|^exercicio$|^num_exercicio$|^competencia$|^ultima_competencia$|^mes$|^mes_referencia$|^num_mes|seq_dat_pagamento|"
     r"quadrimestre|trimestre|bimestre|semestre|edicao|ordem|ranking|posicao|"
     r"^id$|^id_|_id$|^cod_|_cod$|^seq_|^num_|^nro_|^numero_|_numero$|"
     r"num_contrato|nro_contrato|numero_contrato|num_convenio|numero_convenio|num_licitacao|num_processo|num_empenho|numero_ato|protocolo)",
@@ -275,6 +279,8 @@ def _format_cell_value(val: Any, col_kind: str, col_name: str) -> str:
     if col_kind in ("monetary", "non_additive_monetary"):
         d = _to_decimal(val)
         if d is not None:
+            if "mil_reais" in col_name.lower():
+                d = d * Decimal(1000)
             return format_brl_decimal(d)
     elif col_kind == "percentage":
         d = _to_decimal(val)
@@ -593,7 +599,12 @@ class InstitutionalTableRenderer:
                 tot_w = int(d_measure.textlength(totals_label, font=f_tot)) + pad_x * 2 + 10
 
             ideal = max(hdr_w, cell_max_w, tot_w, 105)
-            cap = 220 if kind in ("monetary", "non_additive_monetary", "percentage", "integer_additive", "year_or_code") else 370
+            if kind in ("monetary", "non_additive_monetary"):
+                cap = 310
+            elif kind in ("percentage", "integer_additive", "year_or_code"):
+                cap = 235
+            else:
+                cap = 370
             col_widths.append(min(ideal, cap))
 
         min_table_w = 820

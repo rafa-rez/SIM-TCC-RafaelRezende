@@ -292,6 +292,10 @@ class HybridRAGRetriever:
         self.b = b
         self._index_lock = threading.RLock()
         self._doc_freqs: Dict[str, int] = {}
+        self._postings: Dict[str, List[int]] = {}
+        self._cnpj_postings: Dict[str, List[int]] = {}
+        self._act_num_postings: Dict[str, List[int]] = {}
+        self._doc_digits: List[str] = []
         self._doc_lens: List[int] = []
         self._doc_tfs: List[Counter] = []
         self._doc_norms: List[str] = []
@@ -303,12 +307,16 @@ class HybridRAGRetriever:
         with self._index_lock:
             chunks_snapshot = list(self.corpus_chunks)
             doc_freqs: Dict[str, int] = {}
+            postings: Dict[str, List[int]] = {}
+            cnpj_postings: Dict[str, List[int]] = {}
+            act_num_postings: Dict[str, List[int]] = {}
+            doc_digits: List[str] = []
             doc_lens: List[int] = []
             doc_tfs: List[Counter] = []
             doc_norms: List[str] = []
             ctx_headers: List[str] = []
 
-            for raw in chunks_snapshot:
+            for doc_idx, raw in enumerate(chunks_snapshot):
                 content = raw.get("page_content") or ""
                 ctx_hdr = build_chunk_contextual_header(
                     raw,
@@ -323,15 +331,43 @@ class HybridRAGRetriever:
                 )
                 norm = normalize_text_for_dedup(indexed_text)
                 doc_norms.append(norm)
+                dig_str = re.sub(r"\D", "", content)
+                doc_digits.append(dig_str)
                 tokens = tokenize_bm25(indexed_text)
                 tf = Counter(tokens)
                 doc_tfs.append(tf)
                 doc_lens.append(len(tokens))
                 for term in tf.keys():
                     doc_freqs[term] = doc_freqs.get(term, 0) + 1
+                    postings.setdefault(term, []).append(doc_idx)
+
+                raw_cnpjs = raw.get("cnpjs_Mencionados") or raw.get("cnpjs_mencionados") or []
+                seen_c: set[str] = set()
+                for c_val in list(raw_cnpjs) + [m.group(0) for m in RE_CNPJ.finditer(content)]:
+                    cd = re.sub(r"\D", "", str(c_val or ""))
+                    if len(cd) == 14 and cd not in seen_c:
+                        seen_c.add(cd)
+                        cnpj_postings.setdefault(cd, []).append(doc_idx)
+
+                seen_a: set[str] = set()
+                raw_na = str(raw.get("numero_ato") or "").lower().lstrip("0")
+                if raw_na:
+                    base_na = raw_na.split("/")[0].replace(".", "")
+                    if base_na and base_na not in seen_a:
+                        seen_a.add(base_na)
+                        act_num_postings.setdefault(base_na, []).append(doc_idx)
+                for m_act in RE_ACT_NUMBER.finditer(content):
+                    an = m_act.group(1).strip().replace(".", "").lstrip("0")
+                    if an and an not in seen_a:
+                        seen_a.add(an)
+                        act_num_postings.setdefault(an, []).append(doc_idx)
 
             avgdl = (sum(doc_lens) / len(doc_lens)) if doc_lens else 1.0
             self._doc_freqs = doc_freqs
+            self._postings = postings
+            self._cnpj_postings = cnpj_postings
+            self._act_num_postings = act_num_postings
+            self._doc_digits = doc_digits
             self._doc_lens = doc_lens
             self._doc_tfs = doc_tfs
             self._doc_norms = doc_norms
@@ -432,7 +468,29 @@ class HybridRAGRetriever:
         lexical_hits: List[RetrievedChunk] = []
         dense_hits: List[RetrievedChunk] = []
 
-        for idx, raw in enumerate(self.corpus_chunks):
+        # Se o corpus cresceu em metrópole (> 500 atos) e o índice invertido está sincronizado, avalia apenas documentos candidatos O(1)
+        corpus_len = len(self.corpus_chunks)
+        if corpus_len > 500 and len(self._doc_tfs) == corpus_len:
+            cand_set: set[int] = set()
+            for tok in q_tokens:
+                cand_set.update(self._postings.get(tok, ()))
+            for num in act_nums:
+                n_clean = num.replace(".", "").lstrip("0")
+                if n_clean:
+                    cand_set.update(self._act_num_postings.get(n_clean, ()))
+            for c_str in cnpjs:
+                cd_str = re.sub(r"\D", "", c_str)
+                if cd_str:
+                    cand_set.update(self._cnpj_postings.get(cd_str, ()))
+            if target_tipo and not cand_set:
+                cand_indices = range(corpus_len)
+            else:
+                cand_indices = sorted(cand_set)
+        else:
+            cand_indices = range(corpus_len)
+
+        for idx in cand_indices:
+            raw = self.corpus_chunks[idx]
             content = raw.get("page_content") or ""
             ctx_hdr = (
                 self._ctx_headers[idx]
@@ -450,7 +508,7 @@ class HybridRAGRetriever:
 
             if cnpjs:
                 cnpjs_digits = [re.sub(r"\D", "", c) for c in cnpjs]
-                content_digits = re.sub(r"\D", "", content)
+                content_digits = self._doc_digits[idx] if idx < len(self._doc_digits) else re.sub(r"\D", "", content)
                 if not any(c in content or c in cnpjs_list or (cd and cd in content_digits) for c, cd in zip(cnpjs, cnpjs_digits)):
                     continue
 

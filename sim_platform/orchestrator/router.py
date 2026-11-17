@@ -482,7 +482,14 @@ def _explain_municipal_concepts_for_citizen(
             "Na prefeitura, o gasto passa por três etapas: **Empenhado** é o valor reservado no orçamento para um contrato ou serviço; "
             "**Liquidado** é quando a prefeitura confere que o produto ou serviço foi realmente entregue; e **Pago** é o dinheiro que já saiu da conta."
         )
-    if "orcamento_previsto_loa" in keys_set or any(y in q_low for y in ("2026", "2027", "2028")):
+    if (
+        "orcamento_previsto_loa" in keys_set
+        or "dotacao_inicial_loa" in keys_set
+        or (
+            any(y in q_low for y in ("2026", "2027", "2028"))
+            and any(w in q_low for w in ("orcament", "loa", "receit", "arrecad", "dotaca", "previst", "despes"))
+        )
+    ):
         explanations.append(
             "**Orçamento Previsto (LOA Atualizada)** é o valor planejado e autorizado para o ano inteiro, enquanto **Receita Arrecadada** é o valor que já entrou nos cofres municipais. "
             "A base oficial consolidada nesta plataforma abrange os exercícios até **2026** (com 2026 em execução parcial acumulada)."
@@ -655,6 +662,22 @@ class SessionLockManager:
                 pass
 
 
+def _fix_brl_thousands(text: str) -> str:
+    """Corrige separadores de milhar brasileiros ausentes no bloco inicial de milhões/bilhões (ex.: `R$ 1608.699.263,03` -> `R$ 1.608.699.263,03`)."""
+    if not text or "R$" not in text:
+        return text
+
+    def _repl_brl(m: re.Match[str]) -> str:
+        raw_int = m.group(1).replace(".", "")
+        frac = m.group(2)
+        if not raw_int.isdigit():
+            return m.group(0)
+        int_fmt = f"{int(raw_int):,}".replace(",", ".")
+        return f"R$ {int_fmt},{frac}"
+
+    return re.sub(r"R\$\s*(\d[\d\.]*),(\d{2})\b", _repl_brl, text)
+
+
 @dataclass
 class OrchestrationResult:
     status: str
@@ -698,11 +721,11 @@ class OrchestrationResult:
     asr_corrections: List[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
-        self.answer_text = strip_emojis(self.answer_text)
+        self.answer_text = _fix_brl_thousands(strip_emojis(self.answer_text))
         if self.citizen_response:
-            self.citizen_response = strip_emojis(self.citizen_response)
+            self.citizen_response = _fix_brl_thousands(strip_emojis(self.citizen_response))
         if self.institutional_response:
-            self.institutional_response = strip_emojis(self.institutional_response)
+            self.institutional_response = _fix_brl_thousands(strip_emojis(self.institutional_response))
         if self.chart_caption:
             self.chart_caption = strip_emojis(self.chart_caption)
         if self.table_caption:
@@ -743,6 +766,7 @@ class OrchestrationResult:
             "chart_mime_type": self.chart_mime_type,
             "chart_caption": self.chart_caption,
             "table_image_base64": self.table_image_base64,
+            "table_base64": self.table_image_base64,
             "table_mime_type": self.table_mime_type,
             "table_caption": self.table_caption,
             "table_html": self.table_html,
@@ -891,7 +915,7 @@ class SIMOrchestrator:
     def _build_source_freshness_map(self) -> Dict[str, str]:
         fmap = dict(getattr(self.db_manager.catalog, "source_freshness_map", {}) or {})
         rag_chunks = getattr(self.rag_retriever, "corpus_chunks", None) or []
-        if rag_chunks:
+        if rag_chunks and "DIARIO_OFICIAL" not in fmap:
             years = sorted(
                 {
                     int(c.get("ano_edicao") if isinstance(c, dict) else getattr(c, "ano_edicao", 0))
@@ -1248,9 +1272,14 @@ class SIMOrchestrator:
                 except Exception:
                     pass
 
+                _diag_pii_skip = {
+                    "num_cpf", "cpf", "num_documento", "num_doc_credor", "doc_credor", "doc_contratado",
+                    "nis", "nis favorecido", "nis beneficiário", "cpf favorecido", "cpf beneficiário",
+                    "nom_pessoa", "nom_servidor", "nome favorecido",
+                }
                 for fc in sorted(filtered_cols):
                     real_col = col_map.get(fc.lower())
-                    if not real_col or real_col.lower() == "ano_referencia":
+                    if not real_col or real_col.lower() == "ano_referencia" or real_col.lower() in _diag_pii_skip:
                         continue
                     try:
                         rows = diag_cur.execute(
@@ -1388,11 +1417,20 @@ class SIMOrchestrator:
                 continue
 
             cols_in_pred = list(pred.find_all(exp.Column))
-            lits_in_pred = [l for l in pred.find_all(exp.Literal) if l.is_string and str(l.this or "").strip()]
+            lits_in_pred = [
+                l for l in pred.find_all(exp.Literal)
+                if (l.is_string and str(l.this or "").strip()) or l.is_number
+            ]
             if len(cols_in_pred) != 1 or not lits_in_pred:
                 continue
             c_name_low = (cols_in_pred[0].name or "").strip().lower()
-            if c_name_low == "ano_referencia" or c_name_low not in valid_cols_lower:
+            if (
+                c_name_low == "ano_referencia"
+                or c_name_low not in valid_cols_lower
+                or any(tok in c_name_low for tok in ("cpf", "nis", "documento", "doc_credor"))
+            ):
+                continue
+            if not any(l.is_string for l in lits_in_pred) and not c_name_low.startswith(("cod_", "seq_", "id_")):
                 continue
             candidate_preds.append(pred)
 
@@ -1757,14 +1795,16 @@ class SIMOrchestrator:
                     f"Em relação à consulta anterior (*\"{last_question}\"*):\n\n"
                     f"{first_para}\n\n"
                     + ("\n".join(bullet_lines[:5]) + "\n\n" if bullet_lines else "")
-                    + "Se quiser filtrar esses dados por outro ano (2020 a 2025), por secretaria ou detalhar um fornecedor específico, basta informar."
+                    + f"Se quiser filtrar esses dados por outro exercício (até {getattr(self.db_manager.catalog, 'max_data_year', 2026)}), por secretaria ou detalhar um fornecedor específico, basta informar."
                 )
                 return explained, explained, "SIM Deterministic Multi-Turn Contextualizer (0 tokens)"
 
         # 3. Caso não haja histórico anterior, apresentar resposta concisa de ajuda
+        cat_min_yr = getattr(self.db_manager.catalog, "min_data_year", 2020)
+        cat_max_yr = getattr(self.db_manager.catalog, "max_data_year", 2026)
         fallback_help = (
             f"Sou o sistema de consulta a dados públicos do Município de **{city_str}** (IBGE `{self.db_manager.tenant.ibge_code}`). "
-            f"Consulto dados oficiais de orçamento, receitas, despesas, contratos, licitações, folha de servidores, saúde, educação e Diário Oficial (2020 a 2025). "
+            f"Consulto dados oficiais de orçamento, receitas, despesas, contratos, licitações, folha de servidores, saúde, educação e Diário Oficial ({cat_min_yr} a {cat_max_yr}). "
             f"Informe o tema, fornecedor ou ano que deseja consultar."
         )
         return fallback_help, fallback_help, "SIM Conversational Context Handler (0 tokens)"
@@ -2349,9 +2389,11 @@ class SIMOrchestrator:
                     f"Consultei as bases oficiais da Prefeitura de {city_str}, mas não foram encontrados registros para esses critérios específicos."
                 )
             else:
+                cat_min_y = getattr(self.db_manager.catalog, "min_data_year", 2020)
+                cat_max_y = getattr(self.db_manager.catalog, "max_data_year", 2026)
                 citizen_lines.append(
                     f"Não foi possível concluir o cruzamento tabular automático nas bases de {city_str} com a formulação atual. "
-                    f"Por favor, tente especificar o ano (2020 a 2025), o órgão ou o nome do fornecedor/indicador desejado."
+                    f"Por favor, tente especificar o ano ({cat_min_y} a {cat_max_y}), o órgão ou o nome do fornecedor/indicador desejado."
                 )
 
         if rag_chunks:
@@ -3111,6 +3153,17 @@ class SIMOrchestrator:
                 f"FROM despesa_despesa WHERE {year_filter} GROUP BY ano_referencia ORDER BY ano_referencia"
             )
 
+        if has_tbl("vw_gold_contratos_vigencia_aditivos") and any(
+            w in q_norm for w in ("contrato", "contratos", "contratad", "aditivo", "aditivos", "fornecedor", "fornecedores", "empresa", "empresas")
+        ):
+            ct_yr = f"WHERE {year_filter} " if years else ""
+            return (
+                "SELECT num_contrato, ano_referencia, nom_contratado, doc_contratado, "
+                "dsc_objeto, vlr_contrato, vlr_total_atualizado_contrato, dat_fimvigencia "
+                f"FROM vw_gold_contratos_vigencia_aditivos {ct_yr}"
+                "ORDER BY ano_referencia DESC, vlr_total_atualizado_contrato DESC LIMIT 15"
+            )
+
         # Contingência offline segura: síntese macro-orçamentária oficial (jamais pagamento cego de credores)
         if not has_tbl("vw_gold_orcamento_previsto_vs_realizado"):
             if has_tbl("siconfi_finbra_indicadores"):
@@ -3254,6 +3307,16 @@ class SIMOrchestrator:
                                 new_where = exp.and_(new_where, yp)
                             new_where = exp.and_(new_where, grouped_or)
                             where_node.set("this", new_where)
+
+            # 0. Remover filtro redundante/incompatível `cod_municipio = <ibge_7_ou_6>` (bancos DuckDB já são isolados fisicamente por cidade)
+            ibge_str = str(self.db_manager.tenant.ibge_code or "").strip()
+            ibge_variants = {ibge_str, ibge_str[:6]} if len(ibge_str) >= 6 else {ibge_str}
+            for eq_m in list(tree.find_all(exp.EQ)):
+                if isinstance(eq_m.this, exp.Column) and (eq_m.this.name or "").lower() in ("cod_municipio", "cod_ibge"):
+                    if isinstance(eq_m.expression, exp.Literal):
+                        lit_m = str(eq_m.expression.this or "").strip()
+                        if lit_m in ibge_variants:
+                            eq_m.replace(sqlglot.parse_one("1 = 1", read="duckdb"))
 
             # 1. Comparações textuais sem acento/case em colunas não-sensíveis
             _pii_skip = {"num_cpf", "cpf", "num_documento", "num_doc_credor", "nis", "nis favorecido", "cpf favorecido"}
@@ -3537,6 +3600,41 @@ class SIMOrchestrator:
                         )
                         continue
 
+                # Eixo 1c: Auto-correção quando o LLM projeta `SUM(vlr_pago)` sobre `despesa_despesa` retornando 0/NULL (RREO-Anexo 02 sem coluna de pagamento)
+                # ou quando projeta apenas string literal (`SELECT 'texto' FROM ...`) sobre uma tabela numérica!
+                cand_low = candidate_sql.lower()
+                if (
+                    len(returned_rows) >= 1
+                    and sql_override is None
+                    and attempt <= self.max_sql_retries
+                    and is_generative_engine
+                ):
+                    if "despesa_despesa" in cand_low and "vlr_pago" in cand_low and "vlr_liquidado" not in cand_low:
+                        all_zero_or_null_pag = all(
+                            (v is None or (isinstance(v, (int, float)) and not isinstance(v, bool) and float(v) == 0.0))
+                            for r in returned_rows
+                            for k, v in r.items()
+                            if "pag" in k.lower() or "vlr" in k.lower() or "total" in k.lower() or "gasto" in k.lower()
+                        )
+                        if all_zero_or_null_pag:
+                            last_err = (
+                                "ERRO CONTÁBIL (`despesa_despesa` via RREO-Anexo 02): A coluna `vlr_pago` é NULL/0 no demonstrativo RREO por função! "
+                                "Reescreva a consulta sobre `despesa_despesa` projetando OBRIGATORIAMENTE "
+                                "`ROUND(SUM(TRY_CAST(vlr_liquidado AS DECIMAL(18,2))), 2) AS total_liquidado` e "
+                                "`ROUND(SUM(TRY_CAST(vlr_empenhado AS DECIMAL(18,2))), 2) AS total_empenhado`!"
+                            )
+                            continue
+                    if len(returned_rows) == 1 and "vw_gold_beneficios_sociais_cgu" in cand_low:
+                        r0_vals = list(returned_rows[0].values())
+                        if r0_vals and all(isinstance(v, str) for v in r0_vals):
+                            last_err = (
+                                "PROIBIDO projetar apenas mensagem literal (`SELECT 'texto' FROM vw_gold_beneficios_sociais_cgu`)! "
+                                "Consulte os indicadores numéricos agregados reais: "
+                                "`SELECT ano_referencia, programa_social, ROUND(AVG(beneficiarios_no_mes)) AS media_mensal_familias, "
+                                "ROUND(SUM(vlr_total_pago_mes), 2) AS valor_total_pago_ano FROM vw_gold_beneficios_sociais_cgu GROUP BY 1, 2 ORDER BY 1 DESC`."
+                            )
+                            continue
+
                 # Eixo 4: Se o usuário pediu um GRÁFICO e o modelo retornou 1 único escalar isolado (1x1), refina para série!
                 if (
                     wants_chart
@@ -3717,6 +3815,24 @@ class SIMOrchestrator:
                 }
             )
 
+            if not safety.is_safe:
+                return OrchestrationResult(
+                    status="bloqueado_seguranca",
+                    intent="blocked_security",
+                    tenant_id=self.db_manager.tenant.tenant_id,
+                    role=role,
+                    question=question,
+                    effective_question=effective_question,
+                    standalone_question=effective_question,
+                    answer_text=(
+                        "Solicitação bloqueada automaticamente pelo Guardião de Segurança Institucional do SIM "
+                        f"({', '.join(safety.triggered_rules)})."
+                    ),
+                    asr_corrections=asr_corrections,
+                    pipeline_steps=steps,
+                    exec_ms=round((time.perf_counter() - t0) * 1000.0, 2),
+                )
+
             # Etapa 2: Guardião Semântico IA Leve, Multi-Turn Query Rewriting & Decomposição Adaptativa (CRAG)
             s2_t0 = time.perf_counter()
             intent = "sql_analytics" if sql_override else self.classify_intent(effective_question, allowed_sources=allowed_sources)
@@ -3726,11 +3842,13 @@ class SIMOrchestrator:
             # Fast-Path Cache Trava 1 ANTES de invocar LLM externo (apenas para perguntas autônomas sem histórico/gráfico/tabela)
             wants_chart_hint = bool(re.search(r"\b(grafico|graficos|plotar|visualizacao\s+grafica)\b", q_norm_s2))
             wants_table_hint = SemanticIntentGuardrail._detect_table_signal(working_question)
+            has_custom_llm_key = bool((llm_api_key or "").strip())
             if (
                 not sql_override
                 and not explicit_tables
                 and not explicit_segments
                 and not self._has_custom_sql_generator
+                and not has_custom_llm_key
                 and len(hist_list) == 0
                 and not wants_chart_hint
                 and not wants_table_hint
@@ -4356,6 +4474,7 @@ class SIMOrchestrator:
                 and not explicit_tables
                 and not explicit_segments
                 and not self._has_custom_sql_generator
+                and not has_custom_llm_key
                 and not is_contextual_followup
                 and not wants_chart
                 and not wants_table
@@ -4609,8 +4728,20 @@ class SIMOrchestrator:
                             pipeline_steps=steps,
                             exec_ms=round((time.perf_counter() - t0) * 1000.0, 2),
                         )
-                    # Quando sql_override=None (pergunta natural legítima cujo SQL gerado pelo LLM esbarrou no SQLGuard),
-                    # tenta fallback seguro pelo compilador nativo sem expor mensagem técnica de bloqueio ao cidadão!
+                    # Quando sql_override=None e o SQL gerado pelo LLM esbarrou no SQLGuard ou esgotou tentativas com erro de sintaxe/coluna (`not sql_out.get("sql_executed")`),
+                    # tenta fallback seguro pelo compilador nativo sem expor erro técnico ao cidadão!
+                    fb_sql = self._compile_native_sql(
+                        effective_question,
+                        normalize_text_for_dedup(effective_question),
+                        {s.upper() for s in (allowed_sources or []) if s.upper() != "DIARIO_OFICIAL"},
+                    )
+                    fb_res = self.db_manager.execute_safe_query(fb_sql, role=role)
+                    if fb_res.get("status") == "sucesso":
+                        sql_out["sql_executed"] = fb_res.get("query_executada")
+                        sql_out["sql_rows"] = fb_res.get("dados") or []
+                        sql_out["fontes"] = fb_res.get("fontes_utilizadas") or []
+                        sql_out["pii_masked"] = fb_res.get("pii_masked_count", 0)
+                elif sql_override is None and not sql_out.get("sql_executed"):
                     fb_sql = self._compile_native_sql(
                         effective_question,
                         normalize_text_for_dedup(effective_question),
@@ -4982,6 +5113,7 @@ class SIMOrchestrator:
             already_debited = (self._turn_prompt_tokens_real + self._turn_completion_tokens_real) > 0
             if (
                 not is_degraded_fallback
+                and not has_custom_llm_key
                 and not sql_override
                 and not explicit_tables
                 and not explicit_segments

@@ -90,9 +90,9 @@ MG_MONTHLY_WINDOWS: Tuple[MonthlyWindowSpec, ...] = (
         window_id="portais_abertos_pncp_diarios",
         day_of_month=3,
         even_months_only=False,
-        title="Dia 03 (Mensal) — Portais Abertos (Betha/Cidade360), PNCP Contratos & Diários Oficiais",
-        legal_basis="LC 131/2009 (Tempo Real), Lei 14.133/2021 (PNCP) e Publicidade de Atos Oficiais (AMM-MG)",
-        connectors=("betha_cloud", "cidade360", "amm_mg_gazette"),
+        title="Dia 03 (Mensal) — Portais Abertos (Betha/Cidade360/Memory/PortalFácil/CKAN), PNCP & Diários Oficiais",
+        legal_basis="LC 131/2009 (Tempo Real), Lei 14.133/2021 (PNCP) e Publicidade de Atos Oficiais (AMM-MG / DOM)",
+        connectors=("betha_cloud", "cidade360", "memory_portal", "portalfacil_el", "ckan_portal", "amm_mg_gazette"),
         sync_manager_sources=("DIARIO_OFICIAL", "RECEITA_QSA"),
         requires_assisted_inbox=False,
     ),
@@ -137,7 +137,14 @@ class MGCalendarScheduler:
         Determina os conectores aplicáveis a um município com base no seu perfil declarativo
         (`portal_vendor` / `connector_id` / `diario_oficial.veiculo`).
         """
-        explicit = str(tenant.get("portal_connector") or tenant.get("connector_id") or "").strip().lower()
+        c_prof = tenant.get("connector_profile") if isinstance(tenant.get("connector_profile"), dict) else {}
+        explicit = str(
+            c_prof.get("erp_family")
+            or tenant.get("portal_connector")
+            or tenant.get("connector_id")
+            or ""
+        ).strip().lower()
+        gaz_fam = str(c_prof.get("gazette_family") or "").strip().lower()
         gazette = str(
             tenant.get("official_gazette_name")
             or (tenant.get("diario_oficial") or {}).get("veiculo")
@@ -148,8 +155,14 @@ class MGCalendarScheduler:
         assigned: List[str] = []
         if explicit in ("betha_cloud", "betha"):
             assigned.append("betha_cloud")
-        elif explicit in ("cidade360", "cidade_360"):
+        elif explicit in ("cidade360", "cidade_360", "cidade360_hibrido"):
             assigned.append("cidade360")
+        elif explicit in ("memory_portal", "memory"):
+            assigned.append("memory_portal")
+        elif explicit in ("portalfacil_el", "portalfacil", "el", "smarapd"):
+            assigned.append("portalfacil_el")
+        elif explicit in ("ckan_portal", "ckan"):
+            assigned.append("ckan_portal")
         elif "lagoa_da_prata" in tid:
             assigned.append("betha_cloud")
         elif "sabara" in tid:
@@ -158,7 +171,7 @@ class MGCalendarScheduler:
         # Todas as prefeituras de MG têm cobertura universal garantida pelo pacote SICOM/TCE-MG
         assigned.append("sicom_tcemg")
 
-        if "AMM" in gazette or explicit == "amm_mg_gazette":
+        if "AMM" in gazette or gaz_fam == "amm_mg" or explicit == "amm_mg_gazette":
             assigned.append("amm_mg_gazette")
 
         return list(dict.fromkeys(assigned))

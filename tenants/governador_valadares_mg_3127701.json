@@ -1,0 +1,81 @@
+{
+  "tenant_id": "governador_valadares_mg_3127701",
+  "municipality_name": "Governador Valadares",
+  "state_uf": "MG",
+  "ibge_code": "3127701",
+  "plan_code": "porte_3",
+  "plan_name": "Prefeitura Porte III — Polo Regional & Metrópole do Interior (> 100k hab.)",
+  "monthly_quota_requests": 80000,
+  "status_dados_externos": "SINCRONIZACAO_AUTOMATICA_API_ATIVA",
+  "hospital_referencia": "HOSPITAL MUNICIPAL DE GOVERNADOR VALADARES",
+  "diario_oficial": {
+    "tipo": "pdf_diario_eletronico",
+    "veiculo": "Diário Oficial Eletrônico do Município de Governador Valadares/MG",
+    "chunker": "ActBoundaryChunker"
+  },
+  "connector_profile": {
+    "erp_family": "portalfacil_el",
+    "gazette_family": "dom_pdf_eletronico",
+    "portalfacil_client_id": "94",
+    "portalfacil_api_base": "https://dadosabertos-portalfacil.azurewebsites.net/api",
+    "ocr_fallback": false
+  },
+  "orgaos_map": {
+    "01": "CÂMARA MUNICIPAL DE GOVERNADOR VALADARES",
+    "02": "PREFEITURA MUNICIPAL DE GOVERNADOR VALADARES",
+    "03": "SERVIÇO AUTÔNOMO DE ÁGUA E ESGOTO DE GOVERNADOR VALADARES (SAAE)"
+  },
+  "local_aliases": {
+    "hospital": "HOSPITAL MUNICIPAL DE GOVERNADOR VALADARES",
+    "agua_esgoto": "SERVIÇO AUTÔNOMO DE ÁGUA E ESGOTO",
+    "previdencia": "INSTITUTO DE PREVIDÊNCIA MUNICIPAL DE GOVERNADOR VALADARES (IPREM-GV)"
+  },
+  "institutional_cnpjs": {
+    "20622890000180": "PREFEITURA MUNICIPAL DE GOVERNADOR VALADARES (EXECUTIVO)",
+    "20622932000183": "CÂMARA MUNICIPAL DE GOVERNADOR VALADARES (LEGISLATIVO)",
+    "20622908000144": "SERVIÇO AUTÔNOMO DE ÁGUA E ESGOTO DE GOVERNADOR VALADARES (SAAE)",
+    "00799205000148": "INSTITUTO DE PREVIDÊNCIA MUNICIPAL DE GOVERNADOR VALADARES (IPREM-GV)"
+  },
+  "ibge_series": [],
+  "ideb_series": [
+    {
+      "ano": 2019,
+      "rede": "Pública Municipal",
+      "anos_iniciais": 5.8,
+      "anos_finais": 4.6,
+      "meta_iniciais": 5.7,
+      "escolas": null,
+      "matriculas": null,
+      "taxa_aprovacao": null
+    },
+    {
+      "ano": 2023,
+      "rede": "Pública Municipal",
+      "anos_iniciais": 5.9,
+      "anos_finais": 4.7,
+      "meta_iniciais": 6.0,
+      "escolas": null,
+      "matriculas": null,
+      "taxa_aprovacao": 97.2
+    }
+  ],
+  "official_districts": [
+    "Alto de Santa Helena",
+    "Baguari",
+    "Brejaubinha",
+    "Chonin de Baixo",
+    "Córrego dos Melquíades",
+    "Córregos do Bernardo",
+    "Derribadinha",
+    "Goiabal",
+    "Governador Valadares",
+    "Penha do Cassiano",
+    "Porto das Cachoeiras",
+    "Santo Antônio do Pontal",
+    "São José do Itapinoã",
+    "São Vítor",
+    "Vila Nova Brasília",
+    "Vila Nova Floresta",
+    "Xonin"
+  ]
+}

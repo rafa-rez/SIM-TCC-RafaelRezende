@@ -1,0 +1,10 @@
+{
+  "release_id": "upl_20261116_233221_325",
+  "release_dir": "releases/upl_20261116_233221_325",
+  "release_chain": [
+    "releases/rel_00000000_schema_stubs",
+    "releases/upl_20261116_233221_325"
+  ],
+  "updated_at": "2026-11-16 23:32:22",
+  "summary": "upload(3141108__memory_portal_bundle.zip, tables=13)"
+}

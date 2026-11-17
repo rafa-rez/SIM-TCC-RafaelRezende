@@ -539,7 +539,7 @@ class TestOperational:
             r = app_client.post("/query", json={"query": q})
             h = app_client.get("/health")
             assert h.status_code == 200
-            assert h.json()["mapped_objects"]["total"] == 87
+            assert h.json()["mapped_objects"]["total"] == 88
             return r.json()
 
         with ThreadPoolExecutor(max_workers=4) as pool:
@@ -655,7 +655,10 @@ class TestOperational:
         assert sel_res.status_code == 200
         sel_data = sel_res.json()
         assert sel_data["selection_mode"] == "source_filtered"
-        assert all(t.lower().startswith("cgu_") for t in sel_data["selected_tables"])
+        assert all(
+            t.lower().startswith("cgu_") or t.lower() == "vw_gold_beneficios_sociais_cgu"
+            for t in sel_data["selected_tables"]
+        )
 
         # 2. Tentar consultar despesa_pagamento (SICOM) quando allowed_sources=["CGU"] -> SQLGuard bloqueia!
         blocked_q = app_client.post(
@@ -808,7 +811,7 @@ class TestV30Upgrades:
         assert p_data["status"] == "sucesso"
         assert p_data["pct_pessoal_lrf_2024"] == 42.65
         assert p_data["pct_saude_siops_2024"] == 25.24
-        assert p_data["catalog_objects"] == 87
+        assert p_data["catalog_objects"] == 88
 
 
 # ==============================================================================

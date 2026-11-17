@@ -247,10 +247,20 @@ class InstitutionalAuthManager:
             con.close()
 
     def _resolve_initial_seed_password(self, username: str, admin_user: str) -> str:
+        env_mode = os.environ.get("SIM_ENV", "development").strip().lower()
         specific_pw = os.environ.get(f"SIM_ACCOUNT_PW_{username.upper()}", "").strip()
         if specific_pw:
             return specific_pw
         env_admin_pw = os.environ.get("SIM_ADMIN_PASSWORD", "").strip()
+        if env_mode == "production" and not _is_dev_or_test_auth_env():
+            if len(env_admin_pw) < 12:
+                raise RuntimeError(
+                    "SIM_ADMIN_PASSWORD forte (>= 12 caracteres) é obrigatório para seed inicial quando SIM_ENV=production."
+                )
+            if username in ("admin", admin_user):
+                return env_admin_pw
+            # Em produção, contas secundárias sem SIM_ACCOUNT_PW_<USER> recebem credencial aleatória única de alta entropia
+            return secrets.token_urlsafe(24)
         if env_admin_pw and username in ("admin", admin_user):
             return env_admin_pw
         if env_admin_pw and not _is_dev_or_test_auth_env():

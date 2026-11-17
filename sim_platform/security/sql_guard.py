@@ -530,7 +530,7 @@ class SQLGuard:
                 error_message="A consulta deve referenciar pelo menos uma tabela do catálogo de dados públicos.",
             )
 
-        # 7B. Proteção Semântica Anti-Fan-Out: impedir JOIN redundante entre Gold View pré-unificada e sua tabela-fato bruta
+        # 7B. Proteção Semântica Anti-Fan-Out: impedir JOIN direto redundante entre Gold View pré-unificada e sua tabela-fato bruta no mesmo bloco SELECT
         gold_view_raw_children = {
             "vw_gold_frota_consolidada": {"frota_gastofrota", "frota_frota"},
             "vw_gold_folha_servidores": {"remuneracao_municipio", "pessoa_municipio"},
@@ -549,21 +549,35 @@ class SQLGuard:
                 "licitacao_hablicitacao",
             },
         }
-        base_set = set(base_tables)
-        for gv_name, raw_set in gold_view_raw_children.items():
-            overlap = base_set.intersection(raw_set)
-            if gv_name in base_set and overlap:
-                bad_raw = ", ".join(sorted(overlap))
-                return SQLValidationResult(
-                    is_valid=False,
-                    error_code="REDUNDANT_GOLD_VIEW_JOIN",
-                    error_message=(
-                        f"ERRO SEMÂNTICO DE FAN-OUT (PRODUTO CARTESIANO): A Gold View '{gv_name}' JÁ INCORPORA "
-                        f"os registros e colunas de ({bad_raw})! Fazer JOIN entre '{gv_name}' e ({bad_raw}) "
-                        f"multiplica as somas indevidamente. Reescreva a query consultando APENAS '{gv_name}' "
-                        f"(em frota, use `vlr_gasto`, `dsc_tipo_gasto` e `status_cadastro_frota = 'CADASTRADO'` diretamente nela)."
-                    ),
-                )
+        for sel_node in root.find_all(exp.Select):
+            direct_tables_in_sel = set()
+            from_clause = sel_node.args.get("from") or sel_node.args.get("from_")
+            if from_clause is not None and isinstance(from_clause.this, exp.Table):
+                if id(from_clause.this) not in scoped_cte_table_ids:
+                    t_nm = (from_clause.this.name or "").lower()
+                    if t_nm:
+                        direct_tables_in_sel.add(t_nm)
+            for j_node in sel_node.args.get("joins") or []:
+                if isinstance(j_node.this, exp.Table):
+                    if id(j_node.this) not in scoped_cte_table_ids:
+                        t_nm = (j_node.this.name or "").lower()
+                        if t_nm:
+                            direct_tables_in_sel.add(t_nm)
+            for gv_name, raw_set in gold_view_raw_children.items():
+                overlap = direct_tables_in_sel.intersection(raw_set)
+                if gv_name in direct_tables_in_sel and overlap:
+                    bad_raw = ", ".join(sorted(overlap))
+                    return SQLValidationResult(
+                        is_valid=False,
+                        error_code="REDUNDANT_GOLD_VIEW_JOIN",
+                        error_message=(
+                            f"ERRO SEMÂNTICO DE FAN-OUT (PRODUTO CARTESIANO): A Gold View '{gv_name}' JÁ INCORPORA "
+                            f"os registros de ({bad_raw})! Fazer JOIN direto entre '{gv_name}' e ({bad_raw}) no mesmo SELECT "
+                            f"multiplica as somas indevidamente. Reescreva consultando APENAS '{gv_name}' "
+                            f"(ou, se precisar de `dsc_funcao`/`dsc_acao` ausentes da Gold View, consulte diretamente as tabelas "
+                            f"base ou filtre via `WHERE EXISTS (SELECT 1 FROM ...)` sem JOIN direto)."
+                        ),
+                    )
 
         # 7C. Proteção Anti-Evasão de Mascaramento LGPD para perfil público ('citizen' e perfis não privilegiados)
         if role not in ("admin", "auditor", "controller"):
@@ -673,25 +687,81 @@ class SQLGuard:
             cl = (col_name or "").lower().strip().strip('"')
             return _is_base_sensitive_col_name(cl) or cl in derived_pii_aliases
 
-        # 1. Ponto fixo para propagar aliases derivados de colunas sensíveis em CTEs / subqueries
+        # 1. Ponto fixo para propagar aliases derivados de colunas sensíveis em CTEs (incluindo aliases posicionais), subqueries e UNIONs
         select_nodes = list(root.find_all(exp.Select))
+        cte_nodes = list(root.find_all(exp.CTE))
+        subquery_nodes = list(root.find_all(exp.Subquery))
+        setop_nodes = list(root.find_all((exp.Union, exp.Intersect, exp.Except)))
+
+        def _proj_touches_sensitive(proj_node: exp.Expression) -> bool:
+            inner_p = proj_node.this if isinstance(proj_node, exp.Alias) else proj_node
+            p_cols = [c for c in inner_p.find_all(exp.Column) if _is_sensitive_col(c.name or "")]
+            if not p_cols:
+                return False
+            return not all(self._is_col_strictly_inside_count(c, inner_p) for c in p_cols)
+
         changed = True
         while changed:
             changed = False
             for sel in select_nodes:
                 for proj in sel.expressions:
-                    inner = proj.this if isinstance(proj, exp.Alias) else proj
-                    cols = [c for c in inner.find_all(exp.Column) if _is_sensitive_col(c.name or "")]
-                    if not cols:
-                        continue
-                    if all(self._is_col_strictly_inside_count(c, inner) for c in cols):
+                    if not _proj_touches_sensitive(proj):
                         continue
                     out_alias = (proj.alias_or_name or "").lower().strip().strip('"')
                     if out_alias and out_alias not in derived_pii_aliases:
                         derived_pii_aliases.add(out_alias)
                         changed = True
 
-        # 2. Bloquear funções de fatiamento, extração de caracteres ou codificação sobre colunas sensíveis em QUALQUER cláusula
+            # Propaga aliases posicionais em `WITH c(x) AS (...)` e `FROM (...) AS sub(x)`
+            for container in cte_nodes + subquery_nodes:
+                tbl_alias = container.args.get("alias")
+                col_aliases = list(getattr(tbl_alias, "columns", None) or []) if tbl_alias else []
+                if not col_aliases:
+                    continue
+                body = container.this
+                branch_selects = list(body.find_all(exp.Select)) if body is not None else []
+                for b_sel in branch_selects:
+                    for idx_c, c_alias_node in enumerate(col_aliases):
+                        if idx_c < len(b_sel.expressions) and _proj_touches_sensitive(b_sel.expressions[idx_c]):
+                            pos_name = (c_alias_node.name or "").lower().strip().strip('"')
+                            if pos_name and pos_name not in derived_pii_aliases:
+                                derived_pii_aliases.add(pos_name)
+                                changed = True
+
+            # Propaga sensibilidade posicional entre ramos de `UNION / INTERSECT / EXCEPT`
+            for sop in setop_nodes:
+                left_sels = [sop.this] if isinstance(sop.this, exp.Select) else list(sop.this.find_all(exp.Select)) if sop.this else []
+                right_sels = [sop.expression] if isinstance(sop.expression, exp.Select) else list(sop.expression.find_all(exp.Select)) if sop.expression else []
+                for l_sel in left_sels:
+                    for r_sel in right_sels:
+                        n_proj = min(len(l_sel.expressions), len(r_sel.expressions))
+                        for idx_p in range(n_proj):
+                            l_sens = _proj_touches_sensitive(l_sel.expressions[idx_p])
+                            r_sens = _proj_touches_sensitive(r_sel.expressions[idx_p])
+                            if l_sens or r_sens:
+                                for side_proj in (l_sel.expressions[idx_p], r_sel.expressions[idx_p]):
+                                    s_alias = (side_proj.alias_or_name or "").lower().strip().strip('"')
+                                    if s_alias and s_alias not in derived_pii_aliases:
+                                        derived_pii_aliases.add(s_alias)
+                                        changed = True
+
+        # 2. Bloquear indexação/fatiamento por colchetes (`col[1:3]`, `col[1]`) e funções de extração/codificação sobre colunas sensíveis
+        for br_node in root.find_all(exp.Bracket):
+            br_cols = [
+                (c.name or "").lower().strip('"')
+                for c in br_node.find_all(exp.Column)
+                if _is_sensitive_col(c.name or "")
+            ]
+            if br_cols:
+                return SQLValidationResult(
+                    is_valid=False,
+                    error_code="PII_MASKING_EVASION_BLOCKED",
+                    error_message=(
+                        f"Indexação/fatiamento por colchetes sobre coluna protegida pela LGPD ({br_cols[0]}) "
+                        "bloqueada para perfil público."
+                    ),
+                )
+
         slicing_expr_types = (
             exp.Substring,
             exp.Left,
@@ -716,6 +786,12 @@ class SQLGuard:
             "ascii",
             "ord",
             "unicode",
+            "strpos",
+            "instr",
+            "position",
+            "strchr",
+            "translate",
+            "replace",
             "md5",
             "sha256",
             "sha1",
@@ -745,7 +821,7 @@ class SQLGuard:
                         ),
                     )
 
-        # 3. Bloquear LIKE / ILIKE / SIMILAR TO / REGEXP sobre colunas sensíveis em WHERE / HAVING (e predicados)
+        # 3. Bloquear LIKE / ILIKE / SIMILAR TO / REGEXP e busca binária lexicográfica (>, >=, <, <=, BETWEEN) sobre colunas sensíveis em WHERE / HAVING / FILTER
         pattern_pred_types = tuple(
             t
             for t in (
@@ -759,6 +835,7 @@ class SQLGuard:
             )
             if t is not None
         )
+        range_pred_types = (exp.GT, exp.GTE, exp.LT, exp.LTE, exp.Between)
         pattern_func_names = {
             "regexp_matches",
             "regexp_full_match",
@@ -788,6 +865,22 @@ class SQLGuard:
                             error_message=(
                                 f"Filtro de padrão parcial (LIKE/ILIKE/SIMILAR TO/REGEXP) sobre coluna sensível ({sens_cols[0]}) "
                                 "em WHERE/HAVING bloqueado pela LGPD para evitar inferência de CPF."
+                            ),
+                        )
+                if isinstance(pnode, range_pred_types):
+                    # Permite LENGTH(num_doc_credor) > 11, mas bloqueia num_cpf > '123' / num_cpf BETWEEN '100' AND '200'
+                    bare_range_cols = [
+                        (c.name or "").lower().strip('"')
+                        for c in pnode.find_all(exp.Column)
+                        if _is_sensitive_col(c.name or "") and not isinstance(c.parent, exp.Length)
+                    ]
+                    if bare_range_cols:
+                        return SQLValidationResult(
+                            is_valid=False,
+                            error_code="PII_MASKING_EVASION_BLOCKED",
+                            error_message=(
+                                f"Comparação de intervalo/desigualdade sobre coluna sensível ({bare_range_cols[0]}) "
+                                "em WHERE/HAVING bloqueada pela LGPD para impedir inferência por busca binária."
                             ),
                         )
 

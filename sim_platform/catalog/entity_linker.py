@@ -387,17 +387,36 @@ CANONICAL_GOLD_FEW_SHOTS: List[Dict[str, str]] = [
         "tables": "datasus_siops_saude",
     },
     {
-        "question": "Quantos beneficiários e qual o valor pago pelo Novo Bolsa Família no município segundo a CGU?",
+        "question": "Quantos beneficiários e qual o valor pago pelo Novo Bolsa Família e BPC no município segundo a CGU?",
         "sql": (
-            "SELECT ano_referencia, MAX(\"MÊS REFERÊNCIA\") AS ultima_competencia, "
-            "SUM(CASE WHEN CONTAINS(CAST(\"VALOR PARCELA\" AS VARCHAR), ',') "
-            "THEN TRY_CAST(REPLACE(REPLACE(CAST(\"VALOR PARCELA\" AS VARCHAR), '.', ''), ',', '.') AS DECIMAL(18,2)) "
-            "ELSE TRY_CAST(\"VALOR PARCELA\" AS DECIMAL(18,2)) END) AS valor_total_parcelas, "
-            "COUNT(*) AS registros_apurados "
-            "FROM cgu_novo_bolsa_familia "
-            "GROUP BY ano_referencia ORDER BY ano_referencia DESC"
+            "SELECT ano_referencia, programa_social, "
+            "ROUND(AVG(beneficiarios_no_mes)) AS media_mensal_familias_beneficiarias, "
+            "ROUND(SUM(vlr_total_pago_mes), 2) AS valor_total_pago_ano "
+            "FROM vw_gold_beneficios_sociais_cgu "
+            "GROUP BY ano_referencia, programa_social "
+            "ORDER BY ano_referencia DESC, valor_total_pago_ano DESC"
         ),
-        "tables": "cgu_novo_bolsa_familia",
+        "tables": "vw_gold_beneficios_sociais_cgu",
+    },
+    {
+        "question": "Quais os maiores contratos vigentes ou assinados pelo município, seus fornecedores e valores?",
+        "sql": (
+            "SELECT num_contrato, ano_referencia, nom_contratado, doc_contratado, "
+            "dsc_objeto, vlr_contrato, vlr_total_atualizado_contrato, dat_fimvigencia "
+            "FROM vw_gold_contratos_vigencia_aditivos "
+            "ORDER BY ano_referencia DESC, vlr_total_atualizado_contrato DESC LIMIT 15"
+        ),
+        "tables": "vw_gold_contratos_vigencia_aditivos",
+    },
+    {
+        "question": "Qual o orçamento e a despesa executada pela Câmara Municipal (Poder Legislativo) e pelo Executivo?",
+        "sql": (
+            "SELECT ano_referencia, esfera_poder, nom_orgao, dotacao_inicial_loa, "
+            "dotacao_atualizada, despesa_empenhada, despesa_liquidada, regime_financiamento "
+            "FROM vw_gold_orcamento_por_orgao "
+            "ORDER BY ano_referencia DESC, dotacao_atualizada DESC"
+        ),
+        "tables": "vw_gold_orcamento_por_orgao",
     },
 ]
 
@@ -435,6 +454,7 @@ class EntityLinker:
         self.funcoes: List[Tuple[str, Set[str]]] = []
         self.subfuncoes: List[Tuple[str, str, Set[str]]] = []
         self.vinculos_reais: List[str] = []
+        self.has_granular_receita_rubrica: bool = True
         self.cargos: List[Tuple[str, Set[str]]] = []
         self.lotacoes: List[Tuple[str, Set[str]]] = []
         self.few_shots: List[Dict[str, Any]] = []
@@ -539,6 +559,17 @@ class EntityLinker:
             self.vinculos_reais = [str(v[0]).strip() for v in rows_v if v and v[0]]
         except Exception:
             pass
+
+        # 3c. Detectar se `receita_receita` possui alíneas analíticas PCASP (IPTU/ISS/FPM) ou apenas linhas sintéticas do RREO-Anexo 01
+        try:
+            r_gran = cur.execute(
+                "SELECT COUNT(*) FROM receita_receita WHERE "
+                "REGEXP_MATCHES(REGEXP_REPLACE(COALESCE(dsc_codorcamentario, '') || COALESCE(dsc_rubrica, '') || COALESCE(dsc_alinea, ''), '[^0-9]', '', 'g'), '^(111250|111253|111451|171151|172150)') "
+                "OR strip_accents(UPPER(COALESCE(dsc_rubrica, '') || ' ' || COALESCE(dsc_alinea, ''))) SIMILAR TO '%(IPTU|PREDIAL|ISSQN|SERVICOS DE QUALQUER NATUREZA|FPM|PARTICIPACAO DOS MUNICIPIOS)%'"
+            ).fetchone()
+            self.has_granular_receita_rubrica = bool(r_gran and int(r_gran[0] or 0) > 0)
+        except Exception:
+            self.has_granular_receita_rubrica = True
 
         # 4. TODOS os Cargos distintos de vw_gold_folha_servidores / remuneracao_municipio
         # (inclui cargos singulares de alta relevância pública como PREFEITO MUNICIPAL e SECRETARIO MUNICIPAL DS-01)
@@ -701,22 +732,29 @@ class EntityLinker:
         # Padrão Contábil Nacional Obrigatório STN/PCASP (Portaria Conjunta STN/SOF & Portaria MOG nº 42/1999)
         # Funciona de forma 100% agnóstica em qualquer ERP do Brasil (com ou sem pontos no código, com ou sem sigla na rubrica)
         _stn_receita_map = [
-            (("iptu", "predial", "territorial urbana"), "IPTU", "111250", "PROPRIEDADE PREDIAL"),
-            (("iss", "issqn", "imposto sobre servico"), "ISS/ISSQN", "111451", "SERVICOS DE QUALQUER NATUREZA"),
-            (("itbi", "inter vivos"), "ITBI", "111253", "INTER VIVOS"),
-            (("fpm", "fundo de participacao"), "FPM", "171151", "FUNDO DE PARTICIPACAO DOS MUNICIPIOS"),
-            (("icms",), "Cota-Parte ICMS", "172150", "ICMS"),
-            (("ipva",), "Cota-Parte IPVA", "172151", "VEICULOS AUTOMOTORES"),
-            (("cosip", "cip"), "COSIP (Contribuição Iluminação Pública)", "1241", "ILUMINACAO PUBLICA"),
+            (("iptu", "predial", "territorial urbana"), "IPTU", "111250", "PROPRIEDADE PREDIAL", "IPTU", "IMPOSTOS, TAXAS"),
+            (("iss", "issqn", "imposto sobre servico"), "ISS/ISSQN", "111451", "SERVICOS DE QUALQUER NATUREZA", "ISS", "IMPOSTOS, TAXAS"),
+            (("itbi", "inter vivos"), "ITBI", "111253", "INTER VIVOS", "ITBI", "IMPOSTOS, TAXAS"),
+            (("fpm", "fundo de participacao"), "FPM", "171151", "PARTICIPACAO DOS MUNICIPIOS", "FPM", "TRANSFERENCIAS CORRENTES"),
+            (("icms",), "Cota-Parte ICMS", "172150", "ICMS", "ICMS", "TRANSFERENCIAS CORRENTES"),
+            (("ipva",), "Cota-Parte IPVA", "172151", "VEICULOS AUTOMOTORES", "IPVA", "TRANSFERENCIAS CORRENTES"),
+            (("cosip", "cip"), "COSIP (Contribuição Iluminação Pública)", "1241", "ILUMINACAO PUBLICA", "COSIP", "CONTRIBUICOES"),
         ]
-        for kw_tup, label_tax, pcasp_prefix, text_fallback in _stn_receita_map:
+        for kw_tup, label_tax, pcasp_prefix, text_fallback, sigla_short, rreo_macro in _stn_receita_map:
             if any(re.search(rf"\b{re.escape(k)}\b", q_norm) for k in kw_tup):
-                bindings.append(
-                    f"Receita `{label_tax}` em `receita_receita` (Padrão Nacional PCASP/STN): filtre "
-                    f"`(REGEXP_REPLACE(COALESCE(dsc_rubrica, '') || COALESCE(dsc_alinea, '') || COALESCE(dsc_origem, ''), '[^0-9]', '', 'g') LIKE '{pcasp_prefix}%' "
-                    f"OR strip_accents(UPPER(COALESCE(dsc_alinea, '') || ' ' || COALESCE(dsc_rubrica, ''))) LIKE '%{text_fallback}%')` "
-                    f"(muitos ERPs não escrevem a sigla `{label_tax.split('/')[0]}` por extenso na rubrica!)."
-                )
+                if self.has_granular_receita_rubrica:
+                    bindings.append(
+                        f"Receita `{label_tax}` em `receita_receita` (Padrão Nacional PCASP/STN): filtre "
+                        f"`(REGEXP_REPLACE(COALESCE(dsc_codorcamentario, '') || COALESCE(dsc_rubrica, '') || COALESCE(dsc_alinea, '') || COALESCE(dsc_origem, ''), '[^0-9]', '', 'g') LIKE '{pcasp_prefix}%' "
+                        f"OR strip_accents(UPPER(COALESCE(dsc_alinea, '') || ' ' || COALESCE(dsc_rubrica, ''))) LIKE '%{text_fallback}%' "
+                        f"OR strip_accents(UPPER(COALESCE(dsc_rubrica, ''))) LIKE '%{sigla_short}%')` "
+                        f"(inclua sempre `dsc_codorcamentario` e `dsc_rubrica`!)."
+                    )
+                else:
+                    bindings.append(
+                        f"ATENÇÃO CONTÁBIL (`receita_receita` via RREO-Anexo 01 SICONFI/STN): este município publica a receita consolidada por Origem/Espécie no RREO sem abertura analítica individual de `{label_tax}`. "
+                        f"NÃO retorne zero: consulte `SELECT ano_referencia, dsc_rubrica, SUM(vlr_previsaoatualizada) AS previsto_loa, SUM(vlr_realizadoateperiodo) AS arrecadado FROM receita_receita WHERE strip_accents(UPPER(dsc_rubrica)) LIKE '%{rreo_macro}%' GROUP BY 1, 2 ORDER BY 1 DESC` e explique na resposta que o RREO-Anexo 01 consolida `{label_tax}` dentro de `{rreo_macro}`!"
+                    )
 
         if "iluminacao" in q_norm:
             bindings.append(

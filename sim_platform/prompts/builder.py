@@ -181,8 +181,10 @@ class ModularPromptBuilder:
         base = (
             "[6. SQL GENERATION INSTRUCTIONS]\n"
             "- Gere exclusivamente uma única instrução SQL compatível com DuckDB (`SELECT ... FROM ...` ou `WITH ... SELECT ... FROM ...`) que SEMPRE referencie ao menos uma tabela ou Gold View do catálogo.\n"
-            f"- NUNCA gere `SELECT 'texto literal' AS mensagem` sem `FROM`! Mesmo quando o usuário perguntar sobre anos futuros inexistentes na base (ex.: {self.max_data_year + 1} ou {self.max_data_year + 2}), consulte a série histórica oficial disponível (até {self.max_data_year}) na tabela/Gold View correspondente (ex.: `SELECT * FROM vw_gold_orcamento_previsto_vs_realizado ORDER BY ano_referencia`) para fundamentar a resposta com os valores históricos reais.\n"
-            "- PRIORIDADE MÁXIMA À CAMADA SEMÂNTICA GOLD: Sempre que uma Gold View (`vw_gold_orcamento_previsto_vs_realizado`, `vw_gold_orcamento_por_orgao`, `vw_gold_folha_servidores`, `vw_gold_frota_consolidada`, `vw_gold_fornecedores_qsa_360`, `vw_gold_execucao_despesa_credor`, `vw_gold_contratos_vigencia_aditivos`, `vw_gold_conflito_interesses_licitacao`) estiver disponível em [4. DATA SOURCE CONTEXT] e atender ao domínio da pergunta, utilize-a como tabela principal em vez das tabelas brutas fragmentadas.\n"
+            f"- NUNCA gere `SELECT 'texto literal' AS mensagem` (com ou sem `FROM`)! Mesmo quando o usuário perguntar sobre anos futuros inexistentes na base (ex.: {self.max_data_year + 1} ou {self.max_data_year + 2}) ou pedir lista nominal de beneficiários protegidos pela LGPD (`vw_gold_beneficios_sociais_cgu`), consulte SEMPRE os indicadores reais agregados da tabela/Gold View correspondente (ex.: `SELECT ano_referencia, programa_social, ROUND(AVG(beneficiarios_no_mes)) AS media_mensal_beneficiarios, ROUND(SUM(vlr_total_pago_mes), 2) AS total_pago_ano FROM vw_gold_beneficios_sociais_cgu GROUP BY 1, 2 ORDER BY 1 DESC`).\n"
+            f"- BANCO DUCKDB JÁ ISOLADO FISICAMENTE POR MUNICÍPIO (`{self.municipality_name}/{self.state_uf}`, IBGE `{self.ibge_code}`): NUNCA adicione `WHERE cod_municipio = {self.ibge_code}` nem `WHERE nom_municipio ILIKE '%{self.municipality_name}%'`, pois todas as tabelas e views desta instância já pertencem exclusivamente ao município ativo e códigos legados internos (TCE/SIAFI) podem diferir do código IBGE de 7 dígitos.\n"
+            "- PRIORIDADE MÁXIMA À CAMADA SEMÂNTICA GOLD: Sempre que uma Gold View (`vw_gold_orcamento_previsto_vs_realizado`, `vw_gold_orcamento_por_orgao`, `vw_gold_folha_servidores`, `vw_gold_frota_consolidada`, `vw_gold_fornecedores_qsa_360`, `vw_gold_execucao_despesa_credor`, `vw_gold_contratos_vigencia_aditivos`, `vw_gold_conflito_interesses_licitacao`, `vw_gold_beneficios_sociais_cgu`) estiver disponível em [4. DATA SOURCE CONTEXT] e atender ao domínio da pergunta, utilize-a como tabela principal em vez das tabelas brutas fragmentadas.\n"
+            "- REGRA CONTÁBIL CRÍTICA EM `despesa_despesa` (SICONFI RREO-Anexo 02 / MCASP): Ao consultar `despesa_despesa` por função/subfunção (`dsc_funcao`, `dsc_subfuncao`), PROJETE SEMPRE `ROUND(SUM(TRY_CAST(vlr_liquidado AS DECIMAL(18,2))), 2) AS total_liquidado` e `ROUND(SUM(TRY_CAST(vlr_empenhado AS DECIMAL(18,2))), 2) AS total_empenhado` — NUNCA use `SUM(vlr_pago)` isoladamente em `despesa_despesa` (pois o demonstrativo RREO-Anexo 02 não publica coluna de pagamento por função).\n"
             "- RESPEITE A GRANULARIDADE (`Grão` / `Regra de Grão/Contagem` no DDL):\n"
             "  1) `MONTHLY_PAYROLL_SNAPSHOT` (`vw_gold_folha_servidores`): 1 linha = 1 pagamento mensal. NUNCA use `COUNT(*)` nem `COUNT(DISTINCT num_cpf)` (pois CPFs mascarados colidem entre homônimos de prefixo) para contar funcionários; use `COUNT(DISTINCT seq_dim_pessoa)` filtrando `COALESCE(dsc_tipo_pag, 'Mensal') = 'Mensal'` (e para posição de um ano específico, filtre a última competência `seq_dat_pagamento = (SELECT MAX(seq_dat_pagamento) FROM vw_gold_folha_servidores WHERE ano_referencia = ...)`). Para filtrar Câmara vs. Prefeitura vs. Autarquias, use `esfera_poder` (`'LEGISLATIVO'` / `'EXECUTIVO'`), `administracao_tipo` ou os valores reais de `nom_orgao` no DDL (NUNCA chute códigos `'01'`/`'02'` às cegas!).\n"
             f"  2) `CONSOLIDATED_ENTITY_VIEW` (`vw_gold_frota_consolidada`, `vw_gold_fornecedores_qsa_360`): `vw_gold_frota_consolidada` JÁ UNE `frota_frota` + `frota_gastoFrota` (`vlr_gasto`) — NUNCA faça JOIN dela com `frota_gastoFrota`! Para contar o estoque total de veículos use `COUNT(DISTINCT seq_veiculo) FILTER (WHERE TRY_CAST(seq_veiculo AS BIGINT) > 0)` SEM filtrar apenas um único `ano_referencia`; para veículos emplacados filtre `status_cadastro_frota = 'CADASTRADO'`.\n"
@@ -298,7 +300,11 @@ class ModularPromptBuilder:
                 q_low,
             )
         )
-        has_calendar_lag = (today_dt.year > max_data_year) or ("parcial" in latest_remittance_human.lower())
+        has_calendar_lag = (
+            (today_dt.year > max_data_year)
+            or ("parcial" in latest_remittance_human.lower())
+            or (max_data_year == today_dt.year and today_dt.month < 12)
+        )
         if has_calendar_lag and (asks_present_state or not years_found or max_data_year in years_found):
             notes.append(
                 f"CONSCIÊNCIA DE CALENDÁRIO REAL vs. DEFASAGEM DE PUBLICAÇÃO OFICIAL (OBRIGATÓRIO): "
@@ -337,6 +343,18 @@ class ModularPromptBuilder:
                 f"e a execução de {fut_label} ainda não constam nas remessas consolidadas carregadas neste ambiente (cujo teto é {latest_remittance_human}), "
                 "e apresente os dados históricos oficiais recuperados em `amostra_dados_sql` como referência concreta."
             )
+        asks_nominal_pii_benefits = bool(
+            re.search(r"\b(bolsa\s+fam[ií]lia|bpc|benef[ií]cio\s+de\s+presta[cç][aã]o|aux[ií]lio\s+brasil)\b", q_low)
+            and re.search(r"\b(nome|nomes|nominal|lista\s+completa|cpf|cpfs|endere[cç]o|quem\s+recebe|moradores)\b", q_low)
+        )
+        if asks_nominal_pii_benefits:
+            notes.append(
+                "PROTEÇÃO LGPD EM BENEFÍCIOS SOCIAIS (OBRIGATÓRIO): O usuário solicitou listagem nominal, CPF ou endereço de beneficiários "
+                "de programas assistenciais (Bolsa Família / BPC). Explicite com clareza logo no início de `citizen_intro` que, em conformidade "
+                "com a Lei Geral de Proteção de Dados Pessoais (LGPD — Lei nº 13.709/2018), a plataforma protege dados pessoais identificáveis "
+                "(CPFs completos e endereços residenciais) e por isso apresenta os indicadores oficiais agregados do município (total de beneficiários "
+                "atendidos e montante transferido em R$). NUNCA diga que 'segue anexa a lista nominal com CPFs' se a tabela contiver totais agregados ou mascarados."
+            )
         return notes
 
     def build_naturalization_prompt(
@@ -366,12 +384,19 @@ class ModularPromptBuilder:
         today_pt = today_dt.strftime("%d/%m/%Y")
         eff_remit = (effective_remittance_human or self.latest_remittance_human).strip()
         eff_max_yr = int(effective_max_year if effective_max_year is not None else self.max_data_year)
-        temporal_notes = self.inspect_temporal_horizon_metadata(
-            rows_list,
-            question=question,
-            max_data_year=eff_max_yr,
-            latest_remittance_human=eff_remit,
-        )
+        is_pure_rag = bool(rag_chunks) and not rows_list and not sql_executed
+        if is_pure_rag and self.source_freshness_map.get("DIARIO_OFICIAL"):
+            eff_remit = f"acervo do Diário Oficial Municipal ({self.source_freshness_map['DIARIO_OFICIAL']})"
+            temporal_notes = [
+                f"CONSULTA DOCUMENTAL DIRETA AO DIÁRIO OFICIAL (`DIARIO_OFICIAL`): O acervo normativo indexado cobre {self.source_freshness_map['DIARIO_OFICIAL']} (data civil de hoje: {today_pt}). Responda com base estrita nos atos recuperados em `atos_diario_oficial_rag`, sem citar janelas de tabelas contábeis que não foram consultadas."
+            ]
+        else:
+            temporal_notes = self.inspect_temporal_horizon_metadata(
+                rows_list,
+                question=question,
+                max_data_year=eff_max_yr,
+                latest_remittance_human=eff_remit,
+            )
         if rag_chunks and rows_list and self.source_freshness_map.get("DIARIO_OFICIAL"):
             temporal_notes.append(
                 f"JANELAS TEMPORAIS DISTINTAS POR FONTE (SICOM vs. DIÁRIO OFICIAL): "

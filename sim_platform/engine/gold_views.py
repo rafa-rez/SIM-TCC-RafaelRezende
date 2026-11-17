@@ -78,7 +78,7 @@ def _natureza_credor_sql(doc_expr: str, nom_expr: str) -> str:
     Classificação universal anti-whack-a-mole da natureza jurídica/contábil do credor
     sem hardcodar nomes locais de cidade específica.
     """
-    nom_up = f"UPPER(TRIM(COALESCE({nom_expr}, '')))"
+    nom_up = f"strip_accents(UPPER(TRIM(COALESCE({nom_expr}, ''))))"
     doc_head = f"SPLIT_PART(COALESCE({doc_expr}, ''), ' [', 1)"
     return f"""
         CASE
@@ -90,15 +90,21 @@ def _natureza_credor_sql(doc_expr: str, nom_expr: str) -> str:
             WHEN NOT regexp_matches({doc_expr}, '^[0-9]{{11,14}}$')
             THEN 'FOLHA_OU_SEM_DETALHAMENTO'
             WHEN {doc_expr} IN (SELECT cnpj_orgao_mun FROM cnpjs_proprios_mun)
-                 OR regexp_matches({nom_up}, '(PREFEITURA MUNICIPAL|CAMARA MUNICIPAL|CÂMARA MUNICIPAL|FUNDO MUNICIPAL|SERVI[CÇ]O AUT[OÔ]NOMO DE [AÁ]GUA|\\bSAAE\\b|FUNDA[CÇ][AÃ]O EDUCACIONAL|FUNDA[CÇ][AÃ]O CASA DE CULTURA|SERVIDORES MUNICIPAIS|FOLHA DE PAGAMENTO)')
+                 OR regexp_matches({nom_up}, '(PREFEITURA MUNICIPAL|CAMARA MUNICIPAL|FUNDO MUNICIPAL|SERVICO AUTONOMO DE AGUA|\\bSAAE\\b|FUNDACAO EDUCACIONAL|FUNDACAO CASA DE CULTURA|SERVIDORES MUNICIPAIS|FOLHA DE PAGAMENTO)')
             THEN 'INTRAGOVERNAMENTAL_MUNICIPIO'
-            WHEN SUBSTR({doc_expr}, 1, 8) IN ('29979036', '00394460', '00360305', '18715615', '21154554', '00509968', '00000000', '33657248')
-                 OR regexp_matches({nom_up}, '(INSTITUTO NACIONAL DO SEGURO SOCIAL|INSTITUTO NACIONAL DE SEGURIDADE SOCIAL|\\bINSS\\b|RECEITA FEDERAL|\\bPASEP\\b|\\bFGTS\\b|CONS[OÓ]RCIO INTERMUNICIPAL|CONS[OÓ]RCIO P[UÚ]BLICO|INSTITUI[CÇ][AÃ]O DE COOPERA[CÇ][AÃ]O INTERMUNICIPAL|\\bICISMEP\\b|\\bCISMEP\\b|TRIBUNAL DE JUSTI[CÇ]A|TRIBUNAL REGIONAL|TRIBUNAL SUPERIOR|TRIBUNAL DE CONTAS|\\bTRT\\b|\\bTRF\\b|\\bTRE\\b|MINIST[EÉ]RIO |ESTADO DE |SECRETARIA DE ESTADO|TESOURO NACIONAL|FUNDO ESTADUAL|FUNDO NACIONAL|\\bFNDE\\b|\\bFNS\\b|\\bFISTEL\\b|INSTITUTO DE PREVID[EÊ]NCIA|PREVID[EÊ]NCIA MUNICIPAL|CART[OÓ]RIO )')
+            WHEN SUBSTR({doc_expr}, 1, 8) IN ('29979036', '00394460', '00360305', '18715615', '21154554', '00509968', '00000000', '33657248', '05465167')
+                 OR regexp_matches({nom_up}, '(INSTITUTO NACIONAL DO SEGURO SOCIAL|INSTITUTO NACIONAL DE SEGURIDADE SOCIAL|\\bINSS\\b|RECEITA FEDERAL|\\bPASEP\\b|\\bFGTS\\b|CONSORCIO INTERMUNICIPAL|CONSORCIO PUBLICO|INSTITUICAO DE COOPERACAO INTERMUNICIPAL|\\bICISMEP\\b|\\bCISMEP\\b|TRIBUNAL DE JUSTICA|TRIBUNAL REGIONAL|TRIBUNAL SUPERIOR|TRIBUNAL DE CONTAS|\\bTRT\\b|\\bTRF\\b|\\bTRE\\b|MINISTERIO |ESTADO DE |SECRETARIA DE ESTADO|SEC\\.? DE ESTADO|\\bSEDESE\\b|\\bSES/MG\\b|\\bSEE/MG\\b|\\bSEINFRA\\b|\\bSEMAD\\b|\\bFHEMIG\\b|\\bIPSEMG\\b|\\bDER[-/ ]MG\\b|TESOURO NACIONAL|TESOURO DO ESTADO|FUNDO ESTADUAL|FUNDO NACIONAL|\\bFNDE\\b|\\bFNS\\b|\\bFISTEL\\b|INSTITUTO DE PREVIDENCIA|PREVIDENCIA MUNICIPAL|CARTORIO )')
             THEN 'ENTE_PUBLICO_TRIBUTO_CONSORCIO'
-            WHEN regexp_matches({nom_up}, '(\\bCEMIG\\b|\\bCOPASA\\b|\\bSABESP\\b|\\bSANEPAR\\b|\\bEMBASA\\b|\\bCAGECE\\b|\\bCAESB\\b|\\bCEDAE\\b|\\bCORSAN\\b|\\bCELESC\\b|\\bCOPEL\\b|\\bCOELBA\\b|\\bNEOENERGIA\\b|\\bEQUATORIAL\\b|\\bENEL\\b|\\bLIGHT\\b|CORREIOS|BANCO DO BRASIL|CAIXA ECON[OÔ]MICA FEDERAL|BANCO BRADESCO|BANCO SANTANDER|ITA[UÚ] UNIBANCO|BANCO MERCANTIL|BANCO INTER|\\bSICOOB\\b|\\bSICREDI\\b|\\bBDMG\\b|\\bBNDES\\b|\\bSERPRO\\b|\\bDATAPREV\\b|IMPRENSA NACIONAL|COMPANHIA ENERG[EÉ]TICA|COMPANHIA DE SANEAMENTO)')
+            WHEN regexp_matches({nom_up}, '(\\bCEMIG\\b|\\bCOPASA\\b|\\bSABESP\\b|\\bSANEPAR\\b|\\bEMBASA\\b|\\bCAGECE\\b|\\bCAESB\\b|\\bCEDAE\\b|\\bCORSAN\\b|\\bCELESC\\b|\\bCOPEL\\b|\\bCOELBA\\b|\\bNEOENERGIA\\b|\\bEQUATORIAL\\b|\\bENEL\\b|\\bLIGHT\\b|CORREIOS|BANCO DO BRASIL|CAIXA ECONOMICA FEDERAL|BANCO BRADESCO|BANCO SANTANDER|ITAU UNIBANCO|BANCO MERCANTIL|BANCO INTER|\\bSICOOB\\b|\\bSICREDI\\b|\\bBDMG\\b|\\bBNDES\\b|\\bSERPRO\\b|\\bDATAPREV\\b|IMPRENSA NACIONAL|COMPANHIA ENERGETICA|COMPANHIA DE SANEAMENTO)')
             THEN 'ESTATAL_CONCESSIONARIA_BANCO'
-            WHEN regexp_matches({nom_up}, '(SANTA CASA|BENEFIC[EÊ]NCIA|IRMANDADE|ASSOCIA[CÇ][AÃ]O|FUNDA[CÇ][AÃ]O|SINDICATO|\\bMITRA\\b|DIOCESE|PAR[OÓ]QUIA|\\bAPAE\\b|\\bINSTITUTO\\b|\\bCONSELHO\\b|CAIXA ESCOLAR|CRECHE COMUNIT[AÁ]RIA|LAR DOS IDOSOS|\\bASILO\\b|SOCIEDADE CIVIL|OBRAS SOCIAIS)')
-                 AND NOT regexp_matches({nom_up}, '(\\bLTDA\\b|\\bEIRELI\\b|\\bS\\.A\\.?\\b|\\bS/A\\b|\\bSA\\b)')
+            WHEN (
+                     regexp_matches({nom_up}, '(SANTA CASA|BENEFICENCIA|IRMANDADE|ASSOCIACAO|FUNDACAO|SINDICATO|\\bMITRA\\b|DIOCESE|PAROQUIA|\\bAPAE\\b|\\bINSTITUTO\\b|\\bCONSELHO\\b|CAIXA ESCOLAR|CRECHE COMUNITARIA|LAR DOS IDOSOS|\\bASILO\\b|SOCIEDADE CIVIL|OBRAS SOCIAIS|MATERNIDADE FILANTROPICA)')
+                     OR (
+                         regexp_matches({nom_up}, '(^HOSPITAL\\b|HOSPITAL BENEFICENTE|HOSPITAL SAO |HOSPITAL NOSSA SENHORA|HOSPITAL BOM )')
+                         AND NOT regexp_matches({nom_up}, '(SERVICOS MEDICOS|CLINICA|PARTICULAR)')
+                     )
+                 )
+                 AND NOT regexp_matches({nom_up}, '(\\bLTDA\\b|\\bEIRELI\\b|\\bS\\.A\\.?\\b|\\bS/A\\b|\\bSA\\b|\\bME\\b|\\bEPP\\b|\\bUNIPESSOAL\\b)')
             THEN 'SEM_FINS_LUCRATIVOS'
             ELSE 'EMPRESA_PRIVADA'
         END
@@ -950,7 +956,9 @@ GOLD_VIEWS_DDL: Dict[str, str] = {
                 ROUND(SUM(COALESCE(TRY_CAST(vlr_previsaoinicial AS DECIMAL(18,2)), 0.00)), 2) AS receita_prevista_inicial_loa,
                 ROUND(SUM(COALESCE(TRY_CAST(vlr_previsaoatualizada AS DECIMAL(18,2)), 0.00)), 2) AS receita_prevista_atualizada_loa,
                 ROUND(SUM(COALESCE(TRY_CAST(vlr_realizadoateperiodo AS DECIMAL(18,2)), 0.00)), 2) AS receita_arrecadada_realizada,
-                MAX(TRY_CAST(num_mesexercicio AS INTEGER)) AS ultimo_mes_receita
+                MAX(TRY_CAST(num_mesexercicio AS INTEGER)) FILTER (
+                    WHERE COALESCE(TRY_CAST(vlr_realizadoateperiodo AS DECIMAL(18,2)), 0.00) <> 0
+                ) AS ultimo_mes_receita
             FROM receita_receita
             GROUP BY ano_referencia
         ),
@@ -968,8 +976,15 @@ GOLD_VIEWS_DDL: Dict[str, str] = {
                 ) AS despesa_dotacao_atualizada,
                 ROUND(SUM(COALESCE(TRY_CAST(vlr_empenhado AS DECIMAL(18,2)), 0.00)), 2) AS despesa_empenhada,
                 ROUND(SUM(COALESCE(TRY_CAST(vlr_liquidado AS DECIMAL(18,2)), 0.00)), 2) AS despesa_liquidada,
-                ROUND(SUM(COALESCE(TRY_CAST(vlr_pago AS DECIMAL(18,2)), 0.00)), 2) AS despesa_paga,
-                MAX(TRY_CAST(num_mesexercicio AS INTEGER)) AS ultimo_mes_despesa
+                CASE
+                    WHEN COUNT(vlr_pago) > 0 AND SUM(COALESCE(TRY_CAST(vlr_pago AS DECIMAL(18,2)), 0.00)) > 0
+                    THEN ROUND(SUM(COALESCE(TRY_CAST(vlr_pago AS DECIMAL(18,2)), 0.00)), 2)
+                    ELSE NULL
+                END AS despesa_paga,
+                MAX(TRY_CAST(num_mesexercicio AS INTEGER)) FILTER (
+                    WHERE COALESCE(TRY_CAST(vlr_empenhado AS DECIMAL(18,2)), 0.00) > 0
+                       OR COALESCE(TRY_CAST(vlr_liquidado AS DECIMAL(18,2)), 0.00) > 0
+                ) AS ultimo_mes_despesa
             FROM despesa_despesa
             GROUP BY ano_referencia
         )
@@ -992,10 +1007,12 @@ GOLD_VIEWS_DDL: Dict[str, str] = {
                 / NULLIF(d.despesa_dotacao_atualizada, 0.00),
                 2
             ) AS pct_despesa_empenhada_dotacao,
-            COALESCE(r.ultimo_mes_receita, 12) AS ultimo_mes_receita,
-            COALESCE(d.ultimo_mes_despesa, 12) AS ultimo_mes_despesa,
+            COALESCE(r.ultimo_mes_receita, d.ultimo_mes_despesa) AS ultimo_mes_receita,
+            COALESCE(d.ultimo_mes_despesa, r.ultimo_mes_receita) AS ultimo_mes_despesa,
             CASE
-                WHEN LEAST(COALESCE(r.ultimo_mes_receita, 0), COALESCE(d.ultimo_mes_despesa, 0)) < 12
+                WHEN TRY_CAST(COALESCE(r.ano_referencia, d.ano_referencia) AS INTEGER) >= EXTRACT(YEAR FROM CURRENT_DATE)
+                     OR COALESCE(r.ultimo_mes_receita, d.ultimo_mes_despesa, 0) < 12
+                     OR COALESCE(d.ultimo_mes_despesa, r.ultimo_mes_receita, 0) < 12
                 THEN 'Em andamento (Parcial)'
                 ELSE 'Fechado'
             END AS status_exercicio
@@ -1014,17 +1031,30 @@ GOLD_VIEWS_DDL: Dict[str, str] = {
                 {_norm_cod_orgao_pad2_sql("cod_orgao")} AS cod_orgao_norm,
                 MAX(seq_orgao) AS seq_orgao,
                 ROUND(SUM(COALESCE(TRY_CAST(vlr_previsaoinicial AS DECIMAL(18,2)), 0.00)), 2) AS receita_prevista_inicial_orgao,
+                ROUND(SUM(COALESCE(TRY_CAST(vlr_previsaoatualizada AS DECIMAL(18,2)), 0.00)), 2) AS receita_prevista_atualizada_loa_orgao,
                 ROUND(SUM(COALESCE(TRY_CAST(vlr_previsaoatualizada AS DECIMAL(18,2)), 0.00)), 2) AS receita_prevista_atualizada_orgao,
                 ROUND(SUM(COALESCE(TRY_CAST(vlr_realizadoateperiodo AS DECIMAL(18,2)), 0.00)), 2) AS receita_arrecadada_propria_orgao,
-                MAX(TRY_CAST(num_mesexercicio AS INTEGER)) AS ultimo_mes_receita
+                MAX(TRY_CAST(num_mesexercicio AS INTEGER)) FILTER (
+                    WHERE COALESCE(TRY_CAST(vlr_realizadoateperiodo AS DECIMAL(18,2)), 0.00) <> 0
+                ) AS ultimo_mes_receita
             FROM receita_receita
             GROUP BY 1, 2, 3
         ),
         desp_orgao AS (
             SELECT
                 ano_referencia,
-                {_norm_cod_orgao_key_sql("cod_orgao")} AS cod_orgao_key,
-                {_norm_cod_orgao_pad2_sql("cod_orgao")} AS cod_orgao_norm,
+                CASE
+                    WHEN strip_accents(UPPER(COALESCE(dsc_funcao, ''))) LIKE '01%LEGISLATIV%'
+                         OR strip_accents(UPPER(COALESCE(dsc_funcao, ''))) = 'LEGISLATIVA'
+                    THEN '1'
+                    ELSE {_norm_cod_orgao_key_sql("cod_orgao")}
+                END AS cod_orgao_key,
+                CASE
+                    WHEN strip_accents(UPPER(COALESCE(dsc_funcao, ''))) LIKE '01%LEGISLATIV%'
+                         OR strip_accents(UPPER(COALESCE(dsc_funcao, ''))) = 'LEGISLATIVA'
+                    THEN '01'
+                    ELSE {_norm_cod_orgao_pad2_sql("cod_orgao")}
+                END AS cod_orgao_norm,
                 MAX(seq_orgao) AS seq_orgao,
                 ROUND(SUM(COALESCE(TRY_CAST(vlr_previsto AS DECIMAL(18,2)), 0.00)), 2) AS dotacao_inicial_loa,
                 ROUND(
@@ -1037,8 +1067,15 @@ GOLD_VIEWS_DDL: Dict[str, str] = {
                 ) AS dotacao_atualizada,
                 ROUND(SUM(COALESCE(TRY_CAST(vlr_empenhado AS DECIMAL(18,2)), 0.00)), 2) AS despesa_empenhada,
                 ROUND(SUM(COALESCE(TRY_CAST(vlr_liquidado AS DECIMAL(18,2)), 0.00)), 2) AS despesa_liquidada,
-                ROUND(SUM(COALESCE(TRY_CAST(vlr_pago AS DECIMAL(18,2)), 0.00)), 2) AS despesa_paga,
-                MAX(TRY_CAST(num_mesexercicio AS INTEGER)) AS ultimo_mes_despesa
+                CASE
+                    WHEN COUNT(vlr_pago) > 0 AND SUM(COALESCE(TRY_CAST(vlr_pago AS DECIMAL(18,2)), 0.00)) > 0
+                    THEN ROUND(SUM(COALESCE(TRY_CAST(vlr_pago AS DECIMAL(18,2)), 0.00)), 2)
+                    ELSE NULL
+                END AS despesa_paga,
+                MAX(TRY_CAST(num_mesexercicio AS INTEGER)) FILTER (
+                    WHERE COALESCE(TRY_CAST(vlr_empenhado AS DECIMAL(18,2)), 0.00) > 0
+                       OR COALESCE(TRY_CAST(vlr_liquidado AS DECIMAL(18,2)), 0.00) > 0
+                ) AS ultimo_mes_despesa
             FROM despesa_despesa
             GROUP BY 1, 2, 3
         )
@@ -1072,7 +1109,7 @@ GOLD_VIEWS_DDL: Dict[str, str] = {
             COALESCE(r.receita_arrecadada_propria_orgao, 0.00) AS receita_arrecadada_propria_orgao,
             COALESCE(d.despesa_empenhada, 0.00) AS despesa_empenhada,
             COALESCE(d.despesa_liquidada, 0.00) AS despesa_liquidada,
-            COALESCE(d.despesa_paga, 0.00) AS despesa_paga,
+            d.despesa_paga,
             ROUND(
                 100.0 * COALESCE(d.despesa_empenhada, 0.00)
                 / NULLIF(d.dotacao_atualizada, 0.00),
@@ -1080,7 +1117,8 @@ GOLD_VIEWS_DDL: Dict[str, str] = {
             ) AS pct_execucao_dotacao,
             GREATEST(COALESCE(r.ultimo_mes_receita, 0), COALESCE(d.ultimo_mes_despesa, 0)) AS ultimo_mes_exercicio,
             CASE
-                WHEN COALESCE(d.ultimo_mes_despesa, r.ultimo_mes_receita, 12) < 12
+                WHEN TRY_CAST(COALESCE(d.ano_referencia, r.ano_referencia) AS INTEGER) >= EXTRACT(YEAR FROM CURRENT_DATE)
+                     OR COALESCE(d.ultimo_mes_despesa, r.ultimo_mes_receita, 0) < 12
                 THEN 'Em andamento (Parcial)'
                 ELSE 'Fechado'
             END AS status_exercicio

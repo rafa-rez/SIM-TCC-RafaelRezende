@@ -1,0 +1,68 @@
+{
+  "tenant_id": "matozinhos_mg_3141108",
+  "municipality_name": "Matozinhos",
+  "state_uf": "MG",
+  "ibge_code": "3141108",
+  "plan_code": "porte_2",
+  "plan_name": "Prefeitura Porte II — Controladoria, Ouvidoria & Gestão 360º (30k a 100k hab.)",
+  "monthly_quota_requests": 30000,
+  "status_dados_externos": "SINCRONIZACAO_AUTOMATICA_API_ATIVA",
+  "hospital_referencia": "HOSPITAL WANDA ANDRADE DRUMMOND / PRONTO ATENDIMENTO MUNICIPAL DE MATOZINHOS",
+  "diario_oficial": {
+    "tipo": "pdf_diario_eletronico",
+    "veiculo": "Diário Oficial Eletrônico de Matozinhos/MG (DiOE / Imprensa Oficial Municipal)",
+    "chunker": "ActBoundaryChunker"
+  },
+  "connector_profile": {
+    "erp_family": "memory_portal",
+    "gazette_family": "dosp_imprensa_oficial",
+    "openknowledge_base_url": "https://publico.memory.com.br/openknowledge",
+    "memory_entities": [
+      {"entidade": "1", "tenant_code": "9BHSQH", "cod_orgao": "02", "nome": "PREFEITURA MUNICIPAL DE MATOZINHOS"},
+      {"entidade": "2", "tenant_code": "9BHSQY", "cod_orgao": "01", "nome": "CÂMARA MUNICIPAL DE MATOZINHOS"}
+    ],
+    "ocr_fallback": false
+  },
+  "orgaos_map": {
+    "01": "CÂMARA MUNICIPAL DE MATOZINHOS",
+    "02": "PREFEITURA MUNICIPAL DE MATOZINHOS",
+    "03": "CONSÓRCIO INTERMUNICIPAL DE SAÚDE DA REGIÃO DO CALCÁRIO (CISREC)"
+  },
+  "local_aliases": {
+    "hospital": "HOSPITAL WANDA ANDRADE DRUMMOND",
+    "consorcio_saude": "CISREC",
+    "previdencia": "INSTITUTO NACIONAL DE SEGURIDADE SOCIAL"
+  },
+  "institutional_cnpjs": {
+    "18771238000188": "PREFEITURA MUNICIPAL DE MATOZINHOS (EXECUTIVO)",
+    "20214830000168": "CÂMARA MUNICIPAL DE MATOZINHOS (LEGISLATIVO)",
+    "01325060000169": "CONSÓRCIO INTERMUNICIPAL DE SAÚDE CISREC"
+  },
+  "ibge_series": [],
+  "ideb_series": [
+    {
+      "ano": 2019,
+      "rede": "Pública Municipal",
+      "anos_iniciais": 6.4,
+      "anos_finais": 4.9,
+      "meta_iniciais": 6.2,
+      "escolas": null,
+      "matriculas": null,
+      "taxa_aprovacao": null
+    },
+    {
+      "ano": 2023,
+      "rede": "Pública Municipal",
+      "anos_iniciais": 6.3,
+      "anos_finais": 5.0,
+      "meta_iniciais": 6.5,
+      "escolas": null,
+      "matriculas": null,
+      "taxa_aprovacao": 98.4
+    }
+  ],
+  "official_districts": [
+    "Matozinhos",
+    "Mocambeiro"
+  ]
+}

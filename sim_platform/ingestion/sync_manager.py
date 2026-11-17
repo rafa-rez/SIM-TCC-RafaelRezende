@@ -700,67 +700,80 @@ class DataSyncManager:
             for yr in years_to_scan:
                 yr_data: Dict[str, float] = {}
                 eff_bim = 6
-                # 1. RGF Anexo 01 (coletado tanto no full_extract quanto no incremental para os anos recentes!)
+                # 1. RGF Anexo 01 (suporta tanto regime quadrimestral `RGF` quanto semestral `RGF Simplificado` do art. 63 da LRF!)
                 rgf_periods = (("Q", 3), ("S", 2)) if yr <= 2024 else (("Q", 3), ("S", 2), ("Q", 2), ("S", 1), ("Q", 1))
+                found_rgf = False
                 for per_type, nr_p in rgf_periods:
-                    url_rgf = (
-                        f"https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rgf"
-                        f"?an_exercicio={yr}&in_periodicidade={per_type}&nr_periodo={nr_p}"
-                        f"&co_tipo_demonstrativo=RGF&no_anexo=RGF-Anexo%2001&co_poder=E&id_ente={ibge_code}"
-                    )
-                    r_rgf = _throttled_get(url_rgf)
-                    if r_rgf.status_code == 200:
-                        rgf_items = (r_rgf.json() or {}).get("items") or []
-                        if rgf_items:
-                            checked_years.append(yr)
-                            for it in rgf_items:
-                                cod_c = str(it.get("cod_conta") or "")
-                                col_u = str(it.get("coluna") or "").upper()
-                                val = it.get("valor")
-                                if not isinstance(val, (int, float)) or float(val) <= 0:
-                                    continue
-                                if cod_c in ("ReceitaCorrenteLiquidaAjustada", "ReceitaCorrenteLiquidaLimiteLegal") and (
-                                    "VALOR" in col_u or "TOTAL" in col_u
-                                ):
-                                    yr_data.setdefault("rcl", round(float(val), 2))
-                                elif cod_c == "DespesaComPessoalLiquida" and (
-                                    "12 MESES" in col_u or "TOTAL" in col_u or col_u.strip() == "VALOR"
-                                ):
-                                    if "%" not in col_u:
-                                        yr_data["pessoal"] = round(float(val), 2)
-                            break
+                    rgf_demos = ("RGF", "RGF%20Simplificado") if per_type == "S" else ("RGF",)
+                    for rgf_dem in rgf_demos:
+                        url_rgf = (
+                            f"https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rgf"
+                            f"?an_exercicio={yr}&in_periodicidade={per_type}&nr_periodo={nr_p}"
+                            f"&co_tipo_demonstrativo={rgf_dem}&no_anexo=RGF-Anexo%2001&co_poder=E&id_ente={ibge_code}"
+                        )
+                        r_rgf = _throttled_get(url_rgf)
+                        if r_rgf.status_code == 200:
+                            rgf_items = (r_rgf.json() or {}).get("items") or []
+                            if rgf_items:
+                                checked_years.append(yr)
+                                for it in rgf_items:
+                                    cod_c = str(it.get("cod_conta") or "")
+                                    col_u = str(it.get("coluna") or "").upper()
+                                    val = it.get("valor")
+                                    if not isinstance(val, (int, float)) or float(val) <= 0:
+                                        continue
+                                    if cod_c in ("ReceitaCorrenteLiquidaAjustada", "ReceitaCorrenteLiquidaLimiteLegal") and (
+                                        "VALOR" in col_u or "TOTAL" in col_u
+                                    ):
+                                        yr_data.setdefault("rcl", round(float(val), 2))
+                                    elif cod_c == "DespesaComPessoalLiquida" and (
+                                        "12 MESES" in col_u or "TOTAL" in col_u or col_u.strip() == "VALOR"
+                                    ):
+                                        if "%" not in col_u:
+                                            yr_data["pessoal"] = round(float(val), 2)
+                                found_rgf = True
+                                break
+                    if found_rgf:
+                        break
 
-                # 2. RREO Anexo 02 (6º Bimestre, ou último bimestre publicado em exercícios recentes): Saúde e Educação
+                # 2. RREO Anexo 02 (suporta `RREO` padrão e `RREO Simplificado` para municípios < 50 mil hab. — art. 63 LRF)
                 bim_candidates = (6,) if yr <= 2024 else (6, 5, 4, 3, 2, 1)
+                eff_rreo_dem = "RREO"
+                found_a02 = False
                 for cand_b in bim_candidates:
-                    url_a02 = (
-                        f"https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo"
-                        f"?an_exercicio={yr}&nr_periodo={cand_b}&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2002&id_ente={ibge_code}"
-                    )
-                    r_a02 = _throttled_get(url_a02)
-                    if r_a02.status_code == 200:
-                        a02_items = (r_a02.json() or {}).get("items") or []
-                        if a02_items:
-                            eff_bim = cand_b
-                            checked_years.append(yr)
-                            for it in a02_items:
-                                conta = str(it.get("conta") or "").strip()
-                                col_u = str(it.get("coluna") or "").upper()
-                                val = it.get("valor")
-                                if not isinstance(val, (int, float)) or float(val) <= 0:
-                                    continue
-                                if "LIQUIDADAS AT" in col_u and "BIMESTRE" in col_u:
-                                    if conta.lower() in ("saúde", "saude"):
-                                        yr_data["saude"] = round(float(val), 2)
-                                    elif conta.lower() in ("educação", "educacao"):
-                                        yr_data["educacao"] = round(float(val), 2)
-                            break
+                    for tp_dem_a02 in ("RREO", "RREO%20Simplificado"):
+                        url_a02 = (
+                            f"https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo"
+                            f"?an_exercicio={yr}&nr_periodo={cand_b}&co_tipo_demonstrativo={tp_dem_a02}&no_anexo=RREO-Anexo%2002&id_ente={ibge_code}"
+                        )
+                        r_a02 = _throttled_get(url_a02)
+                        if r_a02.status_code == 200:
+                            a02_items = (r_a02.json() or {}).get("items") or []
+                            if a02_items:
+                                eff_bim = cand_b
+                                eff_rreo_dem = tp_dem_a02
+                                checked_years.append(yr)
+                                for it in a02_items:
+                                    conta = str(it.get("conta") or "").strip()
+                                    col_u = str(it.get("coluna") or "").upper()
+                                    val = it.get("valor")
+                                    if not isinstance(val, (int, float)) or float(val) <= 0:
+                                        continue
+                                    if "LIQUIDADAS AT" in col_u and "BIMESTRE" in col_u:
+                                        if conta.lower() in ("saúde", "saude"):
+                                            yr_data["saude"] = round(float(val), 2)
+                                        elif conta.lower() in ("educação", "educacao"):
+                                            yr_data["educacao"] = round(float(val), 2)
+                                found_a02 = True
+                                break
+                    if found_a02:
+                        break
 
                 # 2b. RREO Anexo 08 (MDE Educação Art. 212 CF/88) e Anexo 12 (Saúde ASPS LC 141/2012):
                 # Extrai APENAS percentuais constitucionais oficialmente homologados pelo ente no SICONFI.
                 url_a08 = (
                     f"https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo"
-                    f"?an_exercicio={yr}&nr_periodo={eff_bim}&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2008&id_ente={ibge_code}"
+                    f"?an_exercicio={yr}&nr_periodo={eff_bim}&co_tipo_demonstrativo={eff_rreo_dem}&no_anexo=RREO-Anexo%2008&id_ente={ibge_code}"
                 )
                 r_a08 = _throttled_get(url_a08)
                 if r_a08.status_code == 200:
@@ -779,7 +792,7 @@ class DataSyncManager:
 
                 url_a12 = (
                     f"https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo"
-                    f"?an_exercicio={yr}&nr_periodo={eff_bim}&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2012&id_ente={ibge_code}"
+                    f"?an_exercicio={yr}&nr_periodo={eff_bim}&co_tipo_demonstrativo={eff_rreo_dem}&no_anexo=RREO-Anexo%2012&id_ente={ibge_code}"
                 )
                 r_a12 = _throttled_get(url_a12)
                 if r_a12.status_code == 200:

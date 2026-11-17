@@ -1,0 +1,11 @@
+{
+  "release_id": "rel_20261116_233222_637",
+  "release_dir": "releases/rel_20261116_233222_637",
+  "release_chain": [
+    "releases/rel_00000000_schema_stubs",
+    "releases/upl_20261116_233221_325",
+    "releases/rel_20261116_233222_637"
+  ],
+  "updated_at": "2026-11-16 23:32:22",
+  "summary": "sync_all(live_api=False, tables=3)"
+}

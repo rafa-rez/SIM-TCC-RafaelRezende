@@ -154,7 +154,7 @@ SEGMENT_DEFINITIONS: Dict[str, Dict[str, Any]] = {
             "valor pago", "maiores pagamentos", "favorecido",
         ],
         "rules": [
-            "DISTINÇÃO ESSENCIAL FUNÇÃO TEMÁTICA vs. CREDOR: Para gastos por função temática (Saúde `'10 - SAÚDE'`, Educação `'12 - EDUCAÇÃO'`, Assistência Social `'08 - ASSISTÊNCIA SOCIAL'`, Urbanismo `'15 - URBANISMO'`, Gestão Ambiental `'18 - GESTÃO AMBIENTAL'`, etc.), use SEMPRE `despesa_despesa` filtrando `dsc_funcao` (ex.: `WHERE dsc_funcao ILIKE '%SAÚDE%'` ou `dsc_funcao = '10 - SAÚDE'`), pois `vw_gold_execucao_despesa_credor` NÃO possui `dsc_funcao`!",
+            "DISTINÇÃO ESSENCIAL FUNÇÃO TEMÁTICA vs. CREDOR: Para gastos por função temática (Saúde `'10 - SAÚDE'`, Educação `'12 - EDUCAÇÃO'`, Assistência Social `'08 - ASSISTÊNCIA SOCIAL'`, Urbanismo `'15 - URBANISMO'`, Gestão Ambiental `'18 - GESTÃO AMBIENTAL'`, etc.), use SEMPRE `despesa_despesa` filtrando `dsc_funcao` (ex.: `WHERE strip_accents(UPPER(dsc_funcao)) LIKE '%SAUDE%'` ou `dsc_funcao = '10 - SAÚDE'`), pois `vw_gold_execucao_despesa_credor` NÃO possui `dsc_funcao`! REGRA CONTÁBIL CRÍTICA EM `despesa_despesa` (SICONFI RREO-Anexo 02 / MCASP): PROJETE SEMPRE `SUM(TRY_CAST(vlr_liquidado AS DECIMAL(18,2))) AS total_liquidado` e `SUM(TRY_CAST(vlr_empenhado AS DECIMAL(18,2))) AS total_empenhado` — NUNCA use `SUM(vlr_pago)` isoladamente em `despesa_despesa`, pois o demonstrativo oficial `RREO-Anexo 02` (STN) publica dotação, empenhado e liquidado por função/subfunção, deixando `vlr_pago` nulo (`NULL`)!",
             "Para pagamentos/empenhos consolidados por credor/fornecedor/órgão, caronas (`total_empenhado_carona > 0`) ou dispensa/inexigibilidade agregada por credor (`total_empenhado_dispensa_inexigibilidade > 0`), use `vw_gold_execucao_despesa_credor`. ATENÇÃO CONTÁBIL (MCASP / Lei 4.320/64): `pago_exercicio` e `liquidado_exercicio` segregam estritamente a execução orçamentária do exercício corrente (reconciliando com `despesa_despesa` e `vw_gold_orcamento_previsto_vs_realizado`), enquanto `total_pago_restos_a_pagar` traz os Restos a Pagar quitados no ano e `total_pago` representa o desembolso total de caixa no ano (`pago_exercicio + total_pago_restos_a_pagar`). Já para listar notas de empenho individuais (`num_empenho`, `dat_empenho`, `dsc_empenho`, `ind_dec_licitacao`), use `empenho_empenho` (e) unido a `empenho_credorEmpenho` (ce) por `e.seq_empenho = ce.seq_empenho AND e.ano_referencia = ce.ano_referencia`.",
             "Colunas `vlr_*` em `VIEW`s não tipadas podem ser VARCHAR: use `CAST(vlr_... AS DECIMAL(18,2))` ou `TRY_CAST(vlr_... AS DECIMAL(18,2))` em somas.",
             "RANKING DE FORNECEDORES / EMPRESAS PRIVADAS vs. REPASSES PÚBLICOS: Em `vw_gold_execucao_despesa_credor` e `vw_gold_fornecedores_qsa_360`, quando a pergunta pedir maiores fornecedores, empresas contratadas ou prestadores privados, filtre SEMPRE `WHERE natureza_credor = 'EMPRESA_PRIVADA'`, o que expurga automaticamente folha sem detalhamento (`FOLHA_OU_SEM_DETALHAMENTO`), repasses intragovernamentais (`INTRAGOVERNAMENTAL_MUNICIPIO`), tributos/consórcios/entes públicos (`ENTE_PUBLICO_TRIBUTO_CONSORCIO`, como INSS/FGTS/RFB/TJ), concessionárias estatais (`ESTATAL_CONCESSIONARIA_BANCO`, como energia/saneamento/bancos) e filantrópicas/Santas Casas (`SEM_FINS_LUCRATIVOS`). Agrupe por `COALESCE(doc_credor_raiz, num_doc_credor)` usando `MAX(nom_credor)` e `MAX(num_doc_credor)` para consolidar filiais do mesmo grupo CNPJ e variações de grafia sem duplicar linhas!",
@@ -800,7 +800,16 @@ class DataCatalog:
         yr_col: Optional[str],
         max_yr: int,
     ) -> Optional[int]:
+        today_dt = date.today()
         yr_filter = f"WHERE TRY_CAST({yr_col} AS INTEGER) = {max_yr}" if yr_col else ""
+
+        def _clamp_mo(m_val: int) -> int:
+            if max_yr > today_dt.year:
+                return 1
+            if max_yr == today_dt.year:
+                return min(m_val, today_dt.month)
+            return m_val
+
         try:
             if "seq_dat_pagamento" in col_names:
                 c_pag = col_names["seq_dat_pagamento"]
@@ -810,7 +819,7 @@ class DataCatalog:
                 if r and r[0] and len(str(r[0])) >= 6 and str(r[0])[:6].isdigit():
                     mo = int(str(r[0])[4:6])
                     if 1 <= mo <= 12:
-                        return mo
+                        return _clamp_mo(mo)
             if "ultimo_mes_despesa" in col_names and "ultimo_mes_receita" in col_names:
                 r = cur.execute(
                     f"SELECT GREATEST(COALESCE(MAX(TRY_CAST(ultimo_mes_despesa AS INTEGER)), 0), "
@@ -818,21 +827,29 @@ class DataCatalog:
                     f"FROM {meta.table_name} {yr_filter}"
                 ).fetchone()
                 if r and r[0] and 1 <= int(r[0]) <= 12:
-                    return int(r[0])
+                    return _clamp_mo(int(r[0]))
             if "ultimo_mes_exercicio" in col_names:
                 r = cur.execute(
                     f"SELECT MAX(TRY_CAST(ultimo_mes_exercicio AS INTEGER)) FROM {meta.table_name} {yr_filter}"
                 ).fetchone()
                 if r and r[0] and 1 <= int(r[0]) <= 12:
-                    return int(r[0])
+                    return _clamp_mo(int(r[0]))
             for m_key in ("num_mesexercicio", "num_mes_referencia"):
                 if m_key in col_names:
                     mc = col_names[m_key]
+                    exec_extra = ""
+                    if "vlr_realizadoateperiodo" in col_names:
+                        rc = col_names["vlr_realizadoateperiodo"]
+                        exec_extra = f'{" AND " if yr_filter else "WHERE "}COALESCE(TRY_CAST("{rc}" AS DOUBLE), 0.0) <> 0.0'
+                    elif "vlr_empenhado" in col_names and "vlr_liquidado" in col_names:
+                        ec = col_names["vlr_empenhado"]
+                        lc = col_names["vlr_liquidado"]
+                        exec_extra = f'{" AND " if yr_filter else "WHERE "}(COALESCE(TRY_CAST("{ec}" AS DOUBLE), 0.0) > 0.0 OR COALESCE(TRY_CAST("{lc}" AS DOUBLE), 0.0) > 0.0)'
                     r = cur.execute(
-                        f'SELECT MAX(TRY_CAST("{mc}" AS INTEGER)) FROM {meta.table_name} {yr_filter}'
+                        f'SELECT MAX(TRY_CAST("{mc}" AS INTEGER)) FROM {meta.table_name} {yr_filter}{exec_extra}'
                     ).fetchone()
                     if r and r[0] and 1 <= int(r[0]) <= 12:
-                        return int(r[0])
+                        return _clamp_mo(int(r[0]))
             for d_key in ("dat_empenho", "dat_pagamento", "dat_liquidacao", "dat_assinatura", "dat_abertura", "dat_pub_edital"):
                 if d_key in col_names:
                     dc = col_names[d_key]
@@ -937,8 +954,12 @@ class DataCatalog:
             except Exception:
                 pass
 
+        today_dt = date.today()
+        if best_month and 1 <= best_month <= 12 and self.max_data_year >= today_dt.year:
+            best_month = min(best_month, today_dt.month)
+
         if not sicom_years:
-            self.latest_remittance_month = 12
+            self.latest_remittance_month = min(12, today_dt.month) if self.max_data_year >= today_dt.year else 12
             self.latest_remittance_human = (
                 f"exercício {self.max_data_year} nas bases federais oficiais (SICONFI/STN, IBGE, DATASUS e CGU; "
                 f"pacotes SICOM/TCE-MG pendentes de ingestão)"
@@ -949,10 +970,11 @@ class DataCatalog:
         elif best_month and 1 <= best_month <= 12:
             self.latest_remittance_month = best_month
             m_name = months_pt[best_month]
+            is_open_civil_year = self.max_data_year >= today_dt.year or best_month < 12
             suffix = (
-                f"exercício {self.max_data_year} em remessa parcial acumulada no SICOM/TCE-MG"
-                if best_month < 12
-                else f"exercício {self.max_data_year} encerrado (12 meses) no SICOM/TCE-MG"
+                f"exercício {self.max_data_year} em execução parcial acumulada nas fontes abertas oficiais"
+                if is_open_civil_year
+                else f"exercício {self.max_data_year} encerrado (12 meses)"
             )
             self.latest_remittance_human = f"{m_name} de {self.max_data_year} ({suffix})"
             self.source_freshness_map = {
@@ -1104,18 +1126,22 @@ class DataCatalog:
             return f"exercício {eff_max_yr} (última remessa granular de {scope_desc} carregada no SICOM/TCE-MG)"
 
         if eff_mo and 1 <= eff_mo <= 12:
+            today_dt = date.today()
+            if eff_max_yr >= today_dt.year:
+                eff_mo = min(eff_mo, today_dt.month)
             m_name = months_pt[eff_mo]
+            is_open_yr = eff_max_yr >= today_dt.year or eff_mo < 12
             suffix = (
-                f"exercício {eff_max_yr} em remessa parcial acumulada no SICOM/TCE-MG"
-                if eff_mo < 12
-                else f"exercício {eff_max_yr} encerrado (12 meses) no SICOM/TCE-MG"
+                f"exercício {eff_max_yr} em execução parcial acumulada nas fontes abertas oficiais"
+                if is_open_yr
+                else f"exercício {eff_max_yr} encerrado (12 meses)"
             )
             return f"{m_name} de {eff_max_yr} ({suffix})"
         return self.latest_remittance_human
 
     def _compute_profile_cache_fingerprint(self) -> str:
         h = hashlib.sha256()
-        h.update(b"sim_catalog_profile_v4.5.1|")
+        h.update(b"sim_catalog_profile_v4.8|")
         h.update(self.tenant_id.encode("utf-8"))
         for t_low in sorted(self.tables.keys()):
             cols_sig = ",".join(f"{c.name}:{c.physical_type}" for c in self.tables[t_low].columns)

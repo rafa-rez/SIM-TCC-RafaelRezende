@@ -1,0 +1,74 @@
+{
+  "tenant_id": "belo_horizonte_mg_3106200",
+  "municipality_name": "Belo Horizonte",
+  "state_uf": "MG",
+  "ibge_code": "3106200",
+  "plan_code": "metropole_capital",
+  "plan_name": "Metrópole & Capital — Governança de Dados Abertos CKAN & Controladoria 360º (> 500k hab.)",
+  "monthly_quota_requests": 150000,
+  "status_dados_externos": "SINCRONIZACAO_AUTOMATICA_API_ATIVA",
+  "hospital_referencia": "HOSPITAL MUNICIPAL ODILON BEHRENS (HOB)",
+  "diario_oficial": {
+    "tipo": "api_dom_eletronico",
+    "veiculo": "Diário Oficial do Município de Belo Horizonte (DOM-BH)",
+    "chunker": "ActBoundaryChunker"
+  },
+  "connector_profile": {
+    "erp_family": "ckan_portal",
+    "gazette_family": "dom_proprio_api",
+    "ckan_base_url": "https://dados.pbh.gov.br",
+    "dom_api_base_url": "https://api-dom.pbh.gov.br/api",
+    "ocr_fallback": false
+  },
+  "orgaos_map": {
+    "01": "CÂMARA MUNICIPAL DE BELO HORIZONTE",
+    "02": "PREFEITURA MUNICIPAL DE BELO HORIZONTE",
+    "03": "SUPERINTENDÊNCIA DE LIMPEZA URBANA / HOSPITAL ODILON BEHRENS / AUTARQUIAS PBH"
+  },
+  "local_aliases": {
+    "hospital": "HOSPITAL MUNICIPAL ODILON BEHRENS",
+    "limpeza_urbana": "SUPERINTENDÊNCIA DE LIMPEZA URBANA (SLU)",
+    "transporte": "BHTRANS / SUMOB",
+    "informatica": "PRODABEL"
+  },
+  "institutional_cnpjs": {
+    "18715383000140": "PREFEITURA MUNICIPAL DE BELO HORIZONTE (EXECUTIVO)",
+    "17316563000196": "CÂMARA MUNICIPAL DE BELO HORIZONTE (LEGISLATIVO)",
+    "16692121000181": "HOSPITAL MUNICIPAL ODILON BEHRENS (HOB)"
+  },
+  "ibge_series": [],
+  "ideb_series": [
+    {
+      "ano": 2019,
+      "rede": "Pública Municipal",
+      "anos_iniciais": 6.4,
+      "anos_finais": 5.3,
+      "meta_iniciais": 6.3,
+      "escolas": null,
+      "matriculas": null,
+      "taxa_aprovacao": null
+    },
+    {
+      "ano": 2023,
+      "rede": "Pública Municipal",
+      "anos_iniciais": 6.3,
+      "anos_finais": 5.2,
+      "meta_iniciais": 6.5,
+      "escolas": null,
+      "matriculas": null,
+      "taxa_aprovacao": 98.9
+    }
+  ],
+  "official_districts": [
+    "Barreiro",
+    "Belo Horizonte",
+    "Centro-Sul",
+    "Leste",
+    "Nordeste",
+    "Noroeste",
+    "Norte",
+    "Oeste",
+    "Pampulha",
+    "Venda Nova"
+  ]
+}

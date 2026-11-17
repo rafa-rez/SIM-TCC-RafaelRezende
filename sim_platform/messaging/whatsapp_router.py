@@ -178,14 +178,18 @@ class WhatsAppTenantRouter:
                     uf = str(data.get("state_uf") or "MG").strip().upper()
                     ibge = str(data.get("ibge_code") or "").strip()
                     city_slug = _to_slug(m_name)
-                    first_tok = city_slug.split("_")[0] if city_slug else tid
+                    sig_toks = [t for t in city_slug.split("_") if t and t not in _STOPWORDS_PT]
+                    if len(sig_toks) >= 2 and sig_toks[0] in ("belo", "governador", "sao", "santa", "santo", "ouro", "pouso", "pocos"):
+                        prim_cmd = f"/{''.join(t[0] for t in sig_toks)}" if len(sig_toks) == 2 and sig_toks[0] in ("belo", "governador") else f"/{city_slug}"
+                    else:
+                        prim_cmd = f"/{city_slug.split('_')[0]}" if city_slug else f"/{tid}"
                     tenants_by_id[tid] = {
                         "tenant_id": tid,
                         "municipality_name": m_name,
                         "state_uf": uf,
                         "ibge_code": ibge,
                         "city_slug": city_slug,
-                        "primary_command": f"/{first_tok}",
+                        "primary_command": prim_cmd,
                     }
 
             if "caete_mg_3110004" not in tenants_by_id and not tenants_by_id:
@@ -231,12 +235,17 @@ class WhatsAppTenantRouter:
                 if tokens:
                     if len(tokens[0]) >= 3:
                         first_token_candidates.setdefault(tokens[0], []).append(tid)
+                    if len(tokens) >= 2 and len(tokens[-1]) >= 4 and tokens[-1] != tokens[0]:
+                        first_token_candidates.setdefault(tokens[-1], []).append(tid)
                     sig_tokens = [t for t in tokens if t not in _STOPWORDS_PT]
                     if len(sig_tokens) >= 2:
                         ns_slug = "_".join(sig_tokens)
                         ns_compact = "".join(sig_tokens)
+                        initials = "".join(t[0] for t in sig_tokens if t)
                         nostop_slug_candidates.setdefault(ns_slug, []).append(tid)
                         nostop_slug_candidates.setdefault(ns_compact, []).append(tid)
+                        if len(initials) >= 2:
+                            nostop_slug_candidates.setdefault(initials, []).append(tid)
 
                 space_name = city_slug.replace("_", " ")
                 if space_name:
@@ -477,12 +486,14 @@ class WhatsAppTenantRouter:
                     return WhatsAppRouteResult(def_tid, clean_q, None)
                 return WhatsAppRouteResult(def_tid, "", self._build_reset_reply(def_tid))
 
-            # 2. Comando `/cidades` (lista as cidades disponíveis)
-            if cmd_slug in ("cidades", "municipios", "ajuda_cidades", "listar_cidades"):
+            # 2. Comandos `/cidades`, `/ajuda`, `/menu`, `/oi`, `/start` (menu institucional e lista de cidades disponíveis)
+            if cmd_slug in ("cidades", "municipios", "ajuda_cidades", "listar_cidades", "ajuda", "menu", "help", "comandos", "oi", "ola", "start", "inicio"):
                 cur_meta = self._tenants_by_id.get(effective_tid) or {"municipality_name": effective_tid, "state_uf": "MG"}
                 reply = (
-                    f"*Município atual desta conversa:* *{cur_meta['municipality_name']}/{cur_meta['state_uf']}*.\n\n"
-                    f"Comandos disponíveis:\n{self._format_available_commands_summary()}"
+                    f"*SIM — Sistema de Inteligência Municipal*\n"
+                    f"*Município ativo nesta conversa:* *{cur_meta['municipality_name']}/{cur_meta['state_uf']}*.\n\n"
+                    f"Envie sua pergunta em texto ou áudio sobre orçamento, receitas, despesas, folha, contratos, frota, saúde, educação ou Diário Oficial.\n\n"
+                    f"Comandos para alternar de município:\n{self._format_available_commands_summary()}"
                 )
                 return WhatsAppRouteResult(effective_tid, "", reply)
 

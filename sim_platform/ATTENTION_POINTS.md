@@ -172,6 +172,28 @@
 
 ---
 
+## F11. Invariantes Multi-ERP das 5 Cidades-Canário de MG (SIM v4.8)
+
+1. **Matriz Homologada dos 5 Modelos de Portais Abertos de MG (`12/12` Readiness):**
+   - **M1 (`cidade360` + SICOM + Jornal PDF):** `caete_mg_3110004` (Caeté/MG)
+   - **M2 (`betha_cloud` + SICONFI RREO + AMM-MG):** `lagoa_da_prata_mg_3137205` (Lagoa da Prata/MG)
+   - **M3 (`memory_portal` iLAI/OpenKnowledge FastAPI + DiOE/DOSP):** `matozinhos_mg_3141108` (Matozinhos/MG — multi-entidade Prefeitura `9BHSQH` + Câmara `9BHSQY`)
+   - **M4 (`portalfacil_el` Actcon/Azure + E&L/SMARapd + DOM PDF):** `governador_valadares_mg_3127701` (Governador Valadares/MG — `idCliente=94`)
+   - **M5 (`ckan_portal` CKAN v3 `dados.pbh.gov.br` + DOM-BH REST API):** `belo_horizonte_mg_3106200` (Belo Horizonte/MG — Metrópole/Capital)
+2. **Art. 63 da LRF (`< 50 mil` hab.) — `RREO Simplificado` e `RGF Simplificado` no SICONFI/STN:**
+   - ~780 dos 853 municípios mineiros (ex.: Matozinhos) entregam `RREO Simplificado` e `RGF Simplificado` semestralmente. O coletor SICONFI deve consultar automaticamente os anexos simplificados quando o padrão retornar vazio.
+   - O `RREO-Anexo 02` (Despesa por Função/Subfunção) **não publica coluna de pagamento (`vlr_pago`)** — apenas dotação, empenhado e liquidado. Portanto, `vlr_pago` nas linhas residuais do RREO deve permanecer `NULL` (jamais `0.00` falso) e queries sobre `despesa_despesa` devem projetar `SUM(vlr_liquidado)` e `SUM(vlr_empenhado)`.
+3. **Armadilha do Zero Significativo no PCASP (`1.1.1.2.50` IPTU vs. `1.1.1.2.53` ITBI):**
+   - **PROIBIDO:** Usar `digits.rstrip("0")` ao podar contas sintéticas-pai de receita! Em códigos como `1.1.1.2.50.00.00` (IPTU) ou `1.7.2.1.50.00.00` (ICMS), `rstrip("0")` amputa o zero do segmento `.50` virando `'11125'`, que colide como prefixo de `'11125301'` (ITBI) e apaga 100% do IPTU!
+   - **OBRIGATÓRIO:** Usar `_significant_pcasp_prefix(...)` removendo apenas segmentos finais inteiramente zerados (`00`).
+4. **Proibição Contábil de Fabricar Empenhos/Pagamentos a partir de Contratos Plurianuais PNCP (Lei 4.320/64, arts. 60–64):**
+   - **PROIBIDO:** Converter `vlr_contrato` global (frequentemente de 24 a 60 meses no PNCP/CKAN) em linhas sintéticas de `empenho_empenho`, `despesa_liquidacao` ou `despesa_pagamento`. Quando o portal CKAN publica apenas execução agregada por UO/Função e contratos homologados, manter `empenho_empenho`/`despesa_pagamento` ausentes (`is_populated = False`) para que o catálogo direcione consultas de fornecedores/contratos a `vw_gold_contratos_vigencia_aditivos`.
+5. **Teto Civil de Competência (`num_mesexercicio`) e Anti-Colisão de Prefixo Municipal:**
+   - Linhas de previsão LOA (`vlr_realizadoateperiodo = 0`) frequentemente trazem `num_mesexercicio = 12` em pleno exercício aberto, induzindo o catálogo a anunciar *"dezembro de 2026 (exercício encerrado)"*. Sempre filtrar `MAX(num_mesexercicio) FILTER (WHERE realizado <> 0)` e limitar pelo mês civil atual (`date.today()`).
+   - No `SemanticIntentGuardrail`, nunca proteger tokens isolados de nomes compostos (`Lagoa`, `Belo`, `Ouro`) antes da varredura de bigramas/trigramas IBGE, garantindo bloqueio imediato de cidades irmãs (`Lagoa Santa` em `Lagoa da Prata`, `Belo Vale` em `Belo Horizonte`, `Ouro Branco` em `Ouro Preto`).
+
+---
+
 ## Gate Automático Obrigatório Pós-Mudança
 
 Sempre que alterar ingestão, catálogo, Gold Views ou cadastrar/atualizar uma cidade, execute:

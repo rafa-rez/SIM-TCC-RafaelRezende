@@ -73,6 +73,33 @@ COMMERCIAL_PLANS: Dict[str, Dict[str, Any]] = {
         "overage_lot_requests": 10000,
         "overage_lot_price_brl": 1500.00,
     },
+    "piloto_dispensa": {
+        "plan_code": "piloto_dispensa",
+        "plan_name": "Piloto Fast-Track 12 Meses — Dispensa Art. 75, II Lei 14.133/2021 (Até R$ 63.800/ano)",
+        "monthly_quota_requests": 8000,
+        "monthly_price_brl": 4900.00,
+        "setup_price_brl": 5000.00,
+        "overage_lot_requests": 10000,
+        "overage_lot_price_brl": 1500.00,
+    },
+    "consorcio": {
+        "plan_code": "consorcio",
+        "plan_name": "Cota Consórcio Público Intermunicipal (Art. 75 § 2º Lei 14.133/2021 / ARP)",
+        "monthly_quota_requests": 15000,
+        "monthly_price_brl": 9900.00,
+        "setup_price_brl": 10000.00,
+        "overage_lot_requests": 10000,
+        "overage_lot_price_brl": 1500.00,
+    },
+    "metropole_capital": {
+        "plan_code": "metropole_capital",
+        "plan_name": "SIM Metrópole & Capital — Alta Escala GovTech (> 500 mil hab.)",
+        "monthly_quota_requests": 200000,
+        "monthly_price_brl": 54900.00,
+        "setup_price_brl": 65000.00,
+        "overage_lot_requests": 25000,
+        "overage_lot_price_brl": 3000.00,
+    },
 }
 
 
@@ -108,7 +135,7 @@ class TenantQuotaManager:
     def __init__(
         self,
         tenant_id: str = "caete_mg_3110004",
-        plan_code: str = "porte_2",
+        plan_code: Optional[str] = None,
         plan_name: Optional[str] = None,
         monthly_quota_requests: Optional[int] = None,
         daily_user_limit_whatsapp: int = 20,
@@ -123,12 +150,24 @@ class TenantQuotaManager:
     ) -> None:
         if sqlite_path is None and db_path is not None:
             sqlite_path = db_path
-        plan_meta = COMMERCIAL_PLANS.get(plan_code, COMMERCIAL_PLANS["porte_2"])
+        prof_meta: Dict[str, Any] = {}
+        if plan_code is None or plan_name is None or monthly_quota_requests is None:
+            try:
+                from sim_platform.ingestion.city_onboarding import load_tenant_profile
+
+                prof_meta = load_tenant_profile(tenant_id=tenant_id)
+            except Exception:
+                prof_meta = {}
+        eff_plan_code = str(plan_code or prof_meta.get("plan_code") or "porte_2").strip()
+        plan_meta = COMMERCIAL_PLANS.get(eff_plan_code, COMMERCIAL_PLANS["porte_2"])
         self.tenant_id = tenant_id
         self.plan_code = plan_meta["plan_code"]
-        self.plan_name = plan_name or plan_meta["plan_name"]
+        self.plan_name = str(plan_name or prof_meta.get("plan_name") or plan_meta["plan_name"])
+        prof_quota = prof_meta.get("monthly_quota_requests") if plan_code is None else None
         self.monthly_quota_requests = int(
-            monthly_quota_requests if monthly_quota_requests is not None else plan_meta["monthly_quota_requests"]
+            monthly_quota_requests
+            if monthly_quota_requests is not None
+            else (prof_quota if prof_quota is not None else plan_meta["monthly_quota_requests"])
         )
         self.monthly_price_brl = float(plan_meta["monthly_price_brl"])
         self.setup_price_brl = float(plan_meta["setup_price_brl"])
@@ -144,6 +183,8 @@ class TenantQuotaManager:
         self._cache: OrderedDict[str, Tuple[float, Dict[str, Any]]] = OrderedDict()
         # (today_str, count, notified_friendly_msg) — limitado em RAM a max_daily_users_ram (10.000 chaves/dia)
         self._daily_user_counts: OrderedDict[str, Tuple[str, int, bool]] = OrderedDict()
+        # Janela deslizante anti-abuso de IP para `web_public` anônimo
+        self._web_ip_windows: OrderedDict[str, List[float]] = OrderedDict()
 
         self.current_month = datetime.now().strftime("%Y-%m")
         self.total_requests = 0
@@ -211,6 +252,9 @@ class TenantQuotaManager:
         try:
             self.sqlite_path.parent.mkdir(parents=True, exist_ok=True)
             with sqlite3.connect(str(self.sqlite_path), timeout=5.0) as con:
+                con.execute("PRAGMA journal_mode=WAL;")
+                con.execute("PRAGMA synchronous=NORMAL;")
+                con.execute("PRAGMA busy_timeout=5000;")
                 con.execute(
                     """
                     CREATE TABLE IF NOT EXISTS monthly_ledger (
@@ -417,6 +461,47 @@ class TenantQuotaManager:
             self.audio_transcriptions += 1
             self._flush_ledger_sqlite()
 
+    def check_web_public_ip_rate_limit(
+        self,
+        client_ip: str,
+        per_minute_limit: int = 30,
+        daily_ip_limit: int = 200,
+    ) -> Tuple[bool, Optional[str]]:
+        """
+        Protege a franquia mensal do município contra exaustão de cota por bots anônimos em `POST /chat` (`web_public`).
+        """
+        ip_key = f"webip:{(client_ip or 'unknown').strip()}"
+        now = time.time()
+        with self._lock:
+            recent = [ts for ts in self._web_ip_windows.get(ip_key, []) if (now - ts) <= 60.0]
+            if len(recent) >= per_minute_limit:
+                self.rate_limited_blocks += 1
+                self._flush_ledger_sqlite()
+                return (
+                    False,
+                    f"Limite de proteção anti-automação atingido ({per_minute_limit} consultas/minuto por IP público). Aguarde alguns segundos e tente novamente.",
+                )
+            today = datetime.now().strftime("%Y-%m-%d")
+            day_rec = self._daily_user_counts.get(ip_key)
+            day_cnt = int(day_rec[1]) if (day_rec and day_rec[0] == today) else 0
+            if day_cnt >= daily_ip_limit:
+                self.rate_limited_blocks += 1
+                self._flush_ledger_sqlite()
+                return (
+                    False,
+                    f"Limite diário de uso público anônimo por endereço IP ({daily_ip_limit} consultas/dia) atingido. Para uso institucional ilimitado, autentique-se no Portal SIM.",
+                )
+            recent.append(now)
+            self._web_ip_windows[ip_key] = recent
+            self._web_ip_windows.move_to_end(ip_key)
+            while len(self._web_ip_windows) > 4096:
+                self._web_ip_windows.popitem(last=False)
+            self._daily_user_counts[ip_key] = (today, day_cnt + 1, False)
+            self._daily_user_counts.move_to_end(ip_key)
+            while len(self._daily_user_counts) > self.max_daily_users_ram:
+                self._daily_user_counts.popitem(last=False)
+            return True, None
+
     @staticmethod
     def _is_payload_cache_hygienic(
         payload: Dict[str, Any],
@@ -427,6 +512,7 @@ class TenantQuotaManager:
         Jamais armazena ou reutiliza respostas de:
         - Follow-ups dependentes de contexto conversacional (`is_contextual_followup == True`);
         - Consultas analíticas (`sql_analytics` / `hybrid_sql_rag`) que retornaram `0 linhas`;
+        - Consultas documentais (`rag_diario_oficial`) que retornaram `0 atos` (`rag_chunks` vazio);
         - Fallbacks de erro, bloqueios de segurança ou pedidos de esclarecimento.
         """
         if is_contextual_followup or payload.get("is_contextual_followup"):
@@ -439,6 +525,10 @@ class TenantQuotaManager:
         if intent in ("sql_analytics", "hybrid_sql_rag"):
             rows = payload.get("sql_rows")
             if not isinstance(rows, list) or len(rows) == 0:
+                return False
+        if intent == "rag_diario_oficial":
+            chunks = payload.get("rag_chunks")
+            if not isinstance(chunks, list) or len(chunks) == 0:
                 return False
         return True
 

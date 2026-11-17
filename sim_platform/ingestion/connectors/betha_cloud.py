@@ -199,9 +199,10 @@ class BethaCloudConnector(BaseMunicipalConnector):
             )
 
             cred_obj = rec.get("credor") if isinstance(rec.get("credor"), dict) else {}
-            doc_cred = digits_only(
+            raw_doc_cred = digits_only(
                 rec.get("cpfCnpjCredor") or cred_obj.get("cpfCnpj") or cred_obj.get("documento") or rec.get("documentoCredor")
             )
+            doc_cred = f"***.{raw_doc_cred[3:6]}.{raw_doc_cred[6:9]}-**" if len(raw_doc_cred) == 11 else raw_doc_cred
             nom_cred = str(
                 rec.get("nomeCredor") or cred_obj.get("nome") or rec.get("favorecido") or "NÃO INFORMADO"
             ).strip()
@@ -291,9 +292,10 @@ class BethaCloudConnector(BaseMunicipalConnector):
                 betha_id or f"{ano}-{cod_orgao}-{num_emp}-{num_pag}",
             )
             cred_obj = rec.get("credor") if isinstance(rec.get("credor"), dict) else {}
-            doc_cred = digits_only(
+            raw_doc_cred = digits_only(
                 rec.get("cpfCnpjCredor") or cred_obj.get("cpfCnpj") or cred_obj.get("documento") or rec.get("documentoCredor")
             )
+            doc_cred = f"***.{raw_doc_cred[3:6]}.{raw_doc_cred[6:9]}-**" if len(raw_doc_cred) == 11 else raw_doc_cred
             nom_cred = str(
                 rec.get("nomeCredor") or cred_obj.get("nome") or rec.get("favorecido") or "NÃO INFORMADO"
             ).strip()
@@ -339,8 +341,13 @@ class BethaCloudConnector(BaseMunicipalConnector):
             betha_despesas_rows,
             fallback_key_fields=("funcao", "dsc_funcao", "mes", "valorLiquidado"),
         )
+        from datetime import date as _date
+
         cod_mun_int = int(self.ibge_code)
         seq_orgao_pref, cod_orgao_pref = self._resolve_orgao_codes("02", self.municipality_name)
+        seq_orgao_cam, cod_orgao_cam = self._resolve_orgao_codes("01", f"CÂMARA MUNICIPAL DE {self.municipality_name}")
+        today_dt = _date.today()
+        default_mes = max(1, today_dt.month - 1) if int(ano_referencia) >= today_dt.year and today_dt.month < 12 else 12
 
         local_by_func: Dict[str, Dict[str, float]] = {}
         silver_rows: List[Dict[str, Any]] = []
@@ -360,13 +367,14 @@ class BethaCloudConnector(BaseMunicipalConnector):
             agg["liquidado"] = round(agg["liquidado"] + v_liq, 2)
             agg["pago"] = round(agg["pago"] + v_pag, 2)
 
+            is_leg_local = norm_fn == "LEGISLATIVA"
             silver_rows.append(
                 {
-                    "seq_orgao": seq_orgao_pref,
+                    "seq_orgao": seq_orgao_cam if is_leg_local else seq_orgao_pref,
                     "cod_municipio": cod_mun_int,
-                    "cod_orgao": cod_orgao_pref,
+                    "cod_orgao": cod_orgao_cam if is_leg_local else cod_orgao_pref,
                     "num_anoexercicio": int(ano_referencia),
-                    "num_mesexercicio": int(r.get("num_mesexercicio") or r.get("mes") or 12),
+                    "num_mesexercicio": int(r.get("num_mesexercicio") or r.get("mes") or default_mes),
                     "dsc_funcao": canon_label,
                     "dsc_subfuncao": str(r.get("dsc_subfuncao") or r.get("subfuncao") or ""),
                     "dsc_fonterecurso": str(r.get("dsc_fonterecurso") or r.get("fonteRecurso") or "CONSOLIDADO PORTAL"),
@@ -404,8 +412,8 @@ class BethaCloudConnector(BaseMunicipalConnector):
                 bucket["empenhado"] = val
             elif "LIQUIDADAS ATE O BIMESTRE" in col_norm:
                 bucket["liquidado"] = val
-            elif "PAGAS ATE O BIMESTRE" in col_norm:
-                bucket["pago"] = val
+            elif "PAGAS ATE O BIMESTRE" in col_norm or "DESPESAS PAGAS" in col_norm:
+                bucket["pago"] = max(bucket["pago"], val)
 
         reconciled_adjustments: List[Dict[str, Any]] = []
         for fn_key, sic_tot in sorted(siconfi_by_func.items()):
@@ -419,14 +427,19 @@ class BethaCloudConnector(BaseMunicipalConnector):
             if sic_liq > 0 and (loc_tot is None or (diff_liq > 0 and (diff_liq / sic_liq) > 0.01)):
                 delta_prev = max(0.0, round(sic_tot["previsto"] - (loc_tot["previsto"] if loc_tot else 0.0), 2))
                 delta_emp = max(0.0, round(sic_tot["empenhado"] - (loc_tot["empenhado"] if loc_tot else 0.0), 2))
-                delta_pag = max(0.0, round(sic_tot["pago"] - (loc_tot["pago"] if loc_tot else 0.0), 2))
+                delta_pag: Optional[float] = (
+                    max(0.0, round(sic_tot["pago"] - (loc_tot["pago"] if loc_tot else 0.0), 2))
+                    if sic_tot["pago"] > 0
+                    else None
+                )
+                is_leg_sic = fn_key == "LEGISLATIVA"
                 silver_rows.append(
                     {
-                        "seq_orgao": seq_orgao_pref,
+                        "seq_orgao": seq_orgao_cam if is_leg_sic else seq_orgao_pref,
                         "cod_municipio": cod_mun_int,
-                        "cod_orgao": cod_orgao_pref,
+                        "cod_orgao": cod_orgao_cam if is_leg_sic else cod_orgao_pref,
                         "num_anoexercicio": int(ano_referencia),
-                        "num_mesexercicio": 12,
+                        "num_mesexercicio": default_mes,
                         "dsc_funcao": canon_label,
                         "dsc_subfuncao": "CONCILIAÇÃO SICONFI RREO-ANEXO 02",
                         "dsc_fonterecurso": "CONCILIAÇÃO OFICIAL SICONFI/STN",

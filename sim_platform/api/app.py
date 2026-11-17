@@ -79,6 +79,7 @@ class SQLQueryRequest(BaseModel):
         default=None,
         description="Compatibilidade com o sub-workflow n8n (Tool_Executar_SQL_Sicom)",
     )
+    tenant_id: Optional[str] = None
     enforce_limit: bool = True
     allowed_sources: Optional[List[str]] = None
     explicit_tables: Optional[List[str]] = None
@@ -86,6 +87,7 @@ class SQLQueryRequest(BaseModel):
 
 class CatalogSelectRequest(BaseModel):
     question: str = ""
+    tenant_id: Optional[str] = None
     explicit_segments: Optional[List[str]] = None
     explicit_tables: Optional[List[str]] = None
     allowed_sources: Optional[List[str]] = None
@@ -95,6 +97,7 @@ class CatalogSelectRequest(BaseModel):
 class ChatRequest(BaseModel):
     question: Optional[str] = None
     pergunta_usuario: Optional[str] = None
+    tenant_id: Optional[str] = None
     session_id: str = "default"
     role: str = "citizen"
     gabinete_id: Optional[str] = None
@@ -629,6 +632,22 @@ def create_app(
         f"(tabelas={len(init_rt.db_manager.catalog.tables)}, atos_rag={len(init_rt.rag_retriever.corpus_chunks)})"
     )
 
+    login_fail_windows: Dict[str, List[float]] = {}
+    login_fail_lock = threading.Lock()
+
+    def resolve_request_runtime(requested_tid: Optional[str] = None) -> TenantRuntime:
+        tid_clean = (requested_tid or "").strip()
+        if not tid_clean:
+            return runtime_pool.get_active()
+        if not re.match(r"^[a-z0-9_]{3,80}$", tid_clean) or not (
+            DEFAULT_REPO_ROOT / "tenants" / f"{tid_clean}.json"
+        ).is_file():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Município '{tid_clean}' não encontrado ou não homologado nesta instância.",
+            )
+        return runtime_pool.get_or_load(tid_clean)
+
     def verify_auth(
         x_api_key: Optional[str] = Header(default=None),
         x_sim_role: str = Header(default="citizen"),
@@ -638,18 +657,22 @@ def create_app(
         import hmac as _hmac
 
         expected_key = (require_api_key if require_api_key is not None else os.environ.get("SIM_API_KEY") or "").strip()
+        api_key_authenticated = False
         if expected_key:
             if not x_api_key or not _hmac.compare_digest(x_api_key.strip(), expected_key):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="API Key inválida ou ausente (cabeçalho X-API-Key obrigatório).",
                 )
+            api_key_authenticated = True
         raw_tok = x_sim_token or (authorization.split(" ", 1)[1] if authorization and " " in authorization else authorization)
         if raw_tok:
             act_tid = runtime_pool.get_active().tenant.tenant_id
             claims = auth_manager.verify_token(raw_tok, expected_tenant_id=act_tid)
             if claims and claims.get("role"):
                 return str(claims["role"])
+            return "citizen"
+        if os.environ.get("SIM_ENV", "development").strip().lower() == "production" and not api_key_authenticated:
             return "citizen"
         role = (x_sim_role or "citizen").lower().strip()
         if role not in (
@@ -664,29 +687,51 @@ def create_app(
         authorization: Optional[str],
         x_sim_token: Optional[str],
         expected_tenant_id: Optional[str] = None,
+        requested_role: Optional[str] = None,
     ) -> bool:
         """
         Verifica se a requisição possui credencial institucional verificada (SSO / Login RBAC SQLite ou X-API-Key válida)
-        para desmascarar CPFs de pessoas físicas nos termos da LGPD (Lei 13.709/2018).
+        E perfil compatível de controladoria/auditoria para desmascarar CPFs nos termos da LGPD (Lei 13.709/2018).
         """
         import hmac
 
-        expected_key = (require_api_key if require_api_key is not None else os.environ.get("SIM_API_KEY") or "").strip()
-        if expected_key and x_api_key and hmac.compare_digest(x_api_key.strip(), expected_key):
-            return True
         raw_tok = x_sim_token or (authorization.split(" ", 1)[1] if authorization and " " in authorization else authorization)
         if raw_tok:
             eff_tid = expected_tenant_id or runtime_pool.get_active().tenant.tenant_id
             claims = auth_manager.verify_token(raw_tok, expected_tenant_id=eff_tid)
             if claims and claims.get("can_unmask_pii"):
+                if requested_role and requested_role.lower().strip() in ("citizen", "cidadao", "public"):
+                    return False
+                return True
+        expected_key = (require_api_key if require_api_key is not None else os.environ.get("SIM_API_KEY") or "").strip()
+        if expected_key and x_api_key and hmac.compare_digest(x_api_key.strip(), expected_key):
+            if requested_role is None or requested_role.lower().strip() in ("auditor", "admin", "controller", "controladoria"):
                 return True
         return False
 
     @app.post("/api/auth/login")
-    def login_institutional_endpoint(req: LoginRequest) -> Dict[str, Any]:
+    def login_institutional_endpoint(req: LoginRequest, request: Request) -> Dict[str, Any]:
+        import time as _time
+
+        client_ip = (request.client.host if request and request.client else "unknown").strip()
+        now_ts = _time.time()
+        with login_fail_lock:
+            recent_fails = [t for t in login_fail_windows.get(client_ip, []) if (now_ts - t) <= 300.0]
+            login_fail_windows[client_ip] = recent_fails
+            if len(recent_fails) >= 10:
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail="Muitas tentativas inválidas de login. Aguarde 5 minutos antes de tentar novamente.",
+                )
         res = auth_manager.authenticate_credentials(req.username, req.password)
         if res.get("status") != "sucesso":
+            with login_fail_lock:
+                arr = [t for t in login_fail_windows.get(client_ip, []) if (now_ts - t) <= 300.0]
+                arr.append(now_ts)
+                login_fail_windows[client_ip] = arr
             raise HTTPException(status_code=401, detail=res.get("detail", "Credenciais inválidas."))
+        with login_fail_lock:
+            login_fail_windows.pop(client_ip, None)
         _log(f"Login Institucional realizado: user={req.username} (role={res.get('user', {}).get('role')}, gabinete={res.get('user', {}).get('gabinete_id')})")
         return res
 
@@ -1271,7 +1316,7 @@ def create_app(
         if not raw_q:
             raise HTTPException(status_code=400, detail="Parâmetro 'q' (nome ou CNPJ/CPF) obrigatório.")
 
-        pii_role = role if is_pii_unmask_authorized(x_api_key, authorization, x_sim_token) else "citizen"
+        pii_role = role if is_pii_unmask_authorized(x_api_key, authorization, x_sim_token, requested_role=role) else "citizen"
         digits = "".join(ch for ch in raw_q if ch.isdigit())
         if len(digits) == 11 and pii_role == "citizen":
             raise HTTPException(
@@ -1406,14 +1451,39 @@ def create_app(
         aditivo_pct_threshold: float = 25.0,
         min_dispensas_recorrentes: int = 5,
         yoy_growth_pct_threshold: float = 100.0,
+        tenant_id: Optional[str] = None,
+        x_sim_tenant: Optional[str] = Header(default=None),
+        x_api_key: Optional[str] = Header(default=None),
+        authorization: Optional[str] = Header(default=None),
+        x_sim_token: Optional[str] = Header(default=None),
     ) -> Dict[str, Any]:
-        rt = runtime_pool.get_active()
+        rt = resolve_request_runtime(tenant_id or x_sim_tenant)
         rt.orchestrator._sync_catalog_freshness_if_hotswapped()
-        return rt.audit_engine.run_all_checks(
+        out = rt.audit_engine.run_all_checks(
             aditivo_pct_threshold=aditivo_pct_threshold,
             min_dispensas_recorrentes=min_dispensas_recorrentes,
             yoy_growth_pct_threshold=yoy_growth_pct_threshold,
         )
+        is_auth_caller, _ = _is_institutional_caller(
+            x_api_key, authorization, x_sim_token, expected_tenant_id=rt.tenant.tenant_id
+        )
+        if not is_auth_caller and isinstance(out.get("insights"), list):
+            from sim_platform.security.sql_guard import mask_sensitive_rows, mask_text_cpfs
+
+            redacted_insights = []
+            for item in out["insights"]:
+                cp = dict(item)
+                if os.environ.get("SIM_ENV", "development").strip().lower() == "production":
+                    cp["sql_executed"] = "-- SQL auditável disponível para sessões institucionais autenticadas --"
+                if isinstance(cp.get("rows"), list) and cp["rows"]:
+                    m_rows, _ = mask_sensitive_rows(cp["rows"], role="citizen")
+                    cp["rows"] = [
+                        {k: mask_text_cpfs(v) if isinstance(v, str) else v for k, v in r.items()}
+                        for r in m_rows
+                    ]
+                redacted_insights.append(cp)
+            out = {**out, "insights": redacted_insights}
+        return out
 
     @app.post("/api/audio/transcribe")
     def transcribe_audio_endpoint(
@@ -1438,8 +1508,11 @@ def create_app(
         return tr_out
 
     @app.get("/api/rag/collection")
-    def get_rag_collection_overview() -> Dict[str, Any]:
-        rt = runtime_pool.get_active()
+    def get_rag_collection_overview(
+        tenant_id: Optional[str] = None,
+        x_sim_tenant: Optional[str] = Header(default=None),
+    ) -> Dict[str, Any]:
+        rt = resolve_request_runtime(tenant_id or x_sim_tenant)
         rt.orchestrator._sync_catalog_freshness_if_hotswapped()
         status_info = rt.sync_manager.check_status()
         return {
@@ -1548,10 +1621,12 @@ def create_app(
     def select_catalog_schema(
         req: CatalogSelectRequest,
         role: str = Depends(verify_auth),
+        x_sim_tenant: Optional[str] = Header(default=None),
     ) -> Dict[str, Any]:
-        rt = runtime_pool.get_active()
+        rt = resolve_request_runtime(req.tenant_id or x_sim_tenant)
         rt.orchestrator._sync_catalog_freshness_if_hotswapped()
-        effective_role = req.role if req.role != "citizen" else role
+        is_prod = os.environ.get("SIM_ENV", "development").strip().lower() == "production"
+        effective_role = role if is_prod else (req.role if req.role != "citizen" else role)
         sel = rt.db_manager.catalog.select_tables_for_query(
             question=req.question,
             explicit_segments=req.explicit_segments,
@@ -1585,12 +1660,21 @@ def create_app(
         x_api_key: Optional[str] = Header(default=None),
         authorization: Optional[str] = Header(default=None),
         x_sim_token: Optional[str] = Header(default=None),
+        x_sim_tenant: Optional[str] = Header(default=None),
     ) -> Dict[str, Any]:
-        rt = runtime_pool.get_active()
+        rt = resolve_request_runtime(req.tenant_id or x_sim_tenant)
         rt.orchestrator._sync_catalog_freshness_if_hotswapped()
         raw_sql = (req.query or req.pergunta_usuario or "").strip()
         effective_query_role = (
-            role if is_pii_unmask_authorized(x_api_key, authorization, x_sim_token) else "citizen"
+            role
+            if is_pii_unmask_authorized(
+                x_api_key,
+                authorization,
+                x_sim_token,
+                expected_tenant_id=rt.tenant.tenant_id,
+                requested_role=role,
+            )
+            else "citizen"
         )
         effective_enforce_limit = True if effective_query_role == "citizen" else bool(req.enforce_limit)
         _log(
@@ -1651,12 +1735,14 @@ def create_app(
         x_api_key: Optional[str],
         authorization: Optional[str],
         x_sim_token: Optional[str],
+        expected_tenant_id: Optional[str] = None,
     ) -> Tuple[bool, Optional[Dict[str, Any]]]:
         import hmac as _hmac
 
         token_claims = auth_manager.resolve_claims_from_headers(
             authorization=authorization,
             x_sim_token=x_sim_token,
+            expected_tenant_id=expected_tenant_id,
         )
         expected_key = (require_api_key if require_api_key is not None else os.environ.get("SIM_API_KEY") or "").strip()
         api_key_ok = bool(expected_key and x_api_key and _hmac.compare_digest(x_api_key.strip(), expected_key))
@@ -1677,18 +1763,38 @@ def create_app(
     @app.post("/chat")
     def chat_endpoint(
         req: ChatRequest,
+        request: Request,
         role: str = Depends(verify_auth),
         x_api_key: Optional[str] = Header(default=None),
         authorization: Optional[str] = Header(default=None),
         x_sim_token: Optional[str] = Header(default=None),
         x_sim_gabinete: Optional[str] = Header(default=None),
+        x_sim_tenant: Optional[str] = Header(default=None),
     ) -> Dict[str, Any]:
         from sim_platform.security.sql_guard import mask_sensitive_rows, mask_text_cpfs
 
-        rt = runtime_pool.get_active()
+        rt = resolve_request_runtime(req.tenant_id or x_sim_tenant)
         question = (req.question or req.pergunta_usuario or "").strip()
-        effective_role = req.role if req.role != "citizen" else role
-        is_auth_caller, token_claims = _is_institutional_caller(x_api_key, authorization, x_sim_token)
+        is_auth_caller, token_claims = _is_institutional_caller(
+            x_api_key, authorization, x_sim_token, expected_tenant_id=rt.tenant.tenant_id
+        )
+        is_prod = os.environ.get("SIM_ENV", "development").strip().lower() == "production"
+        if is_prod and not is_auth_caller:
+            effective_role = "citizen"
+        elif token_claims and token_claims.get("role"):
+            effective_role = str(token_claims["role"]) if req.role == "citizen" else req.role
+        else:
+            effective_role = req.role if req.role != "citizen" else role
+
+        if not is_auth_caller and "PYTEST_CURRENT_TEST" not in os.environ:
+            client_ip = (request.client.host if request and request.client else "unknown").strip()
+            if client_ip not in ("127.0.0.1", "::1", "localhost", "testclient"):
+                allowed_ip, ip_msg = rt.orchestrator.quota_manager.check_web_public_ip_rate_limit(client_ip)
+                if not allowed_ip:
+                    raise HTTPException(
+                        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                        detail=ip_msg or "Limite de requisições públicas por IP excedido.",
+                    )
 
         # P1-02: Bloquear `sql_override` em chamadas anônimas sem credencial institucional verificada
         if req.sql_override and not is_auth_caller:
@@ -1709,7 +1815,11 @@ def create_app(
             )
 
         pii_authorized = is_pii_unmask_authorized(
-            x_api_key, authorization, x_sim_token, expected_tenant_id=rt.tenant.tenant_id
+            x_api_key,
+            authorization,
+            x_sim_token,
+            expected_tenant_id=rt.tenant.tenant_id,
+            requested_role=effective_role,
         )
         # P1-02 + v4.5 Multi-Cidade & Anti-PII Bleed: Isolar namespace de sessão por canal, município, gabinete e escopo PII
         raw_sess = (req.session_id or "default").strip() or "default"
@@ -2247,10 +2357,14 @@ def create_app(
                     turn_res_dict["tenant_id"] = turn_rt.tenant.tenant_id
                     turn_res_dict["municipality"] = f"{turn_rt.tenant.municipality_name}/{turn_rt.tenant.state_uf}"
                     turn_res_dict["ibge_code"] = turn_rt.tenant.ibge_code
-                    cit_nat = str(turn_res_dict.get("citizen_response") or turn_res_dict.get("answer_text") or "").strip()
+                    from sim_platform.security.sql_guard import mask_text_cpfs as _wpp_mask_cpfs
+
+                    cit_nat = _wpp_mask_cpfs(
+                        str(turn_res_dict.get("citizen_response") or turn_res_dict.get("answer_text") or "").strip()
+                    )
                     if turn_was_audio:
-                        cit_nat = f'*[Áudio transcrito]:* "{turn_text}"\n\n{cit_nat}'
-                    wpp_txt = cit_nat.replace("**", "*")
+                        cit_nat = f'*[Áudio transcrito]:* "{_wpp_mask_cpfs(turn_text)}"\n\n{cit_nat}'
+                    wpp_txt = _wpp_mask_cpfs(cit_nat.replace("**", "*"))
 
                     s_res = waha_manager.send_text_with_confirmation(
                         turn_rec,
@@ -2541,13 +2655,15 @@ def create_app(
         if not rec:
             raise HTTPException(status_code=404, detail=f"Interação '{interaction_id}' não encontrada.")
         eff_waha_session = "default" if (not rec.session_id or "::" in rec.session_id) else rec.session_id
+        from sim_platform.security.sql_guard import mask_text_cpfs as _retry_mask_cpfs
+
         waha_manager.start_typing(rec, session=eff_waha_session, chat_id=rec.chat_id, store=rt.interaction_store)
         try:
             send_res = waha_manager.send_text_with_confirmation(
                 rec,
                 session=eff_waha_session,
                 chat_id=rec.chat_id,
-                text=rec.whatsapp_text or rec.citizen_response,
+                text=_retry_mask_cpfs(rec.whatsapp_text or rec.citizen_response),
                 reply_to=rec.inbound_message_id,
                 store=rt.interaction_store,
             )

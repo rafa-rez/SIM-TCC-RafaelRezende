@@ -13,6 +13,7 @@ import hashlib
 import json
 import os
 import re
+import threading
 import time
 import unicodedata
 from collections import OrderedDict
@@ -185,6 +186,7 @@ class SemanticIntentGuardrail:
         self.latest_remittance_human = latest_remittance_human
         self.gazette_name = gazette_name or f"Diário Oficial de {municipality_name}/{state_uf}"
         self._cache_ttl_seconds: float = 3600.0
+        self._cache_lock = threading.Lock()
         self._decision_cache: OrderedDict[str, Tuple[float, SemanticGuardrailDecision]] = OrderedDict()
         self.official_districts: List[str] = self._load_official_districts()
 
@@ -230,12 +232,20 @@ class SemanticIntentGuardrail:
         """
         q_norm = re.sub(r"[^a-z0-9\s]", " ", _norm_ascii(question))
         q_padded = f" {q_norm} "
-        own_names = {_norm_ascii(self.municipality_name)}
-        m_parts = _norm_ascii(self.municipality_name).split()
-        if len(m_parts) >= 2 and len(m_parts[0]) >= 4:
-            own_names.add(m_parts[0])
+        own_full = _norm_ascii(self.municipality_name)
+        protected_phrases: Set[str] = {own_full}
+        single_token_self_parts: Set[str] = set()
+        m_parts = own_full.split()
+        if len(m_parts) >= 2:
+            if len(m_parts[0]) >= 4:
+                single_token_self_parts.add(m_parts[0])
+            if len(m_parts[-1]) >= 4:
+                single_token_self_parts.add(m_parts[-1])
+            sig_m = [p for p in m_parts if p not in ("de", "da", "do", "dos", "das")]
+            if len(sig_m) >= 2:
+                protected_phrases.add("".join(p[0] for p in sig_m))
         for d in self.official_districts:
-            own_names.add(_norm_ascii(d))
+            protected_phrases.add(_norm_ascii(d))
         # Se a própria cidade ou distrito oficial está explícito e nenhuma outra cidade real aparece, é local
         muns_br = self._get_ibge_municipalities_norm()
         if not muns_br:
@@ -249,10 +259,10 @@ class SemanticIntentGuardrail:
             "esperanca", "alegria", "fortuna", "alianca", "amparo", "apoio", "auxilio",
         }
         words = q_norm.split()
-        # Marca posições pertencentes ao nome do próprio município ou aos seus distritos oficiais
-        # (evita que "Martins" ou "Guimarães" dentro do distrito "Martins Guimarães" case com município de outro estado!)
+        # Marca posições pertencentes ao nome COMPLETO do próprio município, sua sigla ou seus distritos oficiais
+        # (NÃO marca partes isoladas como 'lagoa', 'belo' ou 'ouro', para detectar 'Lagoa Santa', 'Belo Vale' e 'Ouro Branco'!)
         protected_indices: Set[int] = set()
-        for own_phrase in own_names:
+        for own_phrase in protected_phrases:
             own_toks = own_phrase.split()
             if not own_toks:
                 continue
@@ -267,7 +277,9 @@ class SemanticIntentGuardrail:
                 if any(pos in protected_indices for pos in range(i, i + n)):
                     continue
                 cand = " ".join(words[i : i + n])
-                if len(cand) < 3 or cand in own_names:
+                if len(cand) < 3 or cand in protected_phrases:
+                    continue
+                if n == 1 and cand in single_token_self_parts:
                     continue
                 if cand in muns_br:
                     if n == 1 and cand in ambiguous_common_words:
@@ -497,35 +509,39 @@ class SemanticIntentGuardrail:
                 used_ai_model=False,
             )
 
-        # 2. Verificar Cache LRU de decisões do Guardião Semântico (com TTL de 1h)
+        # 2. Verificar Cache LRU de decisões do Guardião Semântico (com TTL de 1h; isolado contra chaves customizadas de terceiros)
+        has_custom_key = bool((llm_api_key or "").strip())
         ckey = self._cache_key(question, hist, allowed_sources, role=role)
-        if ckey in self._decision_cache:
-            cached_ts, cached = self._decision_cache[ckey]
-            if (time.time() - cached_ts) <= self._cache_ttl_seconds:
-                self._decision_cache.move_to_end(ckey)
-                return SemanticGuardrailDecision(
-                    makes_sense=cached.makes_sense,
-                    is_safe=cached.is_safe,
-                    intent=cached.intent,
-                    standalone_question=cached.standalone_question,
-                    requires_sql=cached.requires_sql,
-                    requires_rag=cached.requires_rag,
-                    sub_questions=list(cached.sub_questions),
-                    is_contextual_followup=cached.is_contextual_followup,
-                    wants_chart=cached.wants_chart,
-                    wants_table=cached.wants_table,
-                    legal_framework_notes=list(cached.legal_framework_notes),
-                    direct_response_citizen=cached.direct_response_citizen,
-                    direct_response_institutional=cached.direct_response_institutional,
-                    reasoning=cached.reasoning,
-                    engine_used=f"{cached.engine_used} (Cache L1)",
-                    tokens_used=0,
-                    prompt_tokens=0,
-                    completion_tokens=0,
-                    latency_ms=round((time.perf_counter() - t0) * 1000.0, 2),
-                    used_ai_model=cached.used_ai_model,
-                )
-            self._decision_cache.pop(ckey, None)
+        if not has_custom_key:
+            with self._cache_lock:
+                cached_entry = self._decision_cache.get(ckey)
+                if cached_entry is not None:
+                    cached_ts, cached = cached_entry
+                    if (time.time() - cached_ts) <= self._cache_ttl_seconds:
+                        self._decision_cache.move_to_end(ckey)
+                        return SemanticGuardrailDecision(
+                            makes_sense=cached.makes_sense,
+                            is_safe=cached.is_safe,
+                            intent=cached.intent,
+                            standalone_question=cached.standalone_question,
+                            requires_sql=cached.requires_sql,
+                            requires_rag=cached.requires_rag,
+                            sub_questions=list(cached.sub_questions),
+                            is_contextual_followup=cached.is_contextual_followup,
+                            wants_chart=cached.wants_chart,
+                            wants_table=cached.wants_table,
+                            legal_framework_notes=list(cached.legal_framework_notes),
+                            direct_response_citizen=cached.direct_response_citizen,
+                            direct_response_institutional=cached.direct_response_institutional,
+                            reasoning=cached.reasoning,
+                            engine_used=f"{cached.engine_used} (Cache L1)",
+                            tokens_used=0,
+                            prompt_tokens=0,
+                            completion_tokens=0,
+                            latency_ms=round((time.perf_counter() - t0) * 1000.0, 2),
+                            used_ai_model=cached.used_ai_model,
+                        )
+                    self._decision_cache.pop(ckey, None)
 
         # 3. Se o filtro de escopo na UI restringiu explicitamente a apenas DIARIO_OFICIAL, respeitar
         if allowed_sources:
@@ -565,7 +581,8 @@ class SemanticIntentGuardrail:
                         ai_decision.intent = "sql_analytics"
                         ai_decision.requires_rag = False
                         ai_decision.requires_sql = True
-                self._store_cache(ckey, ai_decision)
+                if not has_custom_key:
+                    self._store_cache(ckey, ai_decision)
                 return ai_decision
 
         # 5. Fallback Heurístico Semântico (0 tokens — garante funcionamento offline e em suíte pytest)
@@ -576,13 +593,15 @@ class SemanticIntentGuardrail:
             allowed_sources=allowed_sources,
             t0=t0,
         )
-        self._store_cache(ckey, fallback_decision)
+        if not has_custom_key:
+            self._store_cache(ckey, fallback_decision)
         return fallback_decision
 
     def _store_cache(self, key: str, decision: SemanticGuardrailDecision) -> None:
-        self._decision_cache[key] = (time.time(), decision)
-        if len(self._decision_cache) > self.max_cache_size:
-            self._decision_cache.popitem(last=False)
+        with self._cache_lock:
+            self._decision_cache[key] = (time.time(), decision)
+            if len(self._decision_cache) > self.max_cache_size:
+                self._decision_cache.popitem(last=False)
 
     def _call_lightweight_ai_guardrail(
         self,

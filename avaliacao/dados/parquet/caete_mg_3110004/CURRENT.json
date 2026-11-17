@@ -1,10 +1,10 @@
 {
-  "release_id": "rel_20261116_184050_743",
-  "release_dir": "releases/rel_20261116_184050_743",
+  "release_id": "rel_20261116_231813_822",
+  "release_dir": "releases/rel_20261116_231813_822",
   "release_chain": [
     "releases/upl_20261116_105916_695",
-    "releases/rel_20261116_184050_743"
+    "releases/rel_20261116_231813_822"
   ],
-  "updated_at": "2026-11-16 18:40:50",
+  "updated_at": "2026-11-16 23:18:14",
   "summary": "sync_all(live_api=False, tables=7)"
 }

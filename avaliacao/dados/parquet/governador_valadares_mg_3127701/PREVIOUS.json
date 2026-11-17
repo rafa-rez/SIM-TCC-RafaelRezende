@@ -1,0 +1,10 @@
+{
+  "release_id": "upl_20261116_234133_341",
+  "release_dir": "releases/upl_20261116_234133_341",
+  "release_chain": [
+    "releases/rel_00000000_schema_stubs",
+    "releases/upl_20261116_234133_341"
+  ],
+  "updated_at": "2026-11-16 23:41:34",
+  "summary": "upload(3127701__portalfacil_el_bundle.zip, tables=12)"
+}

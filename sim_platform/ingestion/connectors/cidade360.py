@@ -310,37 +310,61 @@ class Cidade360Connector(BaseMunicipalConnector):
             cat_proc = it.get("categoriaProcesso") if isinstance(it.get("categoriaProcesso"), dict) else {}
             tipo_cont = it.get("tipoContrato") if isinstance(it.get("tipoContrato"), dict) else {}
 
+            raw_doc_forn = digits_only(it.get("niFornecedor") or it.get("num_doc_credor"))
+            doc_forn = f"***.{raw_doc_forn[3:6]}.{raw_doc_forn[6:9]}-**" if len(raw_doc_forn) == 11 else raw_doc_forn
+            nom_forn = str(it.get("nomeRazaoSocialFornecedor") or it.get("dsc_nome_credor") or "").strip()
+            if not nom_forn or "NAO INFORMADO" in normalize_ascii_upper(nom_forn):
+                if doc_forn:
+                    nom_forn = f"CONTRATADO PNCP ({doc_forn})"
+                else:
+                    continue
+
             contratos_rows.append(
                 {
                     "seq_contrato": seq_contrato,
                     "seq_orgao": seq_orgao,
                     "cod_municipio": cod_mun_int,
                     "cod_orgao": cod_orgao,
+                    "seq_unidade": 0,
+                    "cod_unidade": "",
+                    "cod_subunidade": "",
+                    "seq_licitacao": 0,
+                    "seq_dispensa": 0,
                     "num_anoexercicio": ano_cont,
                     "num_mesexercicio": mes_ex,
+                    "dsc_decorrentelicitacao": "SIM",
                     "dsc_tipo_processo": str(it.get("modalidadeNome") or cat_proc.get("nome") or "PNCP Lei 14.133/2021"),
                     "dsc_naturezaobjeto": str(cat_proc.get("nome") or it.get("naturezaObjeto") or "COMPRAS E SERVIÇOS"),
+                    "dsc_tipo_cadastro": "INICIAL",
                     "num_contrato": num_cont,
                     "dat_assinatura": dt_ass,
                     "num_ano_contrato": ano_cont,
                     "dsc_objetocontrato": str(it.get("objetoContrato") or it.get("dsc_objetocontrato") or "").strip(),
+                    "num_doc_signatario": "",
+                    "dsc_nome_signatario": "",
                     "tipo_instrumento": str(tipo_cont.get("nome") or "Contrato"),
                     "dat_iniciovigencia": dt_ini,
                     "dat_fimvigencia": dt_fim,
+                    "dsc_fornecimento": "",
+                    "dsc_formapagamento": "",
+                    "dsc_unid_med_prazo": "",
+                    "dsc_prazoexecucao": "",
+                    "dsc_multarecisoria": "",
+                    "dsc_multa_inadimplencia": "",
+                    "dsc_garantia": "",
                     "dat_publicacao": dt_pub,
                     "dsc_veiculopublicacao": "Portal Nacional de Contratações Públicas (PNCP)",
                     "vlr_contrato": vlr_global,
                     "vlr_empenhado": 0.0,
                     "vlr_liquidado": 0.0,
                     "vlr_pago": 0.0,
+                    "vlr_rspprocessado": 0.0,
+                    "vlr_rspnprocessado": 0.0,
+                    "filename": f"pncp_contratos_{ano_cont}.json",
                     "ano_referencia": ano_cont,
                 }
             )
 
-            doc_forn = digits_only(it.get("niFornecedor") or it.get("num_doc_credor"))
-            nom_forn = str(
-                it.get("nomeRazaoSocialFornecedor") or it.get("dsc_nome_credor") or "FORNECEDOR NÃO INFORMADO"
-            ).strip()
             contratados_rows.append(
                 {
                     "seq_contratado": deterministic_seq_id(self.ibge_code, "pncp_contratado", seq_contrato, doc_forn or nom_forn),

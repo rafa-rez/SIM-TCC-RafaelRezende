@@ -296,9 +296,21 @@ class DuckDBManager:
         - Desativa autoinstall/autoload de extensões remotas
         - Trava a configuração (`lock_configuration = true`) impedindo mutação em runtime.
         """
-        con.execute("SET memory_limit = '512MB';")
+        is_large_tenant = False
+        try:
+            from sim_platform.ingestion.city_onboarding import load_tenant_profile
+
+            t_prof = load_tenant_profile(tenant_id=self.tenant.tenant_id)
+            if str(t_prof.get("plan_code") or "") in ("porte_3", "metropole_capital"):
+                is_large_tenant = True
+        except Exception:
+            is_large_tenant = False
+
+        mem_lim = "1536MB" if is_large_tenant else "512MB"
+        tmp_lim = "4GB" if is_large_tenant else "1GB"
+        con.execute(f"SET memory_limit = '{mem_lim}';")
         con.execute("SET threads = 4;")
-        con.execute("SET max_temp_directory_size = '1GB';")
+        con.execute(f"SET max_temp_directory_size = '{tmp_lim}';")
         con.execute("SET autoinstall_known_extensions = false;")
         con.execute("SET autoload_known_extensions = false;")
         tmp_base = self.tenant.parquet_dir or self.tenant.data_dir
@@ -311,9 +323,11 @@ class DuckDBManager:
             except Exception:
                 tmp_duck = None
         allowed_dirs: List[Path] = []
+        layered_parent_dirs = [p.parent for p in self._resolve_layered_parquet_files().values()]
         candidates = [
             self.tenant.parquet_dir,
             self._get_active_release_dir(),
+            *layered_parent_dirs,
             self.tenant.data_dir,
             self.tenant.fix2023_dir,
             self.tenant.cgu_dir,

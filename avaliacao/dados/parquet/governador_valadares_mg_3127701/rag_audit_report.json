@@ -1,0 +1,17 @@
+{
+  "tenant_id": "governador_valadares_mg_3127701",
+  "raw_candidates_scanned": 0,
+  "atomic_candidates_after_split": 0,
+  "multi_act_chunks_split": 0,
+  "unique_individual_acts": 15,
+  "duplicates_eliminated": 0,
+  "duplication_rate_eliminated_pct": 0.0,
+  "ligatures_repaired": 0,
+  "hyphenations_repaired": 0,
+  "orphan_closing_tails_detected_and_repaired": 0,
+  "golden_benchmark_leakage_removed": true,
+  "qdrant_historical_stats": null,
+  "acts_by_type": {
+    "EDIÇÃO DIÁRIO OFICIAL": 15
+  }
+}
